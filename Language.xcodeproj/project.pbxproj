@@ -11,18 +11,17 @@
 		9A22B8EB299BB93200B1ED3A /* ExistingDictionariesCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A22B8EA299BB93200B1ED3A /* ExistingDictionariesCell.swift */; };
 		9A7B91C6298D6D9600E60CDD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A7B91C5298D6D9600E60CDD /* AppDelegate.swift */; };
 		9A7B91C8298D6D9600E60CDD /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A7B91C7298D6D9600E60CDD /* SceneDelegate.swift */; };
-		9A7B91CA298D6D9600E60CDD /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A7B91C9298D6D9600E60CDD /* ViewController.swift */; };
 		9A7B91CF298D6D9900E60CDD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9A7B91CE298D6D9900E60CDD /* Assets.xcassets */; };
 		9A7B91D2298D6D9900E60CDD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9A7B91D0298D6D9900E60CDD /* LaunchScreen.storyboard */; };
 		9A7B91DD298D6D9900E60CDD /* LanguageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A7B91DC298D6D9900E60CDD /* LanguageTests.swift */; };
 		9A7B91E7298D6D9A00E60CDD /* LanguageUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A7B91E6298D6D9A00E60CDD /* LanguageUITests.swift */; };
 		9A7B91E9298D6D9A00E60CDD /* LanguageUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A7B91E8298D6D9A00E60CDD /* LanguageUITestsLaunchTests.swift */; };
-		9AE5092F2993C65100D86DD7 /* NextViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AE5092E2993C65100D86DD7 /* NextViewController.swift */; };
 		9AE509312993C85A00D86DD7 /* LoadDataVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AE509302993C85A00D86DD7 /* LoadDataVC.swift */; };
 		9AE50933299695B400D86DD7 /* Menu VC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AE50932299695B400D86DD7 /* Menu VC.swift */; };
 		9AE509352997C07700D86DD7 /* AddDictionaryVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AE509342997C07700D86DD7 /* AddDictionaryVC.swift */; };
 		9AE509372999615800D86DD7 /* CustomImageAssets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AE509362999615700D86DD7 /* CustomImageAssets.swift */; };
 		9AFFCE7B299D073D00C12B94 /* AddDictionaryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AFFCE7A299D073D00C12B94 /* AddDictionaryCell.swift */; };
+		9AFFCE7D299E747400C12B94 /* StatisticVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AFFCE7C299E747400C12B94 /* StatisticVC.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -48,7 +47,6 @@
 		9A7B91C2298D6D9600E60CDD /* Language.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Language.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9A7B91C5298D6D9600E60CDD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		9A7B91C7298D6D9600E60CDD /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		9A7B91C9298D6D9600E60CDD /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		9A7B91CE298D6D9900E60CDD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		9A7B91D1298D6D9900E60CDD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		9A7B91D3298D6D9900E60CDD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -57,12 +55,12 @@
 		9A7B91E2298D6D9A00E60CDD /* LanguageUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LanguageUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9A7B91E6298D6D9A00E60CDD /* LanguageUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageUITests.swift; sourceTree = "<group>"; };
 		9A7B91E8298D6D9A00E60CDD /* LanguageUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageUITestsLaunchTests.swift; sourceTree = "<group>"; };
-		9AE5092E2993C65100D86DD7 /* NextViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NextViewController.swift; sourceTree = "<group>"; };
 		9AE509302993C85A00D86DD7 /* LoadDataVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadDataVC.swift; sourceTree = "<group>"; };
 		9AE50932299695B400D86DD7 /* Menu VC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Menu VC.swift"; sourceTree = "<group>"; };
 		9AE509342997C07700D86DD7 /* AddDictionaryVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDictionaryVC.swift; sourceTree = "<group>"; };
 		9AE509362999615700D86DD7 /* CustomImageAssets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomImageAssets.swift; sourceTree = "<group>"; };
 		9AFFCE7A299D073D00C12B94 /* AddDictionaryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDictionaryCell.swift; sourceTree = "<group>"; };
+		9AFFCE7C299E747400C12B94 /* StatisticVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticVC.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -116,13 +114,11 @@
 				9A7B91C5298D6D9600E60CDD /* AppDelegate.swift */,
 				9A7B91C7298D6D9600E60CDD /* SceneDelegate.swift */,
 				9AE50932299695B400D86DD7 /* Menu VC.swift */,
-				9A22B8EA299BB93200B1ED3A /* ExistingDictionariesCell.swift */,
-				9AFFCE7A299D073D00C12B94 /* AddDictionaryCell.swift */,
+				9AFFCE7F299E7DC400C12B94 /* TableViewCells */,
+				9AFFCE7C299E747400C12B94 /* StatisticVC.swift */,
 				9A22B8E8299A9FDA00B1ED3A /* Data.swift */,
 				9AE509342997C07700D86DD7 /* AddDictionaryVC.swift */,
 				9AE509302993C85A00D86DD7 /* LoadDataVC.swift */,
-				9A7B91C9298D6D9600E60CDD /* ViewController.swift */,
-				9AE5092E2993C65100D86DD7 /* NextViewController.swift */,
 				9A7B91CE298D6D9900E60CDD /* Assets.xcassets */,
 				9A7B91D0298D6D9900E60CDD /* LaunchScreen.storyboard */,
 				9A7B91D3298D6D9900E60CDD /* Info.plist */,
@@ -146,6 +142,15 @@
 				9A7B91E8298D6D9A00E60CDD /* LanguageUITestsLaunchTests.swift */,
 			);
 			path = LanguageUITests;
+			sourceTree = "<group>";
+		};
+		9AFFCE7F299E7DC400C12B94 /* TableViewCells */ = {
+			isa = PBXGroup;
+			children = (
+				9AFFCE7A299D073D00C12B94 /* AddDictionaryCell.swift */,
+				9A22B8EA299BB93200B1ED3A /* ExistingDictionariesCell.swift */,
+			);
+			path = TableViewCells;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -281,12 +286,11 @@
 				9A22B8EB299BB93200B1ED3A /* ExistingDictionariesCell.swift in Sources */,
 				9AE50933299695B400D86DD7 /* Menu VC.swift in Sources */,
 				9A22B8E9299A9FDA00B1ED3A /* Data.swift in Sources */,
-				9AE5092F2993C65100D86DD7 /* NextViewController.swift in Sources */,
 				9AE509372999615800D86DD7 /* CustomImageAssets.swift in Sources */,
 				9AFFCE7B299D073D00C12B94 /* AddDictionaryCell.swift in Sources */,
-				9A7B91CA298D6D9600E60CDD /* ViewController.swift in Sources */,
 				9AE509312993C85A00D86DD7 /* LoadDataVC.swift in Sources */,
 				9AE509352997C07700D86DD7 /* AddDictionaryVC.swift in Sources */,
+				9AFFCE7D299E747400C12B94 /* StatisticVC.swift in Sources */,
 				9A7B91C6298D6D9600E60CDD /* AppDelegate.swift in Sources */,
 				9A7B91C8298D6D9600E60CDD /* SceneDelegate.swift in Sources */,
 			);

@@ -36,5 +36,22 @@ class AppData{
     }
     
 }
+class DictionaryDetails{
+    
+    var dictionary : [[String: String]]?
+    
+    var language = String()
+    
+    var numberOfCards = String()
+    
+    init(language: String){
+        self.language = language
+            }
+    init(language: String, dictionary: [[String: String]]){
+        self.language = language
+        self.dictionary = dictionary
+        self.numberOfCards = String(dictionary.count)
+    }
+}
 
 
