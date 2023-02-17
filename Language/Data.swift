@@ -20,9 +20,8 @@ class AppData{
     
     
     func divider(text: String) -> [[String: String]]{
-        let textToDivide = text
         var results = [[String: String]]()
-        var lines = text.split(separator: "\n", omittingEmptySubsequences: true)
+        let lines = text.split(separator: "\n", omittingEmptySubsequences: true)
         
         for line in lines {
             let parts = line.split(separator: " - ")

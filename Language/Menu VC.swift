@@ -70,13 +70,13 @@ class MenuVC: UIViewController {
 //MARK: - ToolBar SetUp
     func toolBarCustomization(){
         
+        let leftToolbarButton = UIBarButtonItem(customView: standartToolbarButton(withText: "View Statistics"))
+        leftToolbarButton.width = 166
         let rightToolbarButton = UIBarButtonItem(customView: standartToolbarButton(withText: "Choose Randomly"))
         rightToolbarButton.width = 166
 
-        let leftToolbarButton = UIBarButtonItem(customView: standartToolbarButton(withText: "View Statistics"))
-        leftToolbarButton.width = 166
         
-        navigationController?.setToolbarHidden(false, animated: true)
+        navigationController?.setToolbarHidden(false, animated: false)
         
         self.navigationController?.toolbar.setItems([
             leftToolbarButton,
@@ -84,17 +84,18 @@ class MenuVC: UIViewController {
             rightToolbarButton], animated: true)
         
         self.navigationController?.toolbar.backgroundColor = .systemBackground
+        self.navigationController?.toolbar.isUserInteractionEnabled = true
         self.toolbarItems = navigationController?.toolbar.items
-        
+
 //Action Register
-//        self.toolbarItems![0].action =
-        self.toolbarItems![1].action = #selector(rightToolBarButTap(sender:))
-        
+        leftToolbarButton.customView?.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(leftToolBarButTap(sender:))))
+        rightToolbarButton.customView?.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(rightToolBarButTap(sender:))))
     }
     func standartToolbarButton(withText: String) -> UIView {
         
         let customLabel : UILabel = {
             let label = UILabel()
+            label.isUserInteractionEnabled = true
             label.attributedText = NSAttributedString(
                 string: withText,
                 attributes: [NSAttributedString.Key.font:
@@ -107,40 +108,46 @@ class MenuVC: UIViewController {
         
         let customView: UIView = {
             let view = UIView()
+            view.isUserInteractionEnabled = true
             view.backgroundColor = UIColor.systemGray4
             view.layer.cornerRadius = 9
-            view.layer.masksToBounds = true
-            
             view.clipsToBounds = true
             
             view.addSubview(customLabel)
-
-            view.translatesAutoresizingMaskIntoConstraints = false
-
-            view.heightAnchor.constraint(equalToConstant: 166).isActive = true
-//            view.heightAnchor.constraint(equalToConstant: 44).isActive = true
-
             return view
         }()
         
-        view.addSubview(customView)
-        
         customLabel.translatesAutoresizingMaskIntoConstraints = false
         
-        customLabel.centerXAnchor.constraint(equalTo: customView.centerXAnchor).isActive = true
-        customLabel.centerYAnchor.constraint(equalTo: customView.centerYAnchor).isActive = true
-        customLabel.heightAnchor.constraint(equalToConstant: 30).isActive = true
-        
+        NSLayoutConstraint.activate([
+            customLabel.centerXAnchor.constraint(equalTo: customView.centerXAnchor),
+            customLabel.centerYAnchor.constraint(equalTo: customView.centerYAnchor),
+            customLabel.leadingAnchor.constraint(greaterThanOrEqualTo: customView.leadingAnchor, constant: 10),
+            customLabel.trailingAnchor.constraint(lessThanOrEqualTo: customView.trailingAnchor, constant: -10),
+            customLabel.topAnchor.constraint(greaterThanOrEqualTo: customView.topAnchor, constant: 10),
+            customLabel.bottomAnchor.constraint(lessThanOrEqualTo: customView.bottomAnchor, constant: -10)
+        ])
         return customView
+        
     }
     
 //MARK: - Actions
     @objc func action(sender: Any){
         navigationController?.showDetailViewController(AddDictionaryVC(), sender: self.navigationController)
     }
-    @objc func rightToolBarButTap(sender: Any){
+    @objc func leftToolBarButTap(sender: Any){
         let vc = StatisticVC()
+        print("the problem isn't here")
         navigationController?.present(vc, animated: true)
+    }
+    @objc func rightToolBarButTap(sender: Any){
+        let allertMessage = UIAlertController(title: "Nothing to randomize", message: "Please, add card stack to start learning.", preferredStyle: .alert)
+        let action = UIAlertAction(title: "Understand", style: .default)
+        action.setValue(UIColor.black, forKey: "titleTextColor")
+        allertMessage.addAction(action)
+        if AppData().availableDictionary.count < 1{
+            self.present(allertMessage, animated: true)
+        }
     }
         
 }
@@ -156,7 +163,7 @@ extension MenuVC: UITableViewDelegate{
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return AppData().availableDictionary.count + 2
+        return AppData().availableDictionary.count + 6
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -177,13 +184,12 @@ extension MenuVC: UITableViewDataSource{
         let addCell = tableView.dequeueReusableCell(withIdentifier: "addCell", for: indexPath) as? AddDictionaryCell
         
         if indexPath.section == tableView.numberOfSections - 1{
-            print(indexPath.section)
-            print(tableView.numberOfSections)
             return addCell!
         } else {
-            print(indexPath.section)
-            print(tableView.numberOfSections)
             return cell!
         }
     }
+}
+extension MenuVC: UIToolbarDelegate{
+    
 }

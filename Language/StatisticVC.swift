@@ -56,7 +56,7 @@ class StatisticVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        view.backgroundColor = .systemBackground
         staticViewLayout()
         setConstraints()
     }
