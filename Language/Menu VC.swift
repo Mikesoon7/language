@@ -19,6 +19,9 @@ class MenuVC: UIViewController {
         return tableView
     }()
     
+    var rightToolbarButton = UIBarButtonItem()
+    var leftToolbarButton = UIBarButtonItem()
+
 //MARK: - Prepare Func
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -70,11 +73,10 @@ class MenuVC: UIViewController {
 //MARK: - ToolBar SetUp
     func toolBarCustomization(){
         
-        let leftToolbarButton = UIBarButtonItem(customView: standartToolbarButton(withText: "View Statistics"))
+        leftToolbarButton = UIBarButtonItem(customView: standartToolbarButton(withText: "View Statistics"))
         leftToolbarButton.width = 166
-        let rightToolbarButton = UIBarButtonItem(customView: standartToolbarButton(withText: "Choose Randomly"))
+        rightToolbarButton = UIBarButtonItem(customView: standartToolbarButton(withText: "Choose Randomly"))
         rightToolbarButton.width = 166
-
         
         navigationController?.setToolbarHidden(false, animated: false)
         
@@ -90,7 +92,8 @@ class MenuVC: UIViewController {
 //Action Register
         leftToolbarButton.customView?.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(leftToolBarButTap(sender:))))
         rightToolbarButton.customView?.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(rightToolBarButTap(sender:))))
-    }
+            }
+    
     func standartToolbarButton(withText: String) -> UIView {
         
         let customLabel : UILabel = {
@@ -136,11 +139,32 @@ class MenuVC: UIViewController {
         navigationController?.showDetailViewController(AddDictionaryVC(), sender: self.navigationController)
     }
     @objc func leftToolBarButTap(sender: Any){
+//        Tap animation.
+        if leftToolbarButton.customView != nil{
+            UIView.animate(withDuration: 0.1, animations: {
+                self.leftToolbarButton.customView!.transform = CGAffineTransform(scaleX: 0.9, y: 0.9)
+            }, completion: { _ in
+                UIView.animate(withDuration: 0.1, animations: {
+                    self.leftToolbarButton.customView!.transform = CGAffineTransform.identity
+                })
+            })
+        }
         let vc = StatisticVC()
         print("the problem isn't here")
         navigationController?.present(vc, animated: true)
     }
     @objc func rightToolBarButTap(sender: Any){
+//        Tap animation.
+        if rightToolbarButton.customView != nil{
+            UIView.animate(withDuration: 0.1, animations: {
+                self.rightToolbarButton.customView!.transform = CGAffineTransform(scaleX: 0.9, y: 0.9)
+            }, completion: { _ in
+                UIView.animate(withDuration: 0.1, animations: {
+                    self.rightToolbarButton.customView!.transform = CGAffineTransform.identity
+                })
+            })
+        }
+        
         let allertMessage = UIAlertController(title: "Nothing to randomize", message: "Please, add card stack to start learning.", preferredStyle: .alert)
         let action = UIAlertAction(title: "Understand", style: .default)
         action.setValue(UIColor.black, forKey: "titleTextColor")
