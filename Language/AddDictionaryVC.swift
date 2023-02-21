@@ -21,6 +21,7 @@ class AddDictionaryVC: UIViewController {
         textView.allowsEditingTextAttributes = true
         
         textView.textColor = .lightGray
+        textView.font = UIFont(name: "TimesNewRomanPSMT", size: 15) ?? UIFont()
         textView.text = "- [ ] Word - Meaning"
         return textView
     }()
@@ -38,16 +39,12 @@ class AddDictionaryVC: UIViewController {
     }()
     
     var submitButton : UIButton = {
-        var button = UIButton()
+        var button = UIButton(type: .custom)
         button.backgroundColor = .systemGray5
         button.layer.cornerRadius = 9
         button.layer.borderColor = UIColor.black.cgColor
         button.layer.borderWidth = 1
-        button.clipsToBounds = true
-        
-        button.setAttributedTitle(NSAttributedString(string: "Add dictionary", attributes: [
-            NSAttributedString.Key.font : UIFont(name: "Georgia-BoldItalic", size: 18) ?? UIFont()
-        ]), for: .normal)
+        button.layer.masksToBounds = true
         return button
     }()
     let nameInputField : UITextField = {
@@ -58,6 +55,14 @@ class AddDictionaryVC: UIViewController {
         field.textAlignment = .right
         return field
     }()
+    let submitButLabel : UILabel = {
+        let label = UILabel()
+        label.font = UIFont(name: "Georgia-BoldItalic", size: 18) ?? UIFont()
+        label.textColor = .label
+        label.text = "Add dictionary"
+        return label
+    }()
+
 
 
 //MARK: - Prepare Func
@@ -91,7 +96,7 @@ class AddDictionaryVC: UIViewController {
             let label = UILabel()
             label.font = UIFont(name: "Georgia-BoldItalic", size: 18) ?? UIFont()
             label.textColor = .label
-            label.text = "Dictionary name:"
+            label.text = "Dictionary name"
             return label
         }()
         nameInputField.delegate = self
@@ -122,15 +127,22 @@ class AddDictionaryVC: UIViewController {
 //MARK: - SubmitButton SetUp
     func submitButtonCustomization(){
         view.addSubview(submitButton)
+        submitButton.addSubview(submitButLabel)
         
         submitButton.translatesAutoresizingMaskIntoConstraints = false
-        
+        submitButLabel.translatesAutoresizingMaskIntoConstraints = false
+
         NSLayoutConstraint.activate([
             submitButton.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor, constant: -11),
             submitButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             submitButton.heightAnchor.constraint(equalToConstant: 60),
-            submitButton.widthAnchor.constraint(equalToConstant: view.bounds.width - 45)
+            submitButton.widthAnchor.constraint(equalToConstant: view.bounds.width - 45),
+            
+            submitButLabel.centerYAnchor.constraint(equalTo: submitButton.centerYAnchor),
+            submitButLabel.centerXAnchor.constraint(equalTo: submitButton.centerXAnchor)
         ])
+//Action
+        submitButton.addTarget(self, action: #selector(submitButTap(sender:)), for: .touchUpInside)
     }
     
 //MARK: - NavBar SetUp
@@ -149,9 +161,19 @@ class AddDictionaryVC: UIViewController {
         navigationController?.navigationBar.tintColor = .label
     }
 //MARK: - Actions
-    @objc func userViewTap(sender: Any){
-        textView.resignFirstResponder()
-        view.becomeFirstResponder()
+    @objc func submitButTap(sender: Any){
+        let insertTextAllert = UIAlertController(title: "Enter the text", message: "Please, enter more than 1 pair of words.", preferredStyle: .alert)
+        let insertNameAllert = UIAlertController(title: "Enter the name", message: "Please, name you dictionary with at least 1 charachter.", preferredStyle: .alert)
+        let action = UIAlertAction(title: "Understand", style: .cancel)
+        insertNameAllert.addAction(action)
+        insertTextAllert.addAction(action)
+        action.setValue(UIColor.black, forKey: "titleTextColor")
+        
+        guard nameInputField.hasText else { return self.present(insertNameAllert, animated: true) }
+        guard textView.hasText else {return self.present(insertTextAllert, animated: true)}
+        
+        print("Not here.")
+        AppData.shared.addDictionary(language: nameInputField.text!, text: textView.text)
     }
     
     @objc func rightBarButTap(sender: Any){

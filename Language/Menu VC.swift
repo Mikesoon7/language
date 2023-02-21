@@ -31,6 +31,11 @@ class MenuVC: UIViewController {
         toolBarCustomization()
         tableViewCustomization()
     }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.navigationController?.isToolbarHidden = false
+        self.tableView.reloadData()
+    }
     
 //MARK: - TableView SetUP
     func tableViewCustomization(){
@@ -166,10 +171,10 @@ class MenuVC: UIViewController {
         }
         
         let allertMessage = UIAlertController(title: "Nothing to randomize", message: "Please, add card stack to start learning.", preferredStyle: .alert)
-        let action = UIAlertAction(title: "Understand", style: .default)
+        let action = UIAlertAction(title: "Understand", style: .cancel)
         action.setValue(UIColor.black, forKey: "titleTextColor")
         allertMessage.addAction(action)
-        if AppData().availableDictionary.count < 1{
+        if AppData.shared.availableDictionary.count < 1{
             self.present(allertMessage, animated: true)
         }
     }
@@ -187,7 +192,7 @@ extension MenuVC: UITableViewDelegate{
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return AppData().availableDictionary.count + 6
+        return AppData.shared.availableDictionary.count + 1
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -202,14 +207,15 @@ extension MenuVC: UITableViewDelegate{
 extension MenuVC: UITableViewDataSource{
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let dictionary = AppData.shared.availableDictionary
         let cell = tableView.dequeueReusableCell(withIdentifier: "dictCell", for: indexPath) as? DictionaryCell
-        cell?.languageResultLabel.text = "English"
-        cell?.cardsResultLabel.text = "11"
         let addCell = tableView.dequeueReusableCell(withIdentifier: "addCell", for: indexPath) as? AddDictionaryCell
         
         if indexPath.section == tableView.numberOfSections - 1{
             return addCell!
         } else {
+            cell?.languageResultLabel.text = dictionary[indexPath.section].language
+            cell?.cardsResultLabel.text =  dictionary[indexPath.section].numberOfCards
             return cell!
         }
     }
