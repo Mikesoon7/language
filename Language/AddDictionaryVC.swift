@@ -17,7 +17,7 @@ class AddDictionaryVC: UIViewController {
         textView.layer.borderColor = UIColor.black.cgColor
         textView.clipsToBounds = true
         
-        textView.textContainerInset = .init(top: 10, left: 5, bottom: 5, right: 5)
+        textView.textContainerInset = .init(top: 5, left: 5, bottom: 0, right: 5)
         textView.allowsEditingTextAttributes = true
         
         textView.textColor = .lightGray

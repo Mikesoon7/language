@@ -44,6 +44,9 @@ class DictionaryDetails{
     
     var numberOfCards = String()
     
+    init(){
+        
+    }
     init(language: String){
         self.language = language
             }

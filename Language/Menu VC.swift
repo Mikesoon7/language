@@ -18,22 +18,48 @@ class MenuVC: UIViewController {
         tableView.selectionFollowsFocus = true
         return tableView
     }()
+    var statisticButton : UIButton = {
+        let button = UIButton()
+        button.configuration = .gray()
+        button.configuration?.baseBackgroundColor = .systemGray4
+        button.configuration?.baseForegroundColor = .label
+        button.layer.borderWidth = 1
+        button.layer.borderColor = UIColor.black.cgColor
+        button.layer.cornerRadius = 9
+        button.clipsToBounds = true
+        return button
+    }()
     
-    var rightToolbarButton = UIBarButtonItem()
+    var randomButton : UIButton = {
+        let button = UIButton()
+        button.backgroundColor = .systemGray4
+        button.tintColor = .label
+        button.layer.borderWidth = 1
+        button.layer.borderColor = UIColor.black.cgColor
+        button.layer.cornerRadius = 9
+        button.layer.masksToBounds = true
+        return button
+    }()
+    
     var leftToolbarButton = UIBarButtonItem()
+    var rightToolbarButton = UIBarButtonItem()
 
+    
 //MARK: - Prepare Func
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         
         navBarCustomization()
-        toolBarCustomization()
+        bottomButtonCustomization()
         tableViewCustomization()
+        /*
+         toolBarCustomization()
+         */
+
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.navigationController?.isToolbarHidden = false
         self.tableView.reloadData()
     }
     
@@ -46,7 +72,7 @@ class MenuVC: UIViewController {
         
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
-        tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
+        tableView.bottomAnchor.constraint(equalTo: self.randomButton.topAnchor, constant: -5).isActive = true
         tableView.widthAnchor.constraint(equalTo: view.widthAnchor, constant: 0).isActive = true
         tableView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
     }
@@ -54,28 +80,66 @@ class MenuVC: UIViewController {
 //MARK: - NavigationBar SetUp
     func navBarCustomization(){
         // Title adjustment.
-        self.navigationController?.navigationBar.titleTextAttributes = [
-            NSAttributedString.Key.foregroundColor : UIColor.black,
-            NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .body).withSize(25)
-        ]
         navigationItem.title = "Menu"
-        navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.font: UIFont(name: "Georgia-BoldItalic", size: 23)!]
+        navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.font:
+                                                                    UIFont(name: "Georgia-BoldItalic",
+                                                                           size: 23)!]
         self.navigationController?.navigationBar.setTitleVerticalPositionAdjustment(3, for: .default)
-        
         
         // Buttons
         let rightButton = UIBarButtonItem(
             image: UIImage(systemName: "gearshape"),
             style: .plain,
             target: self,
-            action: #selector(action(sender:)))
+            action: #selector(settingsButTap(sender:)))
                 self.navigationItem.setRightBarButton(rightButton, animated: true)
         
         self.navigationController?.navigationBar.tintColor = .label
         self.navigationController?.navigationBar.isTranslucent = true
     }
-    
+//MARK: - BottomBut SetUp
+    func bottomButtonCustomization(){
+        view.addSubview(statisticButton)
+        view.addSubview(randomButton)
+
+        statisticButton.translatesAutoresizingMaskIntoConstraints = false
+        randomButton.translatesAutoresizingMaskIntoConstraints = false
+
+        statisticButton.setAttributedTitle(NSAttributedString(
+            string: "View Statistic",
+            attributes: [NSAttributedString.Key.font :
+                            UIFont(name: "Georgia-Italic",
+                                   size: 18) ?? UIFont()]),
+                                           for: .normal)
+        
+        randomButton.setAttributedTitle(NSAttributedString(
+            string: "Choose Randomly",
+            attributes: [NSAttributedString.Key.font :
+                            UIFont(name: "Georgia-Italic",
+                                   size: 18) ?? UIFont()]),
+                                           for: .normal)
+        NSLayoutConstraint.activate([
+            statisticButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -11),
+            statisticButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 15),
+            statisticButton.widthAnchor.constraint(equalToConstant: (view.bounds.width - 30 - 10) / 2),
+            statisticButton.heightAnchor.constraint(equalToConstant: 50),
+            
+            randomButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -11),
+            randomButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -15),
+            randomButton.widthAnchor.constraint(equalToConstant: (view.bounds.width - 30 - 10) / 2),
+            randomButton.heightAnchor.constraint(equalToConstant: 50)
+        ])
+        statisticButton.addTarget(self, action: #selector(animationBegin(sender:)), for: .touchDown)
+        statisticButton.addTarget(self, action: #selector(statiscticButTap(sender:)), for: .touchUpInside)
+        statisticButton.addTarget(self, action: #selector(animationEnded(sender: )), for: .touchUpOutside)
+        
+        randomButton.addTarget(self, action: #selector(animationBegin(sender:)), for: .touchDown)
+        randomButton.addTarget(self, action: #selector(randomButTap(sender:)), for: .touchUpInside)
+        randomButton.addTarget(self, action: #selector(animationEnded(sender: )), for: .touchUpOutside)
+
+    }
 //MARK: - ToolBar SetUp
+    /*
     func toolBarCustomization(){
         
         leftToolbarButton = UIBarButtonItem(customView: standartToolbarButton(withText: "View Statistics"))
@@ -138,11 +202,44 @@ class MenuVC: UIViewController {
         return customView
         
     }
+    */
     
 //MARK: - Actions
-    @objc func action(sender: Any){
+    @objc func settingsButTap(sender: Any){
         navigationController?.showDetailViewController(AddDictionaryVC(), sender: self.navigationController)
     }
+    @objc func randomButTap(sender: UIButton){
+        animationEnded(sender: sender)
+        let allertMessage = UIAlertController(title: "Nothing to randomize", message: "Please, add card stack to start learning.", preferredStyle: .alert)
+        let action = UIAlertAction(title: "Understand", style: .cancel)
+        action.setValue(UIColor.black, forKey: "titleTextColor")
+        allertMessage.addAction(action)
+        
+        if AppData.shared.availableDictionary.count == 0{
+            self.present(allertMessage, animated: true)
+        } else {
+            let vc = DetailsVC()
+            self.navigationController?.pushViewController(vc, animated: true)
+        }
+
+    }
+    @objc func statiscticButTap(sender: UIButton){
+        animationEnded(sender: sender)
+        let vc = StatisticVC()
+        navigationController?.present(vc, animated: true)
+    }
+    @objc func animationBegin( sender: UIView){
+        UIView.animate(withDuration: 0.20, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 0, options: .curveEaseIn, animations: {
+            sender.transform = CGAffineTransform(scaleX: 0.92, y: 0.92)
+        })
+    }
+    @objc func animationEnded( sender: UIView){
+        UIView.animate(withDuration: 0.10, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseIn, animations: {
+            sender.transform = CGAffineTransform(scaleX: 1, y: 1)
+        })
+    }
+
+    /*
     @objc func leftToolBarButTap(sender: Any){
 //        Tap animation.
         if leftToolbarButton.customView != nil{
@@ -176,8 +273,12 @@ class MenuVC: UIViewController {
         allertMessage.addAction(action)
         if AppData.shared.availableDictionary.count < 1{
             self.present(allertMessage, animated: true)
+        } else {
+            let vc = DetailsVC()
+            self.navigationController?.pushViewController(vc, animated: true)
         }
     }
+     */
         
 }
 
@@ -199,7 +300,10 @@ extension MenuVC: UITableViewDelegate{
         if indexPath.section == tableView.numberOfSections - 1{
             self.navigationController?.pushViewController(AddDictionaryVC(), animated: true)
         } else {
-            self.navigationController?.pushViewController(LoadDataVC(), animated: true)
+            let vc = DetailsVC()
+            let dictionary = AppData.shared.availableDictionary
+            vc.dictionary = dictionary[indexPath.section]
+            self.navigationController?.pushViewController(vc, animated: true)
         }
     }
 }
