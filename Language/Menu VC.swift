@@ -41,7 +41,7 @@ class MenuVC: UIViewController {
         return button
     }()
     
-    var animationView = UIView()
+    var animationMainView = UIView()
     /*
      var leftToolbarButton = UIBarButtonItem()
      var rightToolbarButton = UIBarButtonItem()
@@ -52,24 +52,169 @@ class MenuVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
-        navigationController?.pushViewController(LaunchScreenAnimation(), animated: true)
         navBarCustomization()
         bottomButtonCustomization()
         tableViewCustomization()
-        /*
-         toolBarCustomization()
-         */
-
+        setUpAnimationViews()
+        runAnimation()
+        
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.tableView.reloadData()
-        self.navigationController?.isNavigationBarHidden = false
-
     }
     
 //MARK: - Animation SetUp
-    
+    func setUpAnimationViews(){
+        self.navigationController?.navigationBar.alpha = 0
+        animationMainView = UIView(frame: view.bounds)
+        animationMainView.backgroundColor = .systemBackground
+        
+        let animationView : UIView = {
+            let view = UIView()
+            view.backgroundColor = .clear
+            view.layer.cornerRadius = 9
+            view.layer.masksToBounds = true
+            return view
+        }()
+        
+        let label: UILabel = {
+            let label = UILabel()
+            label.attributedText = NSAttributedString(string: "Learny",
+                                                      attributes: [NSAttributedString.Key.font :
+                                                                    UIFont(name: "Georgia-BoldItalic",
+                                                                           size: 20) ?? UIFont()])
+            return label
+        }()
+        
+        view.addSubview(animationMainView)
+        animationMainView.addSubview(animationView)
+        animationView.addSubview(label)
+        
+        animationView.translatesAutoresizingMaskIntoConstraints = false
+        label.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            animationView.topAnchor.constraint(equalTo: view.topAnchor, constant: view.bounds.height / 3),
+            animationView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: view.bounds.width / 3),
+            animationView.widthAnchor.constraint(equalToConstant: view.bounds.width / 3),
+            animationView.heightAnchor.constraint(equalTo: animationView.widthAnchor),
+            
+            label.centerYAnchor.constraint(equalTo: animationView.centerYAnchor),
+            label.centerXAnchor.constraint(equalTo: animationView.centerXAnchor)
+        ])
+        
+    }
+    func runAnimation(){
+        
+        func strokeLayerFrom(_ startPoint: CGPoint, to endPoint: CGPoint, secondPoint: CGPoint?, strokeWidth: CGFloat , with color: UIColor) -> (CAShapeLayer) {
+            let layer = CAShapeLayer()
+            layer.strokeColor = color.cgColor
+            layer.fillColor = UIColor.clear.cgColor
+            layer.lineWidth = strokeWidth
+            
+            let path = UIBezierPath()
+            path.move(to: startPoint)
+            path.addLine(to: endPoint)
+            if secondPoint != nil{
+                path.addLine(to: secondPoint!)
+            }
+            layer.path = path.cgPath
+            return layer
+        }
+        //Screen dimentions
+        let widthPont = view.bounds.width / 3
+        let heightPoint = view.bounds.height / 3
+        let maxY = view.bounds.maxY
+        let maxX = view.bounds.maxX
+        //Black to draw
+        let topLeft = strokeLayerFrom(CGPoint(x: widthPont ,y: 0 ),
+                                      to: CGPoint(x: widthPont, y: maxY - 104),
+                                      secondPoint: CGPoint(x: view.bounds.maxX, y: maxY - 104),
+                                      strokeWidth: 3,
+                                      with: .label)
+        let topRight = strokeLayerFrom(CGPoint(x: widthPont * 2, y: 0),
+                                       to: CGPoint(x: widthPont * 2, y: maxY - 104),
+                                       secondPoint: CGPoint(x: 0, y: maxY - 104),
+                                       strokeWidth: 3,
+                                       with: .label)
+        let rightTop = strokeLayerFrom(CGPoint(x: 0, y: heightPoint),
+                                       to: CGPoint(x: maxX, y: heightPoint),
+                                       secondPoint: nil,
+                                       strokeWidth: 3,
+                                       with: .label)
+        let rightBottom = strokeLayerFrom(CGPoint(x: 0, y: heightPoint + widthPont ),
+                                          to: CGPoint(x: maxX , y: heightPoint + widthPont),
+                                          secondPoint: nil,
+                                          strokeWidth: 3,
+                                          with: .label)
+        
+        //White to vanish
+        let topLeftV = strokeLayerFrom(CGPoint(x: widthPont , y: 0 ),
+                                       to: CGPoint(x: widthPont, y: maxY - 105.5),
+                                       secondPoint: nil,
+                                       strokeWidth: 6,
+                                       with: .systemBackground)
+        let topRightV = strokeLayerFrom(CGPoint(x: widthPont * 2, y: 0),
+                                        to: CGPoint(x: widthPont * 2, y: maxY - 105.5),
+                                        secondPoint: nil,
+                                        strokeWidth: 6,
+                                        with: .systemBackground)
+        let rightTopV = strokeLayerFrom(CGPoint(x: 0, y: heightPoint),
+                                        to: CGPoint(x: maxX, y: heightPoint),
+                                        secondPoint: nil,
+                                        strokeWidth: 6,
+                                        with: .systemBackground)
+        let rightBottomV = strokeLayerFrom(CGPoint(x: 0, y: heightPoint + widthPont ),
+                                           to: CGPoint(x: maxX , y: heightPoint + widthPont),
+                                           secondPoint: nil,
+                                           strokeWidth: 6,
+                                           with: .systemBackground)
+        
+        CATransaction.begin()
+        
+        func strokeAnimation(from: CGFloat, to: CGFloat, inSec: CFTimeInterval) -> CABasicAnimation{
+            let animation = CABasicAnimation(keyPath: "strokeEnd")
+            animation.fromValue = from
+            animation.toValue = to
+            animation.duration = inSec
+            return animation
+        }
+        topLeft.add(strokeAnimation(from: 0, to: 3, inSec: 4), forKey: "myStroke")
+        topRight.add(strokeAnimation(from: 0, to: 3, inSec: 4), forKey: "myStroke")
+        rightTop.add(strokeAnimation(from: 0, to: 3, inSec: 4), forKey: "myStroke")
+        rightBottom.add(strokeAnimation(from: 0, to: 3, inSec: 4), forKey: "myStroke")
+        
+        topLeftV.add(strokeAnimation(from: 0, to: 1.5, inSec: 4), forKey: "myStroke")
+        topRightV.add(strokeAnimation(from: 0, to: 1.5, inSec: 4), forKey: "myStroke")
+        rightTopV.add(strokeAnimation(from: 0, to: 1.2, inSec: 3.78), forKey: "myStroke")
+        rightBottomV.add(strokeAnimation(from: 0, to: 1.2, inSec: 3.78), forKey: "myStroke")
+        
+        
+        CATransaction.setCompletionBlock{ [weak self] in
+            UIView.animate(withDuration: 1, delay: 2.5) {
+                self!.animationMainView.alpha = 0.0
+                self!.navigationController?.navigationBar.alpha = 1
+                self!.navigationController?.navigationBar.isHidden = false
+            }
+        }
+        
+        
+        CATransaction.commit()
+        //            view.layer.addSublayer(animationMainView.layer)
+        animationMainView.layer.addSublayer(topRight)
+        animationMainView.layer.addSublayer(topRightV)
+        animationMainView.layer.addSublayer(rightTop)
+        animationMainView.layer.addSublayer(rightTopV)
+        animationMainView.layer.addSublayer(rightBottom)
+        animationMainView.layer.addSublayer(rightBottomV)
+        animationMainView.layer.addSublayer(topLeft)
+        animationMainView.layer.addSublayer(topLeftV)
+        
+        //            self.perform(#selector(goBack(sender:)), with: MenuVC(), afterDelay: TimeInterval(floatLiteral: 4.0))
+    }
+
+
     
 //MARK: - TableView SetUP
     func tableViewCustomization(){
@@ -80,7 +225,7 @@ class MenuVC: UIViewController {
         
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
-        tableView.bottomAnchor.constraint(equalTo: self.randomButton.topAnchor, constant: -5).isActive = true
+        tableView.bottomAnchor.constraint(equalTo: self.randomButton.topAnchor, constant: -10).isActive = true
         tableView.widthAnchor.constraint(equalTo: view.widthAnchor, constant: 0).isActive = true
         tableView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
     }
@@ -104,7 +249,6 @@ class MenuVC: UIViewController {
         
         self.navigationController?.navigationBar.tintColor = .label
         self.navigationController?.navigationBar.isTranslucent = true
-        self.navigationController?.navigationItem.backBarButtonItem = nil
     }
 
 //MARK: - BottomBut SetUp
@@ -147,6 +291,19 @@ class MenuVC: UIViewController {
         randomButton.addTarget(self, action: #selector(randomButTap(sender:)), for: .touchUpInside)
         randomButton.addTarget(self, action: #selector(animationEnded(sender: )), for: .touchUpOutside)
 
+//Bottom Stroke
+        let stroke : CAShapeLayer = {
+            let path = UIBezierPath()
+            path.move(to: CGPoint(x: 0, y: view.bounds.maxY - 105))
+            path.addLine(to: CGPoint(x: view.bounds.maxX, y: view.bounds.maxY - 105))
+            let stroke = CAShapeLayer()
+            stroke.path = path.cgPath
+            stroke.lineWidth = 3
+            stroke.strokeColor = UIColor.label.cgColor
+            stroke.fillColor = UIColor.clear.cgColor
+            return stroke
+        }()
+        view.layer.addSublayer(stroke)
     }
 //MARK: - ToolBar SetUp
     /*
