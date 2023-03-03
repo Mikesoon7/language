@@ -41,15 +41,18 @@ class MenuVC: UIViewController {
         return button
     }()
     
-    var leftToolbarButton = UIBarButtonItem()
-    var rightToolbarButton = UIBarButtonItem()
+    var animationView = UIView()
+    /*
+     var leftToolbarButton = UIBarButtonItem()
+     var rightToolbarButton = UIBarButtonItem()
+     */
 
     
 //MARK: - Prepare Func
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
-        
+        navigationController?.pushViewController(LaunchScreenAnimation(), animated: true)
         navBarCustomization()
         bottomButtonCustomization()
         tableViewCustomization()
@@ -61,7 +64,12 @@ class MenuVC: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.tableView.reloadData()
+        self.navigationController?.isNavigationBarHidden = false
+
     }
+    
+//MARK: - Animation SetUp
+    
     
 //MARK: - TableView SetUP
     func tableViewCustomization(){
@@ -96,7 +104,9 @@ class MenuVC: UIViewController {
         
         self.navigationController?.navigationBar.tintColor = .label
         self.navigationController?.navigationBar.isTranslucent = true
+        self.navigationController?.navigationItem.backBarButtonItem = nil
     }
+
 //MARK: - BottomBut SetUp
     func bottomButtonCustomization(){
         view.addSubview(statisticButton)

@@ -88,7 +88,7 @@ class DetailsVC: UIViewController {
         view.addSubview(randomiseCardsView)
                 
         let label : UILabel = {
-            var label = UILabel()
+            let label = UILabel()
             label.attributedText = NSAttributedString(
                 string: "Randomize cards",
                 attributes: [NSAttributedString.Key.font :
@@ -133,7 +133,7 @@ class DetailsVC: UIViewController {
         view.addSubview(setTheGoalView)
 
         let label : UILabel = {
-            var label = UILabel()
+            let label = UILabel()
             label.attributedText = NSAttributedString(
                 string: "Set the goal",
                 attributes: [NSAttributedString.Key.font :
@@ -179,7 +179,8 @@ class DetailsVC: UIViewController {
         usePictureView.translatesAutoresizingMaskIntoConstraints = false
         
         let label : UILabel = {
-            var label = UILabel()
+            let label = UILabel()
+
             label.attributedText = NSAttributedString(
                 string: "Use pictures",
                 attributes: [NSAttributedString.Key.font :
@@ -241,6 +242,7 @@ class DetailsVC: UIViewController {
             beginBut.widthAnchor.constraint(equalToConstant: view.bounds.width - 44),
             beginBut.heightAnchor.constraint(equalToConstant: 50)
             ])
+        beginBut.addTarget(self, action: #selector(startButtonTap(sender: )), for: .touchUpInside)
     }
     
 
@@ -255,6 +257,12 @@ class DetailsVC: UIViewController {
     }
     @objc func usePicturesSwitchToggle(sender: Any){
         
+    }
+    
+    @objc func startButtonTap(sender: Any){
+        let vc = GameVC()
+        vc.dictionaryToPerform = self.dictionary
+        self.navigationController?.pushViewController(vc, animated: true)
     }
 
 }

@@ -21,8 +21,20 @@ extension UIView {
             self.layer.cornerRadius = 9
             self.backgroundColor = .systemGray4
             self.clipsToBounds = true
-
+        
         }
     }
-   
+}
+extension UINavigationController{
+    func pushViewControllerFromRight (controller: UIViewController) {
+        let transition = CATransition ()
+        transition.duration = 0.5
+        transition.type = CATransitionType.push
+        transition.subtype = CATransitionSubtype.fromRight
+        transition.timingFunction =
+        CAMediaTimingFunction (name :CAMediaTimingFunctionName.easeInEaseOut)
+        view.window!.layer.add(transition, forKey: kCATransition)
+        pushViewController(controller, animated: false)
+         
+    }
 }

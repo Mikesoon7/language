@@ -20,7 +20,7 @@ class AddDictionaryCell: UITableViewCell {
         button.backgroundColor = .systemGray3
         button.setImage(UIImage(systemName: "square.and.arrow.up"), for: .normal)
         button.imageView?.center = button.center
-        button.tintColor = .black
+        button.tintColor = .label
         
         button.layer.cornerRadius = 9
         button.clipsToBounds = true
