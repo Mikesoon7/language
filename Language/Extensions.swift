@@ -38,3 +38,29 @@ extension UINavigationController{
          
     }
 }
+
+extension UIButton{
+    func addTargetTouchBegin(){
+        super.addTarget(self, action: #selector(animationBegin(sender:)), for: .touchDown)
+        
+    }
+    func addTargetOutsideTouchStop(){
+        super.addTarget(self, action: #selector(animationEnded(sender:)), for: .touchUpOutside)
+    }
+    func addTargetInsideTouchStop(){
+        super.addTarget(self, action: #selector(animationEnded(sender: )), for: .touchUpInside)
+    }
+    
+    @objc func animationBegin( sender: UIButton){
+        UIView.animate(withDuration: 0.20, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 0, options: .curveEaseIn, animations: {
+            sender.transform = CGAffineTransform(scaleX: 0.92, y: 0.92)
+        })
+    }
+    @objc func animationEnded( sender: UIButton){
+        UIView.animate(withDuration: 0.10, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseIn, animations: {
+            sender.transform = CGAffineTransform(scaleX: 1, y: 1)
+        })
+    }
+
+}
+

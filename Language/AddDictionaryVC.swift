@@ -14,7 +14,7 @@ class AddDictionaryVC: UIViewController {
         textView.backgroundColor = .systemGray5
         textView.layer.cornerRadius = 9
         textView.layer.borderWidth = 1
-        textView.layer.borderColor = UIColor.black.cgColor
+        textView.layer.borderColor = UIColor.label.cgColor
         textView.clipsToBounds = true
         
         textView.textContainerInset = .init(top: 5, left: 5, bottom: 0, right: 5)
@@ -29,20 +29,21 @@ class AddDictionaryVC: UIViewController {
     var nameView : UIView = {
         var view = UIView()
         view.backgroundColor = .systemGray5
-        
         view.layer.cornerRadius = 9
         view.layer.borderWidth = 1
-        view.layer.borderColor = UIColor.black.cgColor
+        view.layer.borderColor = UIColor.label.cgColor
         view.clipsToBounds = true
         
         return view
     }()
     
     var submitButton : UIButton = {
-        var button = UIButton(type: .custom)
-        button.backgroundColor = .systemGray5
+        var button = UIButton()
+        button.configuration = .gray()
+        button.configuration?.baseForegroundColor = .label
+        button.configuration?.baseBackgroundColor = .systemGray4
         button.layer.cornerRadius = 9
-        button.layer.borderColor = UIColor.black.cgColor
+        button.layer.borderColor = UIColor.label.cgColor
         button.layer.borderWidth = 1
         button.layer.masksToBounds = true
         return button
@@ -59,13 +60,12 @@ class AddDictionaryVC: UIViewController {
         let label = UILabel()
         label.font = UIFont(name: "Georgia-BoldItalic", size: 18) ?? UIFont()
         label.textColor = .label
+        label.textAlignment = .center
         label.text = "Add dictionary"
         return label
     }()
-
-
-
-//MARK: - Prepare Func
+    
+    //MARK: - Prepare Func
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
@@ -74,8 +74,9 @@ class AddDictionaryVC: UIViewController {
         navBarCustomization()
         nameViewCustomization()
         submitButtonCustomization()
+        keybaordAppears()
     }
-//MARK: - TextView SetUp
+    //MARK: - TextView SetUp
     func textViewCustomization(){
         view.addSubview(textView)
         textView.delegate = self
@@ -90,6 +91,12 @@ class AddDictionaryVC: UIViewController {
             textView.heightAnchor.constraint(lessThanOrEqualToConstant: ((view.bounds.width - 45) * 0.6))
         ])
     }
+//MARK: - KeyboardObserver
+    func keybaordAppears(){
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(sender:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(sender:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+    
 //MARK: - NameView SetUp
     func nameViewCustomization(){
         let nameLabel : UILabel = {
@@ -143,6 +150,9 @@ class AddDictionaryVC: UIViewController {
         ])
 //Action
         submitButton.addTarget(self, action: #selector(submitButTap(sender:)), for: .touchUpInside)
+        submitButton.addTargetTouchBegin()
+        submitButton.addTargetOutsideTouchStop()
+        submitButton.addTargetInsideTouchStop()
     }
     
 //MARK: - NavBar SetUp
@@ -169,11 +179,13 @@ class AddDictionaryVC: UIViewController {
         insertTextAllert.addAction(action)
         action.setValue(UIColor.black, forKey: "titleTextColor")
         
-        guard nameInputField.hasText else { return self.present(insertNameAllert, animated: true) }
+        guard nameInputField.hasText else { return self.present(insertNameAllert, animated: true)}
         guard textView.hasText else {return self.present(insertTextAllert, animated: true)}
         
-        print("Not here.")
         AppData.shared.addDictionary(language: nameInputField.text!, text: textView.text)
+        navigationItem.rightBarButtonItem = nil
+        view.becomeFirstResponder()
+        navigationController?.popViewController(animated: true)
     }
     
     @objc func rightBarButTap(sender: Any){
@@ -186,6 +198,10 @@ class AddDictionaryVC: UIViewController {
     }
     @objc func nonAccurateNameFieldTap(sender: Any){
         nameInputField.becomeFirstResponder()
+    }
+    @objc func keyboardWillShow(sender: Notification){
+    }
+    @objc func keyboardWillHide(sender: Notification){
     }
 }
 

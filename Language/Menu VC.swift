@@ -32,8 +32,9 @@ class MenuVC: UIViewController {
     
     var randomButton : UIButton = {
         let button = UIButton()
-        button.backgroundColor = .systemGray4
-        button.tintColor = .label
+        button.configuration = .gray()
+        button.configuration?.baseBackgroundColor = .systemGray4
+        button.configuration?.baseForegroundColor = .label
         button.layer.borderWidth = 1
         button.layer.borderColor = UIColor.black.cgColor
         button.layer.cornerRadius = 9
@@ -42,6 +43,9 @@ class MenuVC: UIViewController {
     }()
     
     var animationMainView = UIView()
+    
+    var topStroke = CAShapeLayer()
+    var bottomStroke = CAShapeLayer()
     /*
      var leftToolbarButton = UIBarButtonItem()
      var rightToolbarButton = UIBarButtonItem()
@@ -64,9 +68,24 @@ class MenuVC: UIViewController {
         self.tableView.reloadData()
     }
     
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+
+        if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+            if traitCollection.userInterfaceStyle == .dark {
+                self.bottomStroke.strokeColor = UIColor.white.cgColor
+                self.topStroke.strokeColor = UIColor.white.cgColor
+            } else {
+                self.bottomStroke.strokeColor = UIColor.black.cgColor
+                self.bottomStroke.strokeColor = UIColor.black.cgColor
+            }
+        }
+    }
+
 //MARK: - Animation SetUp
     func setUpAnimationViews(){
-        self.navigationController?.navigationBar.alpha = 0
+        navigationController?.navigationBar.isOpaque = false
+        navigationController?.navigationBar.layer.opacity = 0
         animationMainView = UIView(frame: view.bounds)
         animationMainView.backgroundColor = .systemBackground
         
@@ -194,14 +213,12 @@ class MenuVC: UIViewController {
         CATransaction.setCompletionBlock{ [weak self] in
             UIView.animate(withDuration: 1, delay: 2.5) {
                 self!.animationMainView.alpha = 0.0
-                self!.navigationController?.navigationBar.alpha = 1
-                self!.navigationController?.navigationBar.isHidden = false
+                self!.navigationController?.navigationBar.layer.opacity = 0.8
             }
         }
         
         
         CATransaction.commit()
-        //            view.layer.addSublayer(animationMainView.layer)
         animationMainView.layer.addSublayer(topRight)
         animationMainView.layer.addSublayer(topRightV)
         animationMainView.layer.addSublayer(rightTop)
@@ -211,8 +228,7 @@ class MenuVC: UIViewController {
         animationMainView.layer.addSublayer(topLeft)
         animationMainView.layer.addSublayer(topLeftV)
         
-        //            self.perform(#selector(goBack(sender:)), with: MenuVC(), afterDelay: TimeInterval(floatLiteral: 4.0))
-    }
+        }
 
 
     
@@ -237,8 +253,23 @@ class MenuVC: UIViewController {
         navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.font:
                                                                     UIFont(name: "Georgia-BoldItalic",
                                                                            size: 23)!]
-        self.navigationController?.navigationBar.setTitleVerticalPositionAdjustment(3, for: .default)
         
+        // Stroke
+        topStroke = {
+            let path = UIBezierPath()
+            path.move(to: CGPoint(x: 0, y: self.navigationController!.navigationBar.bounds.maxY))
+            path.addLine(to: CGPoint(x: view.bounds.maxX, y: self.navigationController!.navigationBar.bounds.maxY))
+            let stroke = CAShapeLayer()
+            stroke.path = path.cgPath
+            stroke.lineWidth = 1.5
+            stroke.strokeColor = UIColor.label.cgColor
+            stroke.fillColor = UIColor.clear.cgColor
+            stroke.opacity = 0.8
+            
+            return stroke
+        }()
+        self.navigationController?.navigationBar.layer.addSublayer(topStroke)
+
         // Buttons
         let rightButton = UIBarButtonItem(
             image: UIImage(systemName: "gearshape"),
@@ -272,27 +303,29 @@ class MenuVC: UIViewController {
                             UIFont(name: "Georgia-Italic",
                                    size: 18) ?? UIFont()]),
                                            for: .normal)
-        NSLayoutConstraint.activate([
+            NSLayoutConstraint.activate([
             statisticButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -11),
-            statisticButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 15),
-            statisticButton.widthAnchor.constraint(equalToConstant: (view.bounds.width - 30 - 10) / 2),
+            statisticButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),
+            statisticButton.widthAnchor.constraint(equalToConstant: (view.bounds.width - 20 - 10) / 2),
             statisticButton.heightAnchor.constraint(equalToConstant: 50),
             
             randomButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -11),
-            randomButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -15),
-            randomButton.widthAnchor.constraint(equalToConstant: (view.bounds.width - 30 - 10) / 2),
+            randomButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10),
+            randomButton.widthAnchor.constraint(equalToConstant: (view.bounds.width - 20 - 10) / 2),
             randomButton.heightAnchor.constraint(equalToConstant: 50)
         ])
-        statisticButton.addTarget(self, action: #selector(animationBegin(sender:)), for: .touchDown)
+        statisticButton.addTargetTouchBegin()
+        statisticButton.addTargetOutsideTouchStop()
+        statisticButton.addTargetInsideTouchStop()
         statisticButton.addTarget(self, action: #selector(statiscticButTap(sender:)), for: .touchUpInside)
-        statisticButton.addTarget(self, action: #selector(animationEnded(sender: )), for: .touchUpOutside)
         
-        randomButton.addTarget(self, action: #selector(animationBegin(sender:)), for: .touchDown)
+        randomButton.addTargetTouchBegin()
+        randomButton.addTargetOutsideTouchStop()
+        randomButton.addTargetInsideTouchStop()
         randomButton.addTarget(self, action: #selector(randomButTap(sender:)), for: .touchUpInside)
-        randomButton.addTarget(self, action: #selector(animationEnded(sender: )), for: .touchUpOutside)
 
 //Bottom Stroke
-        let stroke : CAShapeLayer = {
+        bottomStroke = {
             let path = UIBezierPath()
             path.move(to: CGPoint(x: 0, y: view.bounds.maxY - 105))
             path.addLine(to: CGPoint(x: view.bounds.maxX, y: view.bounds.maxY - 105))
@@ -301,9 +334,11 @@ class MenuVC: UIViewController {
             stroke.lineWidth = 3
             stroke.strokeColor = UIColor.label.cgColor
             stroke.fillColor = UIColor.clear.cgColor
+            stroke.opacity = 0.8
+            
             return stroke
         }()
-        view.layer.addSublayer(stroke)
+        view.layer.addSublayer(bottomStroke)
     }
 //MARK: - ToolBar SetUp
     /*
@@ -376,10 +411,9 @@ class MenuVC: UIViewController {
         navigationController?.showDetailViewController(AddDictionaryVC(), sender: self.navigationController)
     }
     @objc func randomButTap(sender: UIButton){
-        animationEnded(sender: sender)
         let allertMessage = UIAlertController(title: "Nothing to randomize", message: "Please, add card stack to start learning.", preferredStyle: .alert)
         let action = UIAlertAction(title: "Understand", style: .cancel)
-        action.setValue(UIColor.black, forKey: "titleTextColor")
+        action.setValue(UIColor.label, forKey: "titleTextColor")
         allertMessage.addAction(action)
         
         if AppData.shared.availableDictionary.count == 0{
@@ -391,20 +425,9 @@ class MenuVC: UIViewController {
 
     }
     @objc func statiscticButTap(sender: UIButton){
-        animationEnded(sender: sender)
         let vc = StatisticVC()
         navigationController?.present(vc, animated: true)
-    }
-    @objc func animationBegin( sender: UIView){
-        UIView.animate(withDuration: 0.20, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 0, options: .curveEaseIn, animations: {
-            sender.transform = CGAffineTransform(scaleX: 0.92, y: 0.92)
-        })
-    }
-    @objc func animationEnded( sender: UIView){
-        UIView.animate(withDuration: 0.10, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseIn, animations: {
-            sender.transform = CGAffineTransform(scaleX: 1, y: 1)
-        })
-    }
+        }
 
     /*
     @objc func leftToolBarButTap(sender: Any){
@@ -452,7 +475,7 @@ class MenuVC: UIViewController {
 //MARK: - UITableViewDelegate
 extension MenuVC: UITableViewDelegate{
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 15
+        return 10
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

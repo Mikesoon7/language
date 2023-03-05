@@ -31,10 +31,13 @@ class DetailsVC: UIViewController {
     
     let addNewWordsBut : UIButton = {
         var button = UIButton()
+        button.configuration = .gray()
         button.layer.cornerRadius = 9
-        button.layer.borderColor = UIColor.black.cgColor
+        button.layer.borderColor = UIColor.label.cgColor
         button.layer.borderWidth = 1
-        button.backgroundColor = .systemGray5
+        button.configuration?.baseBackgroundColor = .systemGray5
+        button.configuration?.baseForegroundColor = .label
+
         
         button.setAttributedTitle(NSAttributedString(string: "Add new words",
                                                      attributes: [NSAttributedString.Key.font:
@@ -46,10 +49,13 @@ class DetailsVC: UIViewController {
     
     let beginBut : UIButton = {
         var button = UIButton()
+        button.configuration = .gray()
         button.layer.cornerRadius = 9
-        button.layer.borderColor = UIColor.black.cgColor
+        button.layer.borderColor = UIColor.label.cgColor
         button.layer.borderWidth = 1
-        button.backgroundColor = .systemGray4
+        button.configuration?.baseBackgroundColor = .systemGray4
+        button.configuration?.baseForegroundColor = .label
+
 
         button.setAttributedTitle(NSAttributedString(string: "Start",
                                                      attributes: [NSAttributedString.Key.font:
@@ -230,6 +236,10 @@ class DetailsVC: UIViewController {
             addNewWordsBut.widthAnchor.constraint(equalToConstant: view.bounds.width - 44),
             addNewWordsBut.heightAnchor.constraint(equalToConstant: 55)
         ])
+        addNewWordsBut.addTargetTouchBegin()
+        addNewWordsBut.addTargetOutsideTouchStop()
+        addNewWordsBut.addTargetInsideTouchStop()
+        addNewWordsBut.addTarget(self, action: #selector(addWordsButtonTap(sender:)), for: .touchUpInside)
     }
 //MARK: - Toolbar SetUp
     func beginButCustomization(){
@@ -243,6 +253,10 @@ class DetailsVC: UIViewController {
             beginBut.heightAnchor.constraint(equalToConstant: 50)
             ])
         beginBut.addTarget(self, action: #selector(startButtonTap(sender: )), for: .touchUpInside)
+        beginBut.addTargetTouchBegin()
+        beginBut.addTargetOutsideTouchStop()
+        beginBut.addTargetInsideTouchStop()
+
     }
     
 
@@ -259,10 +273,14 @@ class DetailsVC: UIViewController {
         
     }
     
-    @objc func startButtonTap(sender: Any){
+    @objc func startButtonTap(sender: UIButton){
         let vc = GameVC()
         vc.dictionaryToPerform = self.dictionary
         self.navigationController?.pushViewController(vc, animated: true)
+        sender.addTargetOutsideTouchStop()
+    }
+    @objc func addWordsButtonTap(sender: UIButton){
+        sender.addTargetOutsideTouchStop()
     }
 
 }

@@ -18,6 +18,8 @@
 		9A7B91E7298D6D9A00E60CDD /* LanguageUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A7B91E6298D6D9A00E60CDD /* LanguageUITests.swift */; };
 		9A7B91E9298D6D9A00E60CDD /* LanguageUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A7B91E8298D6D9A00E60CDD /* LanguageUITestsLaunchTests.swift */; };
 		9AA7AB5429AE3CF400CCC9F4 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AA7AB5329AE3CF400CCC9F4 /* Extensions.swift */; };
+		9AAECFBE29B5052F00439C0B /* SettingsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AAECFBD29B5052F00439C0B /* SettingsVC.swift */; };
+		9AAECFC029B5055100439C0B /* ClosureVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AAECFBF29B5055100439C0B /* ClosureVC.swift */; };
 		9AE509312993C85A00D86DD7 /* LoadDataVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AE509302993C85A00D86DD7 /* LoadDataVC.swift */; };
 		9AE50933299695B400D86DD7 /* Menu VC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AE50932299695B400D86DD7 /* Menu VC.swift */; };
 		9AE509352997C07700D86DD7 /* AddDictionaryVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AE509342997C07700D86DD7 /* AddDictionaryVC.swift */; };
@@ -60,6 +62,8 @@
 		9A7B91E6298D6D9A00E60CDD /* LanguageUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageUITests.swift; sourceTree = "<group>"; };
 		9A7B91E8298D6D9A00E60CDD /* LanguageUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		9AA7AB5329AE3CF400CCC9F4 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		9AAECFBD29B5052F00439C0B /* SettingsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsVC.swift; sourceTree = "<group>"; };
+		9AAECFBF29B5055100439C0B /* ClosureVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClosureVC.swift; sourceTree = "<group>"; };
 		9AE509302993C85A00D86DD7 /* LoadDataVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadDataVC.swift; sourceTree = "<group>"; };
 		9AE50932299695B400D86DD7 /* Menu VC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Menu VC.swift"; sourceTree = "<group>"; };
 		9AE509342997C07700D86DD7 /* AddDictionaryVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDictionaryVC.swift; sourceTree = "<group>"; };
@@ -126,7 +130,9 @@
 				9AFFCE8029A4DFEE00C12B94 /* DetailsVC.swift */,
 				9A22B8E8299A9FDA00B1ED3A /* Data.swift */,
 				9AE509342997C07700D86DD7 /* AddDictionaryVC.swift */,
+				9AAECFBD29B5052F00439C0B /* SettingsVC.swift */,
 				9AE509302993C85A00D86DD7 /* LoadDataVC.swift */,
+				9AAECFBF29B5055100439C0B /* ClosureVC.swift */,
 				9A7B91CE298D6D9900E60CDD /* Assets.xcassets */,
 				9A7B91D0298D6D9900E60CDD /* LaunchScreen.storyboard */,
 				9A7B91D3298D6D9900E60CDD /* Info.plist */,
@@ -301,10 +307,12 @@
 				9AE509312993C85A00D86DD7 /* LoadDataVC.swift in Sources */,
 				9AE509352997C07700D86DD7 /* AddDictionaryVC.swift in Sources */,
 				9AA7AB5429AE3CF400CCC9F4 /* Extensions.swift in Sources */,
+				9AAECFC029B5055100439C0B /* ClosureVC.swift in Sources */,
 				9AFFCE7D299E747400C12B94 /* StatisticVC.swift in Sources */,
 				9A7B91C6298D6D9600E60CDD /* AppDelegate.swift in Sources */,
 				9A7B91C8298D6D9600E60CDD /* SceneDelegate.swift in Sources */,
 				9AFFCE8129A4DFEF00C12B94 /* DetailsVC.swift in Sources */,
+				9AAECFBE29B5052F00439C0B /* SettingsVC.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
