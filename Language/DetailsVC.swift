@@ -31,14 +31,7 @@ class DetailsVC: UIViewController {
     
     let addNewWordsBut : UIButton = {
         var button = UIButton()
-        button.configuration = .gray()
-        button.layer.cornerRadius = 9
-        button.layer.borderColor = UIColor.label.cgColor
-        button.layer.borderWidth = 1
-        button.configuration?.baseBackgroundColor = .systemGray5
-        button.configuration?.baseForegroundColor = .label
-
-        
+        button.setUpCommotBut(true)
         button.setAttributedTitle(NSAttributedString(string: "Add new words",
                                                      attributes: [NSAttributedString.Key.font:
                                                                     UIFont(name: "Georgia-BoldItalic",
@@ -49,20 +42,15 @@ class DetailsVC: UIViewController {
     
     let beginBut : UIButton = {
         var button = UIButton()
-        button.configuration = .gray()
-        button.layer.cornerRadius = 9
-        button.layer.borderColor = UIColor.label.cgColor
-        button.layer.borderWidth = 1
-        button.configuration?.baseBackgroundColor = .systemGray4
-        button.configuration?.baseForegroundColor = .label
-
-
+        button.setUpCommotBut(false)
         button.setAttributedTitle(NSAttributedString(string: "Start",
                                                      attributes: [NSAttributedString.Key.font:
                                                                     UIFont(name: "Georgia-BoldItalic",
                                                                            size: 20) ?? UIFont()]), for: .normal)
         return button
     }()
+    var topStroke = CAShapeLayer()
+    var bottomStroke = CAShapeLayer()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -73,21 +61,45 @@ class DetailsVC: UIViewController {
         usePictureCustomization()
         beginButCustomization()
         addNewWordsCustomization()
+        strokeCustomization()
 
         }
-    
+    //MARK: - StyleChange Responding
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        
+        if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+            if traitCollection.userInterfaceStyle == .dark {
+                self.bottomStroke.strokeColor = UIColor.white.cgColor
+                self.topStroke.strokeColor = UIColor.white.cgColor
+            } else {
+                self.bottomStroke.strokeColor = UIColor.black.cgColor
+                self.topStroke.strokeColor = UIColor.black.cgColor
+            }
+        }
+    }
+    //MARK: - Stroke SetUp
+    func strokeCustomization(){
+        topStroke = UIView().addTopStroke(vc: self)
+        bottomStroke = UIView().addBottomStroke(vc: self)
+        
+        view.layer.addSublayer(topStroke)
+        view.layer.addSublayer(bottomStroke)
+    }
 //MARK: - NavigationBar SetUp
     func navBarCustomization(){
         navigationItem.title = "Source Details"
         navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.font: UIFont(name: "Georgia-BoldItalic", size: 23)!]
-        navigationController?.navigationItem.setRightBarButton(
-            UIBarButtonItem(image:UIImage(systemName: "gearshape"),
-                            style: .plain,
-                            target: self,
-                            action: #selector(settingsButTap(sender:))), animated: true)
+        
+        let rightButton = UIBarButtonItem(
+            image: UIImage(systemName: "gearshape"),
+            style: .plain,
+            target: self,
+            action: #selector(settingsButTap(sender:)))
+        self.navigationItem.setRightBarButton(rightButton, animated: true)
         navigationController?.navigationBar.tintColor = .label
         navigationController?.navigationItem.backButtonTitle = "Menu"
-    }
+        }
     
 //MARK: - RandomCardView SetUp
     func randomizeCardCustomization(){
@@ -250,13 +262,13 @@ class DetailsVC: UIViewController {
             beginBut.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -11),
             beginBut.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             beginBut.widthAnchor.constraint(equalToConstant: view.bounds.width - 44),
-            beginBut.heightAnchor.constraint(equalToConstant: 50)
+            beginBut.heightAnchor.constraint(equalToConstant: 55)
             ])
         beginBut.addTarget(self, action: #selector(startButtonTap(sender: )), for: .touchUpInside)
         beginBut.addTargetTouchBegin()
         beginBut.addTargetOutsideTouchStop()
         beginBut.addTargetInsideTouchStop()
-
+        
     }
     
 
@@ -277,10 +289,11 @@ class DetailsVC: UIViewController {
         let vc = GameVC()
         vc.dictionaryToPerform = self.dictionary
         self.navigationController?.pushViewController(vc, animated: true)
-        sender.addTargetOutsideTouchStop()
     }
+
     @objc func addWordsButtonTap(sender: UIButton){
-        sender.addTargetOutsideTouchStop()
+        let vc = AddWordsVC()
+        navigationController?.pushViewController(vc, animated: true)
     }
 
 }

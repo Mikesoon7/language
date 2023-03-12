@@ -9,6 +9,10 @@ import UIKit
 
 class GameVC: UIViewController {
 
+    var randomize = Bool()
+    var cardGoal = Int()
+    var usePicture = Bool()
+
     var dictionaryToPerform = DictionaryDetails()
     var currentPair = [String: String]()
     var currentWord = String()
@@ -21,19 +25,41 @@ class GameVC: UIViewController {
         
         return view
     }()
-    let labelView: UIView = {
+    let labelWordView: UIView = {
         let view = UIView()
-        view.backgroundColor = .systemBackground
-        view.alpha = 0.85
         view.layer.cornerRadius = 9
-        view.layer.masksToBounds = true
+        view.clipsToBounds = true
+        view.backgroundColor = .init(white: 1, alpha: 0.8)
+        view.layer.opacity = 0.75
         
-        view.layer.shadowColor = UIColor.systemBackground.cgColor
+        view.layer.shadowColor = UIColor.gray.cgColor
         view.layer.shadowOffset = CGSize(width: 2, height: 3)
         view.layer.shadowRadius = 1
         view.layer.shadowOpacity = 0.7
         return view
     }()
+    let labelTranslationView : UIView = {
+        let view = UIView()
+        view.layer.cornerRadius = 9
+        view.backgroundColor = .systemBackground
+        view.clipsToBounds = true
+        return view
+    }()
+    
+    let nextButton : UIButton = {
+        let button = UIButton()
+        button.setUpCommotBut(false)
+        button.setAttributedTitle(NSAttributedString(
+            string: "Next",
+            attributes: [ NSAttributedString.Key.font:
+                            UIFont(name: "Georgia-BoldItalic",
+                                   size: 18) ?? UIFont()]), for: .normal)
+        return button
+    } ()
+    
+    var topStroke = CAShapeLayer()
+    var bottomStroke = CAShapeLayer()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
@@ -44,10 +70,22 @@ class GameVC: UIViewController {
         }
         navigationBarCustomization()
         mainViewCustomization()
+        
+        strokeCustomization()
+        nextButCustomization()
+        labelTranslationViewCustomization()
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+    }
+    //MARK: - Stroke SetUp
+    func strokeCustomization(){
+        topStroke = UIView().addTopStroke(vc: self)
+        bottomStroke = UIView().addBottomStroke(vc: self)
+        
+        view.layer.addSublayer(topStroke)
+        view.layer.addSublayer(bottomStroke)
     }
     
 //MARK: - NavBar SetUp
@@ -73,11 +111,11 @@ class GameVC: UIViewController {
         
         labelViewCustomization()
     }
-//MARK: - LabelView SetUp
+//MARK: - WordView SetUp
     func labelViewCustomization(){
-        holderView.addSubview(labelView)
+        holderView.addSubview(labelWordView)
         
-        labelView.translatesAutoresizingMaskIntoConstraints = false
+        labelWordView.translatesAutoresizingMaskIntoConstraints = false
         
         let label : UILabel = {
             let label = UILabel()
@@ -91,20 +129,69 @@ class GameVC: UIViewController {
             label.textAlignment = .center
             return label
         }()
-        labelView.addSubview(label)
+        labelWordView.addSubview(label)
         label.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            labelView.topAnchor.constraint(equalTo: self.holderView.topAnchor, constant: 10),
-            labelView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            labelView.heightAnchor.constraint(equalTo: self.holderView.heightAnchor, constant: -20),
-            labelView.widthAnchor.constraint(equalTo: self.holderView.widthAnchor, constant: -20),
+            labelWordView.topAnchor.constraint(equalTo: self.holderView.topAnchor, constant: 10),
+            labelWordView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            labelWordView.heightAnchor.constraint(equalTo: self.holderView.heightAnchor, constant: -20),
+            labelWordView.widthAnchor.constraint(equalTo: self.holderView.widthAnchor, constant: -20),
             
-            label.centerXAnchor.constraint(equalTo: labelView.centerXAnchor),
-            label.centerYAnchor.constraint(equalTo: labelView.centerYAnchor),
-            label.widthAnchor.constraint(equalTo: labelView.widthAnchor, constant: -20)
+            label.centerXAnchor.constraint(equalTo: labelWordView.centerXAnchor),
+            label.centerYAnchor.constraint(equalTo: labelWordView.centerYAnchor),
+            label.widthAnchor.constraint(equalTo: labelWordView.widthAnchor, constant: -20)
         ])
         
+    }
+//MARK: - TranslationView SetUp
+    func labelTranslationViewCustomization(){
+                
+        let label : UILabel = {
+            let label = UILabel()
+            label.attributedText = NSAttributedString(
+                string: currentTranslation,
+                attributes: [NSAttributedString.Key.font:
+                                UIFont(name: "Georgia-Italic",
+                                       size: 18) ?? UIFont()])
+            label.numberOfLines = 0
+            label.textAlignment = .center
+            return label
+        }()
+        
+        view.addSubview(labelTranslationView)
+        labelTranslationView.addSubview(label)
+
+        
+        labelTranslationView.translatesAutoresizingMaskIntoConstraints = false
+        label.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            labelTranslationView.bottomAnchor.constraint(equalTo: self.nextButton.topAnchor, constant: -20),
+            labelTranslationView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            labelTranslationView.heightAnchor.constraint(equalTo: self.holderView.heightAnchor),
+            labelTranslationView.widthAnchor.constraint(equalToConstant: view.bounds.width - 45),
+            
+            label.centerXAnchor.constraint(equalTo: labelTranslationView.centerXAnchor),
+            label.centerYAnchor.constraint(equalTo: labelTranslationView.centerYAnchor),
+            label.widthAnchor.constraint(equalTo: labelTranslationView.widthAnchor),
+            label.heightAnchor.constraint(equalTo: labelTranslationView.heightAnchor)
+        ])
+        
+    }
+    
+//MARK: - NextButton SetUp
+    func nextButCustomization(){
+        view.addSubview(nextButton)
+        
+        nextButton.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            nextButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -11),
+            nextButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            nextButton.widthAnchor.constraint(equalToConstant: view.bounds.width - 45),
+            nextButton.heightAnchor.constraint(equalToConstant: 55)
+        ])
     }
 
 //MARK: - Actions

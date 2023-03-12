@@ -14,7 +14,7 @@ class AddDictionaryVC: UIViewController {
         textView.backgroundColor = .systemGray5
         textView.layer.cornerRadius = 9
         textView.layer.borderWidth = 1
-        textView.layer.borderColor = UIColor.label.cgColor
+        textView.layer.borderColor = UIColor.black.cgColor
         textView.clipsToBounds = true
         
         textView.textContainerInset = .init(top: 5, left: 5, bottom: 0, right: 5)
@@ -31,7 +31,7 @@ class AddDictionaryVC: UIViewController {
         view.backgroundColor = .systemGray5
         view.layer.cornerRadius = 9
         view.layer.borderWidth = 1
-        view.layer.borderColor = UIColor.label.cgColor
+        view.layer.borderColor = UIColor.black.cgColor
         view.clipsToBounds = true
         
         return view
@@ -39,13 +39,12 @@ class AddDictionaryVC: UIViewController {
     
     var submitButton : UIButton = {
         var button = UIButton()
-        button.configuration = .gray()
-        button.configuration?.baseForegroundColor = .label
-        button.configuration?.baseBackgroundColor = .systemGray4
-        button.layer.cornerRadius = 9
-        button.layer.borderColor = UIColor.label.cgColor
-        button.layer.borderWidth = 1
-        button.layer.masksToBounds = true
+        button.setUpCommotBut(false)
+        button.setAttributedTitle(NSAttributedString(string: "Save",
+                                                     attributes: [NSAttributedString.Key.font:
+                                                        UIFont(name: "Georgia-BoldItalic",
+                                                               size: 18) ?? UIFont()]), for: .normal)
+
         return button
     }()
     let nameInputField : UITextField = {
@@ -56,14 +55,8 @@ class AddDictionaryVC: UIViewController {
         field.textAlignment = .right
         return field
     }()
-    let submitButLabel : UILabel = {
-        let label = UILabel()
-        label.font = UIFont(name: "Georgia-BoldItalic", size: 18) ?? UIFont()
-        label.textColor = .label
-        label.textAlignment = .center
-        label.text = "Add dictionary"
-        return label
-    }()
+    var topStroke = CAShapeLayer()
+    var bottomStroke = CAShapeLayer()
     
     //MARK: - Prepare Func
     override func viewDidLoad() {
@@ -75,8 +68,31 @@ class AddDictionaryVC: UIViewController {
         nameViewCustomization()
         submitButtonCustomization()
         keybaordAppears()
+        strokeCustomization()
     }
-    //MARK: - TextView SetUp
+    //MARK: - StyleChange Responding
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        
+        if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+            if traitCollection.userInterfaceStyle == .dark {
+                self.bottomStroke.strokeColor = UIColor.white.cgColor
+                self.topStroke.strokeColor = UIColor.white.cgColor
+            } else {
+                self.bottomStroke.strokeColor = UIColor.black.cgColor
+                self.topStroke.strokeColor = UIColor.black.cgColor
+            }
+        }
+    }
+    //MARK: - Stroke SetUp
+    func strokeCustomization(){
+        topStroke = UIView().addTopStroke(vc: self)
+        bottomStroke = UIView().addBottomStroke(vc: self)
+        
+        view.layer.addSublayer(topStroke)
+        view.layer.addSublayer(bottomStroke)
+    }
+//MARK: - TextView SetUp
     func textViewCustomization(){
         view.addSubview(textView)
         textView.delegate = self
@@ -96,7 +112,6 @@ class AddDictionaryVC: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(sender:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(sender:)), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
-    
 //MARK: - NameView SetUp
     func nameViewCustomization(){
         let nameLabel : UILabel = {
@@ -116,7 +131,7 @@ class AddDictionaryVC: UIViewController {
         nameInputField.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            nameView.topAnchor.constraint(equalTo: self.textView.bottomAnchor, constant: 11),
+            nameView.topAnchor.constraint(equalTo: self.textView.bottomAnchor, constant: 14),
             nameView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             nameView.widthAnchor.constraint(equalToConstant: view.bounds.width - 45),
             nameView.heightAnchor.constraint(equalToConstant: 60),
@@ -134,19 +149,15 @@ class AddDictionaryVC: UIViewController {
 //MARK: - SubmitButton SetUp
     func submitButtonCustomization(){
         view.addSubview(submitButton)
-        submitButton.addSubview(submitButLabel)
         
         submitButton.translatesAutoresizingMaskIntoConstraints = false
-        submitButLabel.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([
             submitButton.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor, constant: -11),
             submitButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            submitButton.heightAnchor.constraint(equalToConstant: 60),
+            submitButton.heightAnchor.constraint(equalToConstant: 55),
             submitButton.widthAnchor.constraint(equalToConstant: view.bounds.width - 45),
             
-            submitButLabel.centerYAnchor.constraint(equalTo: submitButton.centerYAnchor),
-            submitButLabel.centerXAnchor.constraint(equalTo: submitButton.centerXAnchor)
         ])
 //Action
         submitButton.addTarget(self, action: #selector(submitButTap(sender:)), for: .touchUpInside)
@@ -159,7 +170,7 @@ class AddDictionaryVC: UIViewController {
         func navBarCustomization(){
         self.navigationItem.title = "Text uploading"
         self.navigationController?.navigationBar.titleTextAttributes = [
-            NSAttributedString.Key.font : UIFont(name: "Georgia-BoldItalic", size: 20) ?? UIFont(),
+            NSAttributedString.Key.font : UIFont(name: "Georgia-BoldItalic", size: 23) ?? UIFont(),
         ]
             self.navigationController?.navigationBar.layer.shadowColor = UIColor.black.cgColor
             self.navigationController?.navigationBar.layer.shadowOffset = CGSize(width: 1, height: 1)
@@ -177,7 +188,7 @@ class AddDictionaryVC: UIViewController {
         let action = UIAlertAction(title: "Understand", style: .cancel)
         insertNameAllert.addAction(action)
         insertTextAllert.addAction(action)
-        action.setValue(UIColor.black, forKey: "titleTextColor")
+        action.setValue(UIColor.label, forKey: "titleTextColor")
         
         guard nameInputField.hasText else { return self.present(insertNameAllert, animated: true)}
         guard textView.hasText else {return self.present(insertTextAllert, animated: true)}
@@ -200,8 +211,22 @@ class AddDictionaryVC: UIViewController {
         nameInputField.becomeFirstResponder()
     }
     @objc func keyboardWillShow(sender: Notification){
+        let animation = CABasicAnimation(keyPath: "opacity")
+        animation.fromValue = 1.0
+        animation.toValue = 0.0
+        animation.duration = 0.5
+        animation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+
+        bottomStroke.add(animation, forKey: "strokeOpacity")
     }
     @objc func keyboardWillHide(sender: Notification){
+        let animation = CABasicAnimation(keyPath: "opacity")
+        animation.fromValue = 0.0
+        animation.toValue = 1.0
+        animation.duration = 1.0
+        animation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+
+        bottomStroke.add(animation, forKey: "strokeOpacity")
     }
 }
 
@@ -212,7 +237,9 @@ extension AddDictionaryVC: UITextViewDelegate{
             textView.text = nil
             textView.textColor = .label
         }
-        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(rightBarButTap(sender:)))
+        if self.navigationController?.navigationItem.rightBarButtonItem == nil{
+            navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(rightBarButTap(sender:)))
+        }
     }
 }
 extension AddDictionaryVC: UITextFieldDelegate{

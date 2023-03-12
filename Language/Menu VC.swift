@@ -20,25 +20,25 @@ class MenuVC: UIViewController {
     }()
     var statisticButton : UIButton = {
         let button = UIButton()
-        button.configuration = .gray()
-        button.configuration?.baseBackgroundColor = .systemGray4
-        button.configuration?.baseForegroundColor = .label
-        button.layer.borderWidth = 1
-        button.layer.borderColor = UIColor.black.cgColor
-        button.layer.cornerRadius = 9
-        button.clipsToBounds = true
+        button.setUpCommotBut(false)
+        button.setAttributedTitle(NSAttributedString(
+            string: "Statistic",
+            attributes: [NSAttributedString.Key.font :
+                            UIFont(name: "Georgia-BoldItalic",
+                                   size: 18) ?? UIFont()]),
+                                           for: .normal)
         return button
     }()
     
     var randomButton : UIButton = {
         let button = UIButton()
-        button.configuration = .gray()
-        button.configuration?.baseBackgroundColor = .systemGray4
-        button.configuration?.baseForegroundColor = .label
-        button.layer.borderWidth = 1
-        button.layer.borderColor = UIColor.black.cgColor
-        button.layer.cornerRadius = 9
-        button.layer.masksToBounds = true
+        button.setUpCommotBut(false)
+        button.setAttributedTitle(NSAttributedString(
+            string: "Random mode",
+            attributes: [NSAttributedString.Key.font :
+                            UIFont(name: "Georgia-BoldItalic",
+                                   size: 18) ?? UIFont()]),
+                                           for: .normal)
         return button
     }()
     
@@ -59,6 +59,7 @@ class MenuVC: UIViewController {
         navBarCustomization()
         bottomButtonCustomization()
         tableViewCustomization()
+        strokeCustomization()
         setUpAnimationViews()
         runAnimation()
         
@@ -67,7 +68,7 @@ class MenuVC: UIViewController {
         super.viewWillAppear(animated)
         self.tableView.reloadData()
     }
-    
+//MARK: - StyleChange Responding
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
 
@@ -77,11 +78,18 @@ class MenuVC: UIViewController {
                 self.topStroke.strokeColor = UIColor.white.cgColor
             } else {
                 self.bottomStroke.strokeColor = UIColor.black.cgColor
-                self.bottomStroke.strokeColor = UIColor.black.cgColor
+                self.topStroke.strokeColor = UIColor.black.cgColor
             }
         }
     }
-
+//MARK: - Stroke SetUp
+    func strokeCustomization(){
+        topStroke = UIView().addTopStroke(vc: self)
+        bottomStroke = UIView().addBottomStroke(vc: self)
+        
+        view.layer.addSublayer(topStroke)
+        view.layer.addSublayer(bottomStroke)
+    }
 //MARK: - Animation SetUp
     func setUpAnimationViews(){
         navigationController?.navigationBar.isOpaque = false
@@ -148,13 +156,13 @@ class MenuVC: UIViewController {
         let maxX = view.bounds.maxX
         //Black to draw
         let topLeft = strokeLayerFrom(CGPoint(x: widthPont ,y: 0 ),
-                                      to: CGPoint(x: widthPont, y: maxY - 104),
-                                      secondPoint: CGPoint(x: view.bounds.maxX, y: maxY - 104),
+                                      to: CGPoint(x: widthPont, y: maxY - 109),
+                                      secondPoint: CGPoint(x: view.bounds.maxX, y: maxY - 109),
                                       strokeWidth: 3,
                                       with: .label)
         let topRight = strokeLayerFrom(CGPoint(x: widthPont * 2, y: 0),
-                                       to: CGPoint(x: widthPont * 2, y: maxY - 104),
-                                       secondPoint: CGPoint(x: 0, y: maxY - 104),
+                                       to: CGPoint(x: widthPont * 2, y: maxY - 109),
+                                       secondPoint: CGPoint(x: 0, y: maxY - 109),
                                        strokeWidth: 3,
                                        with: .label)
         let rightTop = strokeLayerFrom(CGPoint(x: 0, y: heightPoint),
@@ -170,12 +178,12 @@ class MenuVC: UIViewController {
         
         //White to vanish
         let topLeftV = strokeLayerFrom(CGPoint(x: widthPont , y: 0 ),
-                                       to: CGPoint(x: widthPont, y: maxY - 105.5),
+                                       to: CGPoint(x: widthPont, y: maxY - 110.5),
                                        secondPoint: nil,
                                        strokeWidth: 6,
                                        with: .systemBackground)
         let topRightV = strokeLayerFrom(CGPoint(x: widthPont * 2, y: 0),
-                                        to: CGPoint(x: widthPont * 2, y: maxY - 105.5),
+                                        to: CGPoint(x: widthPont * 2, y: maxY - 110.5),
                                         secondPoint: nil,
                                         strokeWidth: 6,
                                         with: .systemBackground)
@@ -241,7 +249,7 @@ class MenuVC: UIViewController {
         
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
-        tableView.bottomAnchor.constraint(equalTo: self.randomButton.topAnchor, constant: -10).isActive = true
+        tableView.bottomAnchor.constraint(equalTo: self.randomButton.topAnchor, constant: -11).isActive = true
         tableView.widthAnchor.constraint(equalTo: view.widthAnchor, constant: 0).isActive = true
         tableView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
     }
@@ -253,22 +261,6 @@ class MenuVC: UIViewController {
         navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.font:
                                                                     UIFont(name: "Georgia-BoldItalic",
                                                                            size: 23)!]
-        
-        // Stroke
-        topStroke = {
-            let path = UIBezierPath()
-            path.move(to: CGPoint(x: 0, y: self.navigationController!.navigationBar.bounds.maxY))
-            path.addLine(to: CGPoint(x: view.bounds.maxX, y: self.navigationController!.navigationBar.bounds.maxY))
-            let stroke = CAShapeLayer()
-            stroke.path = path.cgPath
-            stroke.lineWidth = 1.5
-            stroke.strokeColor = UIColor.label.cgColor
-            stroke.fillColor = UIColor.clear.cgColor
-            stroke.opacity = 0.8
-            
-            return stroke
-        }()
-        self.navigationController?.navigationBar.layer.addSublayer(topStroke)
 
         // Buttons
         let rightButton = UIBarButtonItem(
@@ -276,7 +268,7 @@ class MenuVC: UIViewController {
             style: .plain,
             target: self,
             action: #selector(settingsButTap(sender:)))
-                self.navigationItem.setRightBarButton(rightButton, animated: true)
+        self.navigationItem.setRightBarButton(rightButton, animated: true)
         
         self.navigationController?.navigationBar.tintColor = .label
         self.navigationController?.navigationBar.isTranslucent = true
@@ -290,29 +282,16 @@ class MenuVC: UIViewController {
         statisticButton.translatesAutoresizingMaskIntoConstraints = false
         randomButton.translatesAutoresizingMaskIntoConstraints = false
 
-        statisticButton.setAttributedTitle(NSAttributedString(
-            string: "View Statistic",
-            attributes: [NSAttributedString.Key.font :
-                            UIFont(name: "Georgia-Italic",
-                                   size: 18) ?? UIFont()]),
-                                           for: .normal)
-        
-        randomButton.setAttributedTitle(NSAttributedString(
-            string: "Choose Randomly",
-            attributes: [NSAttributedString.Key.font :
-                            UIFont(name: "Georgia-Italic",
-                                   size: 18) ?? UIFont()]),
-                                           for: .normal)
-            NSLayoutConstraint.activate([
+        NSLayoutConstraint.activate([
             statisticButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -11),
             statisticButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),
             statisticButton.widthAnchor.constraint(equalToConstant: (view.bounds.width - 20 - 10) / 2),
-            statisticButton.heightAnchor.constraint(equalToConstant: 50),
+            statisticButton.heightAnchor.constraint(equalToConstant: 55),
             
             randomButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -11),
             randomButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10),
             randomButton.widthAnchor.constraint(equalToConstant: (view.bounds.width - 20 - 10) / 2),
-            randomButton.heightAnchor.constraint(equalToConstant: 50)
+            randomButton.heightAnchor.constraint(equalToConstant: 55)
         ])
         statisticButton.addTargetTouchBegin()
         statisticButton.addTargetOutsideTouchStop()
@@ -323,22 +302,6 @@ class MenuVC: UIViewController {
         randomButton.addTargetOutsideTouchStop()
         randomButton.addTargetInsideTouchStop()
         randomButton.addTarget(self, action: #selector(randomButTap(sender:)), for: .touchUpInside)
-
-//Bottom Stroke
-        bottomStroke = {
-            let path = UIBezierPath()
-            path.move(to: CGPoint(x: 0, y: view.bounds.maxY - 105))
-            path.addLine(to: CGPoint(x: view.bounds.maxX, y: view.bounds.maxY - 105))
-            let stroke = CAShapeLayer()
-            stroke.path = path.cgPath
-            stroke.lineWidth = 3
-            stroke.strokeColor = UIColor.label.cgColor
-            stroke.fillColor = UIColor.clear.cgColor
-            stroke.opacity = 0.8
-            
-            return stroke
-        }()
-        view.layer.addSublayer(bottomStroke)
     }
 //MARK: - ToolBar SetUp
     /*
@@ -475,7 +438,7 @@ class MenuVC: UIViewController {
 //MARK: - UITableViewDelegate
 extension MenuVC: UITableViewDelegate{
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 10
+        return 0
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
