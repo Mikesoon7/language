@@ -38,7 +38,11 @@ class AppData{
 }
 class DictionaryDetails{
     
-    var dictionary : [[String: String]]?
+    var dictionary : [[String: String]]?{
+        didSet{
+            numberOfCards = String(dictionary?.count ?? 0)
+        }
+    }
     
     var language = String()
     

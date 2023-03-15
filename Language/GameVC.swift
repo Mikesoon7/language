@@ -18,6 +18,11 @@ class GameVC: UIViewController {
     var currentWord = String()
     var currentTranslation = String()
     
+    let scrollView : UIScrollView = {
+        let view = UIScrollView()
+        
+        return view
+    }()
     let holderView: UIView = {
         let view = UIView()
         view.setUpBorderedView(true)

@@ -9,6 +9,9 @@ import UIKit
 
 class AddWordsVC: UIViewController {
 
+    var editableDict = DictionaryDetails()
+    var index = Int()
+    
     let textView : UITextView = {
         let textView = UITextView()
         textView.backgroundColor = .systemGray5
@@ -109,6 +112,10 @@ class AddWordsVC: UIViewController {
             submitButton.heightAnchor.constraint(equalToConstant: 55),
             submitButton.widthAnchor.constraint(equalToConstant: view.bounds.width - 45)
         ])
+        submitButton.addTargetTouchBegin()
+        submitButton.addTargetInsideTouchStop()
+        submitButton.addTargetOutsideTouchStop()
+        submitButton.addTarget(self, action: #selector(submitButTap(sender: )), for: .touchUpInside)
     }
 //MARK: - Actions
     @objc func rightBarButTap(sender: Any){
@@ -116,6 +123,20 @@ class AddWordsVC: UIViewController {
         textView.resignFirstResponder()
     }
     @objc func submitButTap(sender: UIButton){
+        let input = textView.text
+        let alert = UIAlertController(title: "Enter the text", message: "Please, enter more than 1 pair of words.", preferredStyle: .alert)
+        let action = UIAlertAction(title: "Understand", style: .cancel)
+        alert.addAction(action)
+        action.setValue(UIColor.label, forKey: "titleTextColor")
+        
+        guard textView.hasText && textView.textColor != .lightGray else {return self.present(alert, animated: true)}
+        
+        editableDict.dictionary!.append(contentsOf: AppData.shared.divider(text: textView.text))
+        self.navigationController?.popViewController(animated: true)
+        print(editableDict.dictionary)
+        print(AppData.shared.availableDictionary.first(where: { dict in
+            return dict === editableDict
+        }))
         
     }
     @objc func keyboardWillShow(sender: Notification){

@@ -49,6 +49,9 @@ class DetailsVC: UIViewController {
                                                                            size: 20) ?? UIFont()]), for: .normal)
         return button
     }()
+    
+    let picker = UIPickerView()
+
     var topStroke = CAShapeLayer()
     var bottomStroke = CAShapeLayer()
     
@@ -64,6 +67,10 @@ class DetailsVC: UIViewController {
         strokeCustomization()
 
         }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.picker.reloadAllComponents()
+    }
     //MARK: - StyleChange Responding
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
@@ -150,6 +157,9 @@ class DetailsVC: UIViewController {
     func setTheGoalCustomization(){
         view.addSubview(setTheGoalView)
 
+        picker.dataSource = self
+        picker.delegate = self
+        
         let label : UILabel = {
             let label = UILabel()
             label.attributedText = NSAttributedString(
@@ -162,13 +172,6 @@ class DetailsVC: UIViewController {
             return label
         }()
         
-        let picker : UIPickerView = {
-            let picker = UIPickerView()
-            picker.delegate = self
-            picker.dataSource = self
-            return picker
-        }()
-
         setTheGoalView.translatesAutoresizingMaskIntoConstraints = false
         label.translatesAutoresizingMaskIntoConstraints = false
         picker.translatesAutoresizingMaskIntoConstraints = false
@@ -293,6 +296,8 @@ class DetailsVC: UIViewController {
 
     @objc func addWordsButtonTap(sender: UIButton){
         let vc = AddWordsVC()
+        vc.editableDict = dictionary
+        print(AppData.shared.availableDictionary.first)
         navigationController?.pushViewController(vc, animated: true)
     }
 
@@ -313,9 +318,6 @@ extension DetailsVC: UIPickerViewDataSource{
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         if row != (pickerView.numberOfRows(inComponent: component) - 1)  {
             return "\((row + 1) * 50)"
-//            return dictionary.numberOfCards
-//        } else if row != (pickerView.numberOfRows(inComponent: component) - 1) {
-//            return "\((row + 1) * 50)"
         } else {
             return dictionary.numberOfCards
         }

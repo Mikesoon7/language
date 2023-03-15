@@ -434,7 +434,6 @@ class MenuVC: UIViewController {
      */
         
 }
-
 //MARK: - UITableViewDelegate
 extension MenuVC: UITableViewDelegate{
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
@@ -454,8 +453,7 @@ extension MenuVC: UITableViewDelegate{
             self.navigationController?.pushViewController(AddDictionaryVC(), animated: true)
         } else {
             let vc = DetailsVC()
-            let dictionary = AppData.shared.availableDictionary
-            vc.dictionary = dictionary[indexPath.section]
+            vc.dictionary = AppData.shared.availableDictionary[indexPath.section]
             self.navigationController?.pushViewController(vc, animated: true)
         }
     }
@@ -477,6 +475,8 @@ extension MenuVC: UITableViewDataSource{
         }
     }
 }
+
 extension MenuVC: UIToolbarDelegate{
     
 }
+

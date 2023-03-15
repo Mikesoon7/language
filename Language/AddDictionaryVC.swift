@@ -190,8 +190,8 @@ class AddDictionaryVC: UIViewController {
         insertTextAllert.addAction(action)
         action.setValue(UIColor.label, forKey: "titleTextColor")
         
+        guard textView.hasText && textView.textColor != .lightGray else {return self.present(insertTextAllert, animated: true)}
         guard nameInputField.hasText else { return self.present(insertNameAllert, animated: true)}
-        guard textView.hasText else {return self.present(insertTextAllert, animated: true)}
         
         AppData.shared.addDictionary(language: nameInputField.text!, text: textView.text)
         navigationItem.rightBarButtonItem = nil
