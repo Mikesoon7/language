@@ -19,9 +19,9 @@ class AddDictionaryVC: UIViewController {
         
         textView.textContainerInset = .init(top: 5, left: 5, bottom: 0, right: 5)
         textView.allowsEditingTextAttributes = true
-        
+                
         textView.textColor = .lightGray
-        textView.font = UIFont(name: "TimesNewRomanPSMT", size: 15) ?? UIFont()
+        textView.font = UIFont(name: "TimesNewRomanPSMT", size: 16) ?? UIFont()
         textView.text = "- [ ] Word - Meaning"
         return textView
     }()
@@ -40,11 +40,7 @@ class AddDictionaryVC: UIViewController {
     var submitButton : UIButton = {
         var button = UIButton()
         button.setUpCommotBut(false)
-        button.setAttributedTitle(NSAttributedString(string: "Save",
-                                                     attributes: [NSAttributedString.Key.font:
-                                                        UIFont(name: "Georgia-BoldItalic",
-                                                               size: 18) ?? UIFont()]), for: .normal)
-
+        button.setAttributedTitle(NSAttributedString().fontWithString(string: "Save", bold: true, size: 18), for: .normal)
         return button
     }()
     let nameInputField : UITextField = {
@@ -116,9 +112,7 @@ class AddDictionaryVC: UIViewController {
     func nameViewCustomization(){
         let nameLabel : UILabel = {
             let label = UILabel()
-            label.font = UIFont(name: "Georgia-BoldItalic", size: 18) ?? UIFont()
-            label.textColor = .label
-            label.text = "Dictionary name"
+            label.attributedText = NSAttributedString().fontWithString(string: "Dictionary name", bold: true, size: 18)
             return label
         }()
         nameInputField.delegate = self
@@ -169,17 +163,13 @@ class AddDictionaryVC: UIViewController {
 //MARK: - NavBar SetUp
         func navBarCustomization(){
         self.navigationItem.title = "Text uploading"
-        self.navigationController?.navigationBar.titleTextAttributes = [
-            NSAttributedString.Key.font : UIFont(name: "Georgia-BoldItalic", size: 23) ?? UIFont(),
-        ]
+            self.navigationController?.navigationBar.titleTextAttributes = NSAttributedString().fontWithoutString(bold: true, size: 23)
             self.navigationController?.navigationBar.layer.shadowColor = UIColor.black.cgColor
             self.navigationController?.navigationBar.layer.shadowOffset = CGSize(width: 1, height: 1)
         self.navigationItem.backButtonTitle = "Menu"
             self.navigationItem.backBarButtonItem?.setTitleTextAttributes([
                 NSAttributedString.Key.font : UIFont.systemFont(ofSize: 20, weight: .bold)
             ], for: .normal)
-
-        navigationController?.navigationBar.tintColor = .label
     }
 //MARK: - Actions
     @objc func submitButTap(sender: Any){
@@ -240,6 +230,9 @@ extension AddDictionaryVC: UITextViewDelegate{
         if self.navigationController?.navigationItem.rightBarButtonItem == nil{
             navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(rightBarButTap(sender:)))
         }
+    }
+    func textViewDidChange(_ textView: UITextView) {
+        textView.font = UIFont(name: "TimesNewRomanPSMT", size: 16) ?? UIFont()
     }
 }
 extension AddDictionaryVC: UITextFieldDelegate{

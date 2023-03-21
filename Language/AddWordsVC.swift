@@ -31,10 +31,8 @@ class AddWordsVC: UIViewController {
     let submitButton : UIButton = {
         let button = UIButton()
         button.setUpCommotBut(false)
-        button.setAttributedTitle(NSAttributedString(string: "Save",
-                                                     attributes: [NSAttributedString.Key.font:
-                                                        UIFont(name: "Georgia-BoldItalic",
-                                                               size: 18) ?? UIFont()]), for: .normal)
+        button.setAttributedTitle(NSAttributedString().fontWithString(string: "Save",
+                                                                      bold: true, size: 18), for: .normal)
         return button
     }()
     var topStroke = CAShapeLayer()
@@ -79,9 +77,7 @@ class AddWordsVC: UIViewController {
 //MARK: - NavBar SetUp
     func navBarCustomization(){
         navigationItem.title = "Text Uploading"
-        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.font:
-                                                                            UIFont(name: "Georgia-BoldItalic",
-                                                                                   size: 23) ?? UIFont()]
+        self.navigationController?.navigationBar.titleTextAttributes = NSAttributedString().fontWithoutString(bold: true, size: 23)
         self.navigationItem.backButtonTitle = "Details"
         self.navigationController?.navigationBar.tintColor = .label
         self.navigationController?.navigationBar.isTranslucent = true
@@ -133,7 +129,6 @@ class AddWordsVC: UIViewController {
         
         editableDict.dictionary!.append(contentsOf: AppData.shared.divider(text: textView.text))
         self.navigationController?.popViewController(animated: true)
-        print(editableDict.dictionary)
         print(AppData.shared.availableDictionary.first(where: { dict in
             return dict === editableDict
         }))

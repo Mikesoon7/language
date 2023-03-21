@@ -20,6 +20,9 @@
 		9A7B91E9298D6D9A00E60CDD /* LanguageUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A7B91E8298D6D9A00E60CDD /* LanguageUITestsLaunchTests.swift */; };
 		9AA71C5B29C20894008A193B /* TestGameVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AA71C5A29C20894008A193B /* TestGameVC.swift */; };
 		9AA71C5F29C2FC76008A193B /* CardCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AA71C5E29C2FC76008A193B /* CardCell.swift */; };
+		9AA71C6129C34EA8008A193B /* LastCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AA71C6029C34EA8008A193B /* LastCell.swift */; };
+		9AA71C6429C84C65008A193B /* ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AA71C6329C84C65008A193B /* ViewModel.swift */; };
+		9AA71C6829C9CE9B008A193B /* TestCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AA71C6729C9CE9B008A193B /* TestCell.swift */; };
 		9AA7AB5429AE3CF400CCC9F4 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AA7AB5329AE3CF400CCC9F4 /* Extensions.swift */; };
 		9AAECFBE29B5052F00439C0B /* SettingsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AAECFBD29B5052F00439C0B /* SettingsVC.swift */; };
 		9AAECFC029B5055100439C0B /* ClosureVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AAECFBF29B5055100439C0B /* ClosureVC.swift */; };
@@ -72,6 +75,9 @@
 		9A7B91E8298D6D9A00E60CDD /* LanguageUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		9AA71C5A29C20894008A193B /* TestGameVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestGameVC.swift; sourceTree = "<group>"; };
 		9AA71C5E29C2FC76008A193B /* CardCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardCell.swift; sourceTree = "<group>"; };
+		9AA71C6029C34EA8008A193B /* LastCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LastCell.swift; sourceTree = "<group>"; };
+		9AA71C6329C84C65008A193B /* ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModel.swift; sourceTree = "<group>"; };
+		9AA71C6729C9CE9B008A193B /* TestCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestCell.swift; sourceTree = "<group>"; };
 		9AA7AB5329AE3CF400CCC9F4 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		9AAECFBD29B5052F00439C0B /* SettingsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsVC.swift; sourceTree = "<group>"; };
 		9AAECFBF29B5055100439C0B /* ClosureVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClosureVC.swift; sourceTree = "<group>"; };
@@ -171,9 +177,9 @@
 				9A7B91C7298D6D9600E60CDD /* SceneDelegate.swift */,
 				9AE50932299695B400D86DD7 /* Menu VC.swift */,
 				9AFFCE7F299E7DC400C12B94 /* TableViewCells */,
-				9AFFCE7C299E747400C12B94 /* StatisticVC.swift */,
 				9AA71C5A29C20894008A193B /* TestGameVC.swift */,
-				9AA71C5E29C2FC76008A193B /* CardCell.swift */,
+				9AA71C6229C34EB5008A193B /* CollectionViewCells */,
+				9AFFCE7C299E747400C12B94 /* StatisticVC.swift */,
 				9AFFCE8029A4DFEE00C12B94 /* DetailsVC.swift */,
 				9A22B8E8299A9FDA00B1ED3A /* Data.swift */,
 				9AE509342997C07700D86DD7 /* AddDictionaryVC.swift */,
@@ -206,6 +212,17 @@
 				9A7B91E8298D6D9A00E60CDD /* LanguageUITestsLaunchTests.swift */,
 			);
 			path = LanguageUITests;
+			sourceTree = "<group>";
+		};
+		9AA71C6229C34EB5008A193B /* CollectionViewCells */ = {
+			isa = PBXGroup;
+			children = (
+				9AA71C5E29C2FC76008A193B /* CardCell.swift */,
+				9AA71C6329C84C65008A193B /* ViewModel.swift */,
+				9AA71C6029C34EA8008A193B /* LastCell.swift */,
+				9AA71C6729C9CE9B008A193B /* TestCell.swift */,
+			);
+			path = CollectionViewCells;
 			sourceTree = "<group>";
 		};
 		9AFFCE7F299E7DC400C12B94 /* TableViewCells */ = {
@@ -457,13 +474,16 @@
 			files = (
 				9A22B8EB299BB93200B1ED3A /* ExistingDictionariesCell.swift in Sources */,
 				9AE50933299695B400D86DD7 /* Menu VC.swift in Sources */,
+				9AA71C6129C34EA8008A193B /* LastCell.swift in Sources */,
 				9A22B8E9299A9FDA00B1ED3A /* Data.swift in Sources */,
 				9AE509372999615800D86DD7 /* CustomImageAssets.swift in Sources */,
 				9AA71C5B29C20894008A193B /* TestGameVC.swift in Sources */,
 				9AFFCE7B299D073D00C12B94 /* AddDictionaryCell.swift in Sources */,
+				9AA71C6829C9CE9B008A193B /* TestCell.swift in Sources */,
 				9A603FF929AF5B3200A65253 /* GameVC.swift in Sources */,
 				9AE509312993C85A00D86DD7 /* LoadDataVC.swift in Sources */,
 				9AE509352997C07700D86DD7 /* AddDictionaryVC.swift in Sources */,
+				9AA71C6429C84C65008A193B /* ViewModel.swift in Sources */,
 				9AA7AB5429AE3CF400CCC9F4 /* Extensions.swift in Sources */,
 				9AAECFC029B5055100439C0B /* ClosureVC.swift in Sources */,
 				9AFFCE7D299E747400C12B94 /* StatisticVC.swift in Sources */,

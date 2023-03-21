@@ -11,19 +11,13 @@ class DictionaryCell: UITableViewCell{
 
     var languageLabel : UILabel = {
         var label = UILabel()
-        label.attributedText = NSAttributedString(
-            string: "Language:",
-            attributes: [ NSAttributedString.Key.font: UIFont(name: "Georgia-BoldItalic" , size: 20) ?? UIFont.systemFont(ofSize: 18)
-            ])
+        label.attributedText = NSAttributedString().fontWithString(string: "Language", bold: true, size: 20)
         return label
     }()
     
     var cardsLabel : UILabel = {
         var label = UILabel()
-        label.attributedText = NSAttributedString(
-            string: "Total words:",
-            attributes: [ NSAttributedString.Key.font: UIFont(name: "Georgia-BoldItalic", size: 20) ?? UIFont.systemFont(ofSize: 18)
-            ])
+        label.attributedText = NSAttributedString().fontWithString(string: "Total words", bold: true, size: 20)
         return label
     }()
     
@@ -56,6 +50,9 @@ class DictionaryCell: UITableViewCell{
     }
     required init?(coder: NSCoder) {
         fatalError("coder wasn't imported")
+    }
+    override func prepareForReuse() {
+        super.prepareForReuse()
     }
     
     func setConstraints(){

@@ -10,6 +10,9 @@ import UIKit
 class DetailsVC: UIViewController {
 
     var dictionary = DictionaryDetails()
+    var random : Bool!
+    var numberOfCards : Int!
+    var preselectedPickerNumber = Int()
     
     let randomiseCardsView : UIView = {
         var view = UIView()
@@ -32,21 +35,14 @@ class DetailsVC: UIViewController {
     let addNewWordsBut : UIButton = {
         var button = UIButton()
         button.setUpCommotBut(true)
-        button.setAttributedTitle(NSAttributedString(string: "Add new words",
-                                                     attributes: [NSAttributedString.Key.font:
-                                                                    UIFont(name: "Georgia-BoldItalic",
-                                                                           size: 20) ?? UIFont()]), for: .normal)
-
-        return button
+        button.setAttributedTitle(NSAttributedString().fontWithString(string: "Add new words", bold: true, size: 20), for: .normal)
+                    return button
     }()
     
     let beginBut : UIButton = {
         var button = UIButton()
         button.setUpCommotBut(false)
-        button.setAttributedTitle(NSAttributedString(string: "Start",
-                                                     attributes: [NSAttributedString.Key.font:
-                                                                    UIFont(name: "Georgia-BoldItalic",
-                                                                           size: 20) ?? UIFont()]), for: .normal)
+        button.setAttributedTitle(NSAttributedString().fontWithString(string: "Start", bold: true, size: 20), for: .normal)
         return button
     }()
     
@@ -96,7 +92,7 @@ class DetailsVC: UIViewController {
 //MARK: - NavigationBar SetUp
     func navBarCustomization(){
         navigationItem.title = "Source Details"
-        navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.font: UIFont(name: "Georgia-BoldItalic", size: 23)!]
+        navigationController?.navigationBar.titleTextAttributes = NSAttributedString().fontWithoutString(bold: true, size: 23)
         
         let rightButton = UIBarButtonItem(
             image: UIImage(systemName: "gearshape"),
@@ -114,13 +110,7 @@ class DetailsVC: UIViewController {
                 
         let label : UILabel = {
             let label = UILabel()
-            label.attributedText = NSAttributedString(
-                string: "Randomize cards",
-                attributes: [NSAttributedString.Key.font :
-                                UIFont(name: "Georgia-BoldItalic", size: 18) ?? UIFont(),
-                             NSAttributedString.Key.foregroundColor :
-                                UIColor.label
-                            ])
+            label.attributedText = NSAttributedString().fontWithString(string: "Randomize cards", bold: true, size: 18)
             return label
         }()
         
@@ -151,6 +141,7 @@ class DetailsVC: UIViewController {
             switchForState.centerYAnchor.constraint(equalTo: randomiseCardsView.centerYAnchor),
             switchForState.trailingAnchor.constraint(equalTo: randomiseCardsView.trailingAnchor, constant: -25)
         ])
+        switchForState.addTarget(self, action: #selector(randomSwitchToggle(sender:)), for: .valueChanged)
     }
     
 //MARK: - SetTheGoal SetUp
@@ -191,7 +182,13 @@ class DetailsVC: UIViewController {
             picker.centerYAnchor.constraint(equalTo: setTheGoalView.centerYAnchor),
             picker.widthAnchor.constraint(equalTo: setTheGoalView.widthAnchor, multiplier: 0.3)
         ])
-        
+        preselectedPickerNumber = {
+            if Int(dictionary.numberOfCards)! <= 49{
+                return Int(dictionary.numberOfCards)!
+            } else {
+                return 50
+            }
+        }()
     }
 
 //MARK: - UsePicture SetUp
@@ -281,28 +278,46 @@ class DetailsVC: UIViewController {
         let vc = LoadDataVC()
         self.present(vc, animated: true)
     }
-    @objc func randomSwitchToggle(sender: Any){
-        
+    @objc func randomSwitchToggle(sender: UISwitch){
+        random = sender.isOn
     }
     @objc func usePicturesSwitchToggle(sender: Any){
         
     }
     
+    
     @objc func startButtonTap(sender: UIButton){
-        let vc = GameVC()
-        vc.dictionaryToPerform = self.dictionary
+        let vc = TestGameVC()
+        if self.numberOfCards == nil{
+            self.numberOfCards = preselectedPickerNumber
+        }
+        if self.random == nil{
+            self.random = true
+        }
+        vc.currentDictionary = self.dictionary
+        vc.currentRandomDictionary = self.dictionary.dictionary?.shuffled()
+        vc.random = self.random
+        vc.numberOFCards = self.numberOfCards
         self.navigationController?.pushViewController(vc, animated: true)
     }
 
     @objc func addWordsButtonTap(sender: UIButton){
         let vc = AddWordsVC()
         vc.editableDict = dictionary
-        print(AppData.shared.availableDictionary.first)
         navigationController?.pushViewController(vc, animated: true)
     }
 
 }
 extension DetailsVC: UIPickerViewDelegate{
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        if Int(dictionary.numberOfCards)! <= 50{
+            numberOfCards = Int(dictionary.numberOfCards)!
+        } else if row == pickerView.numberOfRows(inComponent: component) - 1{
+            numberOfCards = Int(dictionary.numberOfCards)!
+        } else {
+            numberOfCards = (row + 1) * 50
+        }
+    }
 }
 extension DetailsVC: UIPickerViewDataSource{
     func numberOfComponents(in pickerView: UIPickerView) -> Int {

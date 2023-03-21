@@ -21,24 +21,14 @@ class MenuVC: UIViewController {
     var statisticButton : UIButton = {
         let button = UIButton()
         button.setUpCommotBut(false)
-        button.setAttributedTitle(NSAttributedString(
-            string: "Statistic",
-            attributes: [NSAttributedString.Key.font :
-                            UIFont(name: "Georgia-BoldItalic",
-                                   size: 18) ?? UIFont()]),
-                                           for: .normal)
+        button.setAttributedTitle(NSAttributedString().fontWithString(string: "Statisctic", bold: true, size: 18), for: .normal)
         return button
     }()
     
     var randomButton : UIButton = {
         let button = UIButton()
         button.setUpCommotBut(false)
-        button.setAttributedTitle(NSAttributedString(
-            string: "Random mode",
-            attributes: [NSAttributedString.Key.font :
-                            UIFont(name: "Georgia-BoldItalic",
-                                   size: 18) ?? UIFont()]),
-                                           for: .normal)
+        button.setAttributedTitle(NSAttributedString().fontWithString(string: "Random mode", bold: true, size: 18), for: .normal)
         return button
     }()
     
@@ -107,10 +97,7 @@ class MenuVC: UIViewController {
         
         let label: UILabel = {
             let label = UILabel()
-            label.attributedText = NSAttributedString(string: "Learny",
-                                                      attributes: [NSAttributedString.Key.font :
-                                                                    UIFont(name: "Georgia-BoldItalic",
-                                                                           size: 20) ?? UIFont()])
+            label.attributedText = NSAttributedString().fontWithString(string: "Learny", bold: true, size: 20)
             return label
         }()
         
@@ -258,10 +245,7 @@ class MenuVC: UIViewController {
     func navBarCustomization(){
         // Title adjustment.
         navigationItem.title = "Menu"
-        navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.font:
-                                                                    UIFont(name: "Georgia-BoldItalic",
-                                                                           size: 23)!]
-
+        navigationController?.navigationBar.titleTextAttributes = NSAttributedString().fontWithoutString(bold: true, size: 23)
         // Buttons
         let rightButton = UIBarButtonItem(
             image: UIImage(systemName: "gearshape"),

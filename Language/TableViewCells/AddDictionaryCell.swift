@@ -11,8 +11,7 @@ class AddDictionaryCell: UITableViewCell {
     
     var importLabel: UILabel = {
         var label = UILabel()
-        label.font = UIFont(name: "Georgia-BoldItalic", size: 20)
-        label.text = "Import new Note"
+        label.attributedText = NSAttributedString().fontWithString(string: "Import new Note", bold: true, size: 20)
         return label
     }()
     var addButton : UIButton = {

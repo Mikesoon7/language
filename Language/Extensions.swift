@@ -109,4 +109,35 @@ extension UIView{
             return stroke
     }
 }
+extension NSAttributedString{
+    func fontWithString(string: String, bold: Bool, size: CGFloat) -> NSAttributedString{
+        let font : String!
+        if bold {
+            font = "Georgia-BoldItalic"
+        } else {
+            font = "Georgia-Italic"
+        }
+        let attributes = NSAttributedString(string: string,
+                                            attributes: [NSAttributedString.Key.font :
+                                                            UIFont(name: font ,
+                                                                   size: size)!,
+                                                         NSAttributedString.Key.foregroundColor:
+                                                            UIColor.label])
+        return attributes
+    }
+    func fontWithoutString(bold: Bool, size: CGFloat) -> [NSAttributedString.Key : Any]{
+        let font : String!
+        if bold {
+            font = "Georgia-BoldItalic"
+        } else {
+            font = "Georgia-Italic"
+        }
+        let attributes = [NSAttributedString.Key.font:
+                            UIFont(name: font,
+                                   size: size)!,
+                          NSAttributedString.Key.foregroundColor:
+                            UIColor.label]
+        return attributes as [NSAttributedString.Key : Any]
+    }
+}
 

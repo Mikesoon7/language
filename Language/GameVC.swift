@@ -14,7 +14,7 @@ class GameVC: UIViewController {
     var usePicture = Bool()
 
     var dictionaryToPerform = DictionaryDetails()
-    var currentPair = [String: String]()
+    var currentPair : DataForCards! = nil
     var currentWord = String()
     var currentTranslation = String()
     
@@ -69,10 +69,8 @@ class GameVC: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         currentPair = (dictionaryToPerform.dictionary?.removeFirst())!
-        for (key, value) in currentPair{
-            currentWord = key
-            currentTranslation = value
-        }
+        currentWord = currentPair.word
+        currentTranslation = currentPair.translation ?? "   "
         navigationBarCustomization()
         mainViewCustomization()
         
