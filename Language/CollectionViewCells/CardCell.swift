@@ -95,6 +95,11 @@ class CardCell: UICollectionViewCell {
         ])
         
     }
+    func configure(with: DataForCards){
+        self.word.text = with.word
+        self.translation.text = with.translation
+
+    }
 //    func configureCard(with model: ViewModel){
 //        model.getAnImage { [weak self] image in
 //            DispatchQueue.main.async {

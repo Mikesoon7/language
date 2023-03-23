@@ -306,7 +306,6 @@ class DetailsVC: UIViewController {
         vc.editableDict = dictionary
         navigationController?.pushViewController(vc, animated: true)
     }
-
 }
 extension DetailsVC: UIPickerViewDelegate{
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {

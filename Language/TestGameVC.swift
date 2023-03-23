@@ -16,17 +16,21 @@ class TestGameVC: UIViewController {
         
     var collectionView : UICollectionView!
     var contentViewSize : CGSize! = nil
+    var card : UICollectionView.CellRegistration<TestCell, DataForCards>!
+    var lastCard : UICollectionView.CellRegistration<LastCell, DataForLastCard>!
+    var dataSource : UICollectionViewDiffableDataSource<Section, AnyHashable>!
+    var data : UICollectionViewDiffableDataSource<Section, DataForCards>!
     
 //    var viewModel = [ViewModel()]
     
     override func viewDidLoad() {
         super.viewDidLoad()
-//        viewModel = Array(0..<numberOFCards).map({ _ in
-//            ViewModel()
-//        })
+        //        viewModel = Array(0..<numberOFCards).map({ _ in
+        //            ViewModel()
+        //        })
         collectionViewCustomization()
     }
-//MARK: - NavBar SetUp
+    //MARK: - NavBar SetUp
     func navBarCustomization(){
         // Title adjustment.
         navigationItem.title = "Game"
@@ -36,15 +40,14 @@ class TestGameVC: UIViewController {
     }
 //MARK: - CollectionView SetUp
     func collectionViewCustomization(){
+        
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout())
         collectionView.backgroundColor = .systemBackground
         collectionView.delegate = self
-        collectionView.dataSource = self
-        collectionView.prefetchDataSource = self
-        collectionView.collectionViewLayout
-        view.addSubview(collectionView)
+        collectionView.dataSource = cellPreparation(random: random)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
-        
+        view.addSubview(collectionView)
+
         NSLayoutConstraint.activate([
             collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             collectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
@@ -52,23 +55,47 @@ class TestGameVC: UIViewController {
             collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
             
         ])
-        collectionView.register(CardCell.self, forCellWithReuseIdentifier: "card")
-        collectionView.register(LastCell.self, forCellWithReuseIdentifier: "lastCard")
+//        collectionView.register(CardCell.self, forCellWithReuseIdentifier: "card")
+//        collectionView.register(LastCell.self, forCellWithReuseIdentifier: "lastCard")
     }
     func layout() -> UICollectionViewFlowLayout{
-        let cellLayout : UILayoutGuide = {
-            let layout = UILayoutGuide()
-            layout.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-            layout.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
-            return layout
-        }()
         let layout = UICollectionViewFlowLayout()
         contentViewSize = CGSize(width: view.bounds.width / 1.3, height: view.bounds.height / 1.8)
         layout.scrollDirection = .horizontal
         layout.itemSize = contentViewSize
         return layout
     }
-    /*
+    func cellPreparation(random: Bool) -> UICollectionViewDiffableDataSource<Section, AnyHashable>{
+        self.card = UICollectionView.CellRegistration<TestCell, DataForCards> { cell, indexPath, data in
+            cell.configure(with: data)        }
+        self.lastCard = UICollectionView.CellRegistration<LastCell, DataForLastCard> { cell, indexPath, data in
+            cell.configure(with: data)
+        }
+        self.dataSource = UICollectionViewDiffableDataSource<Section, AnyHashable>(collectionView: collectionView) { [weak self ] (collectionView,indexPath,item) -> UICollectionViewCell? in
+            if let item = item as? DataForCards{
+                 let cell = collectionView.dequeueConfiguredReusableCell(using: self!.card, for: indexPath, item: item)
+                return cell
+            } else if let item = item as? DataForLastCard{
+                let cell = collectionView.dequeueConfiguredReusableCell(using: self!.lastCard, for: indexPath, item: item)
+                return cell
+            }
+            return nil
+        }
+        
+        var snaphot = NSDiffableDataSourceSnapshot<Section, AnyHashable>()
+        snaphot.appendSections([.cards])
+        if random {
+            snaphot.appendItems(currentRandomDictionary, toSection: .cards)
+        } else {
+            snaphot.appendItems(currentDictionary.dictionary!, toSection: .cards)
+        }
+        snaphot.appendItems([DataForLastCard(score: numberOFCards, image: UIImage(named: "LastCardImage")!)], toSection: .cards)
+        dataSource.apply(snaphot, animatingDifferences: true)
+        
+        return dataSource
+    }
+/*
+    
     func collectionViewLayoutCustomization() -> UICollectionViewLayout{
         let cardSize = NSCollectionLayoutSize(widthDimension: .absolute(view.bounds.width / 1.2), heightDimension: .absolute(view.bounds.height / 1.8))
         let card = NSCollectionLayoutItem(layoutSize: cardSize)
@@ -93,12 +120,15 @@ extension TestGameVC: UICollectionViewDelegate{
     }
 }
 
-
+/*
 extension TestGameVC: UICollectionViewDataSource{
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return numberOFCards + 1
     }
     
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+
+    }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "card", for: indexPath) as! CardCell
@@ -116,9 +146,10 @@ extension TestGameVC: UICollectionViewDataSource{
             cell.translation.text = currentStraightPair.translation
         }
         return cell
-        
     }
 }
+ */
+
 
 extension TestGameVC: UICollectionViewDataSourcePrefetching{
     func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {

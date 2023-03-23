@@ -8,18 +8,29 @@
 import Foundation
 import UIKit
 
-class DataForCards{
+class DataForCards: Hashable{
+    var identifier : UUID
     var word: String
     var translation: String
     
     init(word: String){
+        self.identifier = UUID()
         self.word = word
         self.translation = "   "
     }
     init(word: String, translation: String){
+        self.identifier = UUID()
         self.word = word
         self.translation = translation
     }
+    
+    func hash(into hasher: inout Hasher) {
+            hasher.combine(identifier)
+        }
+    static func == (lhs: DataForCards, rhs: DataForCards) -> Bool{
+        lhs.identifier == rhs.identifier
+    }
+    
 }
 
 class AppData{
