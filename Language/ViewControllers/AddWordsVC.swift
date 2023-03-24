@@ -119,7 +119,6 @@ class AddWordsVC: UIViewController {
         textView.resignFirstResponder()
     }
     @objc func submitButTap(sender: UIButton){
-        let input = textView.text
         let alert = UIAlertController(title: "Enter the text", message: "Please, enter more than 1 pair of words.", preferredStyle: .alert)
         let action = UIAlertAction(title: "Understand", style: .cancel)
         alert.addAction(action)
@@ -129,10 +128,6 @@ class AddWordsVC: UIViewController {
         
         editableDict.dictionary!.append(contentsOf: AppData.shared.divider(text: textView.text))
         self.navigationController?.popViewController(animated: true)
-        print(AppData.shared.availableDictionary.first(where: { dict in
-            return dict === editableDict
-        }))
-        
     }
     @objc func keyboardWillShow(sender: Notification){
         let animation = CABasicAnimation(keyPath: "opacity")

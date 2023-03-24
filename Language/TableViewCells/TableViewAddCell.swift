@@ -7,7 +7,7 @@
 
 import UIKit
 
-class AddDictionaryCell: UITableViewCell {
+class TableViewAddCell: UITableViewCell {
     
     var importLabel: UILabel = {
         var label = UILabel()

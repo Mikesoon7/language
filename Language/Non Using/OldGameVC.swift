@@ -7,14 +7,14 @@
 
 import UIKit
 
-class GameVC: UIViewController {
+class OldGameVC: UIViewController {
 
     var randomize = Bool()
     var cardGoal = Int()
     var usePicture = Bool()
 
     var dictionaryToPerform = DictionaryDetails()
-    var currentPair : DataForCards! = nil
+    var currentPair : DataForCells! = nil
     var currentWord = String()
     var currentTranslation = String()
     

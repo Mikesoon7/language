@@ -8,7 +8,8 @@
 import Foundation
 import UIKit
 
-class DataForCards: Hashable{
+class DataForCells: Hashable {
+    
     var identifier : UUID
     var word: String
     var translation: String
@@ -27,7 +28,7 @@ class DataForCards: Hashable{
     func hash(into hasher: inout Hasher) {
             hasher.combine(identifier)
         }
-    static func == (lhs: DataForCards, rhs: DataForCards) -> Bool{
+    static func == (lhs: DataForCells, rhs: DataForCells) -> Bool{
         lhs.identifier == rhs.identifier
     }
     
@@ -45,8 +46,8 @@ class AppData{
         availableDictionary.append(DictionaryDetails.init(language: language, dictionary: AppData().divider(text: text)))
         print(availableDictionary.count)
     }
-    func divider(text: String) -> [DataForCards]{
-        var results = [DataForCards]()
+    func divider(text: String) -> [DataForCells]{
+        var results = [DataForCells]()
         let lines = text.split(separator: "\n", omittingEmptySubsequences: true)
         
         for line in lines {
@@ -54,9 +55,9 @@ class AppData{
             if parts.count == 2{
                 let word = String(parts[0]).trimmingCharacters(in: CharacterSet(arrayLiteral: "[", "]", "-", "◦"))
                 let meaning = String(parts[1])
-                results.append(DataForCards(word: word.trimmingCharacters(in: .whitespacesAndNewlines), translation: meaning))
+                results.append(DataForCells(word: word.trimmingCharacters(in: .whitespacesAndNewlines), translation: meaning))
             } else {
-                results.append(DataForCards(word: String(parts[0]).trimmingCharacters(in: CharacterSet(arrayLiteral: "[", "]", "-", "◦"))))
+                results.append(DataForCells(word: String(parts[0]).trimmingCharacters(in: CharacterSet(arrayLiteral: "[", "]", "-", "◦"))))
             }
         }
         return results
@@ -65,7 +66,7 @@ class AppData{
 }
 class DictionaryDetails{
     
-    var dictionary : [DataForCards]?{
+    var dictionary : [DataForCells]?{
         didSet{
             numberOfCards = String(dictionary?.count ?? 0)
         }
@@ -81,7 +82,7 @@ class DictionaryDetails{
     init(language: String){
         self.language = language
             }
-    init(language: String, dictionary: [DataForCards]){
+    init(language: String, dictionary: [DataForCells]){
         self.language = language
         self.dictionary = dictionary
         self.numberOfCards = String(dictionary.count)

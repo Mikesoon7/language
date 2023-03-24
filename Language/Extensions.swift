@@ -140,4 +140,14 @@ extension NSAttributedString{
         return attributes as [NSAttributedString.Key : Any]
     }
 }
+//MARK: -AddSubviews method.
+extension UIView{
+    func addSubviews(_ views: UIView...){
+        for i in views{
+            self.addSubview(i)
+        }
+    }
+}
+
+
 

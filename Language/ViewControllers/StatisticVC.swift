@@ -80,7 +80,7 @@ class StatisticVC: UIViewController {
         repeatedTimesNumber.translatesAutoresizingMaskIntoConstraints = false
         repeatedWordsLabel.translatesAutoresizingMaskIntoConstraints = false
         
-        statisticView.addSubviews(repeatedLabel, totalWordsLabel, repeatedTimesNumber, repeatedWordsLabel)
+        statisticView.addSubviews(repeatedLabel, totalWordsLabel, repeatedWordsLabel, repeatedTimesNumber)
         
         NSLayoutConstraint.activate([
             repeatedLabel.topAnchor.constraint(equalTo: statisticView.topAnchor, constant: 15),

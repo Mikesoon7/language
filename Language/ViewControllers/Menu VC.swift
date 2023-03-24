@@ -11,8 +11,8 @@ class MenuVC: UIViewController {
     
     var tableView: UITableView = {
         var tableView = UITableView(frame: CGRect(x: 0, y: 0, width: 0, height: 0), style: .insetGrouped)
-        tableView.register(DictionaryCell.self, forCellReuseIdentifier: "dictCell")
-        tableView.register(AddDictionaryCell.self, forCellReuseIdentifier: "addCell")
+        tableView.register(TableViewCell .self, forCellReuseIdentifier: "dictCell")
+        tableView.register(TableViewAddCell.self, forCellReuseIdentifier: "addCell")
         tableView.rowHeight = 104
         tableView.backgroundColor = .systemBackground
         tableView.selectionFollowsFocus = true
@@ -447,8 +447,8 @@ extension MenuVC: UITableViewDataSource{
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let dictionary = AppData.shared.availableDictionary
-        let cell = tableView.dequeueReusableCell(withIdentifier: "dictCell", for: indexPath) as? DictionaryCell
-        let addCell = tableView.dequeueReusableCell(withIdentifier: "addCell", for: indexPath) as? AddDictionaryCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: "dictCell", for: indexPath) as? TableViewCell
+        let addCell = tableView.dequeueReusableCell(withIdentifier: "addCell", for: indexPath) as? TableViewAddCell
         
         if indexPath.section == tableView.numberOfSections - 1{
             return addCell!

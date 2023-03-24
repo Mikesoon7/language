@@ -287,7 +287,7 @@ class DetailsVC: UIViewController {
     
     
     @objc func startButtonTap(sender: UIButton){
-        let vc = TestGameVC()
+        let vc = MainGameVC()
         if self.numberOfCards == nil{
             self.numberOfCards = preselectedPickerNumber
         }

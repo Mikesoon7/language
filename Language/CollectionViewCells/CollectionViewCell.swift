@@ -10,7 +10,7 @@ import UIKit
 enum Section: CaseIterable{
     case cards
 }
-class TestCell: UICollectionViewCell {
+class CollectionViewCell: UICollectionViewCell {
     
     var inset = CGFloat(10)
     
@@ -18,7 +18,7 @@ class TestCell: UICollectionViewCell {
         let label = UILabel()
         label.font = UIFont(name: "Georgia-BoldItalic", size: 20)
         label.numberOfLines = 0
-        label.textColor = .label
+        label.textColor = .black
         label.text = "???"
         label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -28,20 +28,13 @@ class TestCell: UICollectionViewCell {
         let label = UILabel()
         label.font = UIFont(name: "Georgia-Italic", size: 18)
         label.numberOfLines = 0
-        label.textColor = .label
+        label.textColor = .black
         label.textAlignment = .center
         label.text = "???"
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
-//    let image : UIImageView = {
-//        let image = UIImageView()
-//        image.clipsToBounds = true
-//        image.contentMode = .scaleAspectFill
-//        image.translatesAutoresizingMaskIntoConstraints = false
-//        return image
-//    }()
     let cardView : UIView = {
         let view = UIView()
         view.backgroundColor = .white
@@ -69,11 +62,9 @@ class TestCell: UICollectionViewCell {
     }
     override func prepareForReuse() {
         super.prepareForReuse()
-//        image.image = nil
     }
     func cardViewCustomiation(){
         self.contentView.addSubview(cardView)
-//        cardView.addSubview(image)
         cardView.addSubviews(word, translation)
         
         NSLayoutConstraint.activate([
@@ -82,11 +73,6 @@ class TestCell: UICollectionViewCell {
             cardView.widthAnchor.constraint(equalTo: self.contentView.widthAnchor, constant: -inset),
             cardView.heightAnchor.constraint(equalTo: self.contentView.heightAnchor, constant: -inset),
             
-//            image.topAnchor.constraint(equalTo: cardView.topAnchor),
-//            image.leadingAnchor.constraint(equalTo: cardView.leadingAnchor),
-//            image.bottomAnchor.constraint(equalTo: cardView.bottomAnchor),
-//            image.trailingAnchor.constraint(equalTo: cardView.trailingAnchor),
-//
             word.topAnchor.constraint(equalTo: cardView.topAnchor, constant: 20),
             word.centerXAnchor.constraint(equalTo: cardView.centerXAnchor, constant: 20),
             word.widthAnchor.constraint(equalTo: cardView.widthAnchor, constant: -40),
@@ -99,7 +85,7 @@ class TestCell: UICollectionViewCell {
         
     }
 
-    func configure(with data: DataForCards){
+    func configure(with data: DataForCells){
         word.text = data.word
         translation.text = data.translation
     }

@@ -95,7 +95,7 @@ class CardCell: UICollectionViewCell {
         ])
         
     }
-    func configure(with: DataForCards){
+    func configure(with: DataForCells){
         self.word.text = with.word
         self.translation.text = with.translation
 

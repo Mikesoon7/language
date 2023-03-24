@@ -7,7 +7,7 @@
 
 import UIKit
 
-class DataForLastCard: Hashable{
+class DataForLastCell: Hashable{
     var identifier = UUID()
     var score : Int
     var image : UIImage
@@ -20,11 +20,11 @@ class DataForLastCard: Hashable{
         hasher.combine(identifier)
     }
     
-    static func == (lhs: DataForLastCard, rhs: DataForLastCard) -> Bool{
+    static func == (lhs: DataForLastCell, rhs: DataForLastCell) -> Bool{
         lhs.identifier == rhs.identifier
     }
 }
-class LastCell: UICollectionViewCell {
+class CollectionViewLastCell: UICollectionViewCell {
     
     let cardView : UIImageView = {
         let view = UIImageView()
@@ -79,7 +79,7 @@ class LastCell: UICollectionViewCell {
         ])
         
     }
-    func configure(with data: DataForLastCard){
+    func configure(with data: DataForLastCell){
         scoreLabel.text = "\(data.score)%"
         cardView.image = data.image
     }

@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ClosureVC: UIViewController {
+class EndVc: UIViewController {
 
     
     var topStroke = CAShapeLayer()

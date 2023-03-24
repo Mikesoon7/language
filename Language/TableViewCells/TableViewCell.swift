@@ -1,13 +1,13 @@
 //
-//  ExistingDictionariesCell.swift
+//  TableViewCell.swift
 //  Language
 //
-//  Created by Star Lord on 14/02/2023.
+//  Created by Star Lord on 23/03/2023.
 //
 
 import UIKit
 
-class DictionaryCell: UITableViewCell{
+class TableViewCell: UITableViewCell{
 
     var languageLabel : UILabel = {
         var label = UILabel()
@@ -80,15 +80,6 @@ class DictionaryCell: UITableViewCell{
             cardsResultLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -15),
             cardsResultLabel.heightAnchor.constraint(equalToConstant: 25),
         ])
-    }
-}
-
-//MARK: -AddSubviews method.
-extension UIView{
-    func addSubviews(_ views: UIView...){
-        for i in views{
-            self.addSubview(i)
-        }
     }
 }
 
