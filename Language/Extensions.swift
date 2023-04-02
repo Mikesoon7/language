@@ -81,6 +81,7 @@ extension UIButton{
 
 }
 extension UIView{
+    
     func addTopStroke(vc: UIViewController) -> CAShapeLayer{
         let topStroke = CAShapeLayer()
         let path = UIBezierPath()
@@ -96,9 +97,10 @@ extension UIView{
             return topStroke
         }
     func addBottomStroke(vc: UIViewController) -> CAShapeLayer{
-            let path = UIBezierPath()
-        path.move(to: CGPoint(x: 0, y: vc.view.bounds.maxY - 110))
-        path.addLine(to: CGPoint(x: vc.view.bounds.maxX, y: vc.view.bounds.maxY - 110))
+        let path = UIBezierPath()
+        
+        path.move(to: CGPoint(x: 0, y: 0))
+        path.addLine(to: CGPoint(x: 0, y: 0 ))
             let stroke = CAShapeLayer()
             stroke.path = path.cgPath
         stroke.lineWidth = 1.5
@@ -148,6 +150,5 @@ extension UIView{
         }
     }
 }
-
 
 

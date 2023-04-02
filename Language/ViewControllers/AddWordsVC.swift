@@ -13,7 +13,7 @@ class AddWordsVC: UIViewController {
     var index = Int()
     
     let textView : UITextView = {
-        let textView = UITextView()
+        let textView = TextViewToAdd()
         textView.backgroundColor = .systemGray5
         textView.layer.cornerRadius = 9
         textView.layer.borderWidth = 1
@@ -25,7 +25,7 @@ class AddWordsVC: UIViewController {
         
         textView.textColor = .lightGray
         textView.font = UIFont(name: "TimesNewRomanPSMT", size: 15) ?? UIFont()
-        textView.text = "- [ ] Word - Meaning"
+        textView.text = "Word - Meaning"
         return textView
     }()
     let submitButton : UIButton = {
@@ -151,10 +151,11 @@ class AddWordsVC: UIViewController {
 
 extension AddWordsVC : UITextViewDelegate{
     func textViewDidBeginEditing(_ textView: UITextView) {
-        if textView.textColor == .lightGray{
+        if textView.textColor == .lightGray {
             textView.text = nil
-            textView.textColor = .label
-            print("Not here either")
+            textView.textColor = nil
+            textView.font = nil
+            textView.typingAttributes = [NSAttributedString.Key.font : UIFont(name: "Times New Roman", size: 17) ?? UIFont(), NSAttributedString.Key.backgroundColor : UIColor.clear, NSAttributedString.Key.foregroundColor : UIColor.label]
         }
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(rightBarButTap(sender:)))
     }
@@ -177,4 +178,18 @@ extension AddWordsVC : UITextInputDelegate{
     }
     
     
+}
+class TextViewToAdd: UITextView {
+
+    override func paste(_ sender: Any?) {
+        if let pasteboardString = UIPasteboard.general.string {
+            let currentAttributes = typingAttributes
+
+            let attributedString = NSAttributedString(string: pasteboardString, attributes: currentAttributes)
+
+            textStorage.insert(attributedString, at: selectedRange.location)
+
+            selectedRange = NSRange(location: selectedRange.location + pasteboardString.count, length: 0)
+        }
+    }
 }

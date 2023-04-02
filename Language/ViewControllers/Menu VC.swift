@@ -52,11 +52,14 @@ class MenuVC: UIViewController {
         strokeCustomization()
         setUpAnimationViews()
         runAnimation()
-        
+
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.tableView.reloadData()
+    }
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
     }
 //MARK: - StyleChange Responding
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -80,6 +83,7 @@ class MenuVC: UIViewController {
         view.layer.addSublayer(topStroke)
         view.layer.addSublayer(bottomStroke)
     }
+    
 //MARK: - Animation SetUp
     func setUpAnimationViews(){
         navigationController?.navigationBar.isOpaque = false

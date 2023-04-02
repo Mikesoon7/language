@@ -85,7 +85,7 @@ class OldGameVC: UIViewController {
     //MARK: - Stroke SetUp
     func strokeCustomization(){
         topStroke = UIView().addTopStroke(vc: self)
-        bottomStroke = UIView().addBottomStroke(vc: self)
+//        bottomStroke = UIView().addBottomStroke(vc: self)
         
         view.layer.addSublayer(topStroke)
         view.layer.addSublayer(bottomStroke)

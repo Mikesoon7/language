@@ -7,14 +7,14 @@
 
 import UIKit
 
+//MARK: - Data for LastCell
 class DataForLastCell: Hashable{
     var identifier = UUID()
-    var score : Int
-    var image : UIImage
-    
-    init(score: Int, image: UIImage) {
+    var score : Float
+    var delegate : CustomCellDelegate?
+    init(score: Float, delegate: CustomCellDelegate) {
         self.score = score
-        self.image = image
+        self.delegate = delegate
     }
     func hash(into hasher: inout Hasher) {
         hasher.combine(identifier)
@@ -24,22 +24,32 @@ class DataForLastCell: Hashable{
         lhs.identifier == rhs.identifier
     }
 }
+//MARK: - Protocol for VC pop
+protocol CustomCellDelegate: AnyObject{
+    func finishButtonTap()
+}
 class CollectionViewLastCell: UICollectionViewCell {
     
-    let cardView : UIImageView = {
-        let view = UIImageView()
+    var staticCardSize : CGSize!
+    weak var delegate: CustomCellDelegate?
+    
+    let cardView : UIView = {
+        let view = UIView()
         view.backgroundColor = .white
         view.layer.cornerRadius = 9
         view.layer.borderColor = UIColor.black.cgColor
         view.layer.borderWidth = 1
-        view.layer.opacity = 0.7
-        view.clipsToBounds = true
+        view.clipsToBounds = false
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    var cardShadowView : UIView = {
+        let view = UIView()
+        view.backgroundColor = .clear
         
-        view.layer.shadowColor = UIColor.black.cgColor
-        view.layer.shadowOffset = CGSize(width: 5, height: 3)
-        view.layer.shadowOpacity = 0.8
-        view.layer.shadowRadius = 3.0
-        view.layer.shadowPath = CGPath(rect: view.bounds, transform: nil)
+        view.layer.shadowOpacity = 0.3
+        view.layer.shadowRadius = 5.0
+        view.layer.shadowOffset = CGSize(width: 10, height: 10)
         
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
@@ -51,37 +61,73 @@ class CollectionViewLastCell: UICollectionViewCell {
         label.font = UIFont(name: "Georgia-BoldItalic", size: 40)
         label.textColor = .label
         label.text = "???"
+        label.translatesAutoresizingMaskIntoConstraints = false
         return label
+    }()
+    
+    let finishButton : UIButton = {
+        let button = UIButton()
+        button.setUpBorderedView(false)
+        button.layer.borderWidth = 0
+        button.setTitle("Okey", for: .normal)
+        button.setTitleColor(.label, for: .normal) 
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
     }()
     override init(frame: CGRect) {
         super.init(frame: frame)
         cardViewCustomiation()
+        staticCardSize = CGSize(width: UIWindow().bounds.width * 0.64, height: UIWindow().bounds.height * 0.48)
     }
     required init?(coder: NSCoder) {
         fatalError("Faild to present cells")
     }
     func cardViewCustomiation(){
-        self.contentView.addSubview(cardView)
-        cardView.addSubviews(scoreLabel)
+        self.contentView.addSubview(cardShadowView)
+        cardShadowView.addSubview(cardView)
+        cardView.addSubviews(scoreLabel, finishButton)
+//        cardShadowView.isUserInteractionEnabled = false
         
         NSLayoutConstraint.activate([
+            cardShadowView.centerXAnchor.constraint(equalTo: self.contentView.centerXAnchor),
+            cardShadowView.centerYAnchor.constraint(equalTo: self.contentView.centerYAnchor),
+            cardShadowView.widthAnchor.constraint(equalTo: self.contentView.widthAnchor),
+            cardShadowView.heightAnchor.constraint(equalTo: self.contentView.heightAnchor ),
+                        
             cardView.centerXAnchor.constraint(equalTo: self.contentView.centerXAnchor),
             cardView.centerYAnchor.constraint(equalTo: self.contentView.centerYAnchor),
-            cardView.widthAnchor.constraint(equalTo: self.contentView.widthAnchor, constant: -10),
-            cardView.heightAnchor.constraint(equalTo: self.contentView.heightAnchor, constant: -10),
-            
+            cardView.widthAnchor.constraint(equalTo: self.contentView.widthAnchor),
+            cardView.heightAnchor.constraint(equalTo: self.contentView.heightAnchor ),
+
+
             scoreLabel.centerXAnchor.constraint(equalTo: cardView.centerXAnchor),
             scoreLabel.centerYAnchor.constraint(equalTo: cardView.centerYAnchor),
-            scoreLabel.heightAnchor.constraint(equalTo: cardView.heightAnchor),
-            scoreLabel.widthAnchor.constraint(equalTo: cardView.widthAnchor)
-
-
-        ])
+            scoreLabel.topAnchor.constraint(equalTo: cardView.topAnchor, constant: 30),
+            scoreLabel.bottomAnchor.constraint(equalTo: cardView.topAnchor, constant: 80),
         
+            finishButton.bottomAnchor.constraint(equalTo: cardView.bottomAnchor, constant: -30 ),
+            finishButton.centerXAnchor.constraint(equalTo: cardView.centerXAnchor),
+            finishButton.heightAnchor.constraint(equalTo: cardView.widthAnchor, multiplier: 0.2),
+            finishButton.widthAnchor.constraint(equalTo: cardView.heightAnchor, multiplier: 0.2)
+        ])
+        finishButton.addTarget(self, action: #selector(buttonTap(sender:)), for: .touchUpInside)
+        finishButton.addTargetTouchBegin()
+        finishButton.addTargetInsideTouchStop()
+        finishButton.addTargetOutsideTouchStop()
     }
-    func configure(with data: DataForLastCell){
-        scoreLabel.text = "\(data.score)%"
-        cardView.image = data.image
+    override func apply(_ layoutAttributes: UICollectionViewLayoutAttributes) {
+        super.apply(layoutAttributes)
+        cardShadowView.layer.shadowOffset = CGSize(
+            width: (layoutAttributes.frame.width - staticCardSize.width) / 4 ,
+            height: ( layoutAttributes.frame.height - staticCardSize.height) / 3)
     }
 
+    func configure(with data: DataForLastCell){
+        scoreLabel.text = "\((data.score).rounded())%"
+        delegate = data.delegate
+    }
+
+    @objc func buttonTap(sender: Any){
+        delegate?.finishButtonTap()
+    }
 }

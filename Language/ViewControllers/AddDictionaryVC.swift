@@ -10,19 +10,19 @@ import UIKit
 class AddDictionaryVC: UIViewController {
     
     var textView: UITextView = {
-        var textView = UITextView()
+        var textView = TextViewToCreate()
         textView.backgroundColor = .systemGray5
         textView.layer.cornerRadius = 9
         textView.layer.borderWidth = 1
         textView.layer.borderColor = UIColor.black.cgColor
         textView.clipsToBounds = true
         
-        textView.textContainerInset = .init(top: 5, left: 5, bottom: 0, right: 5)
+        textView.textContainerInset = .init(top: 5, left: 5, bottom: 5, right: 5)
         textView.allowsEditingTextAttributes = true
-                
+          
+        textView.font = UIFont(name: "Times New Roman", size: 17) ?? UIFont()
+        textView.text = "Word - Description"
         textView.textColor = .lightGray
-        textView.font = UIFont(name: "TimesNewRomanPSMT", size: 16) ?? UIFont()
-        textView.text = "- [ ] Word - Meaning"
         return textView
     }()
     
@@ -220,19 +220,36 @@ class AddDictionaryVC: UIViewController {
     }
 }
 
+import UIKit
+
+class TextViewToCreate: UITextView {
+
+    override func paste(_ sender: Any?) {
+        if let pasteboardString = UIPasteboard.general.string {
+            let currentAttributes = typingAttributes
+
+            let attributedString = NSAttributedString(string: pasteboardString, attributes: currentAttributes)
+
+            textStorage.insert(attributedString, at: selectedRange.location)
+
+            selectedRange = NSRange(location: selectedRange.location + pasteboardString.count, length: 0)
+        }
+    }
+}
+
+
 //MARK: - UITextViewDelegate
 extension AddDictionaryVC: UITextViewDelegate{
     func textViewDidBeginEditing(_ textView: UITextView) {
-        if textView.textColor == .lightGray{
+        if textView.textColor == .lightGray {
             textView.text = nil
-            textView.textColor = .label
+            textView.textColor = nil
+            textView.font = nil
+            textView.typingAttributes = [NSAttributedString.Key.font : UIFont(name: "Times New Roman", size: 17) ?? UIFont(), NSAttributedString.Key.backgroundColor : UIColor.clear, NSAttributedString.Key.foregroundColor : UIColor.label]
         }
         if self.navigationController?.navigationItem.rightBarButtonItem == nil{
             navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(rightBarButTap(sender:)))
         }
-    }
-    func textViewDidChange(_ textView: UITextView) {
-        textView.font = UIFont(name: "TimesNewRomanPSMT", size: 16) ?? UIFont()
     }
 }
 extension AddDictionaryVC: UITextFieldDelegate{

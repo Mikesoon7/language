@@ -66,6 +66,7 @@ class DetailsVC: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.picker.reloadAllComponents()
+        self.numberOfCards = Int(dictionary.numberOfCards)
     }
     //MARK: - StyleChange Responding
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -268,10 +269,7 @@ class DetailsVC: UIViewController {
         beginBut.addTargetTouchBegin()
         beginBut.addTargetOutsideTouchStop()
         beginBut.addTargetInsideTouchStop()
-        
     }
-    
-
 
 //MARK: - Actions
     @objc func settingsButTap(sender: Any){
@@ -336,8 +334,4 @@ extension DetailsVC: UIPickerViewDataSource{
             return dictionary.numberOfCards
         }
     }
-    
-    
-    
 }
-

@@ -53,11 +53,12 @@ class AppData{
         for line in lines {
             let parts = line.split(separator: " - ")
             if parts.count == 2{
-                let word = String(parts[0]).trimmingCharacters(in: CharacterSet(arrayLiteral: "[", "]", "-", "◦"))
+                var word = String(parts[0]).trimmingCharacters(in: CharacterSet(charactersIn: "[ ] ◦ - "))
+                word = word.trimmingCharacters(in: .whitespacesAndNewlines)
                 let meaning = String(parts[1])
-                results.append(DataForCells(word: word.trimmingCharacters(in: .whitespacesAndNewlines), translation: meaning))
+                results.append(DataForCells(word: word, translation: meaning))
             } else {
-                results.append(DataForCells(word: String(parts[0]).trimmingCharacters(in: CharacterSet(arrayLiteral: "[", "]", "-", "◦"))))
+                results.append(DataForCells(word: String(parts[0]).trimmingCharacters(in: CharacterSet(charactersIn: "[ ] ◦  - "))))
             }
         }
         return results
