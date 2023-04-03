@@ -60,13 +60,15 @@ class DetailsVC: UIViewController {
         usePictureCustomization()
         beginButCustomization()
         addNewWordsCustomization()
-        strokeCustomization()
-
         }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.picker.reloadAllComponents()
         self.numberOfCards = Int(dictionary.numberOfCards)
+    }
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        strokeCustomization()
     }
     //MARK: - StyleChange Responding
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {

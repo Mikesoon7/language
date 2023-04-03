@@ -44,8 +44,11 @@ class AddWordsVC: UIViewController {
         navBarCustomization()
         textViewCustomization()
         submitButtonCustomization()
-        strokeCustomization()
         keybaordAppears()
+    }
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        strokeCustomization()
     }
 //MARK: - StyleChange Responding
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {

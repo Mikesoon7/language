@@ -32,8 +32,11 @@ class SettingsVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
+        navBarCustomization()
         
-        self.title = "Settings"
+    }
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
         strokeCustomization()
     }
     //MARK: - StyleChange Responding
@@ -50,6 +53,21 @@ class SettingsVC: UIViewController {
             }
         }
     }
+    func navBarCustomization(){
+        navigationItem.title = "Setting"
+        navigationController?.navigationBar.titleTextAttributes = NSAttributedString().fontWithoutString(bold: true, size: 23)
+        //Statisctic BarButton
+//        let rightButton = UIBarButtonItem(
+//            image: UIImage(systemName: "chart.bar"),
+//            style: .plain,
+//            target: self,
+//            action: #selector(statiscticButTap(sender:)))
+//        self.navigationItem.setRightBarButton(rightButton, animated: true)
+//
+        self.navigationController?.navigationBar.tintColor = .label
+        self.navigationController?.navigationBar.isTranslucent = true
+    }
+
     //MARK: - Stroke SetUp
     func strokeCustomization(){
         topStroke = UIView().addTopStroke(vc: self)

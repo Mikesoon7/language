@@ -38,6 +38,7 @@ extension UIButton {
             self.configuration?.baseBackgroundColor = .systemGray4
 
         }
+
     }
     
 }
@@ -85,7 +86,15 @@ extension UIView{
     func addTopStroke(vc: UIViewController) -> CAShapeLayer{
         let topStroke = CAShapeLayer()
         let path = UIBezierPath()
-        let y = vc.navigationController!.navigationBar.bounds.maxY + vc.navigationController!.navigationBar.bounds.height + 7
+        let y = {
+            if vc.navigationController != nil{
+                print(vc.navigationController!.navigationBar.frame.height)
+                print(vc.view.safeAreaInsets.top)
+                return vc.view.safeAreaInsets.top
+            } else {
+                return 0
+            }
+        }()
         path.move(to: CGPoint(x: 0, y: y ))
         path.addLine(to: CGPoint(x: vc.view.bounds.maxX, y: y))
             topStroke.path = path.cgPath
@@ -98,9 +107,15 @@ extension UIView{
         }
     func addBottomStroke(vc: UIViewController) -> CAShapeLayer{
         let path = UIBezierPath()
-        
-        path.move(to: CGPoint(x: 0, y: 0))
-        path.addLine(to: CGPoint(x: 0, y: 0 ))
+        let y = {
+            if vc.tabBarController?.tabBar != nil{
+                return vc.tabBarController!.tabBar.frame.minY
+            } else {
+                return 0
+            }
+        }()
+        path.move(to: CGPoint(x: 0, y: y))
+        path.addLine(to: CGPoint(x: vc.view.bounds.maxX, y: y))
             let stroke = CAShapeLayer()
             stroke.path = path.cgPath
         stroke.lineWidth = 1.5

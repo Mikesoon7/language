@@ -64,6 +64,12 @@ class AddDictionaryVC: UIViewController {
         nameViewCustomization()
         submitButtonCustomization()
         keybaordAppears()
+    }
+    override func viewDidAppear(_ animated: Bool) {
+        self.view.becomeFirstResponder()
+    }
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
         strokeCustomization()
     }
     //MARK: - StyleChange Responding

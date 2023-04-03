@@ -37,6 +37,7 @@ class MainGameVC: UIViewController {
         navBarCustomization()
         collectionViewCustomization()
         viewCustomization()
+        tabBarCastomization()
         
     }
     func viewCustomization(){
@@ -52,6 +53,9 @@ class MainGameVC: UIViewController {
         navigationController?.navigationBar.titleTextAttributes = NSAttributedString().fontWithoutString(bold: true, size: 23)
         self.navigationController?.navigationBar.tintColor = .label
         self.navigationController?.navigationBar.isTranslucent = true
+    }
+    func tabBarCastomization(){
+        self.tabBarController?.tabBar.isHidden = true
     }
     //MARK: - CollectionView SetUp
     func collectionViewCustomization(){

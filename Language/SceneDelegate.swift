@@ -10,15 +10,53 @@ import UIKit
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
-    var navigationVC = UINavigationController(rootViewController: MenuVC())
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+        //Initializing TabBarController
         guard let window = (scene as? UIWindowScene) else { return }
         self.window = UIWindow(frame: window.coordinateSpace.bounds)
         self.window?.windowScene = window
-        self.window?.rootViewController = navigationVC
+        self.window?.rootViewController = setUpTabBarController()
         self.window?.makeKeyAndVisible()
         
+        var animationView: LaunchAnimation? = LaunchAnimation(bounds: UIWindow().bounds)
+            animationView?.animate()
+            animationView?.makeKeyView()
+
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3.5) {
+                animationView?.animationView.removeFromSuperview()
+                animationView = nil
+            }
+
+        self.window?.makeKeyAndVisible()
+    }
+    //MARK: - TabBar SetUp
+    func setUpTabBarController() -> UITabBarController{
+        let tabBArController = UITabBarController()
+        
+        let firstVC = MenuVC()
+        let firstNC = UINavigationController(rootViewController: firstVC)
+        firstNC.tabBarItem = UITabBarItem(title: "Dictionarys",
+                                          image: UIImage(systemName: "books.vertical"),
+                                          selectedImage:
+                                            UIImage(systemName: "books.vertical.fill")?.withTintColor(.black))
+        let secondVC = SearchVC()
+        let secondNC = UINavigationController(rootViewController: secondVC)
+        secondNC.tabBarItem = UITabBarItem(title: "Search",
+                                           image: UIImage(systemName: "magnifyingglass"),
+                                           selectedImage:
+                                            UIImage(systemName: "magnifyingglass")?.withTintColor(.black))
+        let thirdVC = SettingsVC()
+        let thirdNC = UINavigationController(rootViewController: thirdVC)
+        thirdVC.tabBarItem = UITabBarItem(title: "Settings",
+                                          image:  UIImage(systemName: "gearshape"),
+                                          selectedImage:
+                                            UIImage(systemName: "gearshape.fill")?.withTintColor(.black))
+
+        
+        tabBArController.setViewControllers([firstNC, secondNC, thirdNC], animated: true)
+        tabBArController.tabBar.tintColor = .label
+        return tabBArController
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
