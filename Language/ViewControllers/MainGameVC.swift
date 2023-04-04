@@ -120,6 +120,7 @@ class MainGameVC: UIViewController {
 extension MainGameVC: UICollectionViewDelegateFlowLayout, CustomCellDelegate{
     func finishButtonTap() {
         guard self.navigationController != nil else { return }
+        self.tabBarController?.tabBar.isHidden = false
         self.navigationController?.popToRootViewController(animated: true)
         
     }

@@ -87,9 +87,8 @@ extension UIView{
         let topStroke = CAShapeLayer()
         let path = UIBezierPath()
         let y = {
-            if vc.navigationController != nil{
-                print(vc.navigationController!.navigationBar.frame.height)
-                print(vc.view.safeAreaInsets.top)
+            print(vc.view.safeAreaInsets.top)
+            if vc.navigationController != nil {
                 return vc.view.safeAreaInsets.top
             } else {
                 return 0
