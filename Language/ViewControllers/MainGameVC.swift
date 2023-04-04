@@ -201,7 +201,7 @@ class CustomFlowLayout: UICollectionViewFlowLayout {
             return nil
         }
         let centerX = collectionView.contentOffset.x + collectionView.bounds.width / 2
-
+        
         for attributes in attributesArray {
             let distanceToCenter = abs(attributes.center.x - centerX)
 
@@ -218,4 +218,3 @@ class CustomFlowLayout: UICollectionViewFlowLayout {
         
     }
 }
-

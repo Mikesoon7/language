@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		02795F90A406A1776236D496 /* Pods_Language.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CB968C1BC0BCD6C51D7C2C9 /* Pods_Language.framework */; };
 		950CB66D35A3A66A8CBFD5C7 /* Pods_LanguageTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A8585DE4C793163678CE51E0 /* Pods_LanguageTests.framework */; };
+		9A0BD53A29DC531F00845328 /* SettingsTBCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A0BD53929DC531F00845328 /* SettingsTBCell.swift */; };
 		9A22B8E9299A9FDA00B1ED3A /* Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A22B8E8299A9FDA00B1ED3A /* Data.swift */; };
 		9A603FF929AF5B3200A65253 /* OldGameVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A603FF829AF5B3200A65253 /* OldGameVC.swift */; };
 		9A7B91C6298D6D9600E60CDD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A7B91C5298D6D9600E60CDD /* AppDelegate.swift */; };
@@ -62,6 +63,7 @@
 		30AA1CCA8E9A4F9B1327A649 /* Pods-Language.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Language.release.xcconfig"; path = "Target Support Files/Pods-Language/Pods-Language.release.xcconfig"; sourceTree = "<group>"; };
 		7CB968C1BC0BCD6C51D7C2C9 /* Pods_Language.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Language.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		92E1855A1F6B5D3EF2849FC2 /* Pods-Language-LanguageUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Language-LanguageUITests.release.xcconfig"; path = "Target Support Files/Pods-Language-LanguageUITests/Pods-Language-LanguageUITests.release.xcconfig"; sourceTree = "<group>"; };
+		9A0BD53929DC531F00845328 /* SettingsTBCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTBCell.swift; sourceTree = "<group>"; };
 		9A22B8E8299A9FDA00B1ED3A /* Data.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Data.swift; sourceTree = "<group>"; };
 		9A603FF829AF5B3200A65253 /* OldGameVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OldGameVC.swift; sourceTree = "<group>"; };
 		9A7B91C2298D6D9600E60CDD /* Language.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Language.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -239,6 +241,7 @@
 				9AAECFC129B50A5300439C0B /* AddWordsVC.swift */,
 				9AFFCE8029A4DFEE00C12B94 /* DetailsVC.swift */,
 				9AAECFBD29B5052F00439C0B /* SettingsVC.swift */,
+				9A0BD53929DC531F00845328 /* SettingsTBCell.swift */,
 				9AE509302993C85A00D86DD7 /* LoadDataVC.swift */,
 				9AFFCE7C299E747400C12B94 /* StatisticVC.swift */,
 				9AA71C5A29C20894008A193B /* MainGameVC.swift */,
@@ -508,6 +511,7 @@
 				9AA71C6429C84C65008A193B /* ViewModel.swift in Sources */,
 				9AA7AB5429AE3CF400CCC9F4 /* Extensions.swift in Sources */,
 				9A9970FC29D9D662007EE635 /* SearchVC.swift in Sources */,
+				9A0BD53A29DC531F00845328 /* SettingsTBCell.swift in Sources */,
 				9AAECFC029B5055100439C0B /* EndVc.swift in Sources */,
 				9AFFCE7D299E747400C12B94 /* StatisticVC.swift in Sources */,
 				9A7B91C6298D6D9600E60CDD /* AppDelegate.swift in Sources */,
@@ -681,7 +685,7 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -710,7 +714,7 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

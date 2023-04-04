@@ -43,6 +43,7 @@ class MenuVC: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         strokeCustomization()
+        print("The problem is here")
     }
     //MARK: - StyleChange Responding
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -168,10 +169,4 @@ extension MenuVC: UITableViewDataSource{
         }
     }
 }
-
-extension MenuVC: UIToolbarDelegate{
-    
-}
-
-
 

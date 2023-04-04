@@ -9,6 +9,21 @@ import UIKit
 
 class SettingsVC: UIViewController {
     
+    let tableView: UITableView = {
+        let view = UITableView(frame: .zero, style: .insetGrouped)
+        view.register(SettingsTBCell.self, forCellReuseIdentifier: "settingsCell")
+        view.rowHeight = 20
+        view.backgroundColor = .systemBackground
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    let dataForCells = [["Theme", "Language", "Colour preferences", "Enable Siri", "Preferred appearance"],
+                        ["Separate simbols", "bla bla", "bla bla", "bla bla"],
+                        ["Separate simbols", "bla bla", "bla bla", "bla bla", "Bla"],
+                        ["Separate simbols", "bla bla", "bla bla", "bla bla"]
+    ]
+    let dataForHeaders = ["General", "Dictionary", "Search", "SomeThing"]
+    
     let firstParamView: UIView = {
         let view = UIView()
         view.setUpBorderedView(true)
@@ -36,9 +51,7 @@ class SettingsVC: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         navBarCustomization()
-        firstViewCustomization()
-        secondViewCustomization()
-        thirdViewCustomization()
+        tableViewCustomization()
         
     }
     override func viewDidLayoutSubviews() {
@@ -53,6 +66,7 @@ class SettingsVC: UIViewController {
             if traitCollection.userInterfaceStyle == .dark {
                 self.bottomStroke.strokeColor = UIColor.white.cgColor
                 self.topStroke.strokeColor = UIColor.white.cgColor
+                
             } else {
                 self.bottomStroke.strokeColor = UIColor.black.cgColor
                 self.topStroke.strokeColor = UIColor.black.cgColor
@@ -64,6 +78,20 @@ class SettingsVC: UIViewController {
         navigationController?.navigationBar.titleTextAttributes = NSAttributedString().fontWithoutString(bold: true, size: 23)
         self.navigationController?.navigationBar.tintColor = .label
         self.navigationController?.navigationBar.isTranslucent = true
+    }
+    
+    func tableViewCustomization(){
+        view.addSubview(tableView)
+        
+        tableView.delegate = self
+        tableView.dataSource = self
+        
+        NSLayoutConstraint.activate([
+            tableView.topAnchor.constraint(equalTo: view.topAnchor),
+            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+        ])
     }
 
     //MARK: - Stroke SetUp
@@ -134,4 +162,72 @@ class SettingsVC: UIViewController {
     @objc func segmentTap(sender: UISegmentedControl){
         
     }
+    func viewForHeader(name: String) -> UITableViewHeaderFooterView{
+        let vieww = UITableViewHeaderFooterView()
+        var content = vieww.defaultContentConfiguration()
+        content.text = name
+        content.attributedText = NSAttributedString(string: name, attributes:
+                                                        [NSAttributedString.Key.font :
+                                                            UIFont(name: "Helvetica Neue Medium", size: 20) ?? UIFont(),
+                                                         NSAttributedString.Key.foregroundColor: UIColor.label
+                                                        ])
+
+        vieww.contentConfiguration = content
+        vieww.backgroundColor = .systemGray6.withAlphaComponent(0.8)
+        
+        
+        let view : UIView = {
+            let view = UIView()
+            view.backgroundColor = UIColor.systemGray6.withAlphaComponent(0.8)
+            return view
+        }()
+        
+        
+        
+        let label : UILabel = {
+            let label = UILabel()
+            label.font = UIFont(name: "Helvetica Neue Medium", size: 20)
+            label.translatesAutoresizingMaskIntoConstraints = false
+            label.textColor = .label
+            return label
+        }()
+        
+        view.addSubview(label)
+        
+        NSLayoutConstraint.activate([
+            label.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            label.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            label.topAnchor.constraint(equalTo: view.topAnchor, constant: 8),
+            label.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -8)
+        ])
+        return vieww
+    }
+}
+extension SettingsVC: UITableViewDelegate{
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        viewForHeader(name: dataForHeaders[section])
+    }
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        44
+    }
+}
+
+extension SettingsVC: UITableViewDataSource{
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        dataForCells[section].count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "settingsCell", for: indexPath) as! SettingsTBCell
+        cell.label.text = dataForCells[indexPath.section][indexPath.row]
+        return cell
+    }
+    func numberOfSections(in tableView: UITableView) -> Int {
+        4
+    }
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        40
+    }
+    
+    
 }
