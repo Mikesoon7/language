@@ -15,35 +15,25 @@ class SettingsVC: UIViewController {
         view.rowHeight = 20
         view.backgroundColor = .systemBackground
         view.translatesAutoresizingMaskIntoConstraints = false
+        view.separatorStyle = .none
         return view
     }()
-    let dataForCells = [["Theme", "Language", "Colour preferences", "Enable Siri", "Preferred appearance"],
-                        ["Separate simbols", "bla bla", "bla bla", "bla bla"],
-                        ["Separate simbols", "bla bla", "bla bla", "bla bla", "Bla"],
-                        ["Separate simbols", "bla bla", "bla bla", "bla bla"]
+    var dataForSettings: [[SettingsSection]] = [
+        [SettingsSection(
+            settingsType: SettingsType.General.rawValue ,
+            title: "Theme" ,
+            value: SettingsData.shared.appTheme.rawValue),
+         SettingsSection(
+            settingsType: SettingsType.General.rawValue,
+            title: "Language",
+            value: SettingsData.shared.appLanguage.rawValue)
+        ],
+        [SettingsSection(
+            settingsType: SettingsType.Search.rawValue,
+            title: "Seaarch bar",
+            value: "On Top")]
     ]
-    let dataForHeaders = ["General", "Dictionary", "Search", "SomeThing"]
     
-    let firstParamView: UIView = {
-        let view = UIView()
-        view.setUpBorderedView(true)
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
-    
-    let secondParamView: UIView = {
-        let view = UIView()
-        view.setUpBorderedView(true)
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
-    
-    let thirdParamView: UIView = {
-        let view = UIView()
-        view.setUpBorderedView(true)
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
     var topStroke = CAShapeLayer()
     var bottomStroke = CAShapeLayer()
     
@@ -53,11 +43,15 @@ class SettingsVC: UIViewController {
         navBarCustomization()
         tableViewCustomization()
         
+        NotificationCenter.default.addObserver(self, selector: #selector(themeDidChange(sender:)), name: .appThemeDidChange, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(languageDidChange(sender: )), name: .appLanguageDidChange, object: nil)
     }
+    
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         strokeCustomization()
     }
+    
     //MARK: - StyleChange Responding
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
@@ -74,10 +68,13 @@ class SettingsVC: UIViewController {
         }
     }
     func navBarCustomization(){
-        navigationItem.title = "Setting"
-        navigationController?.navigationBar.titleTextAttributes = NSAttributedString().fontWithoutString(bold: true, size: 23)
+        navigationItem.title = "Settings"
+
         self.navigationController?.navigationBar.tintColor = .label
         self.navigationController?.navigationBar.isTranslucent = true
+        
+        self.navigationController?.navigationBar.titleTextAttributes = NSAttributedString().fontWithoutString( bold: true, size: 23)
+
     }
     
     func tableViewCustomization(){
@@ -103,68 +100,12 @@ class SettingsVC: UIViewController {
         view.layer.addSublayer(bottomStroke)
     }
 
-    func firstViewCustomization(){
-                
-        let label = {
-            let label = UILabel()
-            label.attributedText = NSAttributedString().fontWithString(string: "Preffered mode", bold: false, size: 18)
-            label.translatesAutoresizingMaskIntoConstraints = false
-            return label
-        }()
-        let segment = {
-            let segment = UISegmentedControl()
-            segment.isSpringLoaded = true
-            
-            segment.insertSegment(withTitle: "Light", at: 0, animated: true)
-            segment.insertSegment(withTitle: "Dark", at: 1, animated: true)
-            segment.addTarget(self, action: #selector(self.segmentTap(sender: )), for: .valueChanged)
-            segment.translatesAutoresizingMaskIntoConstraints = false
-            return segment
-        }()
-        
-        view.addSubview(firstParamView)
-        firstParamView.addSubviews(label, segment)
-
-        NSLayoutConstraint.activate([
-            firstParamView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 22),
-            firstParamView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            firstParamView.widthAnchor.constraint(equalToConstant: view.bounds.width - 44),
-            firstParamView.heightAnchor.constraint(lessThanOrEqualToConstant: 60),
-            
-            label.leadingAnchor.constraint(equalTo: firstParamView.leadingAnchor, constant: 15),
-            label.centerYAnchor.constraint(equalTo: firstParamView.centerYAnchor),
-            
-            segment.trailingAnchor.constraint(equalTo: firstParamView.trailingAnchor, constant: -15),
-            segment.centerYAnchor.constraint(equalTo: firstParamView.centerYAnchor),
-            segment.widthAnchor.constraint(equalTo: firstParamView.widthAnchor, multiplier: 0.4),
-            segment.heightAnchor.constraint(equalTo: firstParamView.heightAnchor, multiplier: 0.5)
-        ])
-    }
-    
-    func secondViewCustomization(){
-        view.addSubview(secondParamView)
-        NSLayoutConstraint.activate([
-        secondParamView.topAnchor.constraint(equalTo: firstParamView.bottomAnchor, constant: 23),
-        secondParamView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-        secondParamView.widthAnchor.constraint(equalToConstant: view.bounds.width - 44),
-        secondParamView.heightAnchor.constraint(equalToConstant: 60),
-        ])
-    }
-    func thirdViewCustomization(){
-        view.addSubview(thirdParamView)
-        NSLayoutConstraint.activate([
-        thirdParamView.topAnchor.constraint(equalTo: secondParamView.bottomAnchor, constant: 23),
-        thirdParamView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-        thirdParamView.widthAnchor.constraint(equalToConstant: view.bounds.width - 44),
-        thirdParamView.heightAnchor.constraint(lessThanOrEqualToConstant: 60),
-        ])
-    }
     @objc func segmentTap(sender: UISegmentedControl){
         
     }
     func viewForHeader(name: String) -> UITableViewHeaderFooterView{
-        let vieww = UITableViewHeaderFooterView()
-        var content = vieww.defaultContentConfiguration()
+        let view = UITableViewHeaderFooterView()
+        var content = view.defaultContentConfiguration()
         content.text = name
         content.attributedText = NSAttributedString(string: name, attributes:
                                                         [NSAttributedString.Key.font :
@@ -172,62 +113,72 @@ class SettingsVC: UIViewController {
                                                          NSAttributedString.Key.foregroundColor: UIColor.label
                                                         ])
 
-        vieww.contentConfiguration = content
-        vieww.backgroundColor = .systemGray6.withAlphaComponent(0.8)
+        view.contentConfiguration = content
+        view.backgroundColor = .systemGray6.withAlphaComponent(0.8)
+        return view
+    }
+    func handleThemeSelection(theme: SettingsData.AppTheme) {
+        SettingsData.shared.updateTheme(theme: theme)
+        // Обновите интерфейс приложения с учетом новой темы, если это необходимо.
         
-        
-        let view : UIView = {
-            let view = UIView()
-            view.backgroundColor = UIColor.systemGray6.withAlphaComponent(0.8)
-            return view
-        }()
-        
-        
-        
-        let label : UILabel = {
-            let label = UILabel()
-            label.font = UIFont(name: "Helvetica Neue Medium", size: 20)
-            label.translatesAutoresizingMaskIntoConstraints = false
-            label.textColor = .label
-            return label
-        }()
-        
-        view.addSubview(label)
-        
-        NSLayoutConstraint.activate([
-            label.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            label.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            label.topAnchor.constraint(equalTo: view.topAnchor, constant: 8),
-            label.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -8)
-        ])
-        return vieww
+    }
+    @objc func themeDidChange(sender: Any){
+        let indexPath = IndexPath(item: 0, section: 0)
+        dataForSettings[0][0].value = SettingsData.shared.appTheme.rawValue
+        tableView.reloadRows(at: [indexPath], with: .automatic)
+    }
+    @objc func languageDidChange(sender: Any){
+        let indexPath = IndexPath(item: 1, section: 0)
+        dataForSettings[0][1].value = SettingsData.shared.appLanguage.rawValue
     }
 }
 extension SettingsVC: UITableViewDelegate{
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        viewForHeader(name: dataForHeaders[section])
+        viewForHeader(name: dataForSettings[section][0].title)
     }
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         44
+    }
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let alertMessage = UIAlertController(title: "There is no action", message: nil, preferredStyle: .actionSheet)
+        if indexPath.section == 0 && indexPath.row == 0{
+            let action1 = UIAlertAction(title: "Always light mode", style: .default) { [weak self] _ in
+                self?.handleThemeSelection(theme: .light)
+            }
+            let action2 = UIAlertAction(title: "Always dark mode", style: .default){ [weak self] _ in
+                self?.handleThemeSelection(theme: .dark)
+            }
+            let action3 = UIAlertAction(title: "Use system mode", style: .default){ [weak self] _ in
+                self?.handleThemeSelection(theme: .deviceSettings)
+            }
+            let action4 = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+            alertMessage.title = nil
+            alertMessage.addAction(action1)
+            alertMessage.addAction(action2)
+            alertMessage.addAction(action3)
+            alertMessage.addAction(action4)
+        }
+        self.present(alertMessage, animated: true)
     }
 }
 
 extension SettingsVC: UITableViewDataSource{
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        dataForCells[section].count
+        dataForSettings[section].count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "settingsCell", for: indexPath) as! SettingsTBCell
-        cell.label.text = dataForCells[indexPath.section][indexPath.row]
+        let data = dataForSettings[indexPath.section][indexPath.row]
+        cell.label.text = data.title
+        cell.value.text = data.value
         return cell
     }
     func numberOfSections(in tableView: UITableView) -> Int {
-        4
+        dataForSettings.count
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        40
+        50
     }
-    
     
 }

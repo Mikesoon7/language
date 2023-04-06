@@ -23,6 +23,13 @@ class SettingsTBCell: UITableViewCell {
 
         return label
     }()
+    let value : UILabel = {
+        let label = UILabel()
+        label.textColor = .label
+        label.textAlignment = .right
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
     let image : UIImageView = {
         let view = UIImageView()
         view.image = UIImage(systemName: "chevron.right")
@@ -41,7 +48,7 @@ class SettingsTBCell: UITableViewCell {
 
     func cellViewsCustomization(){
         self.contentView.addSubview(view)
-        view.addSubviews(label, image)
+        view.addSubviews(label, value,image)
         
         NSLayoutConstraint.activate([
             view.topAnchor.constraint(equalTo: contentView.topAnchor),
@@ -53,7 +60,10 @@ class SettingsTBCell: UITableViewCell {
             label.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             
             image.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            image.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -15)
+            image.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -15),
+            
+            value.trailingAnchor.constraint(equalTo: image.leadingAnchor),
+            value.centerYAnchor.constraint(equalTo: view.centerYAnchor)
         ])
     }
 

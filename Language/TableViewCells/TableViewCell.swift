@@ -41,7 +41,7 @@ class TableViewCell: UITableViewCell{
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        self.backgroundColor = .systemGray5
+        self.backgroundColor = .systemGray6
         self.layer.cornerRadius = 9
         self.layer.borderWidth = 1
         self.layer.borderColor = UIColor.black.cgColor

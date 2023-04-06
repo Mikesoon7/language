@@ -165,4 +165,12 @@ extension UIView{
     }
 }
 
+extension Notification.Name{
+    static let appLanguageDidChange = Notification.Name("appLanguageDidChange")
+    static let appThemeDidChange = Notification.Name("appThemeDidChange")
+    static let appSearchBarPositionDidChange = Notification.Name("appSearchBarPositionDidChange")
+}
+
+
+
 

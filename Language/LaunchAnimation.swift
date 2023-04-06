@@ -15,6 +15,8 @@ class LaunchAnimation{
     var label1 : UILabel!
     var label2 : UILabel!
     
+    var userInterfaceStyle = SettingsData.shared.appTheme.rawValue
+    
     init(bounds: CGRect){
         animationView = {
             let view = UIView(frame: bounds)
@@ -115,12 +117,19 @@ class LaunchAnimation{
                 let distance = sqrt(deltaX * deltaX + deltaY * deltaY)
                 let controlPoint = CGPoint(x: midPoint.x - deltaY * 14 / distance,
                                            y: midPoint.y + deltaX * 14 / distance)
-                
                 return controlPoint
             }
             
             let layer = CAShapeLayer()
-            layer.strokeColor = UIColor.label.cgColor
+            layer.strokeColor = {
+                switch userInterfaceStyle{
+                case SettingsData.AppTheme.light.rawValue:
+                    return UIColor.black.cgColor
+                case SettingsData.AppTheme.dark.rawValue:
+                    return UIColor.white.cgColor
+                default: return UIColor.label.cgColor
+                }
+            }()
             layer.fillColor = UIColor.clear.cgColor
             layer.lineWidth = 3
             let path = UIBezierPath()

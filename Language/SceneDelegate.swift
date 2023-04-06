@@ -10,24 +10,26 @@ import UIKit
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
-
+    
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        //Initializing TabBarController
+                        //Initializing TabBarController
         guard let window = (scene as? UIWindowScene) else { return }
         self.window = UIWindow(frame: window.coordinateSpace.bounds)
         self.window?.windowScene = window
         self.window?.rootViewController = setUpTabBarController()
+
         self.window?.makeKeyAndVisible()
         
+        SettingsData.shared.registerSettingsNotifications()
+        SettingsData.shared.themeDidChange(sender: nil)
+
         var animationView: LaunchAnimation? = LaunchAnimation(bounds: UIWindow().bounds)
-            animationView?.animate()
-            animationView?.makeKeyView()
-
-            DispatchQueue.main.asyncAfter(deadline: .now() + 3.5) {
-                animationView?.animationView.removeFromSuperview()
-                animationView = nil
-            }
-
+        animationView?.animate()
+        animationView?.makeKeyView()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3.5) {
+            animationView?.animationView.removeFromSuperview()
+            animationView = nil
+        }
         self.window?.makeKeyAndVisible()
     }
     //MARK: - TabBar SetUp
