@@ -12,7 +12,7 @@ class SearchVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
-        let label = UILabel()
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: 200, height: 50))
         label.center = view.center
         label.text = "Come later"
         label.tintColor = .label
