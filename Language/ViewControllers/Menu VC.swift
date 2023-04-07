@@ -30,7 +30,8 @@ class MenuVC: UIViewController {
         navBarCustomization()
         tableViewCustomization()
         tabBarCustomization()
-    }
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(change(sender:)), name: .appLanguageDidChange, object: nil)    }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.tableView.reloadData()
@@ -43,7 +44,6 @@ class MenuVC: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         strokeCustomization()
-        print("The problem is here")
     }
     //MARK: - StyleChange Responding
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -59,6 +59,9 @@ class MenuVC: UIViewController {
                 self.topStroke.strokeColor = UIColor.black.cgColor
             }
         }
+    }
+    @objc func change(sender: Any){
+        navigationItem.title = NSLocalizedString("navBarTitle", comment: "")
     }
     //MARK: - Stroke SetUp
     func strokeCustomization(){
@@ -87,7 +90,7 @@ class MenuVC: UIViewController {
     //MARK: - NavigationBar SetUp
     func navBarCustomization(){
 
-        navigationItem.title = "Menu"
+        navigationItem.title = NSLocalizedString("navBarTitle", comment: "")
         navigationController?.navigationBar.titleTextAttributes = NSAttributedString().fontWithoutString(bold: true, size: 23)
         //Statisctic BarButton
         let rightButton = UIBarButtonItem(
@@ -105,23 +108,6 @@ class MenuVC: UIViewController {
 
     }
     //MARK: - Actions
-    @objc func settingsButTap(sender: Any){
-        navigationController?.showDetailViewController(AddDictionaryVC(), sender: self.navigationController)
-    }
-    @objc func randomButTap(sender: UIButton){
-        let allertMessage = UIAlertController(title: "Nothing to randomize", message: "Please, add card stack to start learning.", preferredStyle: .alert)
-        let action = UIAlertAction(title: "Understand", style: .cancel)
-        action.setValue(UIColor.label, forKey: "titleTextColor")
-        allertMessage.addAction(action)
-        
-        if AppData.shared.availableDictionary.count == 0{
-            self.present(allertMessage, animated: true)
-        } else {
-            let vc = DetailsVC()
-            self.navigationController?.pushViewController(vc, animated: true)
-        }
-
-    }
     @objc func statiscticButTap(sender: Any){
         let vc = StatisticVC()
         navigationController?.present(vc, animated: true)

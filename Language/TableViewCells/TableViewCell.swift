@@ -11,13 +11,19 @@ class TableViewCell: UITableViewCell{
 
     var languageLabel : UILabel = {
         var label = UILabel()
-        label.attributedText = NSAttributedString().fontWithString(string: "Language", bold: true, size: 20)
+        label.attributedText = NSAttributedString().fontWithString(
+            string: NSLocalizedString("tableCellName", comment: ""),
+            bold: true,
+            size: 20)
         return label
     }()
     
     var cardsLabel : UILabel = {
         var label = UILabel()
-        label.attributedText = NSAttributedString().fontWithString(string: "Total words", bold: true, size: 20)
+        label.attributedText = NSAttributedString().fontWithString(
+            string: NSLocalizedString("tableCellNumberOfCards", comment: ""),
+            bold: true,
+            size: 20)
         return label
     }()
     

@@ -15,7 +15,7 @@ class LaunchAnimation{
     var label1 : UILabel!
     var label2 : UILabel!
     
-    var userInterfaceStyle = SettingsData.shared.appTheme.rawValue
+    var userInterfaceStyle = SettingsData.shared.settings.theme.rawValue
     
     init(bounds: CGRect){
         animationView = {

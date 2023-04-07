@@ -11,7 +11,10 @@ class TableViewAddCell: UITableViewCell {
     
     var importLabel: UILabel = {
         var label = UILabel()
-        label.attributedText = NSAttributedString().fontWithString(string: "Import new Note", bold: true, size: 20)
+        label.attributedText = NSAttributedString().fontWithString(
+            string: NSLocalizedString("tableCellImport", comment: ""),
+            bold: true,
+            size: 20)
         return label
     }()
     var addButton : UIButton = {

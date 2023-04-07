@@ -4,9 +4,8 @@
 <dict>
 	<key>CFBundleLocalizations</key>
 	<array>
-		<string>zh</string>
-		<string>fr</string>
-		<string>Русский</string>
+		<string>Ukrainian</string>
+		<string>Russian</string>
 		<string>en</string>
 	</array>
 	<key>UIApplicationSceneManifest</key>

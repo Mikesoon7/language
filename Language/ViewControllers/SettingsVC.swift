@@ -7,6 +7,10 @@
 
 import UIKit
 
+struct Sections{
+    var title: String
+    var options: [SettingsItems]
+}
 class SettingsVC: UIViewController {
     
     let tableView: UITableView = {
@@ -18,20 +22,15 @@ class SettingsVC: UIViewController {
         view.separatorStyle = .none
         return view
     }()
-    var dataForSettings: [[SettingsSection]] = [
-        [SettingsSection(
-            settingsType: SettingsType.General.rawValue ,
-            title: "Theme" ,
-            value: SettingsData.shared.appTheme.rawValue),
-         SettingsSection(
-            settingsType: SettingsType.General.rawValue,
-            title: "Language",
-            value: SettingsData.shared.appLanguage.rawValue)
-        ],
-        [SettingsSection(
-            settingsType: SettingsType.Search.rawValue,
-            title: "Seaarch bar",
-            value: "On Top")]
+    
+
+    var settingsItems: [Sections] = [
+        Sections(title: "General",
+                 options: [ SettingsItems.theme(SettingsData.shared.settings.theme),
+                            SettingsItems.language(SettingsData.shared.settings.language),
+                            SettingsItems.notification(SettingsData.shared.settings.notification)]),
+        Sections(title: "Search",
+                 options: [SettingsItems.searchBarPosition(SettingsData.shared.settings.searchBar)])
     ]
     
     var topStroke = CAShapeLayer()
@@ -118,23 +117,23 @@ class SettingsVC: UIViewController {
         return view
     }
     func handleThemeSelection(theme: SettingsData.AppTheme) {
-        SettingsData.shared.updateTheme(theme: theme)
-        // Обновите интерфейс приложения с учетом новой темы, если это необходимо.
+        SettingsData.shared.update(newValue: theme)
         
     }
     @objc func themeDidChange(sender: Any){
         let indexPath = IndexPath(item: 0, section: 0)
-        dataForSettings[0][0].value = SettingsData.shared.appTheme.rawValue
+        settingsItems[0].options[0] = .theme(SettingsData.shared.settings.theme)
         tableView.reloadRows(at: [indexPath], with: .automatic)
+        
     }
     @objc func languageDidChange(sender: Any){
         let indexPath = IndexPath(item: 1, section: 0)
-        dataForSettings[0][1].value = SettingsData.shared.appLanguage.rawValue
+        settingsItems[0].options[1].updateValue(with: SettingsData.shared.settings.language.rawValue)
     }
 }
 extension SettingsVC: UITableViewDelegate{
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        viewForHeader(name: dataForSettings[section][0].title)
+        viewForHeader(name: settingsItems[section].title)
     }
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         44
@@ -151,31 +150,33 @@ extension SettingsVC: UITableViewDelegate{
             let action3 = UIAlertAction(title: "Use system mode", style: .default){ [weak self] _ in
                 self?.handleThemeSelection(theme: .deviceSettings)
             }
-            let action4 = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
             alertMessage.title = nil
             alertMessage.addAction(action1)
             alertMessage.addAction(action2)
             alertMessage.addAction(action3)
-            alertMessage.addAction(action4)
+                        
         }
+        let action4 = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        alertMessage.addAction(action4)
         self.present(alertMessage, animated: true)
     }
+    
 }
 
 extension SettingsVC: UITableViewDataSource{
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        dataForSettings[section].count
+        settingsItems[section].options.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "settingsCell", for: indexPath) as! SettingsTBCell
-        let data = dataForSettings[indexPath.section][indexPath.row]
+        let data = settingsItems[indexPath.section].options[indexPath.row]
         cell.label.text = data.title
         cell.value.text = data.value
         return cell
     }
     func numberOfSections(in tableView: UITableView) -> Int {
-        dataForSettings.count
+        settingsItems.count
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         50
