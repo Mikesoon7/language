@@ -31,7 +31,9 @@ class MenuVC: UIViewController {
         tableViewCustomization()
         tabBarCustomization()
         
-        NotificationCenter.default.addObserver(self, selector: #selector(change(sender:)), name: .appLanguageDidChange, object: nil)    }
+        NotificationCenter.default.addObserver(self, selector: #selector(change(sender:)), name: .appLanguageDidChange, object: nil)
+    }
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.tableView.reloadData()

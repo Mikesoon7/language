@@ -31,7 +31,8 @@ class SettingsData {
         case name = "Theme"
         case light = "Light"
         case dark = "Dark"
-        case deviceSettings = "System Settings"
+        case deviceSettings = "System"
+        
     }
     enum AppLanguage: String, Codable {
         case english = "English"
@@ -67,20 +68,6 @@ class SettingsData {
     func update(newValue: Any){
         if let language = newValue as? AppLanguage{
             settings.language = language
-                        
-            if let language = newValue as? AppLanguage {
-                let languageCode: String
-                switch language {
-                case .english:
-                    languageCode = "en"
-                case .russian:
-                    languageCode = "ru"
-                case .ukrainian:
-                    languageCode = "uk"
-                }
-                setAppLanguage(languageCode)
-                
-            }
         } else if let theme = newValue as? AppTheme{
             settings.theme = theme
             NotificationCenter.default.post(name: .appThemeDidChange, object: nil)
@@ -108,7 +95,7 @@ class SettingsData {
         }
         save()
     }
-    func setAppLanguage(_ languageCode: String) {
+    func setAppLanguage(_ languageCode: String, vc: UIViewController) {
         let alertMessage = UIAlertController(
             title: NSLocalizedString("changeLanguageTitle", comment: ""),
             message: NSLocalizedString("changeLanguageDescription", comment: ""),
@@ -118,14 +105,46 @@ class SettingsData {
             style: .default) { _ in
                 NotificationCenter.default.post(name: .appLanguageDidChange, object: nil)
                 UserDefaults.standard.set([languageCode], forKey: "AppleLanguages")
+                print(SettingsData.shared.settings.language)
             }
         let alertActionNo = UIAlertAction(
             title: NSLocalizedString("changeOptionLater", comment: ""),
-            style: .destructive) { _ in
+            style: .cancel) { _ in
                 return
             }
+        alertMessage.addAction(alertActionNo)
+        alertMessage.addAction(alertActionYes)
+        vc.show(alertMessage, sender: nil)
     }
+    func applySavedSettings() {
+        guard let savedSettings = SettingsData.shared.settings else {
+            return
+        }
 
+        var userInterfaceStyle = UIUserInterfaceStyle.unspecified
+        switch savedSettings.theme {
+        case .light:
+            userInterfaceStyle = .light
+        case .dark:
+            userInterfaceStyle = .dark
+        case .deviceSettings:
+            userInterfaceStyle = .unspecified
+        default:
+            break
+        }
+        (UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate)?.window?.overrideUserInterfaceStyle = userInterfaceStyle
+
+        let languageCode: String
+        switch savedSettings.language {
+        case .english:
+            languageCode = "en"
+        case .russian:
+            languageCode = "ru"
+        case .ukrainian:
+            languageCode = "uk"
+        }
+        LanguageChangeManager.shared.changeLanguage(to: languageCode)
+    }
 }
 
 
@@ -140,17 +159,19 @@ enum SettingsItems{
     var title: String {
         switch self {
         case .theme:
-            return NSLocalizedString("themeItem", comment: "")
+            return LanguageChangeManager.shared.localizedString(forKey: "themeItem")
         case .language:
-            return NSLocalizedString("languageItem", comment: "")
+            return LanguageChangeManager.shared.localizedString(forKey: "languageItem")
+
         case .notification:
-            return NSLocalizedString("notificationItem", comment: "")
+            return LanguageChangeManager.shared.localizedString(forKey: "notificationItem")
+
         case .searchBarPosition:
-            return NSLocalizedString("searchSection", comment: "")
+            return LanguageChangeManager.shared.localizedString(forKey: "searchSection")
+
         }
         
     }
-    
     var value: String {
         switch self {
         case .theme(let theme):
@@ -163,6 +184,10 @@ enum SettingsItems{
             return position.rawValue
         }
     }
+//    LanguageChangeManager.shared.localizedString(forKey: "lightTheme")
+//    case dark = LanguageChangeManager.shared.localizedString(forKey: "darkTheme")
+//    case deviceSettings = LanguageChangeManager.shared.localizedString(forKey: "systemTheme")
+
     
     func updateValue(with newValue: String) {
         switch self {

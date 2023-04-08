@@ -12,6 +12,7 @@
 		9A0BD53A29DC531F00845328 /* SettingsTBCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A0BD53929DC531F00845328 /* SettingsTBCell.swift */; };
 		9A0BD53C29DD721D00845328 /* UserSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A0BD53B29DD721D00845328 /* UserSettings.swift */; };
 		9A1F67C829DFFD39003993C5 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 9A1F67CA29DFFD39003993C5 /* Localizable.strings */; };
+		9A1F67CF29E166C4003993C5 /* LanguageChangeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A1F67CE29E166C4003993C5 /* LanguageChangeManager.swift */; };
 		9A22B8E9299A9FDA00B1ED3A /* Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A22B8E8299A9FDA00B1ED3A /* Data.swift */; };
 		9A603FF929AF5B3200A65253 /* OldGameVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A603FF829AF5B3200A65253 /* OldGameVC.swift */; };
 		9A7B91C6298D6D9600E60CDD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A7B91C5298D6D9600E60CDD /* AppDelegate.swift */; };
@@ -70,6 +71,7 @@
 		9A1F67C929DFFD39003993C5 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		9A1F67CC29E00253003993C5 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
 		9A1F67CD29E00262003993C5 /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = uk.lproj/Localizable.strings; sourceTree = "<group>"; };
+		9A1F67CE29E166C4003993C5 /* LanguageChangeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageChangeManager.swift; sourceTree = "<group>"; };
 		9A22B8E8299A9FDA00B1ED3A /* Data.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Data.swift; sourceTree = "<group>"; };
 		9A603FF829AF5B3200A65253 /* OldGameVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OldGameVC.swift; sourceTree = "<group>"; };
 		9A7B91C2298D6D9600E60CDD /* Language.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Language.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -196,6 +198,7 @@
 				9A7B91D3298D6D9900E60CDD /* Info.plist */,
 				9A22B8E8299A9FDA00B1ED3A /* Data.swift */,
 				9A0BD53B29DD721D00845328 /* UserSettings.swift */,
+				9A1F67CE29E166C4003993C5 /* LanguageChangeManager.swift */,
 				9AA7AB5329AE3CF400CCC9F4 /* Extensions.swift */,
 				9A9970FD29DB2D86007EE635 /* LaunchAnimation.swift */,
 				9AB40FEF29CC52B700353FFC /* Non Using */,
@@ -520,6 +523,7 @@
 				9AE509352997C07700D86DD7 /* AddDictionaryVC.swift in Sources */,
 				9AA71C6429C84C65008A193B /* ViewModel.swift in Sources */,
 				9AA7AB5429AE3CF400CCC9F4 /* Extensions.swift in Sources */,
+				9A1F67CF29E166C4003993C5 /* LanguageChangeManager.swift in Sources */,
 				9A9970FC29D9D662007EE635 /* SearchVC.swift in Sources */,
 				9A0BD53A29DC531F00845328 /* SettingsTBCell.swift in Sources */,
 				9AAECFC029B5055100439C0B /* EndVc.swift in Sources */,

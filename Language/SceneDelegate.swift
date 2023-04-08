@@ -17,9 +17,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         self.window = UIWindow(frame: window.coordinateSpace.bounds)
         self.window?.windowScene = window
         self.window?.rootViewController = setUpTabBarController()
-
         self.window?.makeKeyAndVisible()
         
+        SettingsData.shared.applySavedSettings()
+
         var animationView: LaunchAnimation? = LaunchAnimation(bounds: UIWindow().bounds)
         animationView?.animate()
         animationView?.makeKeyView()

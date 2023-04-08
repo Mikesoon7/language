@@ -164,24 +164,6 @@ extension UIView{
         }
     }
 }
-//extension Bundle{
-//    static var localizedBundle: Bundle? {
-//        let language = {
-//            var language = ""
-//            switch SettingsData.shared.settings.language.rawValue{
-//            case "English": language = "en"
-//            case "Русский": language = "ru"
-//            case "Українська": language = "uk"
-//            default: break
-//            }
-//            return language
-//        }()
-//        if let path = Bundle.main.path(forResource: language, ofType: "lproj"){
-//            return Bundle(path: path)
-//        }
-//        return nil
-//    }
-//}
 extension Notification.Name{
     static let appLanguageDidChange = Notification.Name("appLanguageDidChange")
     static let appThemeDidChange = Notification.Name("appThemeDidChange")

@@ -8,6 +8,7 @@
 "tableCellNumberOfCards" = "Total cards";
 "tableCellImport" = "Import new dictionary";
 //MARK: - SettingsVC
+"settingsVCTitle" = "Настройки";
 //Sections
 "generalSection" = "General";
 "searchSection" = "Search";
@@ -19,12 +20,14 @@
 "darkTheme" = "Dark";
 "lightTheme" = "Light";
 "systemTheme" = "System";
+
 "notificationItem" = "Notifications";
 //Items for Search
-"searchSection" = "Search";
 
 //MARK: - Alert Messages
 "changeLanguageTitle" = "Do you want to change language";
 "changeLanguageDescription" = "For this procces we will need to reload your app";
 "changeOptionYes" = "Procced";
 "changeOptionNo" = "I'll do it later";
+//MARK: - System
+"cancel" = "Вiдменити";

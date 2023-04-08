@@ -25,11 +25,11 @@ class SettingsVC: UIViewController {
     
 
     var settingsItems: [Sections] = [
-        Sections(title: "General",
+        Sections(title: LanguageChangeManager.shared.localizedString(forKey: "generalSection"),
                  options: [ SettingsItems.theme(SettingsData.shared.settings.theme),
                             SettingsItems.language(SettingsData.shared.settings.language),
                             SettingsItems.notification(SettingsData.shared.settings.notification)]),
-        Sections(title: "Search",
+        Sections(title: LanguageChangeManager.shared.localizedString(forKey: "searchSection"),
                  options: [SettingsItems.searchBarPosition(SettingsData.shared.settings.searchBar)])
     ]
     
@@ -67,7 +67,7 @@ class SettingsVC: UIViewController {
         }
     }
     func navBarCustomization(){
-        navigationItem.title = "Settings"
+        navigationItem.title = LanguageChangeManager.shared.localizedString(forKey: "settingsVCTitle")
 
         self.navigationController?.navigationBar.tintColor = .label
         self.navigationController?.navigationBar.isTranslucent = true
@@ -118,17 +118,32 @@ class SettingsVC: UIViewController {
     }
     func handleThemeSelection(theme: SettingsData.AppTheme) {
         SettingsData.shared.update(newValue: theme)
-        
+    }
+    func handleLangiageSelection(language: SettingsData.AppLanguage) {
+        SettingsData.shared.update(newValue: language)
+        let currentLanguage = SettingsData.shared.settings.language
+        let languageCode: String
+        switch currentLanguage {
+        case .english:
+            languageCode = "en"
+        case .russian:
+            languageCode = "ru"
+        case .ukrainian:
+            languageCode = "uk"
+        }
+        LanguageChangeManager.shared.changeLanguage(to: languageCode)
     }
     @objc func themeDidChange(sender: Any){
         let indexPath = IndexPath(item: 0, section: 0)
         settingsItems[0].options[0] = .theme(SettingsData.shared.settings.theme)
-        tableView.reloadRows(at: [indexPath], with: .automatic)
-        
+        tableView.reloadRows(at: [indexPath], with: .fade)
     }
     @objc func languageDidChange(sender: Any){
+        navigationItem.title = LanguageChangeManager.shared.localizedString(forKey: "settingsVCTitle")
+        print("Worjingsa")
         let indexPath = IndexPath(item: 1, section: 0)
-        settingsItems[0].options[1].updateValue(with: SettingsData.shared.settings.language.rawValue)
+        settingsItems[0].options[1] = .language(SettingsData.shared.settings.language)
+        tableView.reloadData()
     }
 }
 extension SettingsVC: UITableViewDelegate{
@@ -139,28 +154,54 @@ extension SettingsVC: UITableViewDelegate{
         44
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let currentData = settingsItems[indexPath.section].options[indexPath.row]
         let alertMessage = UIAlertController(title: "There is no action", message: nil, preferredStyle: .actionSheet)
         if indexPath.section == 0 && indexPath.row == 0{
-            let action1 = UIAlertAction(title: "Always light mode", style: .default) { [weak self] _ in
+            let action1 = UIAlertAction(
+                title: LanguageChangeManager.shared.localizedString(forKey: "lightTheme"),
+                style: .default) { [weak self] _ in
                 self?.handleThemeSelection(theme: .light)
             }
-            let action2 = UIAlertAction(title: "Always dark mode", style: .default){ [weak self] _ in
+            let action2 = UIAlertAction(
+                title:  LanguageChangeManager.shared.localizedString(forKey: "darkTheme"),
+                style: .default){ [weak self] _ in
                 self?.handleThemeSelection(theme: .dark)
             }
-            let action3 = UIAlertAction(title: "Use system mode", style: .default){ [weak self] _ in
+            let action3 = UIAlertAction(
+                title:  LanguageChangeManager.shared.localizedString(forKey: "systemTheme"),
+                style: .default){ [weak self] _ in
                 self?.handleThemeSelection(theme: .deviceSettings)
             }
+
+
             alertMessage.title = nil
             alertMessage.addAction(action1)
             alertMessage.addAction(action2)
             alertMessage.addAction(action3)
                         
         }
-        let action4 = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        if indexPath.section == 0 && indexPath.row == 1{
+            let action1 = UIAlertAction(title: "English", style: .default) { [weak self] _ in
+                self?.handleLangiageSelection(language: .english)
+            }
+            let action2 = UIAlertAction(title: "Русский", style: .default){ [weak self] _ in
+                self?.handleLangiageSelection(language: .russian)
+            }
+            let action3 = UIAlertAction(title: "Українська", style: .default){ [weak self] _ in
+                self?.handleLangiageSelection(language: .ukrainian)
+            }
+            alertMessage.title = nil
+            alertMessage.addAction(action1)
+            alertMessage.addAction(action2)
+            alertMessage.addAction(action3)
+        }
+        let action4 = UIAlertAction(
+            title: LanguageChangeManager.shared.localizedString(forKey: "cancel"),
+            style: .cancel,
+            handler: nil)
         alertMessage.addAction(action4)
         self.present(alertMessage, animated: true)
     }
-    
 }
 
 extension SettingsVC: UITableViewDataSource{

@@ -8,6 +8,7 @@
 "tableCellNumberOfCards" = "Всего карточек";
 "tableCellImport" = "Добавить словарь";
 //MARK: - SettingsVC
+"settingsVCTitle" = "Настройки";
 //Sections
 "generalSection" = "Основные";
 "searchSection" = "Поиск";
@@ -19,12 +20,14 @@
 "darkTheme" = "Тёмная";
 "lightTheme" = "Светлая";
 "systemTheme" = "Системная";
+
 "notificationItem" = "Уведомления";
 //Items for Search
-"searchSection" = "Search";
 
 //MARK: - Alert Messages
 "changeLanguageTitle" = "Do you want to change language";
 "changeLanguageDescription" = "For this procces we will need to reload your app";
 "changeOptionYes" = "Procced";
 "changeOptionNo" = "I'll do it later";
+//MARK: - System
+"cancel" = "Отменить";
