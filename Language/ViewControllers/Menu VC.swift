@@ -36,7 +36,7 @@ class MenuVC: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.tableView.reloadData()
+//        perform(#selector(change(sender:)))
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -61,9 +61,6 @@ class MenuVC: UIViewController {
                 self.topStroke.strokeColor = UIColor.black.cgColor
             }
         }
-    }
-    @objc func change(sender: Any){
-        navigationItem.title = NSLocalizedString("navBarTitle", comment: "")
     }
     //MARK: - Stroke SetUp
     func strokeCustomization(){
@@ -92,7 +89,7 @@ class MenuVC: UIViewController {
     //MARK: - NavigationBar SetUp
     func navBarCustomization(){
 
-        navigationItem.title = NSLocalizedString("navBarTitle", comment: "")
+        navigationItem.title = LanguageChangeManager.shared.localizedString(forKey: "navBarTitle")
         navigationController?.navigationBar.titleTextAttributes = NSAttributedString().fontWithoutString(bold: true, size: 23)
         //Statisctic BarButton
         let rightButton = UIBarButtonItem(
@@ -102,6 +99,7 @@ class MenuVC: UIViewController {
             action: #selector(statiscticButTap(sender:)))
         self.navigationItem.setRightBarButton(rightButton, animated: true)
         
+        navigationItem.backButtonDisplayMode = .minimal
         self.navigationController?.navigationBar.tintColor = .label
         self.navigationController?.navigationBar.isTranslucent = true
     }
@@ -114,6 +112,11 @@ class MenuVC: UIViewController {
         let vc = StatisticVC()
         navigationController?.present(vc, animated: true)
         }
+    @objc func change(sender: Any){
+        navigationItem.title = LanguageChangeManager.shared.localizedString(forKey: "navBarTitle")
+        tableView.reloadData()
+    }
+
 
 }
 //MARK: - UITableViewDelegate

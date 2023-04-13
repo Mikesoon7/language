@@ -49,7 +49,7 @@ class MainGameVC: UIViewController {
     }
     //MARK: - NavBar SetUp
     func navBarCustomization(){
-        navigationItem.title = "Game"
+        navigationItem.title = "gameTitle".localized
         navigationController?.navigationBar.titleTextAttributes = NSAttributedString().fontWithoutString(bold: true, size: 23)
         self.navigationController?.navigationBar.tintColor = .label
         self.navigationController?.navigationBar.isTranslucent = true

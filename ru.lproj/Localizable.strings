@@ -23,11 +23,42 @@
 
 "notificationItem" = "Уведомления";
 //Items for Search
+//MARK: - AddDictionary or WordsVC
+"addDictTitle" = "Создание словаря";
+"addWordTitle" = "Добавление текста";
+"viewPlaceholder" = "Слово - описание";
+"fieldPlaceholder" = "Имя";
+"dictionaryName" = "Название словаря";
 
-//MARK: - Alert Messages
-"changeLanguageTitle" = "Do you want to change language";
-"changeLanguageDescription" = "For this procces we will need to reload your app";
-"changeOptionYes" = "Procced";
-"changeOptionNo" = "I'll do it later";
 //MARK: - System
 "cancel" = "Отменить";
+"agreeFormal" = "Согласен";
+"agreeInformal" = "Хорошо";
+"save" = "Сохранить";
+"create" = "Создать";
+"great" = "Круто";
+
+//MARK: - AlertText
+"textAlert" = "Введите текст";
+"nameAlert" = "Укажите имя";
+"textInfo" = "Пожалуйста, используйте как минимум одну пару слов.";
+"nameInfo" = "Осталось назвать ваш словарь.";
+
+//MARK: - DetailsVC
+"detailsTitle" = "Подробности";
+"randomize" = "В перемешку";
+"goal" = "Установить цель";
+"addWords" = "Добавить слова";
+"start" = "Начать";
+
+//MARK: - GameVC
+"gameTitle" = "Карточки";
+
+//MARK: - Notification
+"allowNotification" = "Расрешить уведомления";
+"frequency" = "Повторять";
+"chooseTime" = "Время";
+//Frequency Option
+"every" = "Каждый";
+"day" = "день";
+"onceAWeek" = "Раз в неделю";

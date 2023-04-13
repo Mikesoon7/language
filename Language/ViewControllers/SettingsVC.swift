@@ -10,12 +10,22 @@ import UIKit
 struct Sections{
     var title: String
     var options: [SettingsItems]
+    mutating func reload(index: Int) -> String{
+        switch index{
+        case 0: return LanguageChangeManager.shared.localizedString(forKey: "generalSection")
+        case 1: return LanguageChangeManager.shared.localizedString(forKey: "searchSection")
+        default: return " "
+        }
+    }
 }
+
 class SettingsVC: UIViewController {
     
     let tableView: UITableView = {
         let view = UITableView(frame: .zero, style: .insetGrouped)
-        view.register(SettingsTBCell.self, forCellReuseIdentifier: "settingsCell")
+        view.register(SettingsHeaderCell.self, forCellReuseIdentifier: SettingsHeaderCell().identifier)
+        view.register(SettingsTextCell.self, forCellReuseIdentifier: SettingsTextCell().identifier)
+        view.register(SettingsImageCell.self, forCellReuseIdentifier: SettingsImageCell().identifier)
         view.rowHeight = 20
         view.backgroundColor = .systemBackground
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -26,11 +36,13 @@ class SettingsVC: UIViewController {
 
     var settingsItems: [Sections] = [
         Sections(title: LanguageChangeManager.shared.localizedString(forKey: "generalSection"),
-                 options: [ SettingsItems.theme(SettingsData.shared.settings.theme),
+                 options: [ SettingsItems.header,
+                            SettingsItems.theme(SettingsData.shared.settings.theme),
                             SettingsItems.language(SettingsData.shared.settings.language),
                             SettingsItems.notification(SettingsData.shared.settings.notification)]),
         Sections(title: LanguageChangeManager.shared.localizedString(forKey: "searchSection"),
-                 options: [SettingsItems.searchBarPosition(SettingsData.shared.settings.searchBar)])
+                 options: [SettingsItems.header,
+                           SettingsItems.searchBarPosition(SettingsData.shared.settings.searchBar)])
     ]
     
     var topStroke = CAShapeLayer()
@@ -45,7 +57,10 @@ class SettingsVC: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(themeDidChange(sender:)), name: .appThemeDidChange, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(languageDidChange(sender: )), name: .appLanguageDidChange, object: nil)
     }
-    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+    }
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         strokeCustomization()
@@ -99,27 +114,12 @@ class SettingsVC: UIViewController {
         view.layer.addSublayer(bottomStroke)
     }
 
-    @objc func segmentTap(sender: UISegmentedControl){
-        
-    }
-    func viewForHeader(name: String) -> UITableViewHeaderFooterView{
-        let view = UITableViewHeaderFooterView()
-        var content = view.defaultContentConfiguration()
-        content.text = name
-        content.attributedText = NSAttributedString(string: name, attributes:
-                                                        [NSAttributedString.Key.font :
-                                                            UIFont(name: "Helvetica Neue Medium", size: 20) ?? UIFont(),
-                                                         NSAttributedString.Key.foregroundColor: UIColor.label
-                                                        ])
-
-        view.contentConfiguration = content
-        view.backgroundColor = .systemGray6.withAlphaComponent(0.8)
-        return view
-    }
+    //Update data in userDefaults and sending notification through update(_:)
     func handleThemeSelection(theme: SettingsData.AppTheme) {
         SettingsData.shared.update(newValue: theme)
     }
-    func handleLangiageSelection(language: SettingsData.AppLanguage) {
+    
+    func handleLanguageSelection(language: SettingsData.AppLanguage) {
         SettingsData.shared.update(newValue: language)
         let currentLanguage = SettingsData.shared.settings.language
         let languageCode: String
@@ -133,30 +133,25 @@ class SettingsVC: UIViewController {
         }
         LanguageChangeManager.shared.changeLanguage(to: languageCode)
     }
+    //MARK: - Actions
+    //Updating local instance of userDefault and row value
     @objc func themeDidChange(sender: Any){
-        let indexPath = IndexPath(item: 0, section: 0)
-        settingsItems[0].options[0] = .theme(SettingsData.shared.settings.theme)
+        let indexPath = IndexPath(item: 1, section: 0)
+        settingsItems[0].options[1] = .theme(SettingsData.shared.settings.theme)
         tableView.reloadRows(at: [indexPath], with: .fade)
     }
+    //Updating data for cells and reload table for new language appearence
     @objc func languageDidChange(sender: Any){
-        navigationItem.title = LanguageChangeManager.shared.localizedString(forKey: "settingsVCTitle")
-        print("Worjingsa")
-        let indexPath = IndexPath(item: 1, section: 0)
-        settingsItems[0].options[1] = .language(SettingsData.shared.settings.language)
-        tableView.reloadData()
+        let indexPath = IndexPath(item: 2, section: 0)
+        settingsItems[0].options[2] = .language(SettingsData.shared.settings.language)
+        handleLanguageChange()
     }
 }
 extension SettingsVC: UITableViewDelegate{
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        viewForHeader(name: settingsItems[section].title)
-    }
-    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        44
-    }
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let currentData = settingsItems[indexPath.section].options[indexPath.row]
         let alertMessage = UIAlertController(title: "There is no action", message: nil, preferredStyle: .actionSheet)
-        if indexPath.section == 0 && indexPath.row == 0{
+        if indexPath.section == 0 && indexPath.row == 1{
             let action1 = UIAlertAction(
                 title: LanguageChangeManager.shared.localizedString(forKey: "lightTheme"),
                 style: .default) { [weak self] _ in
@@ -172,23 +167,21 @@ extension SettingsVC: UITableViewDelegate{
                 style: .default){ [weak self] _ in
                 self?.handleThemeSelection(theme: .deviceSettings)
             }
-
-
             alertMessage.title = nil
             alertMessage.addAction(action1)
             alertMessage.addAction(action2)
             alertMessage.addAction(action3)
                         
         }
-        if indexPath.section == 0 && indexPath.row == 1{
+        if indexPath.section == 0 && indexPath.row == 2{
             let action1 = UIAlertAction(title: "English", style: .default) { [weak self] _ in
-                self?.handleLangiageSelection(language: .english)
+                self?.handleLanguageSelection(language: .english)
             }
             let action2 = UIAlertAction(title: "Русский", style: .default){ [weak self] _ in
-                self?.handleLangiageSelection(language: .russian)
+                self?.handleLanguageSelection(language: .russian)
             }
             let action3 = UIAlertAction(title: "Українська", style: .default){ [weak self] _ in
-                self?.handleLangiageSelection(language: .ukrainian)
+                self?.handleLanguageSelection(language: .ukrainian)
             }
             alertMessage.title = nil
             alertMessage.addAction(action1)
@@ -200,7 +193,14 @@ extension SettingsVC: UITableViewDelegate{
             style: .cancel,
             handler: nil)
         alertMessage.addAction(action4)
-        self.present(alertMessage, animated: true)
+            if indexPath.section == 0 && indexPath.row == 3 {
+                let vc = NotificationViewController()
+                
+                vc.modalPresentationStyle = .overFullScreen
+                self.present(vc, animated: false)
+            } else {
+                self.present(alertMessage, animated: true)
+            }
     }
 }
 
@@ -210,17 +210,68 @@ extension SettingsVC: UITableViewDataSource{
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "settingsCell", for: indexPath) as! SettingsTBCell
+        let section = settingsItems[indexPath.section]
         let data = settingsItems[indexPath.section].options[indexPath.row]
-        cell.label.text = data.title
-        cell.value.text = data.value
-        return cell
+        
+        
+        let cellToPresent: UITableViewCell = {
+            switch data{
+            case .header:
+                let headerCell = tableView.dequeueReusableCell(
+                    withIdentifier: SettingsHeaderCell().identifier,
+                    for: indexPath) as! SettingsHeaderCell
+                headerCell.label.text = section.title
+                return headerCell
+            case .language(SettingsData.shared.settings.language),
+                    .theme(SettingsData.shared.settings.theme),
+                    .notification(SettingsData.shared.settings.notification):
+                let textCell = tableView.dequeueReusableCell(
+                    withIdentifier: SettingsTextCell().identifier,
+                    for: indexPath) as! SettingsTextCell
+                textCell.label.text = data.title
+                textCell.value.text = data.value
+                return textCell
+            case .searchBarPosition(SettingsData.shared.settings.searchBar):
+                let imageCell = tableView.dequeueReusableCell(
+                    withIdentifier: SettingsImageCell().identifier,
+                    for: indexPath) as! SettingsImageCell
+                return imageCell
+            default:
+                return UITableViewCell()
+            }
+        }()
+        return cellToPresent
     }
     func numberOfSections(in tableView: UITableView) -> Int {
         settingsItems.count
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        50
+        if indexPath.section == 1 && indexPath.row == 1{
+            return 100
+        } else {
+            return 44
+        }
+        
     }
-    
+}
+extension SettingsVC{
+    func handleLanguageChange(){
+        navigationItem.title = LanguageChangeManager.shared.localizedString(forKey: "settingsVCTitle")
+        for index in 0..<settingsItems.count{
+            settingsItems[index].title = settingsItems[index].reload(index: index)
+        }
+        tableView.reloadData()
+        if let barItems = tabBarController?.tabBar.items{
+            for index in 0..<(barItems.count){
+                barItems[index].title = {
+                    switch index{
+                    case 0: return LanguageChangeManager.shared.localizedString(forKey: "tabBarDictionaries")
+                    case 1: return LanguageChangeManager.shared.localizedString(forKey: "tabBarSearch")
+                    case 2: return LanguageChangeManager.shared.localizedString(forKey: "tabBarSettings")
+                    default: return " "
+                    }
+                }()
+            }
+        }
+    }
 }

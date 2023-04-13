@@ -11,46 +11,51 @@ class AddDictionaryVC: UIViewController {
     
     var textView: UITextView = {
         var textView = TextViewToCreate()
-        textView.backgroundColor = .systemGray5
-        textView.layer.cornerRadius = 9
-        textView.layer.borderWidth = 1
-        textView.layer.borderColor = UIColor.black.cgColor
-        textView.clipsToBounds = true
+        textView.setUpBorderedView(true)
         
         textView.textContainerInset = .init(top: 5, left: 5, bottom: 5, right: 5)
         textView.allowsEditingTextAttributes = true
           
         textView.font = UIFont(name: "Times New Roman", size: 17) ?? UIFont()
-        textView.text = "Word - Description"
+        textView.text = "viewPlaceholder".localized
         textView.textColor = .lightGray
         return textView
     }()
     
     var nameView : UIView = {
         var view = UIView()
-        view.backgroundColor = .systemGray5
-        view.layer.cornerRadius = 9
-        view.layer.borderWidth = 1
-        view.layer.borderColor = UIColor.black.cgColor
-        view.clipsToBounds = true
-        
+        view.setUpBorderedView(true)
         return view
     }()
-    
-    var submitButton : UIButton = {
-        var button = UIButton()
-        button.setUpCommotBut(false)
-        button.setAttributedTitle(NSAttributedString().fontWithString(string: "Save", bold: true, size: 18), for: .normal)
-        return button
+    let nameLabel: UILabel = {
+        let label = UILabel()
+        label.text = "dictionaryName".localized
+        label.attributedText = NSAttributedString().fontWithString(
+            string: "dictionaryName".localized,
+            bold: true,
+            size: 18)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
     }()
     let nameInputField : UITextField = {
         let field = UITextField()
         field.textColor = .label
-        field.font =  UIFont(name: "Georgia-Italic", size: 15) ?? UIFont()
-        field.placeholder = "Name"
         field.textAlignment = .right
+        field.font =  UIFont(name: "Georgia-Italic", size: 15) ?? UIFont()
+        field.placeholder = "fieldPlaceholder".localized
+        field.translatesAutoresizingMaskIntoConstraints = false
         return field
     }()
+    var submitButton : UIButton = {
+        var button = UIButton()
+        button.setUpCommotBut(false)
+        button.setAttributedTitle(NSAttributedString().fontWithString(
+            string: "save".localized,
+            bold: true,
+            size: 18), for: .normal)
+        return button
+    }()
+
     var topStroke = CAShapeLayer()
     var bottomStroke = CAShapeLayer()
     
@@ -58,12 +63,12 @@ class AddDictionaryVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
-        self.navigationController?.isToolbarHidden = true
         textViewCustomization()
         navBarCustomization()
         nameViewCustomization()
         submitButtonCustomization()
         keybaordAppears()
+        NotificationCenter.default.addObserver(self, selector: #selector(languageDidChange(sender:)), name: .appLanguageDidChange, object: nil)
     }
     override func viewDidAppear(_ animated: Bool) {
         self.view.becomeFirstResponder()
@@ -71,6 +76,14 @@ class AddDictionaryVC: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         strokeCustomization()
+    }
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        if let navController = self.navigationController{
+            let menu = navController.viewControllers.first(where: { $0 is MenuVC}) as? MenuVC
+            menu?.tableView.reloadData()
+        
+        }
     }
     //MARK: - StyleChange Responding
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -99,14 +112,12 @@ class AddDictionaryVC: UIViewController {
         view.addSubview(textView)
         textView.delegate = self
         textView.inputDelegate = self
-        
-        textView.translatesAutoresizingMaskIntoConstraints = false
-        
+
         NSLayoutConstraint.activate([
-            textView.topAnchor.constraint(equalTo: view.topAnchor, constant: 126),
-            textView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 22),
-            textView.widthAnchor.constraint(lessThanOrEqualToConstant: view.bounds.width - 45),
-            textView.heightAnchor.constraint(lessThanOrEqualToConstant: ((view.bounds.width - 45) * 0.6))
+            textView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 35),
+            textView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            textView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.91),
+            textView.heightAnchor.constraint(equalTo: textView.widthAnchor, multiplier: 0.57)
         ])
     }
 //MARK: - KeyboardObserver
@@ -116,24 +127,14 @@ class AddDictionaryVC: UIViewController {
     }
 //MARK: - NameView SetUp
     func nameViewCustomization(){
-        let nameLabel : UILabel = {
-            let label = UILabel()
-            label.attributedText = NSAttributedString().fontWithString(string: "Dictionary name", bold: true, size: 18)
-            return label
-        }()
-        nameInputField.delegate = self
         view.addSubview(nameView)
-        nameView.addSubview(nameLabel)
-        nameView.addSubview(nameInputField)
-        
-        nameView.translatesAutoresizingMaskIntoConstraints = false
-        nameLabel.translatesAutoresizingMaskIntoConstraints = false
-        nameInputField.translatesAutoresizingMaskIntoConstraints = false
-        
+        nameView.addSubviews(nameLabel, nameInputField)
+        nameInputField.delegate = self
+
         NSLayoutConstraint.activate([
             nameView.topAnchor.constraint(equalTo: self.textView.bottomAnchor, constant: 14),
             nameView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            nameView.widthAnchor.constraint(equalToConstant: view.bounds.width - 45),
+            nameView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.91),
             nameView.heightAnchor.constraint(equalToConstant: 60),
             
             nameLabel.leadingAnchor.constraint(equalTo: nameView.leadingAnchor, constant: 15),
@@ -155,9 +156,8 @@ class AddDictionaryVC: UIViewController {
         NSLayoutConstraint.activate([
             submitButton.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor, constant: -11),
             submitButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            submitButton.heightAnchor.constraint(equalToConstant: 55),
-            submitButton.widthAnchor.constraint(equalToConstant: view.bounds.width - 45),
-            
+            submitButton.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.91),
+            submitButton.heightAnchor.constraint(equalToConstant: 55)
         ])
 //Action
         submitButton.addTarget(self, action: #selector(submitButTap(sender:)), for: .touchUpInside)
@@ -168,20 +168,22 @@ class AddDictionaryVC: UIViewController {
     
 //MARK: - NavBar SetUp
         func navBarCustomization(){
-        self.navigationItem.title = "Text uploading"
-            self.navigationController?.navigationBar.titleTextAttributes = NSAttributedString().fontWithoutString(bold: true, size: 23)
-            self.navigationController?.navigationBar.layer.shadowColor = UIColor.black.cgColor
-            self.navigationController?.navigationBar.layer.shadowOffset = CGSize(width: 1, height: 1)
-        self.navigationItem.backButtonTitle = "Menu"
-            self.navigationItem.backBarButtonItem?.setTitleTextAttributes([
-                NSAttributedString.Key.font : UIFont.systemFont(ofSize: 20, weight: .bold)
-            ], for: .normal)
-    }
+            navigationItem.title = "addDictTitle".localized
+            navigationController?.navigationBar.titleTextAttributes = NSAttributedString().fontWithoutString(bold: true, size: 23)
+        }
 //MARK: - Actions
     @objc func submitButTap(sender: Any){
-        let insertTextAllert = UIAlertController(title: "Enter the text", message: "Please, enter more than 1 pair of words.", preferredStyle: .alert)
-        let insertNameAllert = UIAlertController(title: "Enter the name", message: "Please, name you dictionary with at least 1 charachter.", preferredStyle: .alert)
-        let action = UIAlertAction(title: "Understand", style: .cancel)
+        let insertTextAllert = UIAlertController(
+            title: "textAlert".localized,
+            message: "textInfo".localized ,
+            preferredStyle: .alert)
+        let insertNameAllert = UIAlertController(
+            title: "nameAlert".localized,
+            message: "nameInfo".localized,
+            preferredStyle: .alert)
+        let action = UIAlertAction(
+            title: "agreeInformal".localized,
+            style: .cancel)
         insertNameAllert.addAction(action)
         insertTextAllert.addAction(action)
         action.setValue(UIColor.label, forKey: "titleTextColor")
@@ -194,7 +196,7 @@ class AddDictionaryVC: UIViewController {
         view.becomeFirstResponder()
         navigationController?.popViewController(animated: true)
     }
-    
+    //Done buttom tap.
     @objc func rightBarButTap(sender: Any){
         navigationItem.rightBarButtonItem = nil
         if textView.isFirstResponder{
@@ -224,9 +226,17 @@ class AddDictionaryVC: UIViewController {
 
         bottomStroke.add(animation, forKey: "strokeOpacity")
     }
+    @objc func languageDidChange(sender: Any){
+        textView.text = LanguageChangeManager.shared.localizedString(forKey: "viewPlaceholder")
+        nameLabel.text = LanguageChangeManager.shared.localizedString(forKey: "dictionaryName")
+        self.navigationItem.title = "addDictTitle".localized
+        nameInputField.placeholder = "fieldPlaceholder".localized
+        submitButton.setAttributedTitle(NSAttributedString().fontWithString(
+            string: "save".localized,
+            bold: true,
+            size: 18), for: .normal)
+    }
 }
-
-import UIKit
 
 class TextViewToCreate: UITextView {
 

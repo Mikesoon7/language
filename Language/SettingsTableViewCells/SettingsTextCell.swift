@@ -7,7 +7,8 @@
 
 import UIKit
 
-class SettingsTBCell: UITableViewCell {
+class SettingsTextCell: UITableViewCell {
+    let identifier = "textCell"
 
     let view : UIView = {
         let view = UIView()
@@ -44,7 +45,11 @@ class SettingsTBCell: UITableViewCell {
     required init?(coder: NSCoder) {
         fatalError("Unable to use Coder")
     }
-    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        label.text = nil
+        value.text = nil
+    }
 
     func cellViewsCustomization(){
         self.contentView.addSubview(view)
@@ -62,7 +67,7 @@ class SettingsTBCell: UITableViewCell {
             image.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             image.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -15),
             
-            value.trailingAnchor.constraint(equalTo: image.leadingAnchor),
+            value.trailingAnchor.constraint(equalTo: image.leadingAnchor, constant: -5),
             value.centerYAnchor.constraint(equalTo: view.centerYAnchor)
         ])
     }

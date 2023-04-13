@@ -1,33 +1,65 @@
 //MARK: - TabBarController
-"tabBarDictionaries" = "Dictionaries";
-"tabBarSearch" = "Search";
-"tabBarSettings" = "Settings";
+"tabBarDictionaries" = "Словники";
+"tabBarSearch" = "Пошук";
+"tabBarSettings" = "Налаштування";
 //MARK: - DictionariesView
-"navBarTitle" = "Dictionaries";
-"tableCellName" = "Name";
-"tableCellNumberOfCards" = "Total cards";
-"tableCellImport" = "Import new dictionary";
+"navBarTitle" = "Словники";
+"tableCellName" = "Імʼя";
+"tableCellNumberOfCards" = "Всього карток";
+"tableCellImport" = "Додади словник";
 //MARK: - SettingsVC
-"settingsVCTitle" = "Настройки";
+"settingsVCTitle" = "Налаштування";
 //Sections
-"generalSection" = "General";
-"searchSection" = "Search";
-"dictionarySection" = "Dictionary";
+"generalSection" = "Основні";
+"searchSection" = "Пошук";
+"dictionarySection" = "Словники";
 //Items for General
-"languageItem" = "Language";
-"themeItem" = "Theme";
+"languageItem" = "Мова";
+"themeItem" = "Тема";
     //Choose options
-"darkTheme" = "Dark";
-"lightTheme" = "Light";
-"systemTheme" = "System";
+"darkTheme" = "Темна";
+"lightTheme" = "Світла";
+"systemTheme" = "Системна";
 
-"notificationItem" = "Notifications";
+"notificationItem" = "Повідомлення";
 //Items for Search
+//MARK: - AddDictionary or WordsVC
+"addDictTitle" = "Створення";
+"addWordTitle" = "Додавання";
+"viewPlaceholder" = "Слово - опис";
+"fieldPlaceholder" = "Имʼя";
+"dictionaryName" = "Назва словника";
 
-//MARK: - Alert Messages
-"changeLanguageTitle" = "Do you want to change language";
-"changeLanguageDescription" = "For this procces we will need to reload your app";
-"changeOptionYes" = "Procced";
-"changeOptionNo" = "I'll do it later";
 //MARK: - System
 "cancel" = "Вiдменити";
+"agreeFormal" = "Згоден";
+"agreeInformal" = "Добре";
+"save" = "Зберегти";
+"create" = "Створити";
+"great" = "Чудово";
+
+//MARK: - AlertText
+"textAlert" = "Вкажіть текст";
+"nameAlert" = "Вкажіть назву";
+"textInfo" = "Будь ласка, не залишайте поля з текстом порожнім.";
+"nameInfo" = "Майже закінчили. Залишилось задати назву.";
+
+//MARK: - DetailsVC
+"detailsTitle" = "Подробиці";
+"randomize" = "У перемішку";
+"goal" = "Встановити ціль";
+"addWords" = "Додати слів";
+"start" = "Почати";
+
+//MARK: - GameVC
+"gameTitle" = "Картки";
+
+//MARK: - Notification
+"allowNotification" = "Дозволити повідомлення";
+"frequency" = "Нагадувати";
+"chooseTime" = "Час";
+//Frequency Option
+"every" = "Кожен";
+"day" = "день";
+"onceAWeek" = "Раз на тиждень";
+

@@ -23,11 +23,42 @@
 
 "notificationItem" = "Notifications";
 //Items for Search
+//MARK: - AddDictionary or WordsVC
+"addDictTitle" = "Dictionary creation";
+"addWordTitle" = "Text Uploading";
+"viewPlaceholder" = "Word - Description";
+"fieldPlaceholder" = "Name";
+"dictionaryName" = "Dictionary name";
 
-//MARK: - Alert Messages
-"changeLanguageTitle" = "Do you want to change language";
-"changeLanguageDescription" = "For this procces we will need to reload your app";
-"changeOptionYes" = "Procced";
-"changeOptionNo" = "I'll do it later";
 //MARK: - System
 "cancel" = "Cancel";
+"agreeFormal" = "Agree";
+"agreeInformal" = "Okey";
+"save" = "Save";
+"create" = "Create";
+"great" = "Great";
+
+//MARK: - AlertText
+"textAlert" = "Enter the text";
+"nameAlert" = "Enter the name";
+"textInfo" = "Please, enter more than 1 pair of words.";
+"nameInfo" = "Almost done. Please, name your dictionary";
+
+//MARK: - DetailsVC
+"detailsTitle" = "Details";
+"randomize" = "Randomize cards";
+"goal" = "Set the goal";
+"addWords" = "Add new words";
+"start" = "Start";
+
+//MARK: - GameVC
+"gameTitle" = "Cards";
+
+//MARK: - Notification
+"allowNotification" = "Allow notification";
+"frequency" = "Frequency";
+"chooseTime" = "Time";
+//Frequency Option
+"every" = "Every";
+"day" = "day";
+"onceAWeek" = "Once a week";

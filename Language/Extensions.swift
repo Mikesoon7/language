@@ -21,6 +21,7 @@ extension UIView {
             self.backgroundColor = .systemGray4
         
         }
+        self.translatesAutoresizingMaskIntoConstraints = false
     }
 }
 extension UIButton {
@@ -56,7 +57,6 @@ extension UINavigationController{
          
     }
 }
-
 extension UIButton{
     func addTargetTouchBegin(){
         super.addTarget(self, action: #selector(animationBegin(sender:)), for: .touchDown)
@@ -79,7 +79,6 @@ extension UIButton{
             sender.transform = CGAffineTransform(scaleX: 1, y: 1)
         })
     }
-
 }
 extension UIView{
     
@@ -87,7 +86,6 @@ extension UIView{
         let topStroke = CAShapeLayer()
         let path = UIBezierPath()
         let y = {
-            print("\(vc.view.safeAreaInsets.top)")
             if vc.navigationController != nil {
                 return vc.view.safeAreaInsets.top
             } else {
@@ -171,6 +169,8 @@ extension Notification.Name{
     static let appNotificationSettingsDidChange = Notification.Name("appNotificationSettingsDidChange")
 }
 
-
-
-
+extension String{
+    var localized: String{
+        return LanguageChangeManager.shared.localizedString(forKey: self)
+    }
+}

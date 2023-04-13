@@ -19,12 +19,14 @@ class LanguageChangeManager {
     }
     func changeLanguage(to language: String){
         let path = Bundle.main.path(forResource: language, ofType: "lproj")
+        UserDefaults.standard.set([language], forKey: "AppleLanguages")
+
         if let newPath = path, let newBundle = Bundle(path: newPath) {
             bundle = newBundle
+        } else {
+            print("No another language")
         }
-        let path1 = Bundle.main.localizations
-        print(path1.contains(language))
-        UserDefaults.standard.set([language], forKey: "AppleLanguages")
+        
         NotificationCenter.default.post(name: .appLanguageDidChange, object: nil)
     }
     func localizedString(forKey: String) -> String{

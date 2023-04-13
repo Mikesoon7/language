@@ -69,7 +69,9 @@ class CollectionViewLastCell: UICollectionViewCell {
         let button = UIButton()
         button.setUpBorderedView(false)
         button.layer.borderWidth = 0
-        button.setTitle("Okey", for: .normal)
+        button.setTitle(
+            "great".localized,
+            for: .normal)
         button.setTitleColor(.label, for: .normal) 
         button.translatesAutoresizingMaskIntoConstraints = false
         return button

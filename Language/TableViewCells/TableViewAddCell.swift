@@ -12,7 +12,7 @@ class TableViewAddCell: UITableViewCell {
     var importLabel: UILabel = {
         var label = UILabel()
         label.attributedText = NSAttributedString().fontWithString(
-            string: NSLocalizedString("tableCellImport", comment: ""),
+            string: LanguageChangeManager.shared.localizedString(forKey: "tableCellImport"),
             bold: true,
             size: 20)
         return label
@@ -31,7 +31,7 @@ class TableViewAddCell: UITableViewCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        
+        NotificationCenter.default.addObserver(self, selector: #selector(languageChanged(sender:)), name: .appLanguageDidChange, object: nil)
         self.backgroundColor = .systemGray5
         self.layer.cornerRadius = 9
         self.layer.borderWidth = 1
@@ -59,5 +59,8 @@ class TableViewAddCell: UITableViewCell {
             addButton.widthAnchor.constraint(equalToConstant: 50),
             addButton.heightAnchor.constraint(equalToConstant: 50)
         ])
+    }
+    @objc func languageChanged(sender: Any){
+        importLabel.text = LanguageChangeManager.shared.localizedString(forKey: "tableCellImport")
     }
 }

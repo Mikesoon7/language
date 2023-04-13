@@ -45,6 +45,7 @@ class AddWordsVC: UIViewController {
         textViewCustomization()
         submitButtonCustomization()
         keybaordAppears()
+        NotificationCenter.default.addObserver(self, selector: #selector(languageDidChange(sender:)), name: .appLanguageDidChange, object: nil)
     }
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
@@ -94,10 +95,10 @@ class AddWordsVC: UIViewController {
         textView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
+            textView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 35),
             textView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            textView.topAnchor.constraint(equalTo: view.topAnchor, constant: 126),
-            textView.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -45),
-            textView.heightAnchor.constraint(equalTo: view.widthAnchor, constant: -(45 + 55 + 11))
+            textView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.91),
+            textView.heightAnchor.constraint(equalTo: textView.widthAnchor, multiplier: 0.79)
         ])
     }
 //MARK: - Submit Button SetUp
@@ -108,8 +109,8 @@ class AddWordsVC: UIViewController {
         NSLayoutConstraint.activate([
             submitButton.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor, constant: -11),
             submitButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            submitButton.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.91),
             submitButton.heightAnchor.constraint(equalToConstant: 55),
-            submitButton.widthAnchor.constraint(equalToConstant: view.bounds.width - 45)
         ])
         submitButton.addTargetTouchBegin()
         submitButton.addTargetInsideTouchStop()
@@ -149,6 +150,14 @@ class AddWordsVC: UIViewController {
         animation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
 
         bottomStroke.add(animation, forKey: "strokeOpacity")
+    }
+    @objc func languageDidChange(sender: Any){
+        textView.text = LanguageChangeManager.shared.localizedString(forKey: "viewPlaceholder")
+        self.navigationItem.title = "addWordTitle".localized
+        submitButton.setAttributedTitle(NSAttributedString().fontWithString(
+            string: "save".localized,
+            bold: true,
+            size: 18), for: .normal)
     }
 }
 

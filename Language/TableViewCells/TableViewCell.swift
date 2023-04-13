@@ -11,17 +11,17 @@ class TableViewCell: UITableViewCell{
 
     var languageLabel : UILabel = {
         var label = UILabel()
-        label.attributedText = NSAttributedString().fontWithString(
-            string: NSLocalizedString("tableCellName", comment: ""),
-            bold: true,
-            size: 20)
+        label.attributedText = NSAttributedString(
+            string: LanguageChangeManager.shared.localizedString(forKey: "tableCellName"),
+            attributes: [NSAttributedString.Key.font : UIFont(name: "Georgia-BoldItalic", size: 20) ?? UIFont(),
+                         NSAttributedString.Key.foregroundColor: UIColor.label])
         return label
     }()
     
     var cardsLabel : UILabel = {
         var label = UILabel()
         label.attributedText = NSAttributedString().fontWithString(
-            string: NSLocalizedString("tableCellNumberOfCards", comment: ""),
+            string: LanguageChangeManager.shared.localizedString(forKey: "tableCellNumberOfCards"),
             bold: true,
             size: 20)
         return label
@@ -47,6 +47,7 @@ class TableViewCell: UITableViewCell{
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
+        NotificationCenter.default.addObserver(self, selector: #selector(languageDidChange(sender:)), name: .appLanguageDidChange, object: nil)
         self.backgroundColor = .systemGray6
         self.layer.cornerRadius = 9
         self.layer.borderWidth = 1
@@ -86,6 +87,10 @@ class TableViewCell: UITableViewCell{
             cardsResultLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -15),
             cardsResultLabel.heightAnchor.constraint(equalToConstant: 25),
         ])
+    }
+    @objc func languageDidChange(sender: Any){
+        languageLabel.text = LanguageChangeManager.shared.localizedString(forKey: "tableCellName")
+        cardsLabel.text = LanguageChangeManager.shared.localizedString(forKey: "tableCellNumberOfCards")
     }
 }
 

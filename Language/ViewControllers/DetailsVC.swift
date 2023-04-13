@@ -14,10 +14,18 @@ class DetailsVC: UIViewController {
     var numberOfCards : Int!
     var preselectedPickerNumber = Int()
     
-    let randomiseCardsView : UIView = {
+    let randomizeCardsView : UIView = {
         var view = UIView()
         view.setUpBorderedView(true)
         return view
+    }()
+    let randomizeLabel: UILabel = {
+        let label = UILabel()
+        label.attributedText = NSAttributedString().fontWithString(
+            string: "randomize".localized,
+            bold: true, size: 18)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
     }()
     
     let setTheGoalView : UIView = {
@@ -25,24 +33,33 @@ class DetailsVC: UIViewController {
         view.setUpBorderedView(true)
         return view
     }()
-
-    let usePictureView : UIView = {
-        var view = UIView()
-        view.setUpBorderedView(true)
-        return view
-    }()
     
+    let setTheGoalLabel : UILabel = {
+        let label = UILabel()
+        label.attributedText = NSAttributedString().fontWithString(
+            string: "goal".localized,
+            bold: true, size: 18)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+
     let addNewWordsBut : UIButton = {
         var button = UIButton()
         button.setUpCommotBut(true)
-        button.setAttributedTitle(NSAttributedString().fontWithString(string: "Add new words", bold: true, size: 20), for: .normal)
+        button.setAttributedTitle(NSAttributedString().fontWithString(
+            string: "addWords".localized,
+            bold: true,
+            size: 20), for: .normal)
                     return button
     }()
     
     let beginBut : UIButton = {
         var button = UIButton()
         button.setUpCommotBut(false)
-        button.setAttributedTitle(NSAttributedString().fontWithString(string: "Start", bold: true, size: 20), for: .normal)
+        button.setAttributedTitle(NSAttributedString().fontWithString(
+            string: "start".localized,
+            bold: true,
+            size: 20), for: .normal)
         return button
     }()
     
@@ -57,9 +74,9 @@ class DetailsVC: UIViewController {
         navBarCustomization()
         randomizeCardCustomization()
         setTheGoalCustomization()
-        usePictureCustomization()
         beginButCustomization()
         addNewWordsCustomization()
+        NotificationCenter.default.addObserver(self, selector: #selector(languageDidChange(sender:)), name: .appLanguageDidChange, object: nil)
         }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -69,6 +86,12 @@ class DetailsVC: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         strokeCustomization()
+    }
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        if let menu = parent as? MenuVC{
+            menu.tableView.reloadData()
+        }
     }
     //MARK: - StyleChange Responding
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -94,28 +117,22 @@ class DetailsVC: UIViewController {
     }
 //MARK: - NavigationBar SetUp
     func navBarCustomization(){
-        navigationItem.title = "Source Details"
+        navigationItem.title = "detailsTitle".localized
         navigationController?.navigationBar.titleTextAttributes = NSAttributedString().fontWithoutString(bold: true, size: 23)
         
         let rightButton = UIBarButtonItem(
-            image: UIImage(systemName: "gearshape"),
+            image: UIImage(systemName: "chart.bar"),
             style: .plain,
             target: self,
-            action: #selector(settingsButTap(sender:)))
+            action: #selector(statisticButTap(sender:)))
         self.navigationItem.setRightBarButton(rightButton, animated: true)
         navigationController?.navigationBar.tintColor = .label
-        navigationController?.navigationItem.backButtonTitle = "Menu"
-        }
+        navigationItem.backButtonDisplayMode = .minimal
+    }
     
 //MARK: - RandomCardView SetUp
     func randomizeCardCustomization(){
-        view.addSubview(randomiseCardsView)
-                
-        let label : UILabel = {
-            let label = UILabel()
-            label.attributedText = NSAttributedString().fontWithString(string: "Randomize cards", bold: true, size: 18)
-            return label
-        }()
+        view.addSubview(randomizeCardsView)
         
         let switchForState : UISwitch = {
             let switchForState = UISwitch()
@@ -126,23 +143,20 @@ class DetailsVC: UIViewController {
             return switchForState
         }()
         
-        randomiseCardsView.translatesAutoresizingMaskIntoConstraints = false
-        label.translatesAutoresizingMaskIntoConstraints = false
         switchForState.translatesAutoresizingMaskIntoConstraints = false
-        
-        randomiseCardsView.addSubviews(label, switchForState)
+        randomizeCardsView.addSubviews(randomizeLabel, switchForState)
         
         NSLayoutConstraint.activate([
-            randomiseCardsView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 22),
-            randomiseCardsView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            randomiseCardsView.widthAnchor.constraint(equalToConstant: view.bounds.width - 44),
-            randomiseCardsView.heightAnchor.constraint(lessThanOrEqualToConstant: 60),
+            randomizeCardsView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 35),
+            randomizeCardsView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            randomizeCardsView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.91),
+            randomizeCardsView.heightAnchor.constraint(lessThanOrEqualToConstant: 60),
             
-            label.centerYAnchor.constraint(equalTo: randomiseCardsView.centerYAnchor),
-            label.leadingAnchor.constraint(equalTo: randomiseCardsView.leadingAnchor, constant: 15),
+            randomizeLabel.centerYAnchor.constraint(equalTo: randomizeCardsView.centerYAnchor),
+            randomizeLabel.leadingAnchor.constraint(equalTo: randomizeCardsView.leadingAnchor, constant: 15),
             
-            switchForState.centerYAnchor.constraint(equalTo: randomiseCardsView.centerYAnchor),
-            switchForState.trailingAnchor.constraint(equalTo: randomiseCardsView.trailingAnchor, constant: -25)
+            switchForState.centerYAnchor.constraint(equalTo: randomizeCardsView.centerYAnchor),
+            switchForState.trailingAnchor.constraint(equalTo: randomizeCardsView.trailingAnchor, constant: -25)
         ])
         switchForState.addTarget(self, action: #selector(randomSwitchToggle(sender:)), for: .valueChanged)
     }
@@ -154,34 +168,20 @@ class DetailsVC: UIViewController {
         picker.dataSource = self
         picker.delegate = self
         
-        let label : UILabel = {
-            let label = UILabel()
-            label.attributedText = NSAttributedString(
-                string: "Set the goal",
-                attributes: [NSAttributedString.Key.font :
-                                UIFont(name: "Georgia-BoldItalic", size: 18) ?? UIFont(),
-                             NSAttributedString.Key.foregroundColor :
-                                UIColor.label
-                            ])
-            return label
-        }()
-        
-        setTheGoalView.translatesAutoresizingMaskIntoConstraints = false
-        label.translatesAutoresizingMaskIntoConstraints = false
         picker.translatesAutoresizingMaskIntoConstraints = false
         
-        setTheGoalView.addSubviews(label, picker)
+        setTheGoalView.addSubviews(setTheGoalLabel, picker)
         
         NSLayoutConstraint.activate([
-            setTheGoalView.topAnchor.constraint(equalTo: self.randomiseCardsView.bottomAnchor, constant: 23),
+            setTheGoalView.topAnchor.constraint(equalTo: self.randomizeCardsView.bottomAnchor, constant: 23),
             setTheGoalView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            setTheGoalView.widthAnchor.constraint(equalToConstant: view.bounds.width - 44),
+            setTheGoalView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.91),
             setTheGoalView.heightAnchor.constraint(equalToConstant: 60),
             
-            label.leadingAnchor.constraint(equalTo: setTheGoalView.leadingAnchor, constant: 15),
-            label.centerYAnchor.constraint(equalTo: setTheGoalView.centerYAnchor),
+            setTheGoalLabel.leadingAnchor.constraint(equalTo: setTheGoalView.leadingAnchor, constant: 15),
+            setTheGoalLabel.centerYAnchor.constraint(equalTo: setTheGoalView.centerYAnchor),
             
-            picker.trailingAnchor.constraint(equalTo: setTheGoalView.trailingAnchor, constant: 0),
+            picker.trailingAnchor.constraint(equalTo: setTheGoalView.trailingAnchor),
             picker.centerYAnchor.constraint(equalTo: setTheGoalView.centerYAnchor),
             picker.widthAnchor.constraint(equalTo: setTheGoalView.widthAnchor, multiplier: 0.3)
         ])
@@ -194,52 +194,6 @@ class DetailsVC: UIViewController {
         }()
     }
 
-//MARK: - UsePicture SetUp
-    func usePictureCustomization(){
-        view.addSubview(usePictureView)
-        usePictureView.translatesAutoresizingMaskIntoConstraints = false
-        
-        let label : UILabel = {
-            let label = UILabel()
-
-            label.attributedText = NSAttributedString(
-                string: "Use pictures",
-                attributes: [NSAttributedString.Key.font :
-                                UIFont(name: "Georgia-BoldItalic", size: 18) ?? UIFont(),
-                             NSAttributedString.Key.foregroundColor :
-                                UIColor.label
-                            ])
-            return label
-        }()
-        
-        let switchForState : UISwitch = {
-            let switchForState = UISwitch()
-            switchForState.onTintColor = .systemGray2
-            switchForState.tintColor = .systemBackground
-            switchForState.setOn(false, animated: true)
-            switchForState.addTarget(self, action: #selector(usePicturesSwitchToggle(sender:)), for: .valueChanged)
-            return switchForState
-        }()
-        
-        label.translatesAutoresizingMaskIntoConstraints = false
-        switchForState.translatesAutoresizingMaskIntoConstraints = false
-        
-        usePictureView.addSubviews(label, switchForState)
-        
-        NSLayoutConstraint.activate([
-            usePictureView.topAnchor.constraint(equalTo: self.setTheGoalView.bottomAnchor, constant: 23),
-            usePictureView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            usePictureView.widthAnchor.constraint(equalToConstant: view.bounds.width - 44),
-            usePictureView.heightAnchor.constraint(lessThanOrEqualToConstant: 60),
-            
-            label.centerYAnchor.constraint(equalTo: usePictureView.centerYAnchor),
-            label.leadingAnchor.constraint(equalTo: usePictureView.leadingAnchor, constant: 15),
-            
-            switchForState.centerYAnchor.constraint(equalTo: usePictureView.centerYAnchor),
-            switchForState.trailingAnchor.constraint(equalTo: usePictureView.trailingAnchor, constant: -25)
-        ])
-
-    }
 //MARK: - AddNewWord SetUp
     func addNewWordsCustomization(){
         view.addSubview(addNewWordsBut)
@@ -248,7 +202,7 @@ class DetailsVC: UIViewController {
         NSLayoutConstraint.activate([
             addNewWordsBut.bottomAnchor.constraint(equalTo: self.beginBut.topAnchor, constant: -23),
             addNewWordsBut.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            addNewWordsBut.widthAnchor.constraint(equalToConstant: view.bounds.width - 44),
+            addNewWordsBut.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.91),
             addNewWordsBut.heightAnchor.constraint(equalToConstant: 55)
         ])
         addNewWordsBut.addTargetTouchBegin()
@@ -264,7 +218,7 @@ class DetailsVC: UIViewController {
         NSLayoutConstraint.activate([
             beginBut.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -11),
             beginBut.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            beginBut.widthAnchor.constraint(equalToConstant: view.bounds.width - 44),
+            beginBut.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.91),
             beginBut.heightAnchor.constraint(equalToConstant: 55)
             ])
         beginBut.addTarget(self, action: #selector(startButtonTap(sender: )), for: .touchUpInside)
@@ -274,17 +228,13 @@ class DetailsVC: UIViewController {
     }
 
 //MARK: - Actions
-    @objc func settingsButTap(sender: Any){
+    @objc func statisticButTap(sender: Any){
         let vc = LoadDataVC()
         self.present(vc, animated: true)
     }
     @objc func randomSwitchToggle(sender: UISwitch){
         random = sender.isOn
     }
-    @objc func usePicturesSwitchToggle(sender: Any){
-        
-    }
-    
     
     @objc func startButtonTap(sender: UIButton){
         let vc = MainGameVC()
@@ -305,6 +255,21 @@ class DetailsVC: UIViewController {
         let vc = AddWordsVC()
         vc.editableDict = dictionary
         navigationController?.pushViewController(vc, animated: true)
+    }
+    @objc func languageDidChange(sender: Any){
+        self.navigationItem.title = "detailsTitle".localized
+        randomizeLabel.text = "randomize".localized
+        setTheGoalLabel.text = "goal".localized
+        
+        addNewWordsBut.setAttributedTitle(NSAttributedString().fontWithString(
+            string: "addWords".localized,
+            bold: true,
+            size: 20), for: .normal)
+
+        beginBut.setAttributedTitle(NSAttributedString().fontWithString(
+            string: "start".localized,
+            bold: true,
+            size: 18), for: .normal)
     }
 }
 extension DetailsVC: UIPickerViewDelegate{
