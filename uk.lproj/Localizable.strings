@@ -23,6 +23,9 @@
 
 "notificationItem" = "Повідомлення";
 //Items for Search
+"searchBarPosition" = "Розташування пошуку";
+"top" = "Зверху";
+"bottom" = "Знизу";
 //MARK: - AddDictionary or WordsVC
 "addDictTitle" = "Створення";
 "addWordTitle" = "Додавання";
@@ -59,7 +62,8 @@
 "frequency" = "Нагадувати";
 "chooseTime" = "Час";
 //Frequency Option
-"every" = "Кожен";
-"day" = "день";
+"everyDay" = "Кожен день";
 "onceAWeek" = "Раз на тиждень";
+"onWeekdays" = "У будні";
+"onTheWeekend" = "На вихідних";
 

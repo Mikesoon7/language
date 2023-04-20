@@ -17,6 +17,9 @@ class SettingsData {
         var language: AppLanguage
         var notification: AppNotification
         
+        var notificationFrequency: AppNotificationFrequency
+        var notificationTime: Date
+        
         var searchBar: AppSearchBarPosition
     }
     
@@ -52,12 +55,17 @@ class SettingsData {
         case allowed = "Allowed"
         case notAllowed = "Not allowed"
     }
-    
+    enum AppNotificationFrequency: String, Codable{
+        case everyDay = "Every day"
+        case onceAWeek = "Once a week"
+        case onTheWeek = "On weekdays"
+        case onTheWeekend = "On the Weekend"
+    }
     enum AppSearchBarPosition: String, Codable{
         case top = "Top"
         case bottom = "Bottom"
     }
-    
+        
     //MARK: - Saving Settings
     func save(){
         if let encodeSettings = try? JSONEncoder().encode(settings){
@@ -70,7 +78,7 @@ class SettingsData {
            let decodedSettings = try? JSONDecoder().decode(Settings.self, from: savedSettings){
             return decodedSettings
         } else {
-            return Settings(theme: .deviceSettings, language: .english, notification: .notAllowed, searchBar: .top)
+            return Settings(theme: .deviceSettings, language: .english, notification: .notAllowed, notificationFrequency: .everyDay, notificationTime: .distantFuture, searchBar: .top)
         }
     }
     //MARK: - Updating Settings with unspesified type of data
@@ -96,8 +104,10 @@ class SettingsData {
         } else if let notification = newValue as? AppNotification{
             settings.notification = notification
             NotificationCenter.default.post(name: .appNotificationSettingsDidChange, object: nil)
-            
-            
+        } else if let frequency = newValue as? AppNotificationFrequency{
+            settings.notificationFrequency = frequency
+        } else if let time = newValue as? Date {
+            settings.notificationTime = time
         } else if let searchPlace = newValue as? AppSearchBarPosition{
             settings.searchBar = searchPlace
             NotificationCenter.default.post(name: .appSearchBarPositionDidChange, object: nil)
@@ -117,8 +127,6 @@ class SettingsData {
             userInterfaceStyle = .dark
         case .deviceSettings:
             userInterfaceStyle = .unspecified
-        default:
-            break
         }
         (UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate)?.window?.overrideUserInterfaceStyle = userInterfaceStyle
 
@@ -142,6 +150,9 @@ enum SettingsItems{
     case theme(SettingsData.AppTheme)
     case language(SettingsData.AppLanguage)
     case notification(SettingsData.AppNotification)
+    
+    case notificationFrequency(SettingsData.AppNotificationFrequency)
+    case notificationTime(Date)
     // Second Section
     case searchBarPosition(SettingsData.AppSearchBarPosition)
     
@@ -153,8 +164,12 @@ enum SettingsItems{
             return LanguageChangeManager.shared.localizedString(forKey: "languageItem")
         case .notification:
             return LanguageChangeManager.shared.localizedString(forKey: "notificationItem")
+        case .notificationFrequency:
+            return "frequency".localized
+        case .notificationTime:
+            return "chooseTime".localized
         case .searchBarPosition:
-            return LanguageChangeManager.shared.localizedString(forKey: "searchSection")
+            return "searchSection".localized
         default: return " "
         }
         
@@ -166,7 +181,13 @@ enum SettingsItems{
         case .language(let language):
             return language.rawValue
         case .notification:
-            return ""
+            return "" 
+        case .notificationFrequency(let frequency):
+            return frequency.rawValue
+        case .notificationTime(let time):
+            let formater = DateFormatter()
+            formater.dateFormat = "HH:mm"
+            return formater.string(from: time)
         case .searchBarPosition(let position):
             return position.rawValue
         default:
@@ -187,6 +208,16 @@ enum SettingsItems{
         case .notification:
             if let notification = SettingsData.AppNotification(rawValue: newValue){
                 print("Notifiction should be recieved")
+            }
+        case .notificationTime:
+            let formatter = DateFormatter()
+            formatter.dateFormat = "HH:mm"
+            if let newTime = formatter.date(from: newValue) {
+                SettingsData.shared.update(newValue: newTime)
+            }
+        case .notificationFrequency:
+            if let newFrequency = SettingsData.AppNotificationFrequency(rawValue: newValue){
+                SettingsData.shared.update(newValue: newFrequency)
             }
         case .searchBarPosition:
             if let newPosition = SettingsData.AppSearchBarPosition(rawValue: newValue){

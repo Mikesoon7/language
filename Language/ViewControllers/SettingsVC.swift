@@ -194,7 +194,7 @@ extension SettingsVC: UITableViewDelegate{
             handler: nil)
         alertMessage.addAction(action4)
             if indexPath.section == 0 && indexPath.row == 3 {
-                let vc = NotificationViewController()
+                let vc = NotificationVC()
                 
                 vc.modalPresentationStyle = .overFullScreen
                 self.present(vc, animated: false)

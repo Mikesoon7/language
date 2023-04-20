@@ -1,19 +1,15 @@
 //
-//  SettingsTBCell.swift
+//  NotificationSwitchCell.swift
 //  Language
 //
-//  Created by Star Lord on 04/04/2023.
+//  Created by Star Lord on 13/04/2023.
 //
 
 import UIKit
 
-protocol NotificationCellDelegate: AnyObject{
-    func datePickerValueChanged(_ cell: SettingsTextCell, date: Date)
-}
-class SettingsTextCell: UITableViewCell {
+class NotificationSwitchCell: UITableViewCell {
+    let identifier = "notificationSwitchCell"
     
-    let identifier = "settingsTextCell"
-
     let view : UIView = {
         let view = UIView()
         view.backgroundColor = .systemGray6.withAlphaComponent(0.8)
@@ -22,25 +18,16 @@ class SettingsTextCell: UITableViewCell {
     }()
     let label : UILabel = {
         let label = UILabel()
+        label.text = "allowNotification".localized
         label.textColor = .label
         label.textAlignment = .left
         label.translatesAutoresizingMaskIntoConstraints = false
-
         return label
     }()
-    let value : UILabel = {
-        let label = UILabel()
-        label.textColor = .label
-        label.textAlignment = .right
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
-    let image : UIImageView = {
-        let view = UIImageView()
-        view.image = UIImage(systemName: "chevron.right")
-        view.tintColor = .label
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
+    var control : UISwitch = {
+        let control = UISwitch()
+        control.translatesAutoresizingMaskIntoConstraints = false
+        return control
     }()
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -49,30 +36,21 @@ class SettingsTextCell: UITableViewCell {
     required init?(coder: NSCoder) {
         fatalError("Unable to use Coder")
     }
-    override func prepareForReuse() {
-        super.prepareForReuse()
-        label.text = nil
-        value.text = nil
-    }
-
     func cellViewsCustomization(){
         self.contentView.addSubview(view)
-        view.addSubviews(label, value,image)
+        view.addSubviews(label, control)
         
         NSLayoutConstraint.activate([
             view.topAnchor.constraint(equalTo: contentView.topAnchor),
             view.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             view.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             view.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-
+            
             label.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 15),
             label.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             
-            image.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            image.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -15),
-            
-            value.trailingAnchor.constraint(equalTo: image.leadingAnchor, constant: -5),
-            value.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+            control.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            control.centerXAnchor.constraint(equalTo: view.trailingAnchor, constant: -40)
         ])
     }
 }

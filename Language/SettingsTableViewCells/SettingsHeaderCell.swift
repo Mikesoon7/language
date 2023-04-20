@@ -8,7 +8,7 @@
 import UIKit
 
 class SettingsHeaderCell: UITableViewCell {
-    let identifier = "headerCell"
+    let identifier = "settingsHeaderCell"
     
     let label: UILabel = {
         let label = UILabel()

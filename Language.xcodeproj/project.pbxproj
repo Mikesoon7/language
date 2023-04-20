@@ -10,7 +10,7 @@
 		02795F90A406A1776236D496 /* Pods_Language.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CB968C1BC0BCD6C51D7C2C9 /* Pods_Language.framework */; };
 		950CB66D35A3A66A8CBFD5C7 /* Pods_LanguageTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A8585DE4C793163678CE51E0 /* Pods_LanguageTests.framework */; };
 		9A0BD53A29DC531F00845328 /* SettingsTextCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A0BD53929DC531F00845328 /* SettingsTextCell.swift */; };
-		9A0BD53C29DD721D00845328 /* UserSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A0BD53B29DD721D00845328 /* UserSettings.swift */; };
+		9A0BD53C29DD721D00845328 /* OldUserSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A0BD53B29DD721D00845328 /* OldUserSettings.swift */; };
 		9A1F67C829DFFD39003993C5 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 9A1F67CA29DFFD39003993C5 /* Localizable.strings */; };
 		9A1F67CF29E166C4003993C5 /* LanguageChangeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A1F67CE29E166C4003993C5 /* LanguageChangeManager.swift */; };
 		9A1F67D129E18BBE003993C5 /* SettingsImageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A1F67D029E18BBE003993C5 /* SettingsImageCell.swift */; };
@@ -34,7 +34,9 @@
 		9AAECFBE29B5052F00439C0B /* SettingsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AAECFBD29B5052F00439C0B /* SettingsVC.swift */; };
 		9AAECFC029B5055100439C0B /* EndVc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AAECFBF29B5055100439C0B /* EndVc.swift */; };
 		9AAECFC229B50A5300439C0B /* AddWordsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AAECFC129B50A5300439C0B /* AddWordsVC.swift */; };
-		9AB2453D29E6A5E900E05E59 /* NotificationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB2453C29E6A5E900E05E59 /* NotificationViewController.swift */; };
+		9AB2453D29E6A5E900E05E59 /* NotificationVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB2453C29E6A5E900E05E59 /* NotificationVC.swift */; };
+		9AB2453F29E8556100E05E59 /* NotificationSwitchCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB2453E29E8556100E05E59 /* NotificationSwitchCell.swift */; };
+		9AB2454329E9498A00E05E59 /* AppData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB2454229E9498A00E05E59 /* AppData.swift */; };
 		9AB40FF229CC6A9D00353FFC /* TableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB40FF129CC6A9D00353FFC /* TableViewCell.swift */; };
 		9AE509312993C85A00D86DD7 /* LoadDataVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AE509302993C85A00D86DD7 /* LoadDataVC.swift */; };
 		9AE50933299695B400D86DD7 /* Menu VC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AE50932299695B400D86DD7 /* Menu VC.swift */; };
@@ -70,7 +72,7 @@
 		7CB968C1BC0BCD6C51D7C2C9 /* Pods_Language.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Language.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		92E1855A1F6B5D3EF2849FC2 /* Pods-Language-LanguageUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Language-LanguageUITests.release.xcconfig"; path = "Target Support Files/Pods-Language-LanguageUITests/Pods-Language-LanguageUITests.release.xcconfig"; sourceTree = "<group>"; };
 		9A0BD53929DC531F00845328 /* SettingsTextCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTextCell.swift; sourceTree = "<group>"; };
-		9A0BD53B29DD721D00845328 /* UserSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettings.swift; sourceTree = "<group>"; };
+		9A0BD53B29DD721D00845328 /* OldUserSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OldUserSettings.swift; sourceTree = "<group>"; };
 		9A1F67C929DFFD39003993C5 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		9A1F67CC29E00253003993C5 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
 		9A1F67CD29E00262003993C5 /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = uk.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -100,7 +102,9 @@
 		9AAECFBD29B5052F00439C0B /* SettingsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsVC.swift; sourceTree = "<group>"; };
 		9AAECFBF29B5055100439C0B /* EndVc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndVc.swift; sourceTree = "<group>"; };
 		9AAECFC129B50A5300439C0B /* AddWordsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddWordsVC.swift; sourceTree = "<group>"; };
-		9AB2453C29E6A5E900E05E59 /* NotificationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationViewController.swift; sourceTree = "<group>"; };
+		9AB2453C29E6A5E900E05E59 /* NotificationVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationVC.swift; sourceTree = "<group>"; };
+		9AB2453E29E8556100E05E59 /* NotificationSwitchCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationSwitchCell.swift; sourceTree = "<group>"; };
+		9AB2454229E9498A00E05E59 /* AppData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppData.swift; sourceTree = "<group>"; };
 		9AB40FF129CC6A9D00353FFC /* TableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableViewCell.swift; sourceTree = "<group>"; };
 		9AE509302993C85A00D86DD7 /* LoadDataVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadDataVC.swift; sourceTree = "<group>"; };
 		9AE50932299695B400D86DD7 /* Menu VC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Menu VC.swift"; sourceTree = "<group>"; };
@@ -174,6 +178,7 @@
 				9A1F67D329E3F69A003993C5 /* SettingsHeaderCell.swift */,
 				9A0BD53929DC531F00845328 /* SettingsTextCell.swift */,
 				9A1F67D029E18BBE003993C5 /* SettingsImageCell.swift */,
+				9AB2453E29E8556100E05E59 /* NotificationSwitchCell.swift */,
 			);
 			path = SettingsTableViewCells;
 			sourceTree = "<group>";
@@ -214,7 +219,8 @@
 				9A7B91CE298D6D9900E60CDD /* Assets.xcassets */,
 				9A7B91D3298D6D9900E60CDD /* Info.plist */,
 				9A22B8E8299A9FDA00B1ED3A /* Data.swift */,
-				9A0BD53B29DD721D00845328 /* UserSettings.swift */,
+				9AB2454229E9498A00E05E59 /* AppData.swift */,
+				9A0BD53B29DD721D00845328 /* OldUserSettings.swift */,
 				9A1F67CE29E166C4003993C5 /* LanguageChangeManager.swift */,
 				9AA7AB5329AE3CF400CCC9F4 /* Extensions.swift */,
 				9A9970FD29DB2D86007EE635 /* LaunchAnimation.swift */,
@@ -268,7 +274,7 @@
 				9AAECFC129B50A5300439C0B /* AddWordsVC.swift */,
 				9AFFCE8029A4DFEE00C12B94 /* DetailsVC.swift */,
 				9AAECFBD29B5052F00439C0B /* SettingsVC.swift */,
-				9AB2453C29E6A5E900E05E59 /* NotificationViewController.swift */,
+				9AB2453C29E6A5E900E05E59 /* NotificationVC.swift */,
 				9AE509302993C85A00D86DD7 /* LoadDataVC.swift */,
 				9A9970FB29D9D661007EE635 /* SearchVC.swift */,
 				9AFFCE7C299E747400C12B94 /* StatisticVC.swift */,
@@ -541,8 +547,10 @@
 				9AE509312993C85A00D86DD7 /* LoadDataVC.swift in Sources */,
 				9AE509352997C07700D86DD7 /* AddDictionaryVC.swift in Sources */,
 				9AA71C6429C84C65008A193B /* ViewModel.swift in Sources */,
+				9AB2454329E9498A00E05E59 /* AppData.swift in Sources */,
 				9AA7AB5429AE3CF400CCC9F4 /* Extensions.swift in Sources */,
 				9A1F67CF29E166C4003993C5 /* LanguageChangeManager.swift in Sources */,
+				9AB2453F29E8556100E05E59 /* NotificationSwitchCell.swift in Sources */,
 				9A9970FC29D9D662007EE635 /* SearchVC.swift in Sources */,
 				9A0BD53A29DC531F00845328 /* SettingsTextCell.swift in Sources */,
 				9AAECFC029B5055100439C0B /* EndVc.swift in Sources */,
@@ -553,8 +561,8 @@
 				9A7B91C8298D6D9600E60CDD /* SceneDelegate.swift in Sources */,
 				9AFFCE8129A4DFEF00C12B94 /* DetailsVC.swift in Sources */,
 				9AAECFBE29B5052F00439C0B /* SettingsVC.swift in Sources */,
-				9AB2453D29E6A5E900E05E59 /* NotificationViewController.swift in Sources */,
-				9A0BD53C29DD721D00845328 /* UserSettings.swift in Sources */,
+				9AB2453D29E6A5E900E05E59 /* NotificationVC.swift in Sources */,
+				9A0BD53C29DD721D00845328 /* OldUserSettings.swift in Sources */,
 				9AA71C5F29C2FC76008A193B /* CardCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

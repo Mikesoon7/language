@@ -8,7 +8,7 @@
 import UIKit
 
 class SettingsImageCell: UITableViewCell {
-    let identifier = "imageCell"
+    let identifier = "settingsImageCell"
 
     let segmentControl: UISegmentedControl = {
         let control = UISegmentedControl()

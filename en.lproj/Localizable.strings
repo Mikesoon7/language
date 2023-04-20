@@ -23,6 +23,9 @@
 
 "notificationItem" = "Notifications";
 //Items for Search
+"searchBarPosition" = "Search bar position";
+"top" = "Top";
+"bottom" = "Bottom";
 //MARK: - AddDictionary or WordsVC
 "addDictTitle" = "Dictionary creation";
 "addWordTitle" = "Text Uploading";
@@ -59,6 +62,7 @@
 "frequency" = "Frequency";
 "chooseTime" = "Time";
 //Frequency Option
-"every" = "Every";
-"day" = "day";
+"everyDay" = "Every day";
 "onceAWeek" = "Once a week";
+"onWeekdays" = "On the weekday";
+"onTheWeekend" = "On the weekend";
