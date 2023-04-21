@@ -34,8 +34,8 @@ class DataForCells: Hashable {
     
 }
 
-class AppData{
-    static let shared = AppData()
+class DataForDictionaries{
+    static let shared = DataForDictionaries()
 
     var availableDictionary = [DictionaryDetails]()
     
@@ -43,7 +43,7 @@ class AppData{
 
     func addDictionary(language: String, text: String){
         print(availableDictionary.count)
-        availableDictionary.append(DictionaryDetails.init(language: language, dictionary: AppData().divider(text: text)))
+        availableDictionary.append(DictionaryDetails.init(language: language, dictionary: DataForDictionaries().divider(text: text)))
         print(availableDictionary.count)
     }
     func divider(text: String) -> [DataForCells]{

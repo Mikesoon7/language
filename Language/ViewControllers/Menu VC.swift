@@ -31,12 +31,11 @@ class MenuVC: UIViewController {
         tableViewCustomization()
         tabBarCustomization()
         
-        NotificationCenter.default.addObserver(self, selector: #selector(change(sender:)), name: .appLanguageDidChange, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(languageDidChange(sender:)), name: .appLanguageDidChange, object: nil)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-//        perform(#selector(change(sender:)))
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -112,8 +111,20 @@ class MenuVC: UIViewController {
         let vc = StatisticVC()
         navigationController?.present(vc, animated: true)
         }
-    @objc func change(sender: Any){
-        navigationItem.title = LanguageChangeManager.shared.localizedString(forKey: "navBarTitle")
+    @objc func languageDidChange(sender: Any){
+        navigationItem.title = "navBarTitle".localized
+        if let barItems = tabBarController?.tabBar.items{
+            for index in 0..<(barItems.count){
+                barItems[index].title = {
+                    switch index{
+                    case 0: return  "tabBarDictionaries".localized
+                    case 1: return  "tabBarSearch".localized
+                    case 2: return  "tabBarSettings".localized
+                    default: return " "
+                    }
+                }()
+            }
+        }
         tableView.reloadData()
     }
 
@@ -130,7 +141,7 @@ extension MenuVC: UITableViewDelegate{
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return AppData.shared.availableDictionary.count + 1
+        return DataForDictionaries.shared.availableDictionary.count + 1
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -138,7 +149,7 @@ extension MenuVC: UITableViewDelegate{
             self.navigationController?.pushViewController(AddDictionaryVC(), animated: true)
         } else {
             let vc = DetailsVC()
-            vc.dictionary = AppData.shared.availableDictionary[indexPath.section]
+            vc.dictionary = DataForDictionaries.shared.availableDictionary[indexPath.section]
             self.navigationController?.pushViewController(vc, animated: true)
         }
     }
@@ -147,7 +158,7 @@ extension MenuVC: UITableViewDelegate{
 extension MenuVC: UITableViewDataSource{
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let dictionary = AppData.shared.availableDictionary
+        let dictionary = DataForDictionaries.shared.availableDictionary
         let cell = tableView.dequeueReusableCell(withIdentifier: "dictCell", for: indexPath) as? TableViewCell
         let addCell = tableView.dequeueReusableCell(withIdentifier: "addCell", for: indexPath) as? TableViewAddCell
         

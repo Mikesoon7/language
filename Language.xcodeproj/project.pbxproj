@@ -10,7 +10,6 @@
 		02795F90A406A1776236D496 /* Pods_Language.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CB968C1BC0BCD6C51D7C2C9 /* Pods_Language.framework */; };
 		950CB66D35A3A66A8CBFD5C7 /* Pods_LanguageTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A8585DE4C793163678CE51E0 /* Pods_LanguageTests.framework */; };
 		9A0BD53A29DC531F00845328 /* SettingsTextCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A0BD53929DC531F00845328 /* SettingsTextCell.swift */; };
-		9A0BD53C29DD721D00845328 /* OldUserSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A0BD53B29DD721D00845328 /* OldUserSettings.swift */; };
 		9A1F67C829DFFD39003993C5 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 9A1F67CA29DFFD39003993C5 /* Localizable.strings */; };
 		9A1F67CF29E166C4003993C5 /* LanguageChangeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A1F67CE29E166C4003993C5 /* LanguageChangeManager.swift */; };
 		9A1F67D129E18BBE003993C5 /* SettingsImageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A1F67D029E18BBE003993C5 /* SettingsImageCell.swift */; };
@@ -72,7 +71,6 @@
 		7CB968C1BC0BCD6C51D7C2C9 /* Pods_Language.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Language.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		92E1855A1F6B5D3EF2849FC2 /* Pods-Language-LanguageUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Language-LanguageUITests.release.xcconfig"; path = "Target Support Files/Pods-Language-LanguageUITests/Pods-Language-LanguageUITests.release.xcconfig"; sourceTree = "<group>"; };
 		9A0BD53929DC531F00845328 /* SettingsTextCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTextCell.swift; sourceTree = "<group>"; };
-		9A0BD53B29DD721D00845328 /* OldUserSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OldUserSettings.swift; sourceTree = "<group>"; };
 		9A1F67C929DFFD39003993C5 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		9A1F67CC29E00253003993C5 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
 		9A1F67CD29E00262003993C5 /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = uk.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -220,7 +218,6 @@
 				9A7B91D3298D6D9900E60CDD /* Info.plist */,
 				9A22B8E8299A9FDA00B1ED3A /* Data.swift */,
 				9AB2454229E9498A00E05E59 /* AppData.swift */,
-				9A0BD53B29DD721D00845328 /* OldUserSettings.swift */,
 				9A1F67CE29E166C4003993C5 /* LanguageChangeManager.swift */,
 				9AA7AB5329AE3CF400CCC9F4 /* Extensions.swift */,
 				9A9970FD29DB2D86007EE635 /* LaunchAnimation.swift */,
@@ -562,7 +559,6 @@
 				9AFFCE8129A4DFEF00C12B94 /* DetailsVC.swift in Sources */,
 				9AAECFBE29B5052F00439C0B /* SettingsVC.swift in Sources */,
 				9AB2453D29E6A5E900E05E59 /* NotificationVC.swift in Sources */,
-				9A0BD53C29DD721D00845328 /* OldUserSettings.swift in Sources */,
 				9AA71C5F29C2FC76008A193B /* CardCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -191,7 +191,7 @@ class AddDictionaryVC: UIViewController {
         guard textView.hasText && textView.textColor != .lightGray else {return self.present(insertTextAllert, animated: true)}
         guard nameInputField.hasText else { return self.present(insertNameAllert, animated: true)}
         
-        AppData.shared.addDictionary(language: nameInputField.text!, text: textView.text)
+        DataForDictionaries.shared.addDictionary(language: nameInputField.text!, text: textView.text)
         navigationItem.rightBarButtonItem = nil
         view.becomeFirstResponder()
         navigationController?.popViewController(animated: true)

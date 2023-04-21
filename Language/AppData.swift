@@ -25,7 +25,7 @@ class UserSettings{
         var notification: AppNotification
         
         var notificationFrequency: AppNotificationFrequency
-        var notificattionTime: AppNotificationTime
+        var notificationTime: AppNotificationTime
         
         var searchBar: AppSearchBarOnTop
     }
@@ -130,7 +130,7 @@ class UserSettings{
         }
     }
     func load() -> Settings{
-        let standartSettings = Settings(theme: .system, language: .english, notification: .notAllowed, notificationFrequency: .everyDay, notificattionTime: .initialTime, searchBar: .onTop)
+        let standartSettings = Settings(theme: .system, language: .english, notification: .notAllowed, notificationFrequency: .everyDay, notificationTime: .initialTime, searchBar: .onTop)
         
         if let userData = UserDefaults.standard.data(forKey: UserSettings.settingsKey){
             let decodedData = try? JSONDecoder().decode(Settings.self, from: userData)
@@ -146,25 +146,88 @@ class UserSettings{
             settings.theme = newTheme
             NotificationCenter.default.post(name: .appThemeDidChange, object: nil)
             
-            var userInterfaceStyle = UIUserInterfaceStyle.unspecified
-            switch newTheme{
-            case .dark:
-                return userInterfaceStyle = .dark
-            case .light:
-                return userInterfaceStyle = .light
-            case .system:
-                return userInterfaceStyle = .unspecified
-            }
+            var userInterfaceStyle = {
+                switch newTheme{
+                case .dark:
+                    return UIUserInterfaceStyle.dark
+                case .light:
+                    return UIUserInterfaceStyle.light
+                case .system:
+                    return UIUserInterfaceStyle.unspecified
+                }
+            }()
             (UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate)?.window?.overrideUserInterfaceStyle = userInterfaceStyle
         } else if let notificationAvailability = newValue as? AppNotification{
             settings.notification = notificationAvailability
         } else if let notificationFrequency = newValue as? AppNotificationFrequency{
             settings.notificationFrequency = notificationFrequency
         } else if let notificationTime = newValue as? Date{
-            settings.notificattionTime = AppNotificationTime.setTime(notificationTime)
+            settings.notificationTime = AppNotificationTime.setTime(notificationTime)
         } else if let searchBarPosition = newValue as? AppSearchBarOnTop{
             settings.searchBar = searchBarPosition
         }
         save()
+    }
+    func use(){
+        let data = load()
+        
+        (UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate)?.window?.overrideUserInterfaceStyle = {
+            switch data.theme{
+            case .dark:
+                return UIUserInterfaceStyle.dark
+            case .light:
+                return UIUserInterfaceStyle.light
+            case .system:
+                return UIUserInterfaceStyle.unspecified
+            }
+        }()
+        let languageCode: String
+        switch data.language {
+        case .english:
+            languageCode = "en"
+        case .russian:
+            languageCode = "ru"
+        case .ukrainian:
+            languageCode = "uk"
+        }
+        LanguageChangeManager.shared.changeLanguage(to: languageCode)
+    }
+}
+
+enum UserSettingsPresented{
+    case header(String)
+    
+    case theme(UserSettings.AppTheme)
+    case language(UserSettings.AppLanguage)
+    case notifications(UserSettings.AppNotification)
+    case searchBar(UserSettings.AppSearchBarOnTop)
+    
+    var title: String{
+        switch self{
+        case .header(let title):
+            return title
+        case .theme(let title):
+            return title.title
+        case .language(let title):
+            return title.title
+        case .notifications(let title):
+            return title.title
+        case .searchBar(let title):
+            return title.title
+        }
+    }
+    var value: Any{
+        switch self{
+        case .header(_):
+            return ""
+        case .theme(let value):
+            return value.value
+        case .language(let value):
+            return value.value
+        case .notifications(let value):
+            return value.value
+        case .searchBar(let value):
+            return value.value
+        }
     }
 }

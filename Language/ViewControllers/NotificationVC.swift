@@ -303,8 +303,8 @@ extension NotificationVC: UITableViewDelegate, UITableViewDataSource{
             textCell?.value.text = data?.notificationFrequency.value.value
             return textCell ?? UITableViewCell()
         case (1, 1):
-            textCell?.label.text = data?.notificattionTime.title
-            textCell?.value.text = data?.notificattionTime.value.formatted(date: .omitted, time: .shortened)
+            textCell?.label.text = data?.notificationTime.title
+            textCell?.value.text = data?.notificationTime.value.formatted(date: .omitted, time: .shortened)
             return textCell ?? UITableViewCell()
         default: return UITableViewCell()
         }
@@ -325,7 +325,7 @@ extension NotificationVC: UITableViewDelegate, UITableViewDataSource{
         case (1, 1):
             UIView.animate(withDuration: 0.2, delay: 0.2) {
                 self.animateTransitionTo(self.constantForThirdStage)
-                self.timePicker.date = self.data?.notificattionTime.value ?? Date()
+                self.timePicker.date = self.data?.notificationTime.value ?? Date()
                 self.timePicker.alpha = 1
             }
         default: return
