@@ -7,21 +7,54 @@
 
 import UIKit
 
-//struct Sectionss{
-//    var title: String
-//    var options: [SettingsItems]
-//    mutating func reload(index: Int) -> String{
-//        switch index{
-//        case 0: return LanguageChangeManager.shared.localizedString(forKey: "generalSection")
-//        case 1: return LanguageChangeManager.shared.localizedString(forKey: "searchSection")
-//        default: return " "
-//        }
-//    }
-//}
 struct Sections{
     var title: String
     var data: [UserSettingsPresented]
 }
+class SignUpHeaderView: UIView{
+    let imageView: UIImageView = {
+        let view = UIImageView()
+        view.image = UIImage(named: "avatar")
+        view.layer.cornerRadius = view.bounds.width / 2
+        view.clipsToBounds = true
+        return view
+    }()
+    let label: UILabel = {
+        let label = UILabel()
+        label.text = "propositionForSign".localized
+        label.font = UIFont.systemFont(ofSize: 17, weight: .semibold)
+        label.numberOfLines = 2
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.tintColor = .label
+        return label
+    }()
+        
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        viewCustomization()
+    }
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    func viewCustomization(){
+        self.setUpBorderedView(true)
+        self.addSubviews(imageView, label)
+        
+        NSLayoutConstraint.activate([
+            self.heightAnchor.constraint(equalToConstant: 80),
+            
+            imageView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 15),
+            imageView.centerYAnchor.constraint(equalTo: self.centerYAnchor),
+            imageView.heightAnchor.constraint(equalToConstant: 60),
+            imageView.widthAnchor.constraint(equalTo: imageView.heightAnchor),
+
+            label.leadingAnchor.constraint(equalTo: imageView.trailingAnchor, constant: 15),
+            label.centerYAnchor.constraint(equalTo: self.centerYAnchor),
+        ])
+    }
+}
+
 class SettingsVC: UIViewController {
     
     let tableView: UITableView = {
@@ -29,7 +62,6 @@ class SettingsVC: UIViewController {
         view.register(SettingsHeaderCell.self, forCellReuseIdentifier: SettingsHeaderCell().identifier)
         view.register(SettingsTextCell.self, forCellReuseIdentifier: SettingsTextCell().identifier)
         view.register(SettingsImageCell.self, forCellReuseIdentifier: SettingsImageCell().identifier)
-        view.rowHeight = 20
         view.backgroundColor = .systemBackground
         view.translatesAutoresizingMaskIntoConstraints = false
         view.separatorStyle = .none
@@ -47,17 +79,6 @@ class SettingsVC: UIViewController {
         UserSettingsPresented.header("searchSection".localized),
         UserSettingsPresented.searchBar(UserSettings.shared.settings.searchBar)])]
     
-//    var settingsItems: [Sectionss] = [
-//        Sectionss(title: LanguageChangeManager.shared.localizedString(forKey: "generalSection"),
-//                 options: [ SettingsItems.header,
-//                            SettingsItems.theme(SettingsData.shared.settings.theme),
-//                            SettingsItems.language(SettingsData.shared.settings.language),
-//                            SettingsItems.notification(SettingsData.shared.settings.notification)]),
-//        Sectionss(title: LanguageChangeManager.shared.localizedString(forKey: "searchSection"),
-//                 options: [SettingsItems.header,
-//                           SettingsItems.searchBarPosition(SettingsData.shared.settings.searchBar)])
-//    ]
-//
     var topStroke = CAShapeLayer()
     var bottomStroke = CAShapeLayer()
     
@@ -93,6 +114,7 @@ class SettingsVC: UIViewController {
             }
         }
     }
+    //MARK: - NavigationBar SetUp
     func navBarCustomization(){
         navigationItem.title = "settingsVCTitle".localized
 
@@ -102,7 +124,7 @@ class SettingsVC: UIViewController {
         self.navigationController?.navigationBar.titleTextAttributes = NSAttributedString().fontWithoutString( bold: true, size: 23)
 
     }
-    
+    //MARK: - TableView SetUp
     func tableViewCustomization(){
         view.addSubview(tableView)
         
@@ -125,14 +147,13 @@ class SettingsVC: UIViewController {
         view.layer.addSublayer(topStroke)
         view.layer.addSublayer(bottomStroke)
     }
-
-    //Update data in userDefaults and sending notification through update(_:)
+    //Upfating theme
     func handleThemeSelection(theme: UserSettings.AppTheme, index: IndexPath) {
         settingsData[index.section].data[index.row] = .theme(theme)
         UserSettings.shared.reload(newValue: theme)
         tableView.reloadRows(at: [index], with: .fade)
     }
-    
+    //Updating data and posting notification
     func handleLanguageSelection(language: UserSettings.AppLanguage, index: IndexPath) {
         UserSettings.shared.reload(newValue: language)
         let languageCode: String
@@ -148,7 +169,7 @@ class SettingsVC: UIViewController {
         settingsData[index.section].data[index.row] = .language(language)
     }
     //MARK: - Actions
-    //Updating data for cells and reload table for new language appearence
+    //Language change
     @objc func languageDidChange(sender: Any){
         navigationItem.title = "settingsVCTitle".localized
         tableView.reloadData()
@@ -205,6 +226,8 @@ extension SettingsVC: UITableViewDelegate{
                 
                 vc.modalPresentationStyle = .overFullScreen
                 self.present(vc, animated: false)
+            } else if indexPath.section == 1{
+                
             } else {
                 self.present(alertMessage, animated: true)
             }
@@ -225,6 +248,8 @@ extension SettingsVC: UITableViewDataSource{
                 let headerCell = tableView.dequeueReusableCell(
                     withIdentifier: SettingsHeaderCell().identifier,
                     for: indexPath) as! SettingsHeaderCell
+                headerCell.isUserInteractionEnabled = false
+                headerCell.selectionStyle = .none
                 headerCell.label.text = data.title
                 return headerCell
             case .language(_),
@@ -240,6 +265,8 @@ extension SettingsVC: UITableViewDataSource{
                 let imageCell = tableView.dequeueReusableCell(
                     withIdentifier: SettingsImageCell().identifier,
                     for: indexPath) as! SettingsImageCell
+                imageCell.label.text = data.title
+                imageCell.selectionStyle = .none
                 return imageCell
             }
         }()
@@ -250,10 +277,24 @@ extension SettingsVC: UITableViewDataSource{
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if indexPath.section == 1 && indexPath.row == 1{
-            return 100
+            return 150
         } else {
             return 44
         }
-        
     }
+    
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        if section == 0 {
+            return SignUpHeaderView()
+        }
+        return nil
+    }
+
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        if section == 0 {
+            return 80
+        }
+        return UITableView.automaticDimension
+    }
+
 }

@@ -15,7 +15,7 @@ class LaunchAnimation{
     var label1 : UILabel!
     var label2 : UILabel!
     
-    var userInterfaceStyle = SettingsData.shared.settings.theme.rawValue
+    var userInterfaceStyle = UserSettings.shared.settings.theme
     
     init(bounds: CGRect){
         animationView = {
@@ -123,9 +123,9 @@ class LaunchAnimation{
             let layer = CAShapeLayer()
             layer.strokeColor = {
                 switch userInterfaceStyle{
-                case SettingsData.AppTheme.light.rawValue:
+                case .light:
                     return UIColor.black.cgColor
-                case SettingsData.AppTheme.dark.rawValue:
+                case .dark:
                     return UIColor.white.cgColor
                 default: return UIColor.label.cgColor
                 }

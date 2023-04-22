@@ -26,6 +26,8 @@
 "searchBarPosition" = "Розташування пошуку";
 "top" = "Зверху";
 "bottom" = "Знизу";
+//Items for SignHeader
+"propositionForSign" = "Підключити ваш Apple ID для передачі даних між пристроями та збереження у iCloud";
 //MARK: - AddDictionary or WordsVC
 "addDictTitle" = "Створення";
 "addWordTitle" = "Додавання";
@@ -66,4 +68,6 @@
 "onceAWeek" = "Раз на тиждень";
 "onWeekdays" = "У будні";
 "onTheWeekend" = "На вихідних";
+//MARK: - SearchVC
+"yourWord" = "Введіть текст";
 

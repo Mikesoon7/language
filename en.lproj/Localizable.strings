@@ -26,6 +26,8 @@
 "searchBarPosition" = "Search bar position";
 "top" = "Top";
 "bottom" = "Bottom";
+//Items for SignHeader
+"propositionForSign" = "Connect your Apple ID to pass your data beteen devices and store it in the iCloud";
 //MARK: - AddDictionary or WordsVC
 "addDictTitle" = "Dictionary creation";
 "addWordTitle" = "Text Uploading";
@@ -66,3 +68,5 @@
 "onceAWeek" = "Once a week";
 "onWeekdays" = "On the weekday";
 "onTheWeekend" = "On the weekend";
+//MARK: - SearchVC
+"yourWord" = "Insert your text";

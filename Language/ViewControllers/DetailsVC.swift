@@ -89,8 +89,9 @@ class DetailsVC: UIViewController {
     }
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        if let menu = parent as? MenuVC{
-            menu.tableView.reloadData()
+        if let navController = self.navigationController{
+            let menu = navController.viewControllers.first(where: { $0 is MenuVC}) as? MenuVC
+            menu?.tableView.reloadData()
         }
     }
     //MARK: - StyleChange Responding

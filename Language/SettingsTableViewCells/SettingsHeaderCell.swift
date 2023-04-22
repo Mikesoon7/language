@@ -27,7 +27,7 @@ class SettingsHeaderCell: UITableViewCell {
     }()
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        viewCustomization()
+        cellViewCustomization()
         contentView.isUserInteractionEnabled = false
     }
     required init?(coder: NSCoder) {
@@ -37,7 +37,7 @@ class SettingsHeaderCell: UITableViewCell {
         super.prepareForReuse()
     }
     
-    func viewCustomization(){
+    func cellViewCustomization(){
         contentView.addSubview(view)
         view.addSubview(label)
         

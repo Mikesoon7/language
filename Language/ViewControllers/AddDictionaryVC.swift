@@ -82,7 +82,6 @@ class AddDictionaryVC: UIViewController {
         if let navController = self.navigationController{
             let menu = navController.viewControllers.first(where: { $0 is MenuVC}) as? MenuVC
             menu?.tableView.reloadData()
-        
         }
     }
     //MARK: - StyleChange Responding

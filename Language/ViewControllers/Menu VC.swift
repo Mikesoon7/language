@@ -11,7 +11,7 @@ class MenuVC: UIViewController {
     
     var tableView: UITableView = {
         var tableView = UITableView(frame: CGRect(x: 0, y: 0, width: 0, height: 0), style: .insetGrouped)
-        tableView.register(TableViewCell .self, forCellReuseIdentifier: "dictCell")
+        tableView.register(TableViewCell.self, forCellReuseIdentifier: "dictCell")
         tableView.register(TableViewAddCell.self, forCellReuseIdentifier: "addCell")
         tableView.rowHeight = 104
         tableView.backgroundColor = .systemBackground
@@ -87,8 +87,7 @@ class MenuVC: UIViewController {
 
     //MARK: - NavigationBar SetUp
     func navBarCustomization(){
-
-        navigationItem.title = LanguageChangeManager.shared.localizedString(forKey: "navBarTitle")
+        navigationItem.title = "navBarTitle".localized
         navigationController?.navigationBar.titleTextAttributes = NSAttributedString().fontWithoutString(bold: true, size: 23)
         //Statisctic BarButton
         let rightButton = UIBarButtonItem(
