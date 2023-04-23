@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import CoreData
 
 class AddDictionaryVC: UIViewController {
     
@@ -81,6 +82,7 @@ class AddDictionaryVC: UIViewController {
         super.viewWillDisappear(animated)
         if let navController = self.navigationController{
             let menu = navController.viewControllers.first(where: { $0 is MenuVC}) as? MenuVC
+            menu?.fetchDictionaries()
             menu?.tableView.reloadData()
         }
     }
@@ -170,6 +172,18 @@ class AddDictionaryVC: UIViewController {
             navigationItem.title = "addDictTitle".localized
             navigationController?.navigationBar.titleTextAttributes = NSAttributedString().fontWithoutString(bold: true, size: 23)
         }
+    private func saveDictionary(name: String, content: String) {
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        let context = appDelegate.persistentContainer.viewContext
+        let newDictionary = NSEntityDescription.insertNewObject(forEntityName: "DictionaryEntity", into: context) as! DictionariesEntity
+        
+        do {
+            try context.save()
+        } catch {
+            print("Failed to save dictionary: \(error)")
+        }
+    }
+
 //MARK: - Actions
     @objc func submitButTap(sender: Any){
         let insertTextAllert = UIAlertController(
@@ -190,7 +204,9 @@ class AddDictionaryVC: UIViewController {
         guard textView.hasText && textView.textColor != .lightGray else {return self.present(insertTextAllert, animated: true)}
         guard nameInputField.hasText else { return self.present(insertNameAllert, animated: true)}
         
-        DataForDictionaries.shared.addDictionary(language: nameInputField.text!, text: textView.text)
+        CoreDataHelper.shared.addDictionary(language: nameInputField.text!,
+                                            text: textView.text!)
+        
         navigationItem.rightBarButtonItem = nil
         view.becomeFirstResponder()
         navigationController?.popViewController(animated: true)

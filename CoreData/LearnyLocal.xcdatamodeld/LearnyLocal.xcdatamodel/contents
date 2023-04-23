@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="21512" systemVersion="22D68" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
-    <entity name="Dictionaries" representedClassName="Dictionaries" syncable="YES" codeGenerationType="class">
+    <entity name="DictionariesEntity" representedClassName="DictionariesEntity" syncable="YES">
         <attribute name="language" optional="YES" attributeType="String"/>
         <attribute name="numberOfCards" optional="YES" attributeType="String"/>
-        <relationship name="words" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Words"/>
+        <relationship name="words" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="WordsEntity"/>
     </entity>
-    <entity name="Words" representedClassName="Words" syncable="YES" codeGenerationType="class">
+    <entity name="WordsEntity" representedClassName="WordsEntity" syncable="YES">
         <attribute name="identifier" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="meaning" optional="YES" attributeType="String"/>
         <attribute name="word" optional="YES" attributeType="String"/>
-        <relationship name="dictionaries" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Dictionaries"/>
+        <relationship name="dictionaries" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="DictionariesEntity"/>
     </entity>
 </model>

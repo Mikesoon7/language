@@ -9,12 +9,23 @@ import UIKit
 
 class TableViewCell: UITableViewCell{
 
+    var view : UIView = {
+        let view = UIView()
+        view.backgroundColor = .systemGray6
+        view.layer.cornerRadius = 9
+        view.layer.borderWidth = 1
+        view.layer.borderColor = UIColor.black.cgColor
+        view.clipsToBounds = true
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
     var languageLabel : UILabel = {
         var label = UILabel()
         label.attributedText = NSAttributedString(
             string: LanguageChangeManager.shared.localizedString(forKey: "tableCellName"),
             attributes: [NSAttributedString.Key.font : UIFont(name: "Georgia-BoldItalic", size: 20) ?? UIFont(),
                          NSAttributedString.Key.foregroundColor: UIColor.label])
+        label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
@@ -24,6 +35,7 @@ class TableViewCell: UITableViewCell{
             string: LanguageChangeManager.shared.localizedString(forKey: "tableCellNumberOfCards"),
             bold: true,
             size: 20)
+        label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
@@ -31,7 +43,7 @@ class TableViewCell: UITableViewCell{
         var label = UILabel()
         label.font = UIFont(name: "Georgia-Italic", size: 15)
         label.textAlignment = .right
-        label.text = "???"
+        label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
@@ -39,21 +51,16 @@ class TableViewCell: UITableViewCell{
         var label = UILabel()
         label.font = UIFont(name: "Georgia-Italic", size: 15)
         label.textAlignment = .right
-        label.text = "???"
+        label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
 //MARK: - Prepare Func
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(languageDidChange(sender:)), name: .appLanguageDidChange, object: nil)
-        self.backgroundColor = .systemGray6
-        self.layer.cornerRadius = 9
-        self.layer.borderWidth = 1
-        self.layer.borderColor = UIColor.black.cgColor
-        self.clipsToBounds = true
         setConstraints()
+        NotificationCenter.default.addObserver(self, selector: #selector(languageDidChange(sender:)), name: .appLanguageDidChange, object: nil)
+
     }
     required init?(coder: NSCoder) {
         fatalError("coder wasn't imported")
@@ -63,28 +70,29 @@ class TableViewCell: UITableViewCell{
     }
     
     func setConstraints(){
-        languageResultLabel.translatesAutoresizingMaskIntoConstraints = false
-        languageLabel.translatesAutoresizingMaskIntoConstraints = false
-        cardsResultLabel.translatesAutoresizingMaskIntoConstraints = false
-        cardsLabel.translatesAutoresizingMaskIntoConstraints = false
-        
-        addSubviews(languageResultLabel, languageLabel, cardsLabel, cardsResultLabel)
+        contentView.addSubview(view)
+        view.addSubviews(languageResultLabel, languageLabel, cardsLabel, cardsResultLabel)
         
         NSLayoutConstraint.activate([
-            languageLabel.topAnchor.constraint(equalTo: self.topAnchor, constant: 15),
-            languageLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 15),
+            view.topAnchor.constraint(equalTo: contentView.topAnchor),
+            view.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            view.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            view.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+
+            languageLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 15),
+            languageLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 15),
             languageLabel.heightAnchor.constraint(equalToConstant: 25),
             
-            cardsLabel.topAnchor.constraint(equalTo: self.topAnchor, constant: 64),
-            cardsLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 15),
+            cardsLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 64),
+            cardsLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 15),
             cardsLabel.heightAnchor.constraint(equalToConstant: 25),
 
-            languageResultLabel.topAnchor.constraint(equalTo: self.topAnchor, constant: 15),
-            languageResultLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -15),
+            languageResultLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 15),
+            languageResultLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -15),
             languageResultLabel.heightAnchor.constraint(equalToConstant: 25),
             
-            cardsResultLabel.topAnchor.constraint(equalTo: self.topAnchor, constant: 64),
-            cardsResultLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -15),
+            cardsResultLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 64),
+            cardsResultLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -15),
             cardsResultLabel.heightAnchor.constraint(equalToConstant: 25),
         ])
     }

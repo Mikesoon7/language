@@ -9,7 +9,7 @@ import UIKit
 
 class DetailsVC: UIViewController {
 
-    var dictionary = DictionaryDetails()
+    var dictionary : DictionariesEntity!
     var random : Bool!
     var numberOfCards : Int!
     var preselectedPickerNumber = Int()
@@ -81,7 +81,7 @@ class DetailsVC: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.picker.reloadAllComponents()
-        self.numberOfCards = Int(dictionary.numberOfCards)
+        self.numberOfCards = dictionary.words?.count
     }
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
@@ -92,6 +92,7 @@ class DetailsVC: UIViewController {
         if let navController = self.navigationController{
             let menu = navController.viewControllers.first(where: { $0 is MenuVC}) as? MenuVC
             menu?.tableView.reloadData()
+        
         }
     }
     //MARK: - StyleChange Responding
@@ -187,8 +188,8 @@ class DetailsVC: UIViewController {
             picker.widthAnchor.constraint(equalTo: setTheGoalView.widthAnchor, multiplier: 0.3)
         ])
         preselectedPickerNumber = {
-            if Int(dictionary.numberOfCards)! <= 49{
-                return Int(dictionary.numberOfCards)!
+            if dictionary.words!.count <= 49{
+                return dictionary.words!.count
             } else {
                 return 50
             }
@@ -246,7 +247,10 @@ class DetailsVC: UIViewController {
             self.random = true
         }
         vc.currentDictionary = self.dictionary
-        vc.currentRandomDictionary = self.dictionary.dictionary?.shuffled()
+        if let randomDictionaries = dictionary.words?.allObjects as? [WordsEntity]{
+            vc.currentRandomDictionary = randomDictionaries.shuffled()
+            print("random getted")
+        }
         vc.random = self.random
         vc.numberOFCards = self.numberOfCards
         self.navigationController?.pushViewController(vc, animated: true)
@@ -275,10 +279,10 @@ class DetailsVC: UIViewController {
 }
 extension DetailsVC: UIPickerViewDelegate{
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        if Int(dictionary.numberOfCards)! <= 50{
-            numberOfCards = Int(dictionary.numberOfCards)!
+        if dictionary.words!.count <= 50{
+            numberOfCards = dictionary.words!.count
         } else if row == pickerView.numberOfRows(inComponent: component) - 1{
-            numberOfCards = Int(dictionary.numberOfCards)!
+            numberOfCards = dictionary.words!.count
         } else {
             numberOfCards = (row + 1) * 50
         }
@@ -289,8 +293,8 @@ extension DetailsVC: UIPickerViewDataSource{
         return 1
     }
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        if ((Int(dictionary.numberOfCards)!) / 50) > 0{
-           return ((Int(dictionary.numberOfCards)!) / 50) + 1
+        if (dictionary.words!.count / 50) > 0{
+           return (dictionary.words!.count / 50) + 1
         } else {
             return 1
         }

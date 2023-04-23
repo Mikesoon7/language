@@ -9,6 +9,8 @@ import UIKit
 
 class MenuVC: UIViewController {
     
+    var dictionaries: [DictionariesEntity] = []
+    
     var tableView: UITableView = {
         var tableView = UITableView(frame: CGRect(x: 0, y: 0, width: 0, height: 0), style: .insetGrouped)
         tableView.register(TableViewCell.self, forCellReuseIdentifier: "dictCell")
@@ -36,6 +38,7 @@ class MenuVC: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        fetchDictionaries()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -61,6 +64,12 @@ class MenuVC: UIViewController {
             }
         }
     }
+    // MARK: - Data fetching
+    func fetchDictionaries() {
+        dictionaries = CoreDataHelper.shared.fetchDictionaries()
+        
+    }
+    
     //MARK: - Stroke SetUp
     func strokeCustomization(){
         topStroke = UIView().addTopStroke(vc: self)
@@ -140,15 +149,16 @@ extension MenuVC: UITableViewDelegate{
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return DataForDictionaries.shared.availableDictionary.count + 1
+        return dictionaries.count + 1
     }
+    
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.section == tableView.numberOfSections - 1{
             self.navigationController?.pushViewController(AddDictionaryVC(), animated: true)
         } else {
             let vc = DetailsVC()
-            vc.dictionary = DataForDictionaries.shared.availableDictionary[indexPath.section]
+            vc.dictionary = dictionaries[indexPath.section]
             self.navigationController?.pushViewController(vc, animated: true)
         }
     }
@@ -157,17 +167,55 @@ extension MenuVC: UITableViewDelegate{
 extension MenuVC: UITableViewDataSource{
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let dictionary = DataForDictionaries.shared.availableDictionary
         let cell = tableView.dequeueReusableCell(withIdentifier: "dictCell", for: indexPath) as? TableViewCell
         let addCell = tableView.dequeueReusableCell(withIdentifier: "addCell", for: indexPath) as? TableViewAddCell
         
-        if indexPath.section == tableView.numberOfSections - 1{
+        if indexPath.section == tableView.numberOfSections - 1 {
             return addCell!
         } else {
-            cell?.languageResultLabel.text = dictionary[indexPath.section].language
-            cell?.cardsResultLabel.text =  dictionary[indexPath.section].numberOfCards
+            cell?.languageResultLabel.text = dictionaries[indexPath.section].language
+            cell?.cardsResultLabel.text = dictionaries[indexPath.section].numberOfCards
             return cell!
         }
     }
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        if indexPath.section == tableView.numberOfSections - 1{
+            return false
+        }
+        return true
+    }
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete{
+            tableView.deleteRows(at: [indexPath], with: .right)
+        }
+    }
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { (action, view, handler) in
+            let dictionaryToDelete = CoreDataHelper.shared.fetchDictionaries()[indexPath.row]
+            
+            CoreDataHelper.shared.deleteDictionary(dictionary: dictionaryToDelete)
+            self.dictionaries = CoreDataHelper.shared.fetchDictionaries()
+            
+            tableView.deleteSections([indexPath.section], with: .left)
+            tableView.reloadData()
+            handler(true)
+        }
+        
+        let shareAction = UIContextualAction(style: .normal, title: "Share") { (action, view, handler) in
+            
+            handler(true)
+        }
+        let editAction = UIContextualAction(style: .normal, title: "Edit") { (action, view, handler) in
+            // Perform your edit action here
+            handler(true)
+        }
+        
+        editAction.backgroundColor = .blue
+        let configuration = UISwipeActionsConfiguration(actions: [editAction, deleteAction, shareAction])
+        configuration.performsFirstActionWithFullSwipe = true
+        
+        return configuration
+    }
+
 }
 

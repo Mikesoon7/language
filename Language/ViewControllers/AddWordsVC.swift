@@ -9,7 +9,7 @@ import UIKit
 
 class AddWordsVC: UIViewController {
 
-    var editableDict = DictionaryDetails()
+    var editableDict : DictionariesEntity!
     var index = Int()
     
     let textView : UITextView = {
@@ -130,7 +130,7 @@ class AddWordsVC: UIViewController {
         
         guard textView.hasText && textView.textColor != .lightGray else {return self.present(alert, animated: true)}
         
-        editableDict.dictionary!.append(contentsOf: DataForDictionaries.shared.divider(text: textView.text))
+        CoreDataHelper.shared.updateDictionary(dictionary: editableDict, text: textView.text)
         self.navigationController?.popViewController(animated: true)
     }
     @objc func keyboardWillShow(sender: Notification){

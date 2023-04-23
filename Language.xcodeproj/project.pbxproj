@@ -39,6 +39,11 @@
 		9AB40FF229CC6A9D00353FFC /* TableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB40FF129CC6A9D00353FFC /* TableViewCell.swift */; };
 		9AB43A1629F3E72D00984350 /* SearchViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB43A1529F3E72D00984350 /* SearchViewCell.swift */; };
 		9AB43A1929F40EA000984350 /* LearnyLocal.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 9AB43A1729F40EA000984350 /* LearnyLocal.xcdatamodeld */; };
+		9AB43A3629F4695B00984350 /* CoreDataMethods.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB43A3529F4695B00984350 /* CoreDataMethods.swift */; };
+		9AB43A4329F4760700984350 /* WordsEntity+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB43A3F29F4760700984350 /* WordsEntity+CoreDataClass.swift */; };
+		9AB43A4429F4760700984350 /* WordsEntity+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB43A4029F4760700984350 /* WordsEntity+CoreDataProperties.swift */; };
+		9AB43A4529F4760700984350 /* DictionariesEntity+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB43A4129F4760700984350 /* DictionariesEntity+CoreDataClass.swift */; };
+		9AB43A4629F4760700984350 /* DictionariesEntity+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB43A4229F4760700984350 /* DictionariesEntity+CoreDataProperties.swift */; };
 		9AE509312993C85A00D86DD7 /* LoadDataVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AE509302993C85A00D86DD7 /* LoadDataVC.swift */; };
 		9AE50933299695B400D86DD7 /* Menu VC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AE50932299695B400D86DD7 /* Menu VC.swift */; };
 		9AE509352997C07700D86DD7 /* AddDictionaryVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AE509342997C07700D86DD7 /* AddDictionaryVC.swift */; };
@@ -108,6 +113,11 @@
 		9AB40FF129CC6A9D00353FFC /* TableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableViewCell.swift; sourceTree = "<group>"; };
 		9AB43A1529F3E72D00984350 /* SearchViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewCell.swift; sourceTree = "<group>"; };
 		9AB43A1829F40EA000984350 /* LearnyLocal.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = LearnyLocal.xcdatamodel; sourceTree = "<group>"; };
+		9AB43A3529F4695B00984350 /* CoreDataMethods.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataMethods.swift; sourceTree = "<group>"; };
+		9AB43A3F29F4760700984350 /* WordsEntity+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WordsEntity+CoreDataClass.swift"; sourceTree = SOURCE_ROOT; };
+		9AB43A4029F4760700984350 /* WordsEntity+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WordsEntity+CoreDataProperties.swift"; sourceTree = SOURCE_ROOT; };
+		9AB43A4129F4760700984350 /* DictionariesEntity+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DictionariesEntity+CoreDataClass.swift"; sourceTree = SOURCE_ROOT; };
+		9AB43A4229F4760700984350 /* DictionariesEntity+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DictionariesEntity+CoreDataProperties.swift"; sourceTree = SOURCE_ROOT; };
 		9AE509302993C85A00D86DD7 /* LoadDataVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadDataVC.swift; sourceTree = "<group>"; };
 		9AE50932299695B400D86DD7 /* Menu VC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Menu VC.swift"; sourceTree = "<group>"; };
 		9AE509342997C07700D86DD7 /* AddDictionaryVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDictionaryVC.swift; sourceTree = "<group>"; };
@@ -228,7 +238,6 @@
 				9AA7AB5329AE3CF400CCC9F4 /* Extensions.swift */,
 				9A9970FD29DB2D86007EE635 /* LaunchAnimation.swift */,
 				9AB40FEF29CC52B700353FFC /* Non Using */,
-				9AB43A1729F40EA000984350 /* LearnyLocal.xcdatamodeld */,
 			);
 			path = Language;
 			sourceTree = "<group>";
@@ -299,6 +308,12 @@
 		9AB43A1A29F4669900984350 /* CoreData */ = {
 			isa = PBXGroup;
 			children = (
+				9AB43A3F29F4760700984350 /* WordsEntity+CoreDataClass.swift */,
+				9AB43A4029F4760700984350 /* WordsEntity+CoreDataProperties.swift */,
+				9AB43A4129F4760700984350 /* DictionariesEntity+CoreDataClass.swift */,
+				9AB43A4229F4760700984350 /* DictionariesEntity+CoreDataProperties.swift */,
+				9AB43A3529F4695B00984350 /* CoreDataMethods.swift */,
+				9AB43A1729F40EA000984350 /* LearnyLocal.xcdatamodeld */,
 			);
 			path = CoreData;
 			sourceTree = "<group>";
@@ -554,6 +569,7 @@
 			files = (
 				9AE50933299695B400D86DD7 /* Menu VC.swift in Sources */,
 				9AA71C6129C34EA8008A193B /* CollectionViewLastCell.swift in Sources */,
+				9AB43A4629F4760700984350 /* DictionariesEntity+CoreDataProperties.swift in Sources */,
 				9A22B8E9299A9FDA00B1ED3A /* Data.swift in Sources */,
 				9AE509372999615800D86DD7 /* CustomImageAssets.swift in Sources */,
 				9AB43A1629F3E72D00984350 /* SearchViewCell.swift in Sources */,
@@ -562,18 +578,21 @@
 				9AA71C5B29C20894008A193B /* MainGameVC.swift in Sources */,
 				9AFFCE7B299D073D00C12B94 /* TableViewAddCell.swift in Sources */,
 				9A9970FE29DB2D86007EE635 /* LaunchAnimation.swift in Sources */,
+				9AB43A3629F4695B00984350 /* CoreDataMethods.swift in Sources */,
 				9A1F67D429E3F69A003993C5 /* SettingsHeaderCell.swift in Sources */,
 				9AA71C6829C9CE9B008A193B /* CollectionViewCell.swift in Sources */,
 				9A603FF929AF5B3200A65253 /* OldGameVC.swift in Sources */,
 				9AE509312993C85A00D86DD7 /* LoadDataVC.swift in Sources */,
 				9AE509352997C07700D86DD7 /* AddDictionaryVC.swift in Sources */,
 				9AA71C6429C84C65008A193B /* ViewModel.swift in Sources */,
+				9AB43A4429F4760700984350 /* WordsEntity+CoreDataProperties.swift in Sources */,
 				9AB2454329E9498A00E05E59 /* AppData.swift in Sources */,
 				9AA7AB5429AE3CF400CCC9F4 /* Extensions.swift in Sources */,
 				9A1F67CF29E166C4003993C5 /* LanguageChangeManager.swift in Sources */,
 				9AB2453F29E8556100E05E59 /* NotificationSwitchCell.swift in Sources */,
 				9A9970FC29D9D662007EE635 /* SearchVC.swift in Sources */,
 				9A0BD53A29DC531F00845328 /* SettingsTextCell.swift in Sources */,
+				9AB43A4529F4760700984350 /* DictionariesEntity+CoreDataClass.swift in Sources */,
 				9AAECFC029B5055100439C0B /* EndVc.swift in Sources */,
 				9AFFCE7D299E747400C12B94 /* StatisticVC.swift in Sources */,
 				9A7B91C6298D6D9600E60CDD /* AppDelegate.swift in Sources */,
@@ -581,6 +600,7 @@
 				9AB40FF229CC6A9D00353FFC /* TableViewCell.swift in Sources */,
 				9A7B91C8298D6D9600E60CDD /* SceneDelegate.swift in Sources */,
 				9AFFCE8129A4DFEF00C12B94 /* DetailsVC.swift in Sources */,
+				9AB43A4329F4760700984350 /* WordsEntity+CoreDataClass.swift in Sources */,
 				9AAECFBE29B5052F00439C0B /* SettingsVC.swift in Sources */,
 				9AB2453D29E6A5E900E05E59 /* NotificationVC.swift in Sources */,
 				9AA71C5F29C2FC76008A193B /* CardCell.swift in Sources */,

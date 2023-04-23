@@ -115,9 +115,9 @@ class CollectionViewCell: UICollectionViewCell {
             height: ( layoutAttributes.frame.height - staticCardSize.height) / 3)
     }
         
-    func configure(with data: DataForCells){
+    func configure(with data: WordsEntity){
         word.text = data.word
-        translation.text = data.translation
+        translation.text = data.meaning
         
     }
     

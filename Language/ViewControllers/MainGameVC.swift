@@ -8,9 +8,8 @@
 import UIKit
 
 class MainGameVC: UIViewController {
-    
-    var currentDictionary : DictionaryDetails!
-    var currentRandomDictionary : [DataForCells]!
+    var currentDictionary: DictionariesEntity!
+    var currentRandomDictionary: [WordsEntity]!
     var numberOFCards = Int()
     var random = Bool()
     
@@ -25,7 +24,7 @@ class MainGameVC: UIViewController {
     var dataSource : DataSource!
     
     // MARK: - TypeAliases
-    typealias MainCell = UICollectionView.CellRegistration<CollectionViewCell, DataForCells>
+    typealias MainCell = UICollectionView.CellRegistration<CollectionViewCell, WordsEntity>
     typealias LastCell = UICollectionView.CellRegistration<CollectionViewLastCell, DataForLastCell>
     typealias DataSource = UICollectionViewDiffableDataSource<Section, AnyHashable>
     typealias Snapshot = NSDiffableDataSourceSnapshot<Section, AnyHashable>
@@ -38,8 +37,12 @@ class MainGameVC: UIViewController {
         collectionViewCustomization()
         viewCustomization()
         tabBarCastomization()
-        
     }
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        tabBarController?.tabBar.isHidden = false
+    }
+
     func viewCustomization(){
         view.backgroundColor = .systemBackground
         dimView = UIView(frame: view.frame)
@@ -78,7 +81,7 @@ class MainGameVC: UIViewController {
     }
     //MARK: - Cell SetUp
     func cellPreparation(){
-        self.mainCell = UICollectionView.CellRegistration<CollectionViewCell, DataForCells> { cell, indexPath, data in
+        self.mainCell = UICollectionView.CellRegistration<CollectionViewCell, WordsEntity> { cell, indexPath, data in
             cell.configure(with: data)
         }
         self.lastCell = UICollectionView.CellRegistration<CollectionViewLastCell, DataForLastCell> { cell, indexPath, data in
@@ -88,7 +91,7 @@ class MainGameVC: UIViewController {
     //MARK: - DataSource SetUp
     func dataSourceCustomization(random: Bool) -> DataSource{
         self.dataSource = DataSource(collectionView: collectionView) { [weak self ] (collectionView,indexPath,item) -> UICollectionViewCell? in
-            if let item = item as? DataForCells{
+            if let item = item as? WordsEntity{
                 let cell = collectionView.dequeueConfiguredReusableCell(using: self!.mainCell,
                                                                         for: indexPath,
                                                                         item: item)
@@ -102,16 +105,16 @@ class MainGameVC: UIViewController {
             return nil
         }
         
-        var snaphot = Snapshot()
-        snaphot.appendSections([.cards])
+        var snapshot = Snapshot()
+        snapshot.appendSections([.cards])
         if random {
-            snaphot.appendItems(currentRandomDictionary, toSection: .cards)
+            snapshot.appendItems(currentRandomDictionary, toSection: .cards)
         } else {
-            snaphot.appendItems(currentDictionary.dictionary!, toSection: .cards)
+            snapshot.appendItems(Array(currentDictionary.words!) as! [WordsEntity], toSection: .cards)
         }
-        snaphot.appendItems([
-            DataForLastCell(score:(Float(numberOFCards) / Float(currentRandomDictionary.count)) * 100.0, delegate: self)], toSection: .cards)
-        dataSource.apply(snaphot, animatingDifferences: true)
+        snapshot.appendItems([
+            DataForLastCell(score: (Float(numberOFCards) / Float(currentRandomDictionary.count)) * 100.0, delegate: self)], toSection: .cards)
+        dataSource.apply(snapshot, animatingDifferences: true)
         
         return dataSource
     }
