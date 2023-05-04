@@ -11,60 +11,19 @@ struct Sections{
     var title: String
     var data: [UserSettingsPresented]
 }
-class SignUpHeaderView: UIView{
-    let imageView: UIImageView = {
-        let view = UIImageView()
-        view.image = UIImage(named: "avatar")
-        view.layer.cornerRadius = view.bounds.width / 2
-        view.clipsToBounds = true
-        return view
-    }()
-    let label: UILabel = {
-        let label = UILabel()
-        label.text = "propositionForSign".localized
-        label.font = UIFont.systemFont(ofSize: 17, weight: .semibold)
-        label.numberOfLines = 2
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.tintColor = .label
-        return label
-    }()
-        
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        viewCustomization()
-    }
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    func viewCustomization(){
-        self.setUpBorderedView(true)
-        self.addSubviews(imageView, label)
-        
-        NSLayoutConstraint.activate([
-            self.heightAnchor.constraint(equalToConstant: 80),
-            
-            imageView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 15),
-            imageView.centerYAnchor.constraint(equalTo: self.centerYAnchor),
-            imageView.heightAnchor.constraint(equalToConstant: 60),
-            imageView.widthAnchor.constraint(equalTo: imageView.heightAnchor),
-
-            label.leadingAnchor.constraint(equalTo: imageView.trailingAnchor, constant: 15),
-            label.centerYAnchor.constraint(equalTo: self.centerYAnchor),
-        ])
-    }
-}
 
 class SettingsVC: UIViewController {
     
-    let tableView: UITableView = {
+    lazy var tableView: UITableView = {
         let view = UITableView(frame: .zero, style: .insetGrouped)
         view.register(SettingsHeaderCell.self, forCellReuseIdentifier: SettingsHeaderCell().identifier)
         view.register(SettingsTextCell.self, forCellReuseIdentifier: SettingsTextCell().identifier)
         view.register(SettingsImageCell.self, forCellReuseIdentifier: SettingsImageCell().identifier)
         view.backgroundColor = .systemBackground
-        view.translatesAutoresizingMaskIntoConstraints = false
         view.separatorStyle = .none
+        view.delegate = self
+        view.dataSource = self
+        view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
     
@@ -77,7 +36,13 @@ class SettingsVC: UIViewController {
         
         Sections(title: "second", data: [
         UserSettingsPresented.header("searchSection".localized),
-        UserSettingsPresented.searchBar(UserSettings.shared.settings.searchBar)])]
+        UserSettingsPresented.searchBar(UserSettings.shared.settings.searchBar)]),
+    
+        Sections(title: "third", data: [
+            UserSettingsPresented.header("dictionaries".localized),
+            UserSettingsPresented.separators(UserSettings.shared.settings.separators),
+            UserSettingsPresented.duplicates(UserSettings.shared.settings.duplicates)
+        ])]
     
     var topStroke = CAShapeLayer()
     var bottomStroke = CAShapeLayer()
@@ -114,6 +79,16 @@ class SettingsVC: UIViewController {
             }
         }
     }
+    
+    //MARK: - Stroke SetUp
+    func strokeCustomization(){
+        topStroke = UIView().addTopStroke(vc: self)
+        bottomStroke = UIView().addBottomStroke(vc: self)
+        
+        view.layer.addSublayer(topStroke)
+        view.layer.addSublayer(bottomStroke)
+    }
+    
     //MARK: - NavigationBar SetUp
     func navBarCustomization(){
         navigationItem.title = "settingsVCTitle".localized
@@ -128,9 +103,6 @@ class SettingsVC: UIViewController {
     func tableViewCustomization(){
         view.addSubview(tableView)
         
-        tableView.delegate = self
-        tableView.dataSource = self
-        
         NSLayoutConstraint.activate([
             tableView.topAnchor.constraint(equalTo: view.topAnchor),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -138,15 +110,43 @@ class SettingsVC: UIViewController {
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
     }
-
-    //MARK: - Stroke SetUp
-    func strokeCustomization(){
-        topStroke = UIView().addTopStroke(vc: self)
-        bottomStroke = UIView().addBottomStroke(vc: self)
-        
-        view.layer.addSublayer(topStroke)
-        view.layer.addSublayer(bottomStroke)
+    //MARK: - Methods for settings cell
+    func createThemeActions(indexPath: IndexPath) -> [UIAlertAction] {
+        let action1 = UIAlertAction(title: LanguageChangeManager.shared.localizedString(forKey: "lightTheme"), style: .default) { [weak self] _ in
+            self?.handleThemeSelection(theme: .light, index: indexPath)
+        }
+        let action2 = UIAlertAction(title: LanguageChangeManager.shared.localizedString(forKey: "darkTheme"), style: .default) { [weak self] _ in
+            self?.handleThemeSelection(theme: .dark, index: indexPath)
+        }
+        let action3 = UIAlertAction(title: LanguageChangeManager.shared.localizedString(forKey: "systemTheme"), style: .default) { [weak self] _ in
+            self?.handleThemeSelection(theme: .system, index: indexPath)
+        }
+        return [action1, action2, action3]
     }
+
+    func createLanguageActions(indexPath: IndexPath) -> [UIAlertAction] {
+        let action1 = UIAlertAction(title: "English", style: .default) { [weak self] _ in
+            self?.handleLanguageSelection(language: .english, index: indexPath)
+        }
+        let action2 = UIAlertAction(title: "Русский", style: .default) { [weak self] _ in
+            self?.handleLanguageSelection(language: .russian, index: indexPath)
+        }
+        let action3 = UIAlertAction(title: "Українська", style: .default) { [weak self] _ in
+            self?.handleLanguageSelection(language: .ukrainian, index: indexPath)
+        }
+        return [action1, action2, action3]
+    }
+    func createDuplicatesActions(indexPath: IndexPath) -> [UIAlertAction] {
+        let action1 = UIAlertAction(title: "keep".localized, style: .default) { [weak self] _ in
+            self?.handleDuplicatesChange(value: .keep, index: indexPath)
+        }
+        let action2 = UIAlertAction(title: "remove".localized, style: .default) { [weak self] _ in
+            self?.handleDuplicatesChange(value: .remove, index: indexPath)
+        }
+        return [action1, action2]
+    }
+
+    
     //Upfating theme
     func handleThemeSelection(theme: UserSettings.AppTheme, index: IndexPath) {
         settingsData[index.section].data[index.row] = .theme(theme)
@@ -156,17 +156,17 @@ class SettingsVC: UIViewController {
     //Updating data and posting notification
     func handleLanguageSelection(language: UserSettings.AppLanguage, index: IndexPath) {
         UserSettings.shared.reload(newValue: language)
-        let languageCode: String
-        switch language {
-        case .english:
-            languageCode = "en"
-        case .russian:
-            languageCode = "ru"
-        case .ukrainian:
-            languageCode = "uk"
-        }
-        LanguageChangeManager.shared.changeLanguage(to: languageCode)
         settingsData[index.section].data[index.row] = .language(language)
+    }
+    //Update search bar position
+    func handleSearchBarPositionChange(position: UserSettings.AppSearchBarOnTop, index: IndexPath){
+        UserSettings.shared.reload(newValue: position)
+        settingsData[index.section].data[index.row] = .searchBar(position)
+    }
+    func handleDuplicatesChange(value: UserSettings.AppDuplicates, index: IndexPath){
+        UserSettings.shared.reload(newValue: value)
+        settingsData[index.section].data[index.row] = .duplicates(value)
+        tableView.reloadRows(at: [index], with: .fade)
     }
     //MARK: - Actions
     //Language change
@@ -176,61 +176,36 @@ class SettingsVC: UIViewController {
     }
 }
 extension SettingsVC: UITableViewDelegate{
-        func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let currentData = settingsData[indexPath.section].data[indexPath.row]
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let alertMessage = UIAlertController(title: "There is no action", message: nil, preferredStyle: .actionSheet)
-        if indexPath.section == 0 && indexPath.row == 1{
-            let action1 = UIAlertAction(
-                title: LanguageChangeManager.shared.localizedString(forKey: "lightTheme"),
-                style: .default) { [weak self] _ in
-                self?.handleThemeSelection(theme: .light, index: indexPath)
-            }
-            let action2 = UIAlertAction(
-                title:  LanguageChangeManager.shared.localizedString(forKey: "darkTheme"),
-                style: .default){ [weak self] _ in
-                self?.handleThemeSelection(theme: .dark, index: indexPath)
-            }
-            let action3 = UIAlertAction(
-                title:  LanguageChangeManager.shared.localizedString(forKey: "systemTheme"),
-                style: .default){ [weak self] _ in
-                    self?.handleThemeSelection(theme: .system, index: indexPath)
-            }
+        let cancelAction = UIAlertAction(title: "cancel".localized, style: .cancel)
+        alertMessage.addAction(cancelAction)
+        switch (indexPath.section, indexPath.row){
+        case (0, 1):
             alertMessage.title = nil
-            alertMessage.addAction(action1)
-            alertMessage.addAction(action2)
-            alertMessage.addAction(action3)
-                        
-        }
-        if indexPath.section == 0 && indexPath.row == 2{
-            let action1 = UIAlertAction(title: "English", style: .default) { [weak self] _ in
-                self?.handleLanguageSelection(language: .english, index: indexPath)
-            }
-            let action2 = UIAlertAction(title: "Русский", style: .default){ [weak self] _ in
-                self?.handleLanguageSelection(language: .russian, index: indexPath)
-            }
-            let action3 = UIAlertAction(title: "Українська", style: .default){ [weak self] _ in
-                self?.handleLanguageSelection(language: .ukrainian, index: indexPath)
-            }
+            createThemeActions(indexPath: indexPath).forEach { alertMessage.addAction($0)}
+            present(alertMessage, animated: true)
+        case (0, 2):
             alertMessage.title = nil
-            alertMessage.addAction(action1)
-            alertMessage.addAction(action2)
-            alertMessage.addAction(action3)
+            createLanguageActions(indexPath: indexPath).forEach { alertMessage.addAction($0)}
+            present(alertMessage, animated: true)
+
+        case (0, 3):
+            let vc = NotificationVC()
+            vc.modalPresentationStyle = .overFullScreen
+            self.present(vc, animated: false)
+        case (1, 1):
+            break
+        case (2, 1):
+            let vc = SeparatorsVC()
+                        self.present(vc, animated: true)
+        case (2, 2):
+            alertMessage.title = nil
+            createDuplicatesActions(indexPath: indexPath).forEach { alertMessage.addAction($0)}
+            present(alertMessage, animated: true)
+        default:
+            break
         }
-        let action4 = UIAlertAction(
-            title: LanguageChangeManager.shared.localizedString(forKey: "cancel"),
-            style: .cancel,
-            handler: nil)
-        alertMessage.addAction(action4)
-            if indexPath.section == 0 && indexPath.row == 3 {
-                let vc = NotificationVC()
-                
-                vc.modalPresentationStyle = .overFullScreen
-                self.present(vc, animated: false)
-            } else if indexPath.section == 1{
-                
-            } else {
-                self.present(alertMessage, animated: true)
-            }
     }
 }
 
@@ -250,24 +225,43 @@ extension SettingsVC: UITableViewDataSource{
                     for: indexPath) as! SettingsHeaderCell
                 headerCell.isUserInteractionEnabled = false
                 headerCell.selectionStyle = .none
-                headerCell.label.text = data.title
+                headerCell.label.text = data.title.localized
                 return headerCell
             case .language(_),
                     .theme(_),
-                    .notifications(_):
+                    .notifications(_),
+                    .duplicates(_):
                 let textCell = tableView.dequeueReusableCell(
                     withIdentifier: SettingsTextCell().identifier,
                     for: indexPath) as! SettingsTextCell
                 textCell.label.text = data.title
                 textCell.value.text = data.value as? String
                 return textCell
-            case .searchBar(_):
+            case .searchBar(let position):
                 let imageCell = tableView.dequeueReusableCell(
                     withIdentifier: SettingsImageCell().identifier,
                     for: indexPath) as! SettingsImageCell
+                imageCell.selectedImage = {[weak self] option in
+                    self?.handleSearchBarPositionChange(position: option, index: indexPath)
+                }
+                switch position{
+                case .onTop:
+                    imageCell.topImageView.tintColor = .label
+                    imageCell.bottomImageView.tintColor = .lightText
+                case .onBottom:
+                    imageCell.topImageView.tintColor = .lightText
+                    imageCell.bottomImageView.tintColor = .label
+                }
                 imageCell.label.text = data.title
                 imageCell.selectionStyle = .none
                 return imageCell
+            case .separators(_):
+                let textCell = tableView.dequeueReusableCell(
+                    withIdentifier: SettingsTextCell().identifier,
+                    for: indexPath) as! SettingsTextCell
+                textCell.label.text = data.title
+                textCell.value.text = nil
+                return textCell
             }
         }()
         return cellToPresent
@@ -283,13 +277,6 @@ extension SettingsVC: UITableViewDataSource{
         }
     }
     
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        if section == 0 {
-            return SignUpHeaderView()
-        }
-        return nil
-    }
-
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         if section == 0 {
             return 80
@@ -298,3 +285,4 @@ extension SettingsVC: UITableViewDataSource{
     }
 
 }
+//We designed this app to make an easy transition from your existing notes, vocabularies and other valuable staff to an easy to repeat version of it.

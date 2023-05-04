@@ -26,6 +26,13 @@
 "searchBarPosition" = "Расположение поиска";
 "top" = "Сверху";
 "bottom" = "Снизу";
+//Items for Dictionary
+"dictionaries" = "Словари";
+"dividor" = "Символы для разделения";
+"duplicates" = "Дубликаты";
+    //Options
+"keep" = "Оставлять";
+"remove" = "Удалять";
 //Items for SignHeader
 "propositionForSign" = "Подключить ваш Apple ID для передачи данных между устройствами и сохранения в iCloud";
 //MARK: - AddDictionary or WordsVC
@@ -70,3 +77,8 @@
 "onTheWeekend" = "На выходных";
 //MARK: - SearchVC
 "yourWord" = "Введите ваш текст";
+//MARK: - SeparatorsVC
+"howIt'sWorking" = "Как это работает ?";
+"firstMessage" = "Во-первых, введенный текст разделяется на блоки.";
+"secondMessage" = "Во-вторых, блоки разделяются с помощью выбранного символа на пары Слово и Определение.";
+"informMessage" = "Мы продолжаем заниматься разработкой приложения, чтобы сделать его более устойчивым, стабильным и полезным. Если у вас возникнут проблемы или предложения - пожалуйста, свяжитесь с нами.";

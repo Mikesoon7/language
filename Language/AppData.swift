@@ -28,6 +28,13 @@ class UserSettings{
         var notificationTime: AppNotificationTime
         
         var searchBar: AppSearchBarOnTop
+        
+        var separators: AppDictionarySeparators
+        var availabelSeparators: [String]
+    
+        var duplicates: AppDuplicates
+        
+        
     }
     
     enum AppTheme: Codable{
@@ -123,6 +130,33 @@ class UserSettings{
             }
         }
     }
+    enum AppDictionarySeparators: Codable{
+        case selected(String)
+        
+        var title: String{
+            return "dividor".localized
+        }
+        var selectedValue: String{
+            switch self{
+            case .selected(let selected):
+                return selected
+            }
+        }
+    }
+    enum AppDuplicates: Codable{
+        case remove
+        case keep
+        
+        var title: String{
+            return "duplicates".localized
+        }
+        var value: String{
+            switch self{
+            case .keep: return "keep".localized
+            case .remove: return "remove".localized
+            }
+        }
+    }
     
     func save(){
         if let encodedData = try? JSONEncoder().encode(UserSettings.shared.settings){
@@ -130,7 +164,7 @@ class UserSettings{
         }
     }
     func load() -> Settings{
-        let standartSettings = Settings(theme: .system, language: .english, notification: .notAllowed, notificationFrequency: .everyDay, notificationTime: .initialTime, searchBar: .onTop)
+        let standartSettings = Settings(theme: .system, language: .english, notification: .notAllowed, notificationFrequency: .everyDay, notificationTime: .initialTime, searchBar: .onTop, separators: .selected("-"), availabelSeparators: ["-", "–", "_", "~", "=", ":", "/"], duplicates: .keep)
         
         if let userData = UserDefaults.standard.data(forKey: UserSettings.settingsKey){
             let decodedData = try? JSONDecoder().decode(Settings.self, from: userData)
@@ -142,11 +176,21 @@ class UserSettings{
     func reload(newValue: Any){
         if let newLanguage = newValue as? AppLanguage{
             settings.language = newLanguage
+            let languageCode: String
+            switch newLanguage {
+            case .english:
+                languageCode = "en"
+            case .russian:
+                languageCode = "ru"
+            case .ukrainian:
+                languageCode = "uk"
+            }
+            LanguageChangeManager.shared.changeLanguage(to: languageCode)
         } else if let newTheme = newValue as? AppTheme{
             settings.theme = newTheme
             NotificationCenter.default.post(name: .appThemeDidChange, object: nil)
             
-            var userInterfaceStyle = {
+            let userInterfaceStyle = {
                 switch newTheme{
                 case .dark:
                     return UIUserInterfaceStyle.dark
@@ -165,6 +209,10 @@ class UserSettings{
             settings.notificationTime = AppNotificationTime.setTime(notificationTime)
         } else if let searchBarPosition = newValue as? AppSearchBarOnTop{
             settings.searchBar = searchBarPosition
+        } else if let separators = newValue as? AppDictionarySeparators{
+            settings.separators = separators
+        } else if let duplicates = newValue as? AppDuplicates{
+            settings.duplicates = duplicates
         }
         save()
     }
@@ -192,6 +240,16 @@ class UserSettings{
         }
         LanguageChangeManager.shared.changeLanguage(to: languageCode)
     }
+    func updateCustomSeparators(newSeparator: String, indexPath: IndexPath?) {
+        if indexPath != nil{
+            settings.availabelSeparators.remove(at: indexPath!.row)
+            save()
+        } else {
+            settings.availabelSeparators.append(newSeparator)
+            save()
+
+        }
+    }
 }
 
 enum UserSettingsPresented{
@@ -200,7 +258,11 @@ enum UserSettingsPresented{
     case theme(UserSettings.AppTheme)
     case language(UserSettings.AppLanguage)
     case notifications(UserSettings.AppNotification)
+    
     case searchBar(UserSettings.AppSearchBarOnTop)
+    
+    case separators(UserSettings.AppDictionarySeparators)
+    case duplicates(UserSettings.AppDuplicates)
     
     var title: String{
         switch self{
@@ -213,6 +275,10 @@ enum UserSettingsPresented{
         case .notifications(let title):
             return title.title
         case .searchBar(let title):
+            return title.title
+        case .separators(let title):
+            return title.title
+        case .duplicates(let title):
             return title.title
         }
     }
@@ -227,6 +293,10 @@ enum UserSettingsPresented{
         case .notifications(let value):
             return value.value
         case .searchBar(let value):
+            return value.value
+        case .separators(_):
+            return " "
+        case .duplicates(let value):
             return value.value
         }
     }

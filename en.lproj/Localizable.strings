@@ -26,6 +26,13 @@
 "searchBarPosition" = "Search bar position";
 "top" = "Top";
 "bottom" = "Bottom";
+//Items for Dictionary
+"dictionaries" = "Dictionaries";
+"dividor" = "Symbols for pairs dividing";
+"duplicates" = "Duplicates";
+    //Options
+"keep" = "Keep";
+"remove" = "Remove";
 //Items for SignHeader
 "propositionForSign" = "Connect your Apple ID to pass your data beteen devices and store it in the iCloud";
 //MARK: - AddDictionary or WordsVC
@@ -70,3 +77,11 @@
 "onTheWeekend" = "On the weekend";
 //MARK: - SearchVC
 "yourWord" = "Insert your text";
+//MARK: - SeparatorsVC
+"howIt'sWorking" = "How is it working ?";
+"firstMessage" = "Firstly, inputed text devides into blocks.";
+"secondMessage" = "Secondly, blocks are deviding by separator mark into Word and Description pairs.";
+"informMessage" = "We are still developing an app to make it more sustainable, stable and usefull. If you have any seggestions or problems - please, constact us.";
+
+
+

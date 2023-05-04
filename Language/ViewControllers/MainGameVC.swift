@@ -38,11 +38,14 @@ class MainGameVC: UIViewController {
         viewCustomization()
         tabBarCastomization()
     }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.tabBarController?.tabBar.isHidden = true
+    }
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        tabBarController?.tabBar.isHidden = false
+        self.tabBarController?.tabBar.isHidden = false
     }
-
     func viewCustomization(){
         view.backgroundColor = .systemBackground
         dimView = UIView(frame: view.frame)
@@ -50,6 +53,7 @@ class MainGameVC: UIViewController {
         dimView.alpha = 0.0
         view.addSubview(dimView)
     }
+
     //MARK: - NavBar SetUp
     func navBarCustomization(){
         navigationItem.title = "gameTitle".localized

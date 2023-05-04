@@ -53,6 +53,7 @@ class SettingsTextCell: UITableViewCell {
         super.prepareForReuse()
         label.text = nil
         value.text = nil
+        image.image = UIImage(systemName: "chevron.right")
     }
 
     func cellViewsCustomization(){

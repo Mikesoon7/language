@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import UserNotifications
 
 class NotificationVC: UIViewController {
     
@@ -195,8 +196,20 @@ class NotificationVC: UIViewController {
             self?.view.layoutIfNeeded()
         }
     }
+    
+    func askPermitionForNotifications(){
+        let notification = UNUserNotificationCenter.current()
+        notification.requestAuthorization(options: [.alert, .sound, .badge]){ gained, canceled in
+            if let cancel = canceled{
+                print("Nope")
+            } else {
+                print("Gained")
+            }
+        }
+    }
     //MARK: - Actions
     @objc func switchToggle(sender: UISwitch){
+        askPermitionForNotifications()
         UserSettings.shared.reload(newValue: sender.isOn
                                    ? UserSettings.AppNotification.allowed
                                    : UserSettings.AppNotification.notAllowed )

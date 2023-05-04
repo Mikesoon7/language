@@ -48,16 +48,21 @@ class CoreDataHelper {
         let context = appDelegate.persistentContainer.viewContext
 
         for line in lines {
-            let parts = line.split(separator: " - ")
+            var parts = line.split(separator: " - ")
             let newWord = WordsEntity(context: context)
             if parts.count == 2{
                 var word = String(parts[0]).trimmingCharacters(in: CharacterSet(charactersIn: "[ ] ◦ - "))
                 word = word.trimmingCharacters(in: .whitespacesAndNewlines)
                 let meaning = String(parts[1])
-                newWord.word = word
+                newWord.word = word.capitalized
+                newWord.meaning = meaning
+            } else if parts.count > 2{
+                var word = String(parts.removeFirst()).trimmingCharacters(in: CharacterSet(charactersIn: " "))
+                var meaning = parts.joined(separator: " ")
+                newWord.word = word.capitalized
                 newWord.meaning = meaning
             } else {
-                newWord.word = String(parts[0]).trimmingCharacters(in: CharacterSet(charactersIn: "[ ] ◦ - "))
+                newWord.word = String(parts[0]).trimmingCharacters(in: CharacterSet(charactersIn: "[ ] ◦ - ")).capitalized
                 newWord.meaning = ""
             }
             newWord.identifier = UUID()

@@ -24,35 +24,35 @@ class SettingsImageCell: UITableViewCell {
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
-    let leftImageView: UIImageView = {
+    let topImageView: UIImageView = {
         let view = UIImageView()
         view.contentMode = .scaleAspectFill
         view.backgroundColor = .clear
-        view.tintColor = .white
         view.image = UIImage(systemName: "platter.filled.top.iphone")
         view.isUserInteractionEnabled = true
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
-    let rightImageView: UIImageView = {
+    let bottomImageView: UIImageView = {
         let view = UIImageView()
-        view.backgroundColor = .clear
-        view.tintColor = .gray
         view.contentMode = .scaleAspectFill
+        view.backgroundColor = .clear
         view.image = UIImage(systemName: "platter.filled.bottom.iphone")
         view.isUserInteractionEnabled = true
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
     lazy var imageStackView: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: [UIView(), leftImageView, UIView(), rightImageView, UIView()])
-        stackView.backgroundColor = .systemGray6.withAlphaComponent(0.8)
+        let stackView = UIStackView(arrangedSubviews: [UIView(), topImageView, UIView(), bottomImageView, UIView()])
+        stackView.backgroundColor = .clear
         stackView.axis = .horizontal
         stackView.distribution = .equalCentering
         stackView.alignment = .center
         stackView.translatesAutoresizingMaskIntoConstraints = false
         return stackView
     }()
+    
+    var selectedImage:((UserSettings.AppSearchBarOnTop) -> Void)?
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -61,6 +61,7 @@ class SettingsImageCell: UITableViewCell {
     required init?(coder: NSCoder) {
         fatalError("Unable to use Coder")
     }
+        
     func cellViewCustomization(){
         contentView.addSubview(view)
         view.addSubviews(label, imageStackView)
@@ -80,11 +81,11 @@ class SettingsImageCell: UITableViewCell {
             imageStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             imageStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
 
-            leftImageView.heightAnchor.constraint(equalTo: imageStackView.heightAnchor, multiplier: 0.5),
-            leftImageView.widthAnchor.constraint(equalTo: leftImageView.heightAnchor),
+            topImageView.heightAnchor.constraint(equalTo: imageStackView.heightAnchor, multiplier: 0.5),
+            topImageView.widthAnchor.constraint(equalTo: topImageView.heightAnchor),
 
-            rightImageView.heightAnchor.constraint(equalTo: imageStackView.heightAnchor, multiplier: 0.5),
-            rightImageView.widthAnchor.constraint(equalTo: rightImageView.heightAnchor),
+            bottomImageView.heightAnchor.constraint(equalTo: imageStackView.heightAnchor, multiplier: 0.5),
+            bottomImageView.widthAnchor.constraint(equalTo: bottomImageView.heightAnchor),
 
         ])
         gestures()
@@ -93,31 +94,24 @@ class SettingsImageCell: UITableViewCell {
     func gestures() {
         let tapGestureLeft = UITapGestureRecognizer()
         tapGestureLeft.addTarget(self, action: #selector(imageTapped(sender:)))
-        leftImageView.addGestureRecognizer(tapGestureLeft)
+        topImageView.addGestureRecognizer(tapGestureLeft)
         
         let tapGestureRight = UITapGestureRecognizer()
         tapGestureRight.addTarget(self, action: #selector(imageTapped(sender:)))
-        rightImageView.addGestureRecognizer(tapGestureRight)
+        bottomImageView.addGestureRecognizer(tapGestureRight)
     }
 
     @objc func imageTapped(sender: UITapGestureRecognizer){
         let tappedImageView = sender.view as? UIImageView
         
-        if tappedImageView === leftImageView {
-            leftImageView.tintColor = .white
-            rightImageView.tintColor = .gray
-            print("left")
+        if tappedImageView === topImageView {
+            topImageView.tintColor = .label
+            bottomImageView.tintColor = .lightText
+            selectedImage?(.onTop)
         } else {
-            leftImageView.tintColor = .gray
-            rightImageView.tintColor = .white
-            print("right")
+            topImageView.tintColor = .lightText
+            bottomImageView.tintColor = .label
+            selectedImage?(.onBottom)
         }
-        print(contentView.bounds)
-        print(imageStackView.bounds)
-        print(leftImageView.bounds)
-        print(rightImageView.bounds)
-
-        
     }
-    
 }

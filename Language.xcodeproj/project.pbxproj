@@ -44,6 +44,8 @@
 		9AB43A4429F4760700984350 /* WordsEntity+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB43A4029F4760700984350 /* WordsEntity+CoreDataProperties.swift */; };
 		9AB43A4529F4760700984350 /* DictionariesEntity+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB43A4129F4760700984350 /* DictionariesEntity+CoreDataClass.swift */; };
 		9AB43A4629F4760700984350 /* DictionariesEntity+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB43A4229F4760700984350 /* DictionariesEntity+CoreDataProperties.swift */; };
+		9AB9A95F29FD70A800694FE8 /* SeparatorsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB9A95E29FD70A800694FE8 /* SeparatorsCell.swift */; };
+		9AB9A96129FD71F000694FE8 /* SeparatorsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB9A96029FD71F000694FE8 /* SeparatorsVC.swift */; };
 		9AE509312993C85A00D86DD7 /* LoadDataVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AE509302993C85A00D86DD7 /* LoadDataVC.swift */; };
 		9AE50933299695B400D86DD7 /* Menu VC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AE50932299695B400D86DD7 /* Menu VC.swift */; };
 		9AE509352997C07700D86DD7 /* AddDictionaryVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AE509342997C07700D86DD7 /* AddDictionaryVC.swift */; };
@@ -118,6 +120,8 @@
 		9AB43A4029F4760700984350 /* WordsEntity+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WordsEntity+CoreDataProperties.swift"; sourceTree = SOURCE_ROOT; };
 		9AB43A4129F4760700984350 /* DictionariesEntity+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DictionariesEntity+CoreDataClass.swift"; sourceTree = SOURCE_ROOT; };
 		9AB43A4229F4760700984350 /* DictionariesEntity+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DictionariesEntity+CoreDataProperties.swift"; sourceTree = SOURCE_ROOT; };
+		9AB9A95E29FD70A800694FE8 /* SeparatorsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeparatorsCell.swift; sourceTree = "<group>"; };
+		9AB9A96029FD71F000694FE8 /* SeparatorsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeparatorsVC.swift; sourceTree = "<group>"; };
 		9AE509302993C85A00D86DD7 /* LoadDataVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadDataVC.swift; sourceTree = "<group>"; };
 		9AE50932299695B400D86DD7 /* Menu VC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Menu VC.swift"; sourceTree = "<group>"; };
 		9AE509342997C07700D86DD7 /* AddDictionaryVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDictionaryVC.swift; sourceTree = "<group>"; };
@@ -287,7 +291,7 @@
 				9AAECFC129B50A5300439C0B /* AddWordsVC.swift */,
 				9AFFCE8029A4DFEE00C12B94 /* DetailsVC.swift */,
 				9AAECFBD29B5052F00439C0B /* SettingsVC.swift */,
-				9AB2453C29E6A5E900E05E59 /* NotificationVC.swift */,
+				9AB9A95D29FD706E00694FE8 /* VC's for SettingsVC */,
 				9AE509302993C85A00D86DD7 /* LoadDataVC.swift */,
 				9A9970FB29D9D661007EE635 /* SearchVC.swift */,
 				9AFFCE7C299E747400C12B94 /* StatisticVC.swift */,
@@ -316,6 +320,16 @@
 				9AB43A1729F40EA000984350 /* LearnyLocal.xcdatamodeld */,
 			);
 			path = CoreData;
+			sourceTree = "<group>";
+		};
+		9AB9A95D29FD706E00694FE8 /* VC's for SettingsVC */ = {
+			isa = PBXGroup;
+			children = (
+				9AB2453C29E6A5E900E05E59 /* NotificationVC.swift */,
+				9AB9A96029FD71F000694FE8 /* SeparatorsVC.swift */,
+				9AB9A95E29FD70A800694FE8 /* SeparatorsCell.swift */,
+			);
+			path = "VC's for SettingsVC";
 			sourceTree = "<group>";
 		};
 		9AFFCE7F299E7DC400C12B94 /* TableViewCells */ = {
@@ -577,6 +591,7 @@
 				9AB43A1929F40EA000984350 /* LearnyLocal.xcdatamodeld in Sources */,
 				9AA71C5B29C20894008A193B /* MainGameVC.swift in Sources */,
 				9AFFCE7B299D073D00C12B94 /* TableViewAddCell.swift in Sources */,
+				9AB9A96129FD71F000694FE8 /* SeparatorsVC.swift in Sources */,
 				9A9970FE29DB2D86007EE635 /* LaunchAnimation.swift in Sources */,
 				9AB43A3629F4695B00984350 /* CoreDataMethods.swift in Sources */,
 				9A1F67D429E3F69A003993C5 /* SettingsHeaderCell.swift in Sources */,
@@ -603,6 +618,7 @@
 				9AB43A4329F4760700984350 /* WordsEntity+CoreDataClass.swift in Sources */,
 				9AAECFBE29B5052F00439C0B /* SettingsVC.swift in Sources */,
 				9AB2453D29E6A5E900E05E59 /* NotificationVC.swift in Sources */,
+				9AB9A95F29FD70A800694FE8 /* SeparatorsCell.swift in Sources */,
 				9AA71C5F29C2FC76008A193B /* CardCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -780,6 +796,8 @@
 				DEVELOPMENT_TEAM = ZPMQQ4YYLW;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Language/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Learny;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -809,6 +827,8 @@
 				DEVELOPMENT_TEAM = ZPMQQ4YYLW;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Language/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Learny;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
