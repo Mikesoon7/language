@@ -22,6 +22,9 @@
 		9A7B91DD298D6D9900E60CDD /* LanguageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A7B91DC298D6D9900E60CDD /* LanguageTests.swift */; };
 		9A7B91E7298D6D9A00E60CDD /* LanguageUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A7B91E6298D6D9A00E60CDD /* LanguageUITests.swift */; };
 		9A7B91E9298D6D9A00E60CDD /* LanguageUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A7B91E8298D6D9A00E60CDD /* LanguageUITestsLaunchTests.swift */; };
+		9A912FC62A06BB540004A91A /* NotificationTextCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A912FC52A06BB540004A91A /* NotificationTextCell.swift */; };
+		9A912FC82A078E250004A91A /* SearchViewAICell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A912FC72A078E250004A91A /* SearchViewAICell.swift */; };
+		9A912FCA2A0793FE0004A91A /* SearchBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A912FC92A0793FE0004A91A /* SearchBarView.swift */; };
 		9A9970FC29D9D662007EE635 /* SearchVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A9970FB29D9D661007EE635 /* SearchVC.swift */; };
 		9A9970FE29DB2D86007EE635 /* LaunchAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A9970FD29DB2D86007EE635 /* LaunchAnimation.swift */; };
 		9AA71C5B29C20894008A193B /* MainGameVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AA71C5A29C20894008A193B /* MainGameVC.swift */; };
@@ -98,6 +101,9 @@
 		9A7B91E2298D6D9A00E60CDD /* LanguageUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LanguageUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9A7B91E6298D6D9A00E60CDD /* LanguageUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageUITests.swift; sourceTree = "<group>"; };
 		9A7B91E8298D6D9A00E60CDD /* LanguageUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		9A912FC52A06BB540004A91A /* NotificationTextCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationTextCell.swift; sourceTree = "<group>"; };
+		9A912FC72A078E250004A91A /* SearchViewAICell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewAICell.swift; sourceTree = "<group>"; };
+		9A912FC92A0793FE0004A91A /* SearchBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchBarView.swift; sourceTree = "<group>"; };
 		9A9970FB29D9D661007EE635 /* SearchVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchVC.swift; sourceTree = "<group>"; };
 		9A9970FD29DB2D86007EE635 /* LaunchAnimation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchAnimation.swift; sourceTree = "<group>"; };
 		9AA71C5A29C20894008A193B /* MainGameVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainGameVC.swift; sourceTree = "<group>"; };
@@ -194,6 +200,7 @@
 				9A1F67D329E3F69A003993C5 /* SettingsHeaderCell.swift */,
 				9A0BD53929DC531F00845328 /* SettingsTextCell.swift */,
 				9A1F67D029E18BBE003993C5 /* SettingsImageCell.swift */,
+				9A912FC52A06BB540004A91A /* NotificationTextCell.swift */,
 				9AB2453E29E8556100E05E59 /* NotificationSwitchCell.swift */,
 			);
 			path = SettingsTableViewCells;
@@ -304,7 +311,9 @@
 		9AB43A1429F3E6D400984350 /* SearchTableViewCells */ = {
 			isa = PBXGroup;
 			children = (
+				9A912FC92A0793FE0004A91A /* SearchBarView.swift */,
 				9AB43A1529F3E72D00984350 /* SearchViewCell.swift */,
+				9A912FC72A078E250004A91A /* SearchViewAICell.swift */,
 			);
 			path = SearchTableViewCells;
 			sourceTree = "<group>";
@@ -590,6 +599,7 @@
 				9A1F67D129E18BBE003993C5 /* SettingsImageCell.swift in Sources */,
 				9AB43A1929F40EA000984350 /* LearnyLocal.xcdatamodeld in Sources */,
 				9AA71C5B29C20894008A193B /* MainGameVC.swift in Sources */,
+				9A912FC62A06BB540004A91A /* NotificationTextCell.swift in Sources */,
 				9AFFCE7B299D073D00C12B94 /* TableViewAddCell.swift in Sources */,
 				9AB9A96129FD71F000694FE8 /* SeparatorsVC.swift in Sources */,
 				9A9970FE29DB2D86007EE635 /* LaunchAnimation.swift in Sources */,
@@ -600,6 +610,7 @@
 				9AE509312993C85A00D86DD7 /* LoadDataVC.swift in Sources */,
 				9AE509352997C07700D86DD7 /* AddDictionaryVC.swift in Sources */,
 				9AA71C6429C84C65008A193B /* ViewModel.swift in Sources */,
+				9A912FCA2A0793FE0004A91A /* SearchBarView.swift in Sources */,
 				9AB43A4429F4760700984350 /* WordsEntity+CoreDataProperties.swift in Sources */,
 				9AB2454329E9498A00E05E59 /* AppData.swift in Sources */,
 				9AA7AB5429AE3CF400CCC9F4 /* Extensions.swift in Sources */,
@@ -609,6 +620,7 @@
 				9A0BD53A29DC531F00845328 /* SettingsTextCell.swift in Sources */,
 				9AB43A4529F4760700984350 /* DictionariesEntity+CoreDataClass.swift in Sources */,
 				9AAECFC029B5055100439C0B /* EndVc.swift in Sources */,
+				9A912FC82A078E250004A91A /* SearchViewAICell.swift in Sources */,
 				9AFFCE7D299E747400C12B94 /* StatisticVC.swift in Sources */,
 				9A7B91C6298D6D9600E60CDD /* AppDelegate.swift in Sources */,
 				9AAECFC229B50A5300439C0B /* AddWordsVC.swift in Sources */,

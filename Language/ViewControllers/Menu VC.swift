@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import CoreData
 
 class MenuVC: UIViewController {
     
@@ -16,9 +17,12 @@ class MenuVC: UIViewController {
         tableView.register(TableViewCell.self, forCellReuseIdentifier: "dictCell")
         tableView.register(TableViewAddCell.self, forCellReuseIdentifier: "addCell")
         tableView.rowHeight = 104
-        tableView.backgroundColor = .systemBackground
-        tableView.selectionFollowsFocus = true
+        tableView.backgroundColor = .clear
         tableView.translatesAutoresizingMaskIntoConstraints = false
+        
+        tableView.subviews.forEach{ section in
+            section.addShadowWhichOverlays(false)
+        }
         return tableView
     }()
     
@@ -28,12 +32,10 @@ class MenuVC: UIViewController {
 //MARK: - Prepare Func
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .systemBackground
+        controllerCustomization()
         navBarCustomization()
         tableViewCustomization()
         tabBarCustomization()
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(languageDidChange(sender:)), name: .appLanguageDidChange, object: nil)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -52,22 +54,31 @@ class MenuVC: UIViewController {
     //MARK: - StyleChange Responding
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
-
-        if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
-            if traitCollection.userInterfaceStyle == .dark {
         
-                self.bottomStroke.strokeColor = UIColor.white.cgColor
-                self.topStroke.strokeColor = UIColor.white.cgColor
+        if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+            self.bottomStroke.strokeColor = UIColor.label.cgColor
+            self.topStroke.strokeColor = UIColor.label.cgColor
+            if traitCollection.userInterfaceStyle == .dark {
+                tableView.subviews.forEach { section in
+                    section.layer.shadowColor = shadowColorForDarkIdiom
+                }
             } else {
-                self.bottomStroke.strokeColor = UIColor.black.cgColor
-                self.topStroke.strokeColor = UIColor.black.cgColor
+                tableView.subviews.forEach { section in
+                    section.layer.shadowColor = shadowColorForLightIdiom
+                }
             }
         }
+    }
+    //MARK: - Controleler SetUp
+    func controllerCustomization(){
+        view.backgroundColor = .systemBackground
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(languageDidChange(sender:)), name: .appLanguageDidChange, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(appDataDidChange(sender: )), name: .appDataDidChange, object: nil)
     }
     // MARK: - Data fetching
     func fetchDictionaries() {
         dictionaries = CoreDataHelper.shared.fetchDictionaries()
-        
     }
     
     //MARK: - Stroke SetUp
@@ -96,7 +107,7 @@ class MenuVC: UIViewController {
 
     //MARK: - NavigationBar SetUp
     func navBarCustomization(){
-        navigationItem.title = "navBarTitle".localized
+        navigationItem.title = "menuVCTitle".localized
         navigationController?.navigationBar.titleTextAttributes = NSAttributedString().fontWithoutString(bold: true, size: 23)
         //Statisctic BarButton
         let rightButton = UIBarButtonItem(
@@ -112,7 +123,10 @@ class MenuVC: UIViewController {
     }
     //MARK: - TabBar SetUp
     func tabBarCustomization(){
-
+        tabBarController?.tabBar.backgroundColor = .systemBackground
+        tabBarController?.tabBar.isTranslucent = false
+        tabBarController?.tabBar.shadowImage = UIImage()
+        tabBarController?.tabBar.backgroundImage = UIImage()
     }
     //MARK: - Actions
     @objc func statiscticButTap(sender: Any){
@@ -120,7 +134,7 @@ class MenuVC: UIViewController {
         navigationController?.present(vc, animated: true)
         }
     @objc func languageDidChange(sender: Any){
-        navigationItem.title = "navBarTitle".localized
+        navigationItem.title = "menuVCTitle".localized
         if let barItems = tabBarController?.tabBar.items{
             for index in 0..<(barItems.count){
                 barItems[index].title = {
@@ -135,8 +149,15 @@ class MenuVC: UIViewController {
         }
         tableView.reloadData()
     }
-
-
+    @objc func appDataDidChange(sender: Notification){
+        if let type = sender.userInfo?["changeType"] as? NSManagedObject.ChangeType {
+            switch type{
+            case .delete: fetchDictionaries()
+            case .insert, .update: fetchDictionaries()
+                tableView.reloadData()
+            }
+        }
+    }
 }
 //MARK: - UITableViewDelegate
 extension MenuVC: UITableViewDelegate{
@@ -194,7 +215,6 @@ extension MenuVC: UITableViewDataSource{
             let dictionaryToDelete = CoreDataHelper.shared.fetchDictionaries()[indexPath.row]
             
             CoreDataHelper.shared.deleteDictionary(dictionary: dictionaryToDelete)
-            self.dictionaries = CoreDataHelper.shared.fetchDictionaries()
             
             tableView.deleteSections([indexPath.section], with: .left)
             tableView.reloadData()
@@ -206,7 +226,6 @@ extension MenuVC: UITableViewDataSource{
             handler(true)
         }
         let editAction = UIContextualAction(style: .normal, title: "Edit") { (action, view, handler) in
-            // Perform your edit action here
             handler(true)
         }
         

@@ -16,10 +16,14 @@ class SeparatorsVC: UIViewController{
         let view = UITableView(frame: .zero, style: .insetGrouped)
         view.register(SeparatorsCell.self, forCellReuseIdentifier: SeparatorsCell().identifier)
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = .clear
         view.isScrollEnabled = false
         view.delegate = self
         view.dataSource = self
+        
+        view.subviews.forEach { view in
+            view.addShadowWhichOverlays(false)
+        }
         return view
     }()
     
@@ -33,6 +37,7 @@ class SeparatorsVC: UIViewController{
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
+    
     let messageLabelFirstPart: UILabel = {
         let label = UILabel()
         label.numberOfLines = 0
@@ -53,10 +58,8 @@ class SeparatorsVC: UIViewController{
 
     lazy var firstExampleView : UIView = {
         let view = UIView()
-        view.backgroundColor = .systemBackground
-        view.layer.shadowOffset = shadowForUpperView
-        view.layer.shadowColor = UIColor.systemGray5.cgColor
-        view.layer.shadowOpacity = 0.5
+        view.backgroundColor = .secondarySystemBackground
+        view.addShadowWhichOverlays(true)
         view.layer.cornerRadius = 9
         view.layer.borderWidth = 0.2
         view.layer.masksToBounds = false
@@ -79,10 +82,8 @@ class SeparatorsVC: UIViewController{
     
     lazy var secondExampleView : UIView = {
         let view = UIView()
-        view.backgroundColor = .systemBackground
-        view.layer.shadowOffset = shadowForOverlayedView
-        view.layer.shadowColor = UIColor.systemGray5.cgColor
-        view.layer.shadowOpacity = 0.8
+        view.backgroundColor = .secondarySystemBackground
+        view.addShadowWhichOverlays(false)
         view.layer.cornerRadius = 9
         view.layer.borderWidth = 0.2
         view.layer.masksToBounds = false
@@ -112,9 +113,6 @@ class SeparatorsVC: UIViewController{
     
     var heightForExampleViews: CGFloat = 100
     
-    var shadowForUpperView = CGSize(width: 8, height: 9)
-    var shadowForOverlayedView = CGSize(width: 4, height: 5)
-    
     var heightForTableView : NSLayoutConstraint?
     var suggestionTopAnchor: NSLayoutConstraint?
     
@@ -128,8 +126,23 @@ class SeparatorsVC: UIViewController{
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
     }
-    func tableCustomization(){
-        
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection){
+            if traitCollection.userInterfaceStyle == .dark{
+                firstExampleView.layer.shadowColor = shadowColorForDarkIdiom
+                secondExampleView.layer.shadowColor = shadowColorForDarkIdiom
+                tableView.subviews.forEach { view in
+                    view.layer.shadowColor = shadowColorForDarkIdiom
+                }
+            } else {
+                firstExampleView.layer.shadowColor = shadowColorForLightIdiom
+                secondExampleView.layer.shadowColor = shadowColorForLightIdiom
+                tableView.subviews.forEach { view in
+                    view.layer.shadowColor = shadowColorForLightIdiom
+                }
+            }
+        }
     }
     func viewCustomization(){
         view.addSubviews(headerLabel, messageLabelFirstPart, firstExampleView,
@@ -140,21 +153,21 @@ class SeparatorsVC: UIViewController{
             headerLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 20),
             headerLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             
-            messageLabelFirstPart.topAnchor.constraint(equalTo: headerLabel.bottomAnchor, constant: 15),
+            messageLabelFirstPart.topAnchor.constraint(equalTo: headerLabel.bottomAnchor, constant: 20),
             messageLabelFirstPart.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.9),
             messageLabelFirstPart.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             
-            firstExampleView.topAnchor.constraint(equalTo: messageLabelFirstPart.bottomAnchor, constant: 15),
-            firstExampleView.leadingAnchor.constraint(equalTo: headerLabel.leadingAnchor),
+            firstExampleView.topAnchor.constraint(equalTo: messageLabelFirstPart.bottomAnchor, constant: 20),
+            firstExampleView.leadingAnchor.constraint(equalTo: headerLabel.leadingAnchor, constant: 10),
             firstExampleView.trailingAnchor.constraint(equalTo: view.centerXAnchor, constant: view.bounds.width * 0.3),
             firstExampleView.heightAnchor.constraint(equalToConstant: heightForExampleViews),
             
             secondExampleView.topAnchor.constraint(equalTo: firstExampleView.centerYAnchor),
             secondExampleView.leadingAnchor.constraint(equalTo: view.centerXAnchor, constant: -(view.bounds.width * 0.3)),
-            secondExampleView.trailingAnchor.constraint(equalTo: headerLabel.trailingAnchor),
+            secondExampleView.trailingAnchor.constraint(equalTo: headerLabel.trailingAnchor, constant: -10),
             secondExampleView.heightAnchor.constraint(equalToConstant: heightForExampleViews),
             
-            messageLabelSecondPart.topAnchor.constraint(equalTo: secondExampleView.bottomAnchor, constant: 10),
+            messageLabelSecondPart.topAnchor.constraint(equalTo: secondExampleView.bottomAnchor, constant: 20),
             messageLabelSecondPart.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.9),
             messageLabelSecondPart.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             
@@ -169,7 +182,7 @@ class SeparatorsVC: UIViewController{
         heightForTableView = tableView.heightAnchor.constraint(
             equalToConstant: CGFloat(tableView.numberOfRows(inSection: 0) * 35) + 50.0)
         suggestionTopAnchor = suggestionLabel.topAnchor.constraint(
-            equalTo: tableView.topAnchor, constant: heightForTableView?.constant ?? 0)
+            equalTo: tableView.topAnchor, constant: (heightForTableView?.constant ?? 0) + 30 )
     
         heightForTableView?.isActive = true
         suggestionTopAnchor?.isActive = true
@@ -251,11 +264,10 @@ class SeparatorsVC: UIViewController{
     }
     func updateExampleViewSize(_ view: UIView, secondView: UIView ){
         view.transform = CGAffineTransform(scaleX: 1.1, y: 1.1)
-        view.layer.shadowOpacity = 0.5
-        view.layer.shadowOffset = shadowForUpperView
+        view.addShadowWhichOverlays(true)
         secondView.transform = .identity
-        secondView.layer.shadowOpacity = 1
-        secondView.layer.shadowOffset = shadowForOverlayedView
+        secondView.addShadowWhichOverlays(false)
+
     }
     func addAlertMessage(){
         let alert = UIAlertController(title: "Type from 1 to 3 characters", message: nil, preferredStyle: .alert)
@@ -267,12 +279,22 @@ class SeparatorsVC: UIViewController{
         let invalidInput = UIAlertController(title: "Invalid input", message: "Please, don't use duplicates.", preferredStyle: .alert)
         let spaceInput = UIAlertController(title: "Invalid input", message: "Please, don't use spaces only", preferredStyle: .alert)
         invalidInput.addAction(UIAlertAction(title: "agreeInformal".localized, style: .cancel))
+        spaceInput.addAction(UIAlertAction(title: "agreeInformal".localized, style: .cancel))
+        
         let confirmAction = UIAlertAction(title: "Confirm", style: .default) { [weak self] _ in
-            if let textField = alert.textFields?.first, let text = textField.text {
+            if let textField = alert.textFields?.first, var text = textField.text {
                 guard !text.isEmpty, let self = self else {
                     return
                 }
-                        
+                if text.trimmingCharacters(in: CharacterSet(charactersIn: " ")).isEmpty {
+                    self.present(spaceInput, animated: true)
+                } else {
+                    text = text.trimmingCharacters(in: CharacterSet(charactersIn: " "))
+                }
+                
+                guard text.trimmingCharacters(in: CharacterSet(charactersIn: " ")) != "" else{
+                    return
+                }
                 guard !self.informationToPresent.contains(text) else {
                     self.present(invalidInput, animated: false)
                     return
@@ -318,7 +340,6 @@ extension SeparatorsVC: UITableViewDelegate, UITableViewDataSource{
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: SeparatorsCell().identifier, for: indexPath) as! SeparatorsCell
-
         if indexPath.row == informationToPresent.endIndex && informationToPresent.count != 5{
             cell.label.text = "Add character"
             cell.addImage.tintColor = .label

@@ -164,7 +164,7 @@ class UserSettings{
         }
     }
     func load() -> Settings{
-        let standartSettings = Settings(theme: .system, language: .english, notification: .notAllowed, notificationFrequency: .everyDay, notificationTime: .initialTime, searchBar: .onTop, separators: .selected("-"), availabelSeparators: ["-", "–", "_", "~", "=", ":", "/"], duplicates: .keep)
+        let standartSettings = Settings(theme: .system, language: .english, notification: .notAllowed, notificationFrequency: .everyDay, notificationTime: .initialTime, searchBar: .onTop, separators: .selected("-"), availabelSeparators: ["-", "–", "~", "="], duplicates: .keep)
         
         if let userData = UserDefaults.standard.data(forKey: UserSettings.settingsKey){
             let decodedData = try? JSONDecoder().decode(Settings.self, from: userData)
@@ -209,6 +209,7 @@ class UserSettings{
             settings.notificationTime = AppNotificationTime.setTime(notificationTime)
         } else if let searchBarPosition = newValue as? AppSearchBarOnTop{
             settings.searchBar = searchBarPosition
+            NotificationCenter.default.post(name: .appSearchBarPositionDidChange, object: nil)
         } else if let separators = newValue as? AppDictionarySeparators{
             settings.separators = separators
         } else if let duplicates = newValue as? AppDuplicates{

@@ -24,22 +24,26 @@ class SettingsVC: UIViewController {
         view.delegate = self
         view.dataSource = self
         view.translatesAutoresizingMaskIntoConstraints = false
+        
+        view.subviews.forEach { sections in
+            sections.addShadowWhichOverlays(false)
+        }
         return view
     }()
     
     var settingsData: [Sections] = [
         Sections(title: "first", data: [
-        UserSettingsPresented.header("generalSection".localized),
+        UserSettingsPresented.header("generalSection"),
         UserSettingsPresented.theme(UserSettings.shared.settings.theme),
         UserSettingsPresented.language(UserSettings.shared.settings.language),
         UserSettingsPresented.notifications(UserSettings.shared.settings.notification)]),
         
         Sections(title: "second", data: [
-        UserSettingsPresented.header("searchSection".localized),
+        UserSettingsPresented.header("searchSection"),
         UserSettingsPresented.searchBar(UserSettings.shared.settings.searchBar)]),
     
         Sections(title: "third", data: [
-            UserSettingsPresented.header("dictionaries".localized),
+            UserSettingsPresented.header("dictionaries"),
             UserSettingsPresented.separators(UserSettings.shared.settings.separators),
             UserSettingsPresented.duplicates(UserSettings.shared.settings.duplicates)
         ])]
@@ -70,12 +74,17 @@ class SettingsVC: UIViewController {
         
         if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
             if traitCollection.userInterfaceStyle == .dark {
-                self.bottomStroke.strokeColor = UIColor.white.cgColor
-                self.topStroke.strokeColor = UIColor.white.cgColor
-                
+                bottomStroke.strokeColor = UIColor.white.cgColor
+                topStroke.strokeColor = UIColor.white.cgColor
+                tableView.subviews.forEach { section in
+                    section.layer.shadowColor = shadowColorForDarkIdiom
+                }
             } else {
-                self.bottomStroke.strokeColor = UIColor.black.cgColor
-                self.topStroke.strokeColor = UIColor.black.cgColor
+                bottomStroke.strokeColor = UIColor.black.cgColor
+                topStroke.strokeColor = UIColor.black.cgColor
+                tableView.subviews.forEach { section in
+                    section.layer.shadowColor = shadowColorForLightIdiom
+                }
             }
         }
     }
@@ -91,13 +100,13 @@ class SettingsVC: UIViewController {
     
     //MARK: - NavigationBar SetUp
     func navBarCustomization(){
-        navigationItem.title = "settingsVCTitle".localized
+        self.navigationItem.title = "settingsVCTitle".localized
+        self.navigationController?.navigationBar.titleTextAttributes = NSAttributedString().fontWithoutString( bold: true, size: 23)
 
         self.navigationController?.navigationBar.tintColor = .label
         self.navigationController?.navigationBar.isTranslucent = true
         
-        self.navigationController?.navigationBar.titleTextAttributes = NSAttributedString().fontWithoutString( bold: true, size: 23)
-
+        
     }
     //MARK: - TableView SetUp
     func tableViewCustomization(){
@@ -198,7 +207,7 @@ extension SettingsVC: UITableViewDelegate{
             break
         case (2, 1):
             let vc = SeparatorsVC()
-                        self.present(vc, animated: true)
+            self.present(vc, animated: true)
         case (2, 2):
             alertMessage.title = nil
             createDuplicatesActions(indexPath: indexPath).forEach { alertMessage.addAction($0)}
@@ -206,6 +215,7 @@ extension SettingsVC: UITableViewDelegate{
         default:
             break
         }
+        tableView.deselectRow(at: indexPath, animated: true)
     }
 }
 
@@ -247,9 +257,9 @@ extension SettingsVC: UITableViewDataSource{
                 switch position{
                 case .onTop:
                     imageCell.topImageView.tintColor = .label
-                    imageCell.bottomImageView.tintColor = .lightText
+                    imageCell.bottomImageView.tintColor = .systemGray3
                 case .onBottom:
-                    imageCell.topImageView.tintColor = .lightText
+                    imageCell.topImageView.tintColor = .systemGray3
                     imageCell.bottomImageView.tintColor = .label
                 }
                 imageCell.label.text = data.title
@@ -283,6 +293,4 @@ extension SettingsVC: UITableViewDataSource{
         }
         return UITableView.automaticDimension
     }
-
 }
-//We designed this app to make an easy transition from your existing notes, vocabularies and other valuable staff to an easy to repeat version of it.

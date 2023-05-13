@@ -11,9 +11,9 @@ class SeparatorsCell: UITableViewCell {
     
     let identifier = "separatorCell"
     
-    let view : UIView = {
+    lazy var view : UIView = {
         let view = UIView()
-        view.backgroundColor = .systemGray6.withAlphaComponent(0.9)
+        view.backgroundColor = .secondarySystemBackground
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -57,7 +57,16 @@ class SeparatorsCell: UITableViewCell {
             addImage.tintColor = .clear
             selectedImage.tintColor = .clear
         }
-
+        override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection){
+            if traitCollection.userInterfaceStyle == .dark {
+                self.view.backgroundColor = .secondarySystemBackground
+            } else {
+                self.view.backgroundColor = .systemGray6.withAlphaComponent(0.8)
+            }
+        }
+    }
     func cellCustomization(){
         contentView.addSubview(view)
         view.addSubviews(label, addImage, selectedImage)
@@ -71,7 +80,6 @@ class SeparatorsCell: UITableViewCell {
             label.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 15),
             label.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             
-//            addImage.leadingAnchor.constraint(equalTo: label.trailingAnchor),
             addImage.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -15),
             addImage.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             addImage.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.8),

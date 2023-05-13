@@ -27,11 +27,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             animationView?.animationView.removeFromSuperview()
             animationView = nil
         }
+        
         self.window?.makeKeyAndVisible()
     }
     //MARK: - TabBar SetUp
     func setUpTabBarController() -> UITabBarController{
         let tabBArController = UITabBarController()
+        tabBArController.tabBar.backgroundColor = .systemBackground
         
         let firstVC = MenuVC()
         let firstNC = UINavigationController(rootViewController: firstVC)
@@ -87,7 +89,5 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Use this method to save data, release shared resources, and store enough scene-specific state information
         // to restore the scene back to its current state.
     }
-
-
 }
 

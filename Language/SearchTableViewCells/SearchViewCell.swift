@@ -10,11 +10,19 @@ import UIKit
 class SearchViewCell: UITableViewCell {
     let identifier = "searchCell"
     
+    let inset = CGFloat(10)
+    
     let view: UIView = {
         let view = UIView()
-        view.backgroundColor = .systemGray6
+        view.backgroundColor = .secondarySystemBackground
         view.layer.cornerRadius = 9
-        view.clipsToBounds = true
+        view.addCenterSideShadows(false)
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    let spacerView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .systemBackground
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -41,15 +49,30 @@ class SearchViewCell: UITableViewCell {
     required init?(coder: NSCoder) {
         fatalError("Unable to use Coder")
     }
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection){
+            if traitCollection.userInterfaceStyle == .dark{
+                view.layer.shadowColor = shadowColorForDarkIdiom
+            } else {
+                view.layer.shadowColor = shadowColorForLightIdiom
+            }
+        }
+    }
     func cellViewCustomization(){
-        contentView.addSubview(view)
+        contentView.addSubview(spacerView)
+        spacerView.addSubview(view)
         view.addSubviews(wordLabel, descriptionLabel)
         
         NSLayoutConstraint.activate([
-            view.topAnchor.constraint(equalTo: contentView.topAnchor),
-            view.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            view.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
-            view.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            spacerView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            spacerView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            spacerView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            spacerView.topAnchor.constraint(equalTo: contentView.topAnchor),
+
+            view.topAnchor.constraint(equalTo: spacerView.topAnchor, constant: inset),
+            view.bottomAnchor.constraint(equalTo: spacerView.bottomAnchor, constant: -inset),
+            view.widthAnchor.constraint(equalTo: spacerView.widthAnchor, multiplier: 0.91),
+            view.centerXAnchor.constraint(equalTo: spacerView.centerXAnchor),
 
             wordLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 15),
             wordLabel.bottomAnchor.constraint(equalTo: view.centerYAnchor),

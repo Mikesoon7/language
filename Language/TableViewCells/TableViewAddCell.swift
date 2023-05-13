@@ -34,8 +34,6 @@ class TableViewAddCell: UITableViewCell {
         NotificationCenter.default.addObserver(self, selector: #selector(languageChanged(sender:)), name: .appLanguageDidChange, object: nil)
         self.backgroundColor = .systemGray5
         self.layer.cornerRadius = 9
-        self.layer.borderWidth = 1
-        self.layer.borderColor = UIColor.black.cgColor
         self.clipsToBounds = true
         
         setUpAccessories()

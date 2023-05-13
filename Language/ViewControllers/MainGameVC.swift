@@ -32,37 +32,39 @@ class MainGameVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         cellPreparation()
-        navBarCustomization()
         collectionViewCustomization()
-        viewCustomization()
-        tabBarCastomization()
+        controllerCustomization()
+        navBarCustomization()
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.tabBarController?.tabBar.isHidden = true
+        
     }
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        self.tabBarController?.tabBar.isHidden = false
+        tabBarController?.tabBar.isHidden = false
+        self.navigationController?.interactivePopGestureRecognizer?.delegate = nil
     }
-    func viewCustomization(){
+    //MARK: - Controller SetUp
+    func controllerCustomization(){
         view.backgroundColor = .systemBackground
         dimView = UIView(frame: view.frame)
         dimView.backgroundColor = .black
         dimView.alpha = 0.0
         view.addSubview(dimView)
     }
-
     //MARK: - NavBar SetUp
     func navBarCustomization(){
         navigationItem.title = "gameTitle".localized
         navigationController?.navigationBar.titleTextAttributes = NSAttributedString().fontWithoutString(bold: true, size: 23)
         self.navigationController?.navigationBar.tintColor = .label
         self.navigationController?.navigationBar.isTranslucent = true
+        self.navigationController?.interactivePopGestureRecognizer?.delegate = self
     }
     func tabBarCastomization(){
-        self.tabBarController?.tabBar.isHidden = true
+        tabBarController?.tabBar.isHidden = true
     }
     //MARK: - CollectionView SetUp
     func collectionViewCustomization(){
@@ -83,6 +85,7 @@ class MainGameVC: UIViewController {
             collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
     }
+    
     //MARK: - Cell SetUp
     func cellPreparation(){
         self.mainCell = UICollectionView.CellRegistration<CollectionViewCell, WordsEntity> { cell, indexPath, data in
@@ -133,7 +136,8 @@ extension MainGameVC: UICollectionViewDelegateFlowLayout, CustomCellDelegate{
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        collectionView.deselectItem(at: indexPath, animated: true)
+        guard let cell = collectionView.cellForItem(at: indexPath) as? CollectionViewCell else { return }
+        
     }
 }
 
@@ -156,7 +160,11 @@ extension MainGameVC: UIScrollViewDelegate{
         }
     }
 }
-
+extension MainGameVC: UIGestureRecognizerDelegate {
+    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        false
+    }
+}
 
 class CustomFlowLayout: UICollectionViewFlowLayout {
     

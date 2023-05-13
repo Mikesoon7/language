@@ -14,11 +14,11 @@ class AddWordsVC: UIViewController {
     
     let textView : UITextView = {
         let textView = TextViewToAdd()
-        textView.backgroundColor = .systemGray5
-        textView.layer.cornerRadius = 9
-        textView.layer.borderWidth = 1
+        textView.setUpBorderedView(false)
+        textView.layer.masksToBounds = true
+
+        textView.layer.borderWidth = 0.5
         textView.layer.borderColor = UIColor.black.cgColor
-        textView.clipsToBounds = true
         
         textView.textContainerInset = .init(top: 5, left: 5, bottom: 0, right: 5)
         textView.allowsEditingTextAttributes = true
@@ -40,32 +40,43 @@ class AddWordsVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .systemBackground
+        controllerCustomization()
         navBarCustomization()
         textViewCustomization()
         submitButtonCustomization()
         keybaordAppears()
-        NotificationCenter.default.addObserver(self, selector: #selector(languageDidChange(sender:)), name: .appLanguageDidChange, object: nil)
     }
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         strokeCustomization()
     }
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        if textView.isFirstResponder{
+            textView.resignFirstResponder()
+        }
+    }
 //MARK: - StyleChange Responding
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
-        
         if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+            self.bottomStroke.strokeColor = UIColor.label.cgColor
+            self.topStroke.strokeColor = UIColor.label.cgColor
             if traitCollection.userInterfaceStyle == .dark {
-                self.bottomStroke.strokeColor = UIColor.white.cgColor
-                self.topStroke.strokeColor = UIColor.white.cgColor
+                submitButton.layer.shadowColor = shadowColorForDarkIdiom
             } else {
-                self.bottomStroke.strokeColor = UIColor.black.cgColor
-                self.topStroke.strokeColor = UIColor.black.cgColor
+                submitButton.layer.shadowColor = shadowColorForLightIdiom
             }
         }
     }
-//MARK: - Stroke SetUp
+    //MARK: - Controller SetUp
+    func controllerCustomization(){
+        view.backgroundColor = .systemBackground
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(languageDidChange(sender:)), name: .appLanguageDidChange, object: nil)
+    }
+
+    //MARK: - Stroke SetUp
     func strokeCustomization(){
         topStroke = UIView().addTopStroke(vc: self)
         bottomStroke = UIView().addBottomStroke(vc: self)
@@ -73,7 +84,7 @@ class AddWordsVC: UIViewController {
         view.layer.addSublayer(topStroke)
         view.layer.addSublayer(bottomStroke)
     }
-//MARK: - KeyboardObserver
+    //MARK: - KeyboardObserver
     func keybaordAppears(){
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(sender:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(sender:)), name: UIResponder.keyboardWillHideNotification, object: nil)

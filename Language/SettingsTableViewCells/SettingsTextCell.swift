@@ -7,9 +7,6 @@
 
 import UIKit
 
-protocol NotificationCellDelegate: AnyObject{
-    func datePickerValueChanged(_ cell: SettingsTextCell, date: Date)
-}
 class SettingsTextCell: UITableViewCell {
     
     let identifier = "settingsTextCell"

@@ -13,8 +13,8 @@ class TableViewCell: UITableViewCell{
         let view = UIView()
         view.backgroundColor = .systemGray6
         view.layer.cornerRadius = 9
-        view.layer.borderWidth = 1
-        view.layer.borderColor = UIColor.black.cgColor
+//        view.layer.borderWidth = 1
+//        view.layer.borderColor = UIColor.black.cgColor
         view.clipsToBounds = true
         view.translatesAutoresizingMaskIntoConstraints = false
         return view

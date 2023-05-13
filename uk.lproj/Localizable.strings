@@ -3,7 +3,7 @@
 "tabBarSearch" = "Пошук";
 "tabBarSettings" = "Налаштування";
 //MARK: - DictionariesView
-"navBarTitle" = "Словники";
+"menuVCTitle" = "Словники";
 "tableCellName" = "Імʼя";
 "tableCellNumberOfCards" = "Всього карток";
 "tableCellImport" = "Додади словник";
@@ -76,10 +76,11 @@
 "onWeekdays" = "У будні";
 "onTheWeekend" = "На вихідних";
 //MARK: - SearchVC
+"searchVCTitle" = "Пошук";
 "yourWord" = "Введіть текст";
 //MARK: - SeparatorsVC
 "howIt'sWorking" = "Як це працюе ?";
 "firstMessage" = "По-перше, введений текст поділяється на блоки.";
 "secondMessage" = "По-друге, блоки поділяються за допомогою вибраного символу на пари Слово та Визначення.";
-"informMessage" = "Ми продовжуємо займатися розробкою програми, щоб зробити його більш стабільним та корисним. Якщо у вас виникнуть проблеми чи пропозиції - будь ласка, зв'яжіться з нами.";
+"informMessage" = "Якщо у вас виникнули запитання чи пропозиції - будь ласка, зв'яжіться з нами.";
 

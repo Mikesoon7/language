@@ -48,7 +48,7 @@ class CoreDataHelper {
         let context = appDelegate.persistentContainer.viewContext
 
         for line in lines {
-            var parts = line.split(separator: " - ")
+            var parts = line.split(separator: " \(UserSettings.shared.settings.separators.selectedValue) ")
             let newWord = WordsEntity(context: context)
             if parts.count == 2{
                 var word = String(parts[0]).trimmingCharacters(in: CharacterSet(charactersIn: "[ ] ◦ - "))

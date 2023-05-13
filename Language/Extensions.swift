@@ -7,39 +7,26 @@
 
 import Foundation
 import UIKit
+import CoreData
+
+public let shadowColorForDarkIdiom = UIColor.clear.cgColor
+public let shadowColorForLightIdiom = UIColor.systemGray2.cgColor
+
 
 extension UIView {
-    func setUpBorderedView(_ light: Bool){
-        self.layer.borderWidth = 1
-        self.layer.borderColor = UIColor.black.cgColor
+    func setUpBorderedView(_ overlays: Bool){
         self.layer.cornerRadius = 9
-        self.clipsToBounds = true
-
-        if light {
-            self.backgroundColor = .systemGray5
-        } else {
-            self.backgroundColor = .systemGray4
-        
-        }
+        self.addShadowWhichOverlays(overlays)
+        self.backgroundColor = .secondarySystemBackground
         self.translatesAutoresizingMaskIntoConstraints = false
     }
 }
 extension UIButton {
-    func setUpCommotBut(_ light: Bool){
-        self.configuration = .gray()
-        self.configuration?.baseForegroundColor = .label
-        self.layer.borderWidth = 1
-        self.layer.borderColor = UIColor.black.cgColor
+    func setUpCommotBut(_ overlays: Bool){
         self.layer.cornerRadius = 9
         self.tintColor = .label
-        self.clipsToBounds = true
-        if light{
-            self.configuration?.baseBackgroundColor = .systemGray5
-        } else {
-            self.configuration?.baseBackgroundColor = .systemGray4
-
-        }
-
+        self.addShadowWhichOverlays(overlays)
+        self.backgroundColor = .secondarySystemBackground
     }
     
 }
@@ -94,14 +81,14 @@ extension UIView{
         }()
         path.move(to: CGPoint(x: 0, y: y ))
         path.addLine(to: CGPoint(x: vc.view.bounds.maxX, y: y))
-            topStroke.path = path.cgPath
-            topStroke.lineWidth = 1.5
-            topStroke.strokeColor = UIColor.label.cgColor
-            topStroke.fillColor = UIColor.clear.cgColor
-            topStroke.opacity = 0.8
-            
-            return topStroke
-        }
+        topStroke.path = path.cgPath
+        topStroke.lineWidth = 0.8
+        topStroke.strokeColor = UIColor.label.cgColor
+        topStroke.fillColor = UIColor.clear.cgColor
+        topStroke.opacity = 0.8
+        
+        return topStroke
+    }
     func addBottomStroke(vc: UIViewController) -> CAShapeLayer{
         let path = UIBezierPath()
         let y = {
@@ -113,14 +100,14 @@ extension UIView{
         }()
         path.move(to: CGPoint(x: 0, y: y))
         path.addLine(to: CGPoint(x: vc.view.bounds.maxX, y: y))
-            let stroke = CAShapeLayer()
-            stroke.path = path.cgPath
-        stroke.lineWidth = 1.5
-            stroke.strokeColor = UIColor.label.cgColor
-            stroke.fillColor = UIColor.clear.cgColor
-            stroke.opacity = 0.8
-            
-            return stroke
+        let stroke = CAShapeLayer()
+        stroke.path = path.cgPath
+        stroke.lineWidth = 0.8
+        stroke.strokeColor = UIColor.label.cgColor
+        stroke.fillColor = UIColor.clear.cgColor
+        stroke.opacity = 0.8
+        
+        return stroke
     }
 }
 extension NSAttributedString{
@@ -161,12 +148,38 @@ extension UIView{
             self.addSubview(i)
         }
     }
+    func addCenterSideShadows(_ over: Bool){
+        self.layer.masksToBounds = false
+        self.layer.shadowOffset = over ? CGSize(width: 0, height: 10) : CGSize(width: 0, height: 5)
+        self.layer.shadowColor = ((traitCollection.userInterfaceStyle == .dark)
+                                  ? shadowColorForDarkIdiom
+                                  : shadowColorForLightIdiom)
+        self.layer.shadowOpacity = over ? 0.4 : 0.8
+    }
+
+    func addShadowWhichOverlays( _ over: Bool){
+        self.layer.masksToBounds = false
+        self.layer.shadowOffset = over ? CGSize(width: 9, height: 10) : CGSize(width: 4, height: 5)
+        self.layer.shadowColor = ((traitCollection.userInterfaceStyle == .dark)
+                                  ? shadowColorForDarkIdiom
+                                  : shadowColorForLightIdiom)
+        self.layer.shadowOpacity = over ? 0.4 : 0.8
+    }
 }
+extension NSManagedObject{
+    enum ChangeType{
+        case insert
+        case delete
+        case update
+    }
+}
+
 extension Notification.Name{
     static let appLanguageDidChange = Notification.Name("appLanguageDidChange")
     static let appThemeDidChange = Notification.Name("appThemeDidChange")
     static let appSearchBarPositionDidChange = Notification.Name("appSearchBarPositionDidChange")
     static let appNotificationSettingsDidChange = Notification.Name("appNotificationSettingsDidChange")
+    static let appDataDidChange = Notification.Name("appDataDidChange")
 }
 
 extension String{

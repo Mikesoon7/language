@@ -12,7 +12,10 @@ class AddDictionaryVC: UIViewController {
     
     var textView: UITextView = {
         var textView = TextViewToCreate()
-        textView.setUpBorderedView(true)
+        textView.setUpBorderedView(false)
+        textView.layer.masksToBounds = true
+        textView.layer.borderWidth = 0.5
+        textView.layer.borderColor = UIColor.black.cgColor
         
         textView.textContainerInset = .init(top: 5, left: 5, bottom: 5, right: 5)
         textView.allowsEditingTextAttributes = true
@@ -20,12 +23,13 @@ class AddDictionaryVC: UIViewController {
         textView.font = UIFont(name: "Times New Roman", size: 17) ?? UIFont()
         textView.text = "viewPlaceholder".localized
         textView.textColor = .lightGray
+        textView.layer.shadowColor = UIColor.clear.cgColor
         return textView
     }()
     
     var nameView : UIView = {
         var view = UIView()
-        view.setUpBorderedView(true)
+        view.setUpBorderedView(false)
         return view
     }()
     let nameLabel: UILabel = {
@@ -60,16 +64,16 @@ class AddDictionaryVC: UIViewController {
     var topStroke = CAShapeLayer()
     var bottomStroke = CAShapeLayer()
     
+
     //MARK: - Prepare Func
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .systemBackground
+        controllerCustomization()
         textViewCustomization()
         navBarCustomization()
         nameViewCustomization()
         submitButtonCustomization()
         keybaordAppears()
-        NotificationCenter.default.addObserver(self, selector: #selector(languageDidChange(sender:)), name: .appLanguageDidChange, object: nil)
     }
     override func viewDidAppear(_ animated: Bool) {
         self.view.becomeFirstResponder()
@@ -80,26 +84,38 @@ class AddDictionaryVC: UIViewController {
     }
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        if textView.isFirstResponder{
+            textView.resignFirstResponder()
+        }
         if let navController = self.navigationController{
             let menu = navController.viewControllers.first(where: { $0 is MenuVC}) as? MenuVC
             menu?.fetchDictionaries()
             menu?.tableView.reloadData()
         }
     }
+    
     //MARK: - StyleChange Responding
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
-        
-        if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
-            if traitCollection.userInterfaceStyle == .dark {
-                self.bottomStroke.strokeColor = UIColor.white.cgColor
-                self.topStroke.strokeColor = UIColor.white.cgColor
+        if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection){
+            self.bottomStroke.strokeColor = UIColor.label.cgColor
+            self.topStroke.strokeColor = UIColor.label.cgColor
+            if traitCollection.userInterfaceStyle == .dark{
+                nameView.layer.shadowColor = shadowColorForDarkIdiom
+                submitButton.layer.shadowColor = shadowColorForDarkIdiom
             } else {
-                self.bottomStroke.strokeColor = UIColor.black.cgColor
-                self.topStroke.strokeColor = UIColor.black.cgColor
+                nameView.layer.shadowColor = shadowColorForLightIdiom
+                submitButton.layer.shadowColor = shadowColorForLightIdiom
             }
         }
     }
+    //MARK: - Controleler SetUp
+    func controllerCustomization(){
+        view.backgroundColor = .systemBackground
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(languageDidChange(sender:)), name: .appLanguageDidChange, object: nil)
+    }
+
     //MARK: - Stroke SetUp
     func strokeCustomization(){
         topStroke = UIView().addTopStroke(vc: self)
@@ -144,11 +160,11 @@ class AddDictionaryVC: UIViewController {
             nameInputField.trailingAnchor.constraint(equalTo: nameView.trailingAnchor, constant: -15),
             nameInputField.centerYAnchor.constraint(equalTo: nameView.centerYAnchor)
         ])
-//Action
+        //Action
         nameView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(nonAccurateNameFieldTap(sender:))))
 
     }
-//MARK: - SubmitButton SetUp
+    //MARK: - SubmitButton SetUp
     func submitButtonCustomization(){
         view.addSubview(submitButton)
         
@@ -168,10 +184,11 @@ class AddDictionaryVC: UIViewController {
     }
     
 //MARK: - NavBar SetUp
-        func navBarCustomization(){
-            navigationItem.title = "addDictTitle".localized
-            navigationController?.navigationBar.titleTextAttributes = NSAttributedString().fontWithoutString(bold: true, size: 23)
-        }
+    func navBarCustomization(){
+        navigationItem.title = "addDictTitle".localized
+        navigationController?.navigationBar.titleTextAttributes = NSAttributedString().fontWithoutString(bold: true, size: 23)
+    }
+    
     private func saveDictionary(name: String, content: String) {
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         let context = appDelegate.persistentContainer.viewContext
@@ -314,3 +331,4 @@ extension AddDictionaryVC: UITextInputDelegate{
     
     
 }
+

@@ -16,7 +16,7 @@ class DetailsVC: UIViewController {
     
     let randomizeCardsView : UIView = {
         var view = UIView()
-        view.setUpBorderedView(true)
+        view.setUpBorderedView(false)
         return view
     }()
     let randomizeLabel: UILabel = {
@@ -28,9 +28,10 @@ class DetailsVC: UIViewController {
         return label
     }()
     
-    let setTheGoalView : UIView = {
+    lazy var setTheGoalView : UIView = {
         var view = UIView()
-        view.setUpBorderedView(true)
+        view.setUpBorderedView(false)
+        view.layer.masksToBounds = true
         return view
     }()
     
@@ -45,7 +46,7 @@ class DetailsVC: UIViewController {
 
     let addNewWordsBut : UIButton = {
         var button = UIButton()
-        button.setUpCommotBut(true)
+        button.setUpCommotBut(false)
         button.setAttributedTitle(NSAttributedString().fontWithString(
             string: "addWords".localized,
             bold: true,
@@ -70,45 +71,36 @@ class DetailsVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .systemBackground
+        controllerCustomization()
         navBarCustomization()
         randomizeCardCustomization()
         setTheGoalCustomization()
         beginButCustomization()
         addNewWordsCustomization()
-        NotificationCenter.default.addObserver(self, selector: #selector(languageDidChange(sender:)), name: .appLanguageDidChange, object: nil)
         }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.picker.reloadAllComponents()
         self.numberOfCards = dictionary.words?.count
     }
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-    }
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         strokeCustomization()
     }
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        if let navController = self.navigationController{
-            let menu = navController.viewControllers.first(where: { $0 is MenuVC}) as? MenuVC
-            menu?.tableView.reloadData()
-        
-        }
-    }
     //MARK: - StyleChange Responding
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
-        
         if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+            self.bottomStroke.strokeColor = UIColor.label.cgColor
+            self.topStroke.strokeColor = UIColor.label.cgColor
             if traitCollection.userInterfaceStyle == .dark {
-                self.bottomStroke.strokeColor = UIColor.white.cgColor
-                self.topStroke.strokeColor = UIColor.white.cgColor
+                view.subviews.forEach { view in
+                    view.layer.shadowColor = shadowColorForDarkIdiom
+                }
             } else {
-                self.bottomStroke.strokeColor = UIColor.black.cgColor
-                self.topStroke.strokeColor = UIColor.black.cgColor
+                view.subviews.forEach { view in
+                    view.layer.shadowColor = shadowColorForLightIdiom
+                }
             }
         }
     }
@@ -120,7 +112,13 @@ class DetailsVC: UIViewController {
         view.layer.addSublayer(topStroke)
         view.layer.addSublayer(bottomStroke)
     }
-//MARK: - NavigationBar SetUp
+    //MARK: - Controller SetUp
+    func controllerCustomization(){
+        view.backgroundColor = .systemBackground
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(languageDidChange(sender:)), name: .appLanguageDidChange, object: nil)
+    }
+    //MARK: - NavigationBar SetUp
     func navBarCustomization(){
         navigationItem.title = "detailsTitle".localized
         navigationController?.navigationBar.titleTextAttributes = NSAttributedString().fontWithoutString(bold: true, size: 23)
@@ -132,6 +130,7 @@ class DetailsVC: UIViewController {
             action: #selector(statisticButTap(sender:)))
         self.navigationItem.setRightBarButton(rightButton, animated: true)
         navigationController?.navigationBar.tintColor = .label
+        navigationItem.backBarButtonItem?.menu = nil
         navigationItem.backButtonDisplayMode = .minimal
     }
     
@@ -168,7 +167,10 @@ class DetailsVC: UIViewController {
     
 //MARK: - SetTheGoal SetUp
     func setTheGoalCustomization(){
-        view.addSubview(setTheGoalView)
+        var shadowView = UIView()
+        shadowView.setUpBorderedView(false)
+
+        view.addSubviews(shadowView, setTheGoalView)
 
         picker.dataSource = self
         picker.delegate = self
@@ -178,6 +180,11 @@ class DetailsVC: UIViewController {
         setTheGoalView.addSubviews(setTheGoalLabel, picker)
         
         NSLayoutConstraint.activate([
+            shadowView.topAnchor.constraint(equalTo: self.randomizeCardsView.bottomAnchor, constant: 23),
+            shadowView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            shadowView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.91),
+            shadowView.heightAnchor.constraint(equalToConstant: 60),
+            
             setTheGoalView.topAnchor.constraint(equalTo: self.randomizeCardsView.bottomAnchor, constant: 23),
             setTheGoalView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             setTheGoalView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.91),
@@ -296,17 +303,21 @@ extension DetailsVC: UIPickerViewDataSource{
         return 1
     }
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        if (dictionary.words!.count / 50) > 0{
-           return (dictionary.words!.count / 50) + 1
-        } else {
-            return 1
+        guard let number = dictionary.words?.count else { return 0}
+        switch number % 50{
+        case 0: return number / 50
+        default: return (number / 50) + 1
         }
     }
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        if row != (pickerView.numberOfRows(inComponent: component) - 1)  {
-            return "\((row + 1) * 50)"
+        guard let number = dictionary.words?.count else { return " " }
+        let overal = pickerView.numberOfRows(inComponent: 0)
+        if row != overal - 1{
+            return String((row + 1) * 50)
         } else {
-            return dictionary.numberOfCards
+            return String(number)
+
         }
-    }
+        
+            }
 }

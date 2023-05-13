@@ -17,10 +17,14 @@ class NotificationVC: UIViewController {
         view.backgroundColor = .clear
         view.delegate = self
         view.dataSource = self
-        view.register(SettingsTextCell.self, forCellReuseIdentifier: SettingsTextCell().identifier)
+        view.register(NotificationTextCell.self, forCellReuseIdentifier: NotificationTextCell().identifier)
         view.register(NotificationSwitchCell.self, forCellReuseIdentifier: NotificationSwitchCell().identifier)
         view.translatesAutoresizingMaskIntoConstraints = false
         view.isScrollEnabled = false
+        
+        view.subviews.forEach { section in
+            view.addShadowWhichOverlays(false)
+        }
         return view
     }()
     lazy var containerView: UIView = {
@@ -88,8 +92,15 @@ class NotificationVC: UIViewController {
         super.traitCollectionDidChange(previousTraitCollection)
         if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
             if traitCollection.userInterfaceStyle == .dark {
+                containerView.subviews.forEach { view in
+                    view.layer.shadowColor = shadowColorForDarkIdiom
+
+                }
                 containerView.backgroundColor = .secondarySystemBackground
             } else {
+                containerView.subviews.forEach { view in
+                    view.layer.shadowColor = shadowColorForLightIdiom
+                }
                 containerView.backgroundColor = .systemBackground
             }
         }
@@ -219,19 +230,18 @@ class NotificationVC: UIViewController {
     }
     @objc func timePickerValueChanged(picker: UIDatePicker){
         let formatter = DateFormatter()
-        formatter.dateFormat = "HH:mm "
-        
+        formatter.dateFormat = "HH:mm " 
         let selectedTime = formatter.string(from: picker.date)
         UserSettings.shared.reload(newValue: picker.date)
         data = UserSettings.shared.settings
-        if let cell = tableView.cellForRow(at: IndexPath(row: 1, section: 1)) as? SettingsTextCell{
+        if let cell = tableView.cellForRow(at: IndexPath(row: 1, section: 1)) as? NotificationTextCell{
             cell.value.text = selectedTime
         }
         
     }
     @objc func handlePanGesture(gesture: UIPanGestureRecognizer){
         let translation = gesture.translation(in: view).y
-        
+
         let newConstant = currentConstant + translation
                 
         switch gesture.state {
@@ -278,7 +288,8 @@ extension NotificationVC: UIPickerViewDelegate, UIPickerViewDataSource{
         return view.bounds.width * 0.91
     }
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        if let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 1)) as? SettingsTextCell{
+        let indexPath = IndexPath(row: 0, section: 1)
+        if let cell = tableView.cellForRow(at: indexPath) as? NotificationTextCell{
             cell.value.text = {
                 switch row{
                 case 0:
@@ -301,42 +312,57 @@ extension NotificationVC: UIPickerViewDelegate, UIPickerViewDataSource{
     }
 }
 extension NotificationVC: UITableViewDelegate, UITableViewDataSource{
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let switchCell = tableView.dequeueReusableCell(
-            withIdentifier: NotificationSwitchCell().identifier) as? NotificationSwitchCell
-        let textCell = tableView.dequeueReusableCell(
-            withIdentifier: SettingsTextCell().identifier) as? SettingsTextCell
+        guard let switchCell = tableView.dequeueReusableCell(
+            withIdentifier: NotificationSwitchCell().identifier)
+                as? NotificationSwitchCell else { return UITableViewCell() }
+        guard let textCell = tableView.dequeueReusableCell(
+            withIdentifier: NotificationTextCell().identifier)
+                as? NotificationTextCell else {return UITableViewCell() }
+        
         switch (indexPath.section, indexPath.row){
         case (0, 0):
-            switchCell?.control.isOn = data?.notification.value ?? false
-            switchCell?.control.addTarget(self, action: #selector(switchToggle(sender: )), for: .valueChanged)
-            return switchCell ?? UITableViewCell()
+            switchCell.control.isOn = data?.notification.value ?? false
+            switchCell.control.addTarget(self, action: #selector(switchToggle(sender: )), for: .valueChanged)
+            switchCell.selectionStyle = .none
+            return switchCell
         case (1, 0):
-            textCell?.label.text = data?.notificationFrequency.title
-            textCell?.value.text = data?.notificationFrequency.value.value
-            return textCell ?? UITableViewCell()
+            textCell.label.text = data?.notificationFrequency.title
+            textCell.value.text = data?.notificationFrequency.value.value
+            return textCell
         case (1, 1):
-            textCell?.label.text = data?.notificationTime.title
-            textCell?.value.text = data?.notificationTime.value.formatted(date: .omitted, time: .shortened)
-            return textCell ?? UITableViewCell()
+            textCell.label.text = data?.notificationTime.title
+            textCell.value.text = data?.notificationTime.value.formatted(date: .omitted, time: .shortened)
+            return textCell
         default: return UITableViewCell()
         }
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch (indexPath.section, indexPath.row){
         case (0, 0):
-            self.animateTransitionTo(constantForSecondStage)
+            let thirdStage = (currentConstant == constantForSecondStage)
+            if thirdStage {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    print("First select")
+                    self.animateTransitionTo(self.constantForSecondStage)
+                }
+            }
         case (1, 0):
+            print("Select")
+
             guard let index = data?.notificationFrequency.value.index else {
                 return
             }
-            UIView.animate(withDuration: 0.2, delay: 0.2) {
+            UIView.animate(withDuration: 0.3, delay: 0.2) {
                 self.animateTransitionTo(self.constantForThirdStage)
                 self.frequencyPicker.selectRow(index.row, inComponent: index.section, animated: false)
                 self.frequencyPicker.alpha = 1
             }
         case (1, 1):
-            UIView.animate(withDuration: 0.2, delay: 0.2) {
+            print("Select")
+
+            UIView.animate(withDuration: 0.3, delay: 0.2) {
                 self.animateTransitionTo(self.constantForThirdStage)
                 self.timePicker.date = self.data?.notificationTime.value ?? Date()
                 self.timePicker.alpha = 1
@@ -345,16 +371,21 @@ extension NotificationVC: UITableViewDelegate, UITableViewDataSource{
         }
     }
     func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+        let thirdStage = (currentConstant == constantForThirdStage)
         switch (indexPath.section, indexPath.row){
         case (1, 0):
-            self.animateTransitionTo(-constantForSecondStage)
-            UIView.animate(withDuration: 0.2) { [weak self] in
-                self?.frequencyPicker.alpha = 0
+            if frequencyPicker.alpha == 1 {
+                animateTransitionTo(constantForSecondStage)
+                UIView.animate(withDuration: 0.1) { [weak self] in
+                    self?.frequencyPicker.alpha = 0
+                }
             }
         case (1, 1):
-            self.animateTransitionTo(-constantForSecondStage)
-            UIView.animate(withDuration: 0.2) { [weak self] in
-                self?.timePicker.alpha = 0
+            if timePicker.alpha == 1{
+                self.animateTransitionTo(constantForSecondStage)
+                UIView.animate(withDuration: 0.1) { [weak self] in
+                    self?.timePicker.alpha = 0
+                }
             }
         default: return
         }

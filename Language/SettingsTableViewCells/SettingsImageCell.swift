@@ -52,7 +52,7 @@ class SettingsImageCell: UITableViewCell {
         return stackView
     }()
     
-    var selectedImage:((UserSettings.AppSearchBarOnTop) -> Void)?
+    var selectedImage: ((UserSettings.AppSearchBarOnTop) -> Void)?
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -103,13 +103,12 @@ class SettingsImageCell: UITableViewCell {
 
     @objc func imageTapped(sender: UITapGestureRecognizer){
         let tappedImageView = sender.view as? UIImageView
-        
         if tappedImageView === topImageView {
             topImageView.tintColor = .label
-            bottomImageView.tintColor = .lightText
+            bottomImageView.tintColor = .systemGray3
             selectedImage?(.onTop)
         } else {
-            topImageView.tintColor = .lightText
+            topImageView.tintColor = .systemGray3
             bottomImageView.tintColor = .label
             selectedImage?(.onBottom)
         }

@@ -35,8 +35,9 @@ class SettingsHeaderCell: UITableViewCell {
     }
     override func prepareForReuse() {
         super.prepareForReuse()
+        label.text = nil
     }
-    
+        
     func cellViewCustomization(){
         contentView.addSubview(view)
         view.addSubview(label)
