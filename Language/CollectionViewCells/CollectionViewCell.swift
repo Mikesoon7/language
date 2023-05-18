@@ -21,6 +21,11 @@ class CollectionViewCell: UICollectionViewCell {
 
     var insets = InsetsForLabel()
     
+    var initialShadowValue = CGSize(width: 2, height: 2)
+    var finalShadowValue = CGSize()
+    
+    let shadowOpacity = Float(0.3)
+    
     var staticCardSize : CGSize!
     
     var word: UILabel = {
@@ -61,12 +66,12 @@ class CollectionViewCell: UICollectionViewCell {
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
-    var cardShadowView : UIView = {
+    lazy var cardShadowView : UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
         
-        view.layer.shadowOpacity = 0.3
-        view.layer.shadowOffset = CGSize(width: 0, height: 10)
+        view.layer.shadowOpacity = shadowOpacity
+        view.layer.shadowOffset = initialShadowValue
         view.layer.shadowRadius = 5.0
 
         return view
@@ -88,7 +93,6 @@ class CollectionViewCell: UICollectionViewCell {
         self.contentView.addSubview(cardShadowView)
         cardShadowView.addSubview(cardView)
         cardView.addSubviews(word, translation)
-        
                 
         NSLayoutConstraint.activate([
             cardView.topAnchor.constraint(equalTo: self.contentView.topAnchor),
@@ -110,9 +114,13 @@ class CollectionViewCell: UICollectionViewCell {
     }
     override func apply(_ layoutAttributes: UICollectionViewLayoutAttributes) {
         super.apply(layoutAttributes)
-        cardShadowView.layer.shadowOffset = CGSize(
-            width: (layoutAttributes.frame.width - staticCardSize.width) / 4 ,
-            height: ( layoutAttributes.frame.height - staticCardSize.height) / 3)
+        let size = CGSize(
+            width: max(((layoutAttributes.frame.width - staticCardSize.width) / 4) , initialShadowValue.width),
+            height: max(((layoutAttributes.frame.height - staticCardSize.height) / 3), initialShadowValue.height))
+        cardShadowView.layer.shadowOffset = size
+        if finalShadowValue.width < size.width{
+            finalShadowValue = size
+        }
     }
         
     func configure(with data: WordsEntity){

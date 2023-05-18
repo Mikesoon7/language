@@ -49,6 +49,10 @@
 		9AB43A4629F4760700984350 /* DictionariesEntity+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB43A4229F4760700984350 /* DictionariesEntity+CoreDataProperties.swift */; };
 		9AB9A95F29FD70A800694FE8 /* SeparatorsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB9A95E29FD70A800694FE8 /* SeparatorsCell.swift */; };
 		9AB9A96129FD71F000694FE8 /* SeparatorsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB9A96029FD71F000694FE8 /* SeparatorsVC.swift */; };
+		9AE34A782A115DD300F8BB65 /* GameDetailsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AE34A772A115DD300F8BB65 /* GameDetailsVC.swift */; };
+		9AE34A7B2A16A57900F8BB65 /* WikipediaKit in Frameworks */ = {isa = PBXBuildFile; productRef = 9AE34A7A2A16A57900F8BB65 /* WikipediaKit */; };
+		9AE34A7D2A16A61500F8BB65 /* WikipediaVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AE34A7C2A16A61400F8BB65 /* WikipediaVC.swift */; };
+		9AE34A7F2A16A68B00F8BB65 /* WikipediaAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AE34A7E2A16A68B00F8BB65 /* WikipediaAPI.swift */; };
 		9AE509312993C85A00D86DD7 /* LoadDataVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AE509302993C85A00D86DD7 /* LoadDataVC.swift */; };
 		9AE50933299695B400D86DD7 /* Menu VC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AE50932299695B400D86DD7 /* Menu VC.swift */; };
 		9AE509352997C07700D86DD7 /* AddDictionaryVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AE509342997C07700D86DD7 /* AddDictionaryVC.swift */; };
@@ -128,6 +132,9 @@
 		9AB43A4229F4760700984350 /* DictionariesEntity+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DictionariesEntity+CoreDataProperties.swift"; sourceTree = SOURCE_ROOT; };
 		9AB9A95E29FD70A800694FE8 /* SeparatorsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeparatorsCell.swift; sourceTree = "<group>"; };
 		9AB9A96029FD71F000694FE8 /* SeparatorsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeparatorsVC.swift; sourceTree = "<group>"; };
+		9AE34A772A115DD300F8BB65 /* GameDetailsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameDetailsVC.swift; sourceTree = "<group>"; };
+		9AE34A7C2A16A61400F8BB65 /* WikipediaVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WikipediaVC.swift; sourceTree = "<group>"; };
+		9AE34A7E2A16A68B00F8BB65 /* WikipediaAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WikipediaAPI.swift; sourceTree = "<group>"; };
 		9AE509302993C85A00D86DD7 /* LoadDataVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadDataVC.swift; sourceTree = "<group>"; };
 		9AE50932299695B400D86DD7 /* Menu VC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Menu VC.swift"; sourceTree = "<group>"; };
 		9AE509342997C07700D86DD7 /* AddDictionaryVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDictionaryVC.swift; sourceTree = "<group>"; };
@@ -149,6 +156,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				02795F90A406A1776236D496 /* Pods_Language.framework in Frameworks */,
+				9AE34A7B2A16A57900F8BB65 /* WikipediaKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -303,6 +311,9 @@
 				9A9970FB29D9D661007EE635 /* SearchVC.swift */,
 				9AFFCE7C299E747400C12B94 /* StatisticVC.swift */,
 				9AA71C5A29C20894008A193B /* MainGameVC.swift */,
+				9AE34A772A115DD300F8BB65 /* GameDetailsVC.swift */,
+				9AE34A7C2A16A61400F8BB65 /* WikipediaVC.swift */,
+				9AE34A7E2A16A68B00F8BB65 /* WikipediaAPI.swift */,
 				9AAECFBF29B5055100439C0B /* EndVc.swift */,
 			);
 			path = ViewControllers;
@@ -368,6 +379,9 @@
 			dependencies = (
 			);
 			name = Language;
+			packageProductDependencies = (
+				9AE34A7A2A16A57900F8BB65 /* WikipediaKit */,
+			);
 			productName = Language;
 			productReference = 9A7B91C2298D6D9600E60CDD /* Language.app */;
 			productType = "com.apple.product-type.application";
@@ -444,6 +458,9 @@
 				uk,
 			);
 			mainGroup = 9A7B91B9298D6D9600E60CDD;
+			packageReferences = (
+				9AE34A792A16A57900F8BB65 /* XCRemoteSwiftPackageReference "WikipediaKit" */,
+			);
 			productRefGroup = 9A7B91C3298D6D9600E60CDD /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -601,6 +618,7 @@
 				9AA71C5B29C20894008A193B /* MainGameVC.swift in Sources */,
 				9A912FC62A06BB540004A91A /* NotificationTextCell.swift in Sources */,
 				9AFFCE7B299D073D00C12B94 /* TableViewAddCell.swift in Sources */,
+				9AE34A782A115DD300F8BB65 /* GameDetailsVC.swift in Sources */,
 				9AB9A96129FD71F000694FE8 /* SeparatorsVC.swift in Sources */,
 				9A9970FE29DB2D86007EE635 /* LaunchAnimation.swift in Sources */,
 				9AB43A3629F4695B00984350 /* CoreDataMethods.swift in Sources */,
@@ -609,6 +627,7 @@
 				9A603FF929AF5B3200A65253 /* OldGameVC.swift in Sources */,
 				9AE509312993C85A00D86DD7 /* LoadDataVC.swift in Sources */,
 				9AE509352997C07700D86DD7 /* AddDictionaryVC.swift in Sources */,
+				9AE34A7D2A16A61500F8BB65 /* WikipediaVC.swift in Sources */,
 				9AA71C6429C84C65008A193B /* ViewModel.swift in Sources */,
 				9A912FCA2A0793FE0004A91A /* SearchBarView.swift in Sources */,
 				9AB43A4429F4760700984350 /* WordsEntity+CoreDataProperties.swift in Sources */,
@@ -625,6 +644,7 @@
 				9A7B91C6298D6D9600E60CDD /* AppDelegate.swift in Sources */,
 				9AAECFC229B50A5300439C0B /* AddWordsVC.swift in Sources */,
 				9AB40FF229CC6A9D00353FFC /* TableViewCell.swift in Sources */,
+				9AE34A7F2A16A68B00F8BB65 /* WikipediaAPI.swift in Sources */,
 				9A7B91C8298D6D9600E60CDD /* SceneDelegate.swift in Sources */,
 				9AFFCE8129A4DFEF00C12B94 /* DetailsVC.swift in Sources */,
 				9AB43A4329F4760700984350 /* WordsEntity+CoreDataClass.swift in Sources */,
@@ -979,6 +999,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		9AE34A792A16A57900F8BB65 /* XCRemoteSwiftPackageReference "WikipediaKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Raureif/WikipediaKit.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		9AE34A7A2A16A57900F8BB65 /* WikipediaKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9AE34A792A16A57900F8BB65 /* XCRemoteSwiftPackageReference "WikipediaKit" */;
+			productName = WikipediaKit;
+		};
+/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
 		9AB43A1729F40EA000984350 /* LearnyLocal.xcdatamodeld */ = {

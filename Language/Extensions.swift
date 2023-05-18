@@ -8,6 +8,7 @@
 import Foundation
 import UIKit
 import CoreData
+import WikipediaKit
 
 public let shadowColorForDarkIdiom = UIColor.clear.cgColor
 public let shadowColorForLightIdiom = UIColor.systemGray2.cgColor
@@ -185,5 +186,14 @@ extension Notification.Name{
 extension String{
     var localized: String{
         return LanguageChangeManager.shared.localizedString(forKey: self)
+    }
+    
+    func load() -> UIImage {
+        do{
+            
+        } catch {
+            
+        }
+        return UIImage()
     }
 }

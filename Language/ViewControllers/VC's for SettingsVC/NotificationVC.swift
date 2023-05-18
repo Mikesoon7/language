@@ -68,7 +68,6 @@ class NotificationVC: UIViewController {
     let heightForThirdStage: CGFloat = 400
         
     var currentConstant: CGFloat = 0
-    var dismissConstant: CGFloat = 315
     var initialConstant: CGFloat = 400
     var constantForFirstStage: CGFloat = 285
     var constantForSecondStage: CGFloat = 165
@@ -94,7 +93,6 @@ class NotificationVC: UIViewController {
             if traitCollection.userInterfaceStyle == .dark {
                 containerView.subviews.forEach { view in
                     view.layer.shadowColor = shadowColorForDarkIdiom
-
                 }
                 containerView.backgroundColor = .secondarySystemBackground
             } else {
@@ -169,15 +167,15 @@ class NotificationVC: UIViewController {
         dimmedView.addGestureRecognizer(tapGesture)
     }
     func animatePresentContainer(){
-        UIView.animate(withDuration: 0.3) { [weak self] in
-            guard let value = self?.data?.notification.value else {
+        UIView.animate(withDuration: 0.3) {
+            guard let value = self.data?.notification.value else {
                 return
             }
-            self?.containerViewBottomConstraits?.constant = (value
-                                                             ? self?.constantForSecondStage
-                                                             : self?.constantForFirstStage)!
-            self?.currentConstant = self!.containerViewBottomConstraits!.constant
-            self?.view.layoutIfNeeded()
+            self.containerViewBottomConstraits?.constant = (value
+                                                             ? self.constantForSecondStage
+                                                             : self.constantForFirstStage)
+            self.currentConstant = self.containerViewBottomConstraits!.constant
+            self.view.layoutIfNeeded()
         }
     }
     func animateDimmedView(){
@@ -251,7 +249,7 @@ class NotificationVC: UIViewController {
                 view.layoutIfNeeded()
             }
         case .ended, .cancelled:
-            if newConstant > currentConstant * 1.3 {
+            if newConstant > initialConstant * 0.5 {
                 animateViewDismiss()
             } else if newConstant > currentConstant || newConstant < currentConstant {
                 animateTransitionTo(currentConstant)
