@@ -36,6 +36,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         tabBArController.tabBar.backgroundColor = .systemBackground
         
         let firstVC = MenuVC()
+//        let firstVC = UIBezierPathTestController()
         let firstNC = UINavigationController(rootViewController: firstVC)
         firstNC.tabBarItem = UITabBarItem(
             title: LanguageChangeManager.shared.localizedString(forKey: "tabBarDictionaries"),

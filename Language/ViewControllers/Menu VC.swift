@@ -11,13 +11,15 @@ import CoreData
 class MenuVC: UIViewController {
     
     var dictionaries: [DictionariesEntity] = []
+    var isEditMenuActive: Bool!
     
     var tableView: UITableView = {
         var tableView = UITableView(frame: CGRect(x: 0, y: 0, width: 0, height: 0), style: .insetGrouped)
-        tableView.register(TableViewCell.self, forCellReuseIdentifier: "dictCell")
-        tableView.register(TableViewAddCell.self, forCellReuseIdentifier: "addCell")
+        tableView.register(TableViewCell.self, forCellReuseIdentifier: TableViewCell().identifier)
+        tableView.register(TableViewAddCell.self, forCellReuseIdentifier: TableViewAddCell().identifier)
         tableView.rowHeight = 104
         tableView.backgroundColor = .clear
+
         tableView.translatesAutoresizingMaskIntoConstraints = false
         
         tableView.subviews.forEach{ section in
@@ -46,9 +48,9 @@ class MenuVC: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
     }
-    
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+        print(tableView.subviews[0].frame)
         strokeCustomization()
     }
     //MARK: - StyleChange Responding
@@ -188,8 +190,8 @@ extension MenuVC: UITableViewDelegate{
 extension MenuVC: UITableViewDataSource{
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "dictCell", for: indexPath) as? TableViewCell
-        let addCell = tableView.dequeueReusableCell(withIdentifier: "addCell", for: indexPath) as? TableViewAddCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: TableViewCell().identifier, for: indexPath) as? TableViewCell
+        let addCell = tableView.dequeueReusableCell(withIdentifier: TableViewAddCell().identifier, for: indexPath) as? TableViewAddCell
         
         if indexPath.section == tableView.numberOfSections - 1 {
             return addCell!
@@ -199,42 +201,44 @@ extension MenuVC: UITableViewDataSource{
             return cell!
         }
     }
-    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        if indexPath.section == tableView.numberOfSections - 1{
-            return false
-        }
-        return true
-    }
-    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete{
-            tableView.deleteRows(at: [indexPath], with: .right)
-        }
-    }
-    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { (action, view, handler) in
-            let dictionaryToDelete = CoreDataHelper.shared.fetchDictionaries()[indexPath.row]
-            
-            CoreDataHelper.shared.deleteDictionary(dictionary: dictionaryToDelete)
-            
-            tableView.deleteSections([indexPath.section], with: .left)
-            tableView.reloadData()
-            handler(true)
-        }
-        
-        let shareAction = UIContextualAction(style: .normal, title: "Share") { (action, view, handler) in
-            
-            handler(true)
-        }
-        let editAction = UIContextualAction(style: .normal, title: "Edit") { (action, view, handler) in
-            handler(true)
-        }
-        
-        editAction.backgroundColor = .blue
-        let configuration = UISwipeActionsConfiguration(actions: [editAction, deleteAction, shareAction])
-        configuration.performsFirstActionWithFullSwipe = true
-        
-        return configuration
-    }
-
+//    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+//        if indexPath.section == tableView.numberOfSections - 1{
+//            return false
+//        }
+//        return true
+//    }
+    
+//    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+//        if editingStyle == .delete{
+//            tableView.deleteRows(at: [indexPath], with: .right)
+//        }
+//    }
+//    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+//
+//        let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { (action, view, handler) in
+//            let dictionaryToDelete = CoreDataHelper.shared.fetchDictionaries()[indexPath.row]
+//
+//            CoreDataHelper.shared.deleteDictionary(dictionary: dictionaryToDelete)
+//
+//            tableView.deleteSections([indexPath.section], with: .left)
+//            tableView.reloadData()
+//            handler(true)
+//        }
+//
+//        let shareAction = UIContextualAction(style: .normal, title: "Share") { (action, view, handler) in
+//
+//            handler(true)
+//        }
+//        let editAction = UIContextualAction(style: .normal, title: "Edit") { (action, view, handler) in
+//            handler(true)
+//        }
+//
+//        editAction.backgroundColor = .blue
+//        let configuration = UISwipeActionsConfiguration(actions: [editAction, deleteAction, shareAction])
+//            configuration.performsFirstActionWithFullSwipe = true
+//
+//        return configuration
+//    }
+//
 }
 

@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		02795F90A406A1776236D496 /* Pods_Language.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CB968C1BC0BCD6C51D7C2C9 /* Pods_Language.framework */; };
 		950CB66D35A3A66A8CBFD5C7 /* Pods_LanguageTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A8585DE4C793163678CE51E0 /* Pods_LanguageTests.framework */; };
+		9A02B2842A222B3D00652FC3 /* UIBezierPathTestController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A02B2832A222B3C00652FC3 /* UIBezierPathTestController.swift */; };
 		9A0BD53A29DC531F00845328 /* SettingsTextCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A0BD53929DC531F00845328 /* SettingsTextCell.swift */; };
 		9A1F67C829DFFD39003993C5 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 9A1F67CA29DFFD39003993C5 /* Localizable.strings */; };
 		9A1F67CF29E166C4003993C5 /* LanguageChangeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A1F67CE29E166C4003993C5 /* LanguageChangeManager.swift */; };
@@ -50,9 +51,6 @@
 		9AB9A95F29FD70A800694FE8 /* SeparatorsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB9A95E29FD70A800694FE8 /* SeparatorsCell.swift */; };
 		9AB9A96129FD71F000694FE8 /* SeparatorsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB9A96029FD71F000694FE8 /* SeparatorsVC.swift */; };
 		9AE34A782A115DD300F8BB65 /* GameDetailsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AE34A772A115DD300F8BB65 /* GameDetailsVC.swift */; };
-		9AE34A7B2A16A57900F8BB65 /* WikipediaKit in Frameworks */ = {isa = PBXBuildFile; productRef = 9AE34A7A2A16A57900F8BB65 /* WikipediaKit */; };
-		9AE34A7D2A16A61500F8BB65 /* WikipediaVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AE34A7C2A16A61400F8BB65 /* WikipediaVC.swift */; };
-		9AE34A7F2A16A68B00F8BB65 /* WikipediaAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AE34A7E2A16A68B00F8BB65 /* WikipediaAPI.swift */; };
 		9AE509312993C85A00D86DD7 /* LoadDataVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AE509302993C85A00D86DD7 /* LoadDataVC.swift */; };
 		9AE50933299695B400D86DD7 /* Menu VC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AE50932299695B400D86DD7 /* Menu VC.swift */; };
 		9AE509352997C07700D86DD7 /* AddDictionaryVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AE509342997C07700D86DD7 /* AddDictionaryVC.swift */; };
@@ -86,6 +84,7 @@
 		30AA1CCA8E9A4F9B1327A649 /* Pods-Language.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Language.release.xcconfig"; path = "Target Support Files/Pods-Language/Pods-Language.release.xcconfig"; sourceTree = "<group>"; };
 		7CB968C1BC0BCD6C51D7C2C9 /* Pods_Language.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Language.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		92E1855A1F6B5D3EF2849FC2 /* Pods-Language-LanguageUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Language-LanguageUITests.release.xcconfig"; path = "Target Support Files/Pods-Language-LanguageUITests/Pods-Language-LanguageUITests.release.xcconfig"; sourceTree = "<group>"; };
+		9A02B2832A222B3C00652FC3 /* UIBezierPathTestController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIBezierPathTestController.swift; sourceTree = "<group>"; };
 		9A0BD53929DC531F00845328 /* SettingsTextCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTextCell.swift; sourceTree = "<group>"; };
 		9A1F67C929DFFD39003993C5 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		9A1F67CC29E00253003993C5 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -133,8 +132,6 @@
 		9AB9A95E29FD70A800694FE8 /* SeparatorsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeparatorsCell.swift; sourceTree = "<group>"; };
 		9AB9A96029FD71F000694FE8 /* SeparatorsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeparatorsVC.swift; sourceTree = "<group>"; };
 		9AE34A772A115DD300F8BB65 /* GameDetailsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameDetailsVC.swift; sourceTree = "<group>"; };
-		9AE34A7C2A16A61400F8BB65 /* WikipediaVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WikipediaVC.swift; sourceTree = "<group>"; };
-		9AE34A7E2A16A68B00F8BB65 /* WikipediaAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WikipediaAPI.swift; sourceTree = "<group>"; };
 		9AE509302993C85A00D86DD7 /* LoadDataVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadDataVC.swift; sourceTree = "<group>"; };
 		9AE50932299695B400D86DD7 /* Menu VC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Menu VC.swift"; sourceTree = "<group>"; };
 		9AE509342997C07700D86DD7 /* AddDictionaryVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDictionaryVC.swift; sourceTree = "<group>"; };
@@ -156,7 +153,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				02795F90A406A1776236D496 /* Pods_Language.framework in Frameworks */,
-				9AE34A7B2A16A57900F8BB65 /* WikipediaKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -312,9 +308,8 @@
 				9AFFCE7C299E747400C12B94 /* StatisticVC.swift */,
 				9AA71C5A29C20894008A193B /* MainGameVC.swift */,
 				9AE34A772A115DD300F8BB65 /* GameDetailsVC.swift */,
-				9AE34A7C2A16A61400F8BB65 /* WikipediaVC.swift */,
-				9AE34A7E2A16A68B00F8BB65 /* WikipediaAPI.swift */,
 				9AAECFBF29B5055100439C0B /* EndVc.swift */,
+				9A02B2832A222B3C00652FC3 /* UIBezierPathTestController.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -380,7 +375,6 @@
 			);
 			name = Language;
 			packageProductDependencies = (
-				9AE34A7A2A16A57900F8BB65 /* WikipediaKit */,
 			);
 			productName = Language;
 			productReference = 9A7B91C2298D6D9600E60CDD /* Language.app */;
@@ -459,7 +453,6 @@
 			);
 			mainGroup = 9A7B91B9298D6D9600E60CDD;
 			packageReferences = (
-				9AE34A792A16A57900F8BB65 /* XCRemoteSwiftPackageReference "WikipediaKit" */,
 			);
 			productRefGroup = 9A7B91C3298D6D9600E60CDD /* Products */;
 			projectDirPath = "";
@@ -627,9 +620,9 @@
 				9A603FF929AF5B3200A65253 /* OldGameVC.swift in Sources */,
 				9AE509312993C85A00D86DD7 /* LoadDataVC.swift in Sources */,
 				9AE509352997C07700D86DD7 /* AddDictionaryVC.swift in Sources */,
-				9AE34A7D2A16A61500F8BB65 /* WikipediaVC.swift in Sources */,
 				9AA71C6429C84C65008A193B /* ViewModel.swift in Sources */,
 				9A912FCA2A0793FE0004A91A /* SearchBarView.swift in Sources */,
+				9A02B2842A222B3D00652FC3 /* UIBezierPathTestController.swift in Sources */,
 				9AB43A4429F4760700984350 /* WordsEntity+CoreDataProperties.swift in Sources */,
 				9AB2454329E9498A00E05E59 /* AppData.swift in Sources */,
 				9AA7AB5429AE3CF400CCC9F4 /* Extensions.swift in Sources */,
@@ -644,7 +637,6 @@
 				9A7B91C6298D6D9600E60CDD /* AppDelegate.swift in Sources */,
 				9AAECFC229B50A5300439C0B /* AddWordsVC.swift in Sources */,
 				9AB40FF229CC6A9D00353FFC /* TableViewCell.swift in Sources */,
-				9AE34A7F2A16A68B00F8BB65 /* WikipediaAPI.swift in Sources */,
 				9A7B91C8298D6D9600E60CDD /* SceneDelegate.swift in Sources */,
 				9AFFCE8129A4DFEF00C12B94 /* DetailsVC.swift in Sources */,
 				9AB43A4329F4760700984350 /* WordsEntity+CoreDataClass.swift in Sources */,
@@ -999,25 +991,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		9AE34A792A16A57900F8BB65 /* XCRemoteSwiftPackageReference "WikipediaKit" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/Raureif/WikipediaKit.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 3.0.0;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		9AE34A7A2A16A57900F8BB65 /* WikipediaKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 9AE34A792A16A57900F8BB65 /* XCRemoteSwiftPackageReference "WikipediaKit" */;
-			productName = WikipediaKit;
-		};
-/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
 		9AB43A1729F40EA000984350 /* LearnyLocal.xcdatamodeld */ = {

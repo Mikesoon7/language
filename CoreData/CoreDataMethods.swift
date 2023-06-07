@@ -57,10 +57,10 @@ class CoreDataHelper {
                 newWord.word = word.capitalized
                 newWord.meaning = meaning
             } else if parts.count > 2{
-                var word = String(parts.removeFirst()).trimmingCharacters(in: CharacterSet(charactersIn: " "))
-                var meaning = parts.joined(separator: " ")
+                let word = String(parts.removeFirst()).trimmingCharacters(in: CharacterSet(charactersIn: " "))
+                let meaning = parts.joined(separator: " ")
                 newWord.word = word.capitalized
-                newWord.meaning = meaning
+                newWord.meaning = meaning.trimmingCharacters(in: CharacterSet(charactersIn: " ")).capitalized
             } else {
                 newWord.word = String(parts[0]).trimmingCharacters(in: CharacterSet(charactersIn: "[ ] ◦ - ")).capitalized
                 newWord.meaning = ""

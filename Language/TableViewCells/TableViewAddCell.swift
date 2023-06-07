@@ -9,6 +9,8 @@ import UIKit
 
 class TableViewAddCell: UITableViewCell {
     
+    let identifier = "addCell"
+
     var importLabel: UILabel = {
         var label = UILabel()
         label.attributedText = NSAttributedString().fontWithString(

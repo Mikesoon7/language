@@ -10,16 +10,8 @@ import UIKit
 enum Section: CaseIterable{
     case cards
 }
-struct InsetsForLabel {
-    var top = 15.0
-    var wordSide = 15.0
-    var transSide = 10.0
-    var transBottom = 10.0
-}
 
 class CollectionViewCell: UICollectionViewCell {
-
-    var insets = InsetsForLabel()
     
     var initialShadowValue = CGSize(width: 2, height: 2)
     var finalShadowValue = CGSize()
@@ -35,6 +27,7 @@ class CollectionViewCell: UICollectionViewCell {
         label.textColor = .black
         label.text = "???"
         label.textAlignment = .center
+
         label.translatesAutoresizingMaskIntoConstraints = false
         label.minimumScaleFactor = 0.5
         label.adjustsFontSizeToFitWidth = true
@@ -47,9 +40,8 @@ class CollectionViewCell: UICollectionViewCell {
         label.numberOfLines = 0
         label.textColor = .black
         label.textAlignment = .center
-        label.text = "???"
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.minimumScaleFactor = 0.7
+        label.minimumScaleFactor = 0.9
         label.adjustsFontSizeToFitWidth = true
         label.baselineAdjustment = .alignCenters
         return label
@@ -58,10 +50,10 @@ class CollectionViewCell: UICollectionViewCell {
     let cardView : UIView = {
         let view = UIView()
         view.backgroundColor = .white
-        view.layer.cornerRadius = 9
+        view.layer.cornerRadius = 13
         view.layer.borderColor = UIColor.black.cgColor
         view.layer.borderWidth = 1
-        view.clipsToBounds = true
+//        view.clipsToBounds = true
         
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
@@ -69,11 +61,11 @@ class CollectionViewCell: UICollectionViewCell {
     lazy var cardShadowView : UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .clear
         
         view.layer.shadowOpacity = shadowOpacity
         view.layer.shadowOffset = initialShadowValue
         view.layer.shadowRadius = 5.0
-
         return view
     }()
     
@@ -81,37 +73,48 @@ class CollectionViewCell: UICollectionViewCell {
         super.init(frame: frame)
         cardViewCustomiation()
         staticCardSize = CGSize(width: UIWindow().frame.width * 0.64, height: UIWindow().frame.height * 0.48)
-
     }
     required init?(coder: NSCoder) {
         fatalError("Faild to present cells")
     }
     override func prepareForReuse() {
         super.prepareForReuse()
+        translation.text = nil
+        word.text = nil
     }
     func cardViewCustomiation(){
         self.contentView.addSubview(cardShadowView)
         cardShadowView.addSubview(cardView)
         cardView.addSubviews(word, translation)
-                
+        
         NSLayoutConstraint.activate([
             cardView.topAnchor.constraint(equalTo: self.contentView.topAnchor),
             cardView.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor),
             cardView.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor),
             cardView.trailingAnchor.constraint(equalTo: self.contentView.trailingAnchor),
-            
-            word.topAnchor.constraint(equalTo: cardView.topAnchor, constant: insets.top),
-            word.centerXAnchor.constraint(equalTo: cardView.centerXAnchor),
-            word.widthAnchor.constraint(equalTo: cardView.widthAnchor, constant: -insets.wordSide * 2),
-            word.bottomAnchor.constraint(lessThanOrEqualTo: cardView.topAnchor, constant: 200),
-                            
-            translation.topAnchor.constraint(equalTo: word.bottomAnchor, constant: insets.top),
-            translation.centerXAnchor.constraint(equalTo: cardView.centerXAnchor),
-            translation.widthAnchor.constraint(equalTo: cardView.widthAnchor, constant: -insets.transSide * 2),
-            translation.bottomAnchor.constraint(lessThanOrEqualTo: cardView.bottomAnchor, constant: -insets.transBottom)
-        ])
-            
+            ])
+        
+        if translation.text != nil {
+            NSLayoutConstraint.activate([
+                word.topAnchor.constraint(equalTo: cardView.topAnchor, constant: 20),
+                word.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: 5),
+                word.bottomAnchor.constraint(equalTo: cardView.bottomAnchor, constant: -5),
+                word.trailingAnchor.constraint(lessThanOrEqualTo: cardView.trailingAnchor, constant: -5),
+            ])
+        } else {
+            NSLayoutConstraint.activate([
+                word.topAnchor.constraint(equalTo: cardView.topAnchor, constant: 20),
+                word.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: 5),
+                word.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -5),
+                
+                translation.topAnchor.constraint(equalTo: word.bottomAnchor, constant: 20),
+                translation.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: 5),
+                translation.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -5),
+                translation.bottomAnchor.constraint(lessThanOrEqualTo: cardView.bottomAnchor, constant: -5)
+            ])
+        }
     }
+    
     override func apply(_ layoutAttributes: UICollectionViewLayoutAttributes) {
         super.apply(layoutAttributes)
         let size = CGSize(
@@ -126,7 +129,5 @@ class CollectionViewCell: UICollectionViewCell {
     func configure(with data: WordsEntity){
         word.text = data.word
         translation.text = data.meaning
-        
     }
-    
 }

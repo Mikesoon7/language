@@ -8,7 +8,6 @@
 import Foundation
 import UIKit
 import CoreData
-import WikipediaKit
 
 public let shadowColorForDarkIdiom = UIColor.clear.cgColor
 public let shadowColorForLightIdiom = UIColor.systemGray2.cgColor
@@ -190,7 +189,9 @@ extension String{
     
     func load() -> UIImage {
         do{
-            
+            guard let url = URL(string: self) else { return UIImage()}
+            let data: Data = try Data(contentsOf: url, options: .uncached)
+            return UIImage(data: data) ?? UIImage()
         } catch {
             
         }
