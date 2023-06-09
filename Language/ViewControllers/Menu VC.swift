@@ -11,7 +11,9 @@ import CoreData
 class MenuVC: UIViewController {
     
     var dictionaries: [DictionariesEntity] = []
-    var isEditMenuActive: Bool!
+    
+    var cellTouched: Bool!
+    var menuAccessedForCell: IndexPath?
     
     var tableView: UITableView = {
         var tableView = UITableView(frame: CGRect(x: 0, y: 0, width: 0, height: 0), style: .insetGrouped)
@@ -47,6 +49,10 @@ class MenuVC: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        if !dictionaries.isEmpty{
+            let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? TableViewCell
+            cell?.launchHintAnimation()
+        }
     }
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
@@ -130,6 +136,11 @@ class MenuVC: UIViewController {
         tabBarController?.tabBar.shadowImage = UIImage()
         tabBarController?.tabBar.backgroundImage = UIImage()
     }
+    func configureGestureForContextMenu(){
+        let gesture = UIPanGestureRecognizer()
+        gesture.addTarget(self, action: #selector(cellDidSwipe(sender: )))
+        tableView.addGestureRecognizer(gesture)
+    }
     //MARK: - Actions
     @objc func statiscticButTap(sender: Any){
         let vc = StatisticVC()
@@ -150,6 +161,11 @@ class MenuVC: UIViewController {
             }
         }
         tableView.reloadData()
+    }
+    @objc func cellDidSwipe(sender: UIPanGestureRecognizer){
+        guard let table = sender.view as? UITableView else {
+            return
+        }
     }
     @objc func appDataDidChange(sender: Notification){
         if let type = sender.userInfo?["changeType"] as? NSManagedObject.ChangeType {
@@ -186,6 +202,38 @@ extension MenuVC: UITableViewDelegate{
         }
     }
 }
+extension MenuVC: CustomCellDataDelegate{
+    func panningBegan(for index: IndexPath){
+        guard index == menuAccessedForCell || menuAccessedForCell == nil else {
+            print("working")
+            if let cell = tableView.cellForRow(at: menuAccessedForCell!) as? TableViewCell{
+                print("deactivate")
+                cell.activate(false)
+            }
+            return
+        }
+        menuAccessedForCell = index
+    }
+    
+    func panningProcced(for index: IndexPath) {
+        
+    }
+    
+    func panningEnded(for index: IndexPath) {
+        menuAccessedForCell = nil
+    }
+    
+    func menuAccessed(for index: IndexPath) {
+        
+    }
+    
+    func menuClosed() {
+        
+    }
+    
+    
+    
+}
 //MARK: - UITableViewDataSource
 extension MenuVC: UITableViewDataSource{
     
@@ -198,9 +246,12 @@ extension MenuVC: UITableViewDataSource{
         } else {
             cell?.languageResultLabel.text = dictionaries[indexPath.section].language
             cell?.cardsResultLabel.text = dictionaries[indexPath.section].numberOfCards
+            cell?.indexPath = indexPath
+//           r cell?.delegate = self
             return cell!
         }
     }
+    
 //    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
 //        if indexPath.section == tableView.numberOfSections - 1{
 //            return false
@@ -242,3 +293,14 @@ extension MenuVC: UITableViewDataSource{
 //
 }
 
+protocol CustomCellDataDelegate: AnyObject{
+    func panningBegan(for index: IndexPath)
+    
+    func panningProcced(for index: IndexPath)
+    
+    func panningEnded(for index: IndexPath)
+    
+    func menuAccessed(for index: IndexPath)
+    
+    func menuClosed()
+}

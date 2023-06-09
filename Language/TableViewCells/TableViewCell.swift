@@ -10,9 +10,12 @@ import UIKit
 class TableViewCell: UITableViewCell{
 
     let identifier = "dictCell"
+    var indexPath: IndexPath!
+    
     var isActionActive: Bool = false
-    var leftToRight: Bool!
     var isActionLooped: Bool = false
+    
+//    var delegate: CustomCellDataDelegate!
     
     lazy var holderView: UIView = {
         let view = UIView()
@@ -71,18 +74,12 @@ class TableViewCell: UITableViewCell{
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
-    var editView: UIView = {
-        let view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .blue
-        return view
-    }()
-    var deleteView: UIView = {
-        let view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .red
-        return view
-    }()
+    
+    lazy var editView: UIView = configureCustomActions(imageName: "pencil",
+                                                       colour: .systemGray5)
+    
+    lazy var deleteView: UIView = configureCustomActions(imageName: "trash",
+                                                         colour: .systemGray4)
     
     //MARK: - Dimensions
     let cornerRadius: CGFloat = 9
@@ -103,9 +100,9 @@ class TableViewCell: UITableViewCell{
 //MARK: - Prepare Func
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        configureViews()
-        configureEditView()
-        configureDeleteView()
+        configureHolderView()
+        configureMainView()
+
         configurePanGesture()
 
         NotificationCenter.default.addObserver(self, selector: #selector(languageDidChange(sender:)), name: .appLanguageDidChange, object: nil)
@@ -117,27 +114,29 @@ class TableViewCell: UITableViewCell{
     override func layoutSubviews() {
         super.layoutSubviews()
         
-        
         editView.layer.mask = configureMaskFor(size: CGSize(width: contentView.frame.width * 0.2 , height: contentView.frame.height))
         deleteView.layer.mask = configureMaskFor(size: CGSize(width: contentView.frame.width * 0.2 , height: contentView.frame.height))
         
     }
-    override func prepareForReuse() {
-        super.prepareForReuse()
-    }
     
-    func configureViews(){
+    func configureHolderView(){
         contentView.addSubview(holderView)
         holderView.addSubviews(mainView, editView, deleteView)
-        mainView.addSubviews(languageResultLabel, languageLabel, cardsLabel, cardsResultLabel)
 
         contentViewWidth = contentView.frame.width
         
-        initialActionConstant = 0
+        //Related to the holder
+        initialHolderConstant = 0
         currentHolderConstant = 0
         finalHolderConstant = -(contentViewWidth * 0.4 - cornerRadius)
-        
         holderViewLeadingAnchor = holderView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: currentHolderConstant)
+        
+        //Related to the Action
+        initialActionConstant = -cornerRadius
+        currentActionConstant = -cornerRadius
+        finalActionConstant = contentViewWidth * 0.2 - cornerRadius * 1.5
+        deleteViewLeadingAnchor = deleteView.leadingAnchor.constraint(equalTo: mainView.trailingAnchor,
+                                                                      constant: -cornerRadius)
         
         NSLayoutConstraint.activate([
             holderViewLeadingAnchor,
@@ -149,7 +148,22 @@ class TableViewCell: UITableViewCell{
             mainView.leadingAnchor.constraint(equalTo: holderView.leadingAnchor),
             mainView.bottomAnchor.constraint(equalTo: holderView.bottomAnchor),
             mainView.widthAnchor.constraint(equalTo: contentView.widthAnchor),
+            
+            deleteView.topAnchor.constraint(equalTo: mainView.topAnchor),
+            deleteViewLeadingAnchor,
+            deleteView.bottomAnchor.constraint(equalTo: mainView.bottomAnchor),
+            deleteView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.2),
 
+            editView.topAnchor.constraint(equalTo: mainView.topAnchor),
+            editView.leadingAnchor.constraint(equalTo: mainView.trailingAnchor, constant: -cornerRadius),
+            editView.bottomAnchor.constraint(equalTo: mainView.bottomAnchor),
+            editView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.2)
+            ])
+    }
+    func configureMainView(){
+        mainView.addSubviews(languageResultLabel, languageLabel, cardsLabel, cardsResultLabel)
+        
+        NSLayoutConstraint.activate([
             languageLabel.topAnchor.constraint(equalTo: mainView.topAnchor, constant: 15),
             languageLabel.leadingAnchor.constraint(equalTo: mainView.leadingAnchor, constant: 15),
             languageLabel.heightAnchor.constraint(equalToConstant: 25),
@@ -164,60 +178,34 @@ class TableViewCell: UITableViewCell{
             
             cardsResultLabel.topAnchor.constraint(equalTo: mainView.topAnchor, constant: 64),
             cardsResultLabel.trailingAnchor.constraint(equalTo: mainView.trailingAnchor, constant: -15),
-            cardsResultLabel.heightAnchor.constraint(equalToConstant: 25),
+            cardsResultLabel.heightAnchor.constraint(equalToConstant: 25)
         ])
+
     }
-    func configureEditView(){
-        let label : UIImageView = {
-            let view = UIImageView()
-            view.image = UIImage(systemName: "pencil")
+    func configureCustomActions(imageName: String, colour: UIColor) -> UIView{
+        let actionView: UIView = {
+            let view = UIView()
+            view.backgroundColor = colour
             view.translatesAutoresizingMaskIntoConstraints = false
-            view.tintColor = .white
-            view.contentMode = .center
             return view
         }()
-
-        editView.addSubview(label)
-
-        NSLayoutConstraint.activate([
-            editView.topAnchor.constraint(equalTo: mainView.topAnchor),
-            editView.leadingAnchor.constraint(equalTo: mainView.trailingAnchor, constant: -cornerRadius),
-            editView.bottomAnchor.constraint(equalTo: mainView.bottomAnchor),
-            editView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.2),
-            
-            label.centerYAnchor.constraint(equalTo: editView.centerYAnchor),
-            label.centerXAnchor.constraint(equalTo: editView.centerXAnchor, constant: cornerRadius / 2)
-        ])
-    }
-    func configureDeleteView(){
-        let label : UIImageView = {
+        let imageView: UIImageView = {
             let view = UIImageView()
-            view.image = UIImage(systemName: "trash")
+            view.image = UIImage(systemName: imageName)
             view.translatesAutoresizingMaskIntoConstraints = false
-            view.tintColor = .white
+            view.tintColor = .label
             view.contentMode = .center
             return view
         }()
         
-        deleteView.addSubview(label)
-
-        initialActionConstant = -cornerRadius
-        currentActionConstant = -cornerRadius
-        finalActionConstant = contentViewWidth * 0.2 - cornerRadius * 1.5
-        deleteViewLeadingAnchor = deleteView.leadingAnchor.constraint(equalTo: mainView.trailingAnchor,
-                                                                      constant: -cornerRadius)
+        actionView.addSubview(imageView)
         
-        NSLayoutConstraint.activate([
-            deleteView.topAnchor.constraint(equalTo: mainView.topAnchor),
-            deleteViewLeadingAnchor,
-            deleteView.bottomAnchor.constraint(equalTo: mainView.bottomAnchor),
-            deleteView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.2),
-            
-            label.centerYAnchor.constraint(equalTo: deleteView.centerYAnchor),
-            label.centerXAnchor.constraint(equalTo: deleteView.centerXAnchor)
-        ])
+        imageView.centerXAnchor.constraint(equalTo: actionView.centerXAnchor).isActive = true
+        imageView.centerYAnchor.constraint(equalTo: actionView.centerYAnchor).isActive = true
+        
+        return actionView
     }
-
+    
     func configureMaskFor(size: CGSize) -> CAShapeLayer{
         let cornerRadius: CGFloat = 9
 
@@ -252,7 +240,39 @@ class TableViewCell: UITableViewCell{
     func configurePanGesture(){
         let pan = UIPanGestureRecognizer(target: self, action: #selector(viewDidPan(sender: )))
         mainView.addGestureRecognizer(pan)
+        
+//        let tap = UITapGestureRecognizer(target: self, action: #selector(tap))
     }
+    
+    func launchHintAnimation(){
+        let anim1 = UIViewPropertyAnimator(duration: 0.3, curve: .easeInOut) {
+            self.transform = CGAffineTransform(translationX: 35, y: 0)
+        }
+        anim1.addCompletion { _ in
+            UIView.animate(withDuration: 0.4, delay: 0) {
+                self.transform = .identity
+            }
+            let anim2 = UIViewPropertyAnimator(duration: 0.5, curve: .easeInOut){
+                self.holderViewLeadingAnchor.constant = self.finalHolderConstant
+                self.deleteViewLeadingAnchor.constant = self.finalActionConstant
+                self.transform = CGAffineTransform(translationX: -20, y: 0)
+                self.layoutIfNeeded()
+            }
+            anim2.addCompletion { _ in
+                let anim3 = UIViewPropertyAnimator(duration: 0.3, curve: .easeInOut){
+                    self.transform = .identity
+                    self.holderViewLeadingAnchor.constant = self.initialHolderConstant
+                    self.deleteViewLeadingAnchor.constant = self.initialActionConstant
+                    self.layoutIfNeeded()
+                }
+                anim3.startAnimation(afterDelay: 0.55)
+            }
+            anim2.startAnimation()
+        }
+        anim1.startAnimation(afterDelay: 0.5)
+    }
+    
+    //Animation for swipe transition
     func activate(_ activate: Bool){
         let animation = UIViewPropertyAnimator(duration: 0.5, curve: .easeOut){
             self.holderViewLeadingAnchor.constant = activate ? self.finalHolderConstant : 0
@@ -262,48 +282,38 @@ class TableViewCell: UITableViewCell{
         }
         animation.startAnimation()
     }
+    //MARK: - Actions
+    //Panning
     @objc func viewDidPan(sender: UIPanGestureRecognizer){
         let translation = sender.translation(in: mainView).x
-        let velocity = sender.velocity(in: mainView)
-        let magnitude = sqrt((velocity.x * velocity.x) + ( velocity.y * velocity.y))
-        print(magnitude)
+        
         let holderConstant = currentHolderConstant + translation
         let actionConstant = currentActionConstant + -(translation / 2)
         
-        
-
         switch sender.state{
         case .began, .changed:
-//            guard abs(velocity.x) < 2000 else {
-//                activate(false)
-//                sender.state = .failed
-//                return
-//            }
+            
+//            delegate.panningBegan(for: indexPath)
 
+            if holderConstant >= finalHolderConstant &&  holderConstant <= 0{
+                holderViewLeadingAnchor.constant = holderConstant
+                deleteViewLeadingAnchor.constant = actionConstant
+            }
             if isActionActive {
-                if holderConstant >= finalHolderConstant && holderConstant < -50 {
-                    holderViewLeadingAnchor.constant = holderConstant
-                    deleteViewLeadingAnchor.constant = actionConstant
-                } else if holderConstant < finalHolderConstant{
-//                    print("to forward")
+                if holderConstant < finalHolderConstant{
                     self.transform = CGAffineTransform(translationX: (holderConstant + abs(finalHolderConstant)) / 4, y: 0)
-                } else if holderConstant > -50 {
+                } else if holderConstant > -1 {
                     isActionLooped = true
                     isActionActive = false
                 }
             } else {
-                if holderConstant > finalHolderConstant && holderConstant <= 0 {
-                    holderViewLeadingAnchor.constant = holderConstant
-                    deleteViewLeadingAnchor.constant = actionConstant
-                } else if holderConstant < finalHolderConstant * 0.9{
+                if holderConstant < finalHolderConstant * 0.9{
                     isActionActive = true
                 }
                 else if holderConstant > 0 && holderConstant < 100 && !isActionLooped {
                     self.transform = CGAffineTransform(translationX: translation / 4, y: 0)
                 }
             }
-        case .failed:
-            break
         default:
             if holderConstant > 0 || holderConstant < finalHolderConstant {
                 UIView.animate(withDuration: 0.2, delay: 0) {
@@ -313,26 +323,25 @@ class TableViewCell: UITableViewCell{
             if !isActionActive && holderConstant <= finalHolderConstant * 0.2
                         || isActionActive && translation < finalHolderConstant * 1.2 {
                 activate(true)
-            } else if isActionActive && translation >= finalHolderConstant * 1.2
-                        || !isActionActive && holderConstant > finalHolderConstant * 0.2 {
-                activate(false)
-
             } else {
                 activate(false)
+//                delegate.panningEnded(for: indexPath)
 
             }
             currentActionConstant = deleteViewLeadingAnchor.constant
             currentHolderConstant = holderViewLeadingAnchor.constant
             isActionLooped = false
-            print("but where is ")
         }
     }
-
+    @objc func viewDidTap(sender: UITapGestureRecognizer){
+        
+    }
+    //LanguageChange
     @objc func languageDidChange(sender: Any){
         languageLabel.text = LanguageChangeManager.shared.localizedString(forKey: "tableCellName")
         cardsLabel.text = LanguageChangeManager.shared.localizedString(forKey: "tableCellNumberOfCards")
     }
 }
-
-
-
+//extension TableViewCell: UIGestureRecognizerDelegate{
+//
+//}
