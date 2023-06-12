@@ -47,16 +47,15 @@ class MenuVC: UIViewController {
         fetchDictionaries()
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        if !dictionaries.isEmpty{
-            let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? TableViewCell
-            cell?.launchHintAnimation()
-        }
-    }
+//    override func viewDidAppear(_ animated: Bool) {
+//        super.viewDidAppear(animated)
+//        if !dictionaries.isEmpty{
+//            let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? TableViewCell
+//            cell?.launchHintAnimation()
+//        }
+//    }
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        print(tableView.subviews[0].frame)
         strokeCustomization()
     }
     //MARK: - StyleChange Responding
@@ -168,9 +167,15 @@ class MenuVC: UIViewController {
         }
     }
     @objc func appDataDidChange(sender: Notification){
+        print("was called")
         if let type = sender.userInfo?["changeType"] as? NSManagedObject.ChangeType {
             switch type{
             case .delete: fetchDictionaries()
+//                tableView.reloadData()
+//                if let section = menuAccessedForCell?.section{
+//                    tableView.deleteSections([section], with: .left)
+//
+//                }
             case .insert, .update: fetchDictionaries()
                 tableView.reloadData()
             }
@@ -205,32 +210,38 @@ extension MenuVC: UITableViewDelegate{
 extension MenuVC: CustomCellDataDelegate{
     func panningBegan(for index: IndexPath){
         guard index == menuAccessedForCell || menuAccessedForCell == nil else {
-            print("working")
             if let cell = tableView.cellForRow(at: menuAccessedForCell!) as? TableViewCell{
-                print("deactivate")
                 cell.activate(false)
+                menuAccessedForCell = index
             }
             return
         }
         menuAccessedForCell = index
     }
     
-    func panningProcced(for index: IndexPath) {
-        
+    func panningEnded(active: Bool) {
+        guard active else {
+            menuAccessedForCell = nil
+            print(menuAccessedForCell)
+            return
+        }
+        print(menuAccessedForCell)
     }
     
-    func panningEnded(for index: IndexPath) {
+    func deleteButtonTapped(){
+        print(dictionaries.count)
+        guard let section = menuAccessedForCell?.section else { return }
+        let dictionaryToDelete = CoreDataHelper.shared.fetchDictionaries()[section]
+        CoreDataHelper.shared.deleteDictionary(dictionary: dictionaryToDelete)
+        tableView.deleteSections([section], with: .left)
+        tableView.reloadData()
         menuAccessedForCell = nil
-    }
-    
-    func menuAccessed(for index: IndexPath) {
         
     }
     
-    func menuClosed() {
+    func editButtonTapped(){
         
     }
-    
     
     
 }
@@ -247,7 +258,7 @@ extension MenuVC: UITableViewDataSource{
             cell?.languageResultLabel.text = dictionaries[indexPath.section].language
             cell?.cardsResultLabel.text = dictionaries[indexPath.section].numberOfCards
             cell?.indexPath = indexPath
-//           r cell?.delegate = self
+            cell?.delegate = self
             return cell!
         }
     }
@@ -295,12 +306,11 @@ extension MenuVC: UITableViewDataSource{
 
 protocol CustomCellDataDelegate: AnyObject{
     func panningBegan(for index: IndexPath)
+        
+    func panningEnded(active: Bool)
     
-    func panningProcced(for index: IndexPath)
+    func deleteButtonTapped()
     
-    func panningEnded(for index: IndexPath)
-    
-    func menuAccessed(for index: IndexPath)
-    
-    func menuClosed()
+    func editButtonTapped()
+        
 }

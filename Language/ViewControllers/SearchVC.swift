@@ -105,7 +105,8 @@ class SearchVC: UIViewController {
         
         NotificationCenter.default.addObserver(self, selector: #selector(languageDidChange(sender: )), name: .appLanguageDidChange, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(positionDidChange(sender: )), name: .appSearchBarPositionDidChange, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(appDataDidChange(sender: )), name: .appDataDidChange, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(appDataDidChange(sender: )), name:
+                .appDataDidChange, object: nil)
         
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
@@ -214,17 +215,34 @@ class SearchVC: UIViewController {
         if searchBarOnTop {
             view.layer.addSublayer(bottomStroke)
             topStroke.removeFromSuperlayer()
+            if customSearchBar.text != nil {
+                customSearchBar.text = nil
+                searchBarTextDidEndEditing(customSearchBar)
+            }
         } else {
             view.layer.addSublayer(topStroke)
             bottomStroke.removeFromSuperlayer()
+            
+            if searchControllerForTop.searchBar.text != nil {
+                searchControllerForTop.searchBar.resignFirstResponder()
+                searchControllerForTop.searchBar.text = nil
+                searchControllerForTop.isActive = false
+            }
+
+//            if searchControllerForTop.searchBar.text != nil{
+//                searchControllerForTop.searchBar.text = nil
+//                searchBarTextDidEndEditing(searchControllerForTop.searchBar)
+//            }
         }
         searchBarDidChanged = true
     }
     @objc func appDataDidChange(sender: Notification){
         loadData()
-        if searchBarOnTop && !searchControllerForTop.searchBar.text!.isEmpty{
+        if searchBarOnTop && searchControllerForTop.searchBar.text != nil{
             searchControllerForTop.searchBar.text = nil
-        } else if !searchBarOnTop && customSearchBar.text!.isEmpty{
+            searchControllerForTop.resignFirstResponder()
+        } else if !searchBarOnTop && customSearchBar.text != nil{
+            customSearchBar.resignFirstResponder()
             customSearchBar.text = nil
         }
     }
@@ -245,14 +263,27 @@ class SearchVC: UIViewController {
         guard let userInfo = notification.userInfo,
               let animationDuration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval
         else { return }
+        if customSearchBar.text == "" {
+            UIView.animate(withDuration: animationDuration) { [weak self] in
+                self?.searchBarWidthAnchor.constant = 0
+                self?.view.layoutIfNeeded()
+                print("1")
+            }
+            
+        }
     }
     @objc func cancelButtonTapped(sender: UIButton){
+        customSearchBar.resignFirstResponder()
+        customSearchBar.text = nil
+
         UIView.animate(withDuration: 0.5) { [weak self] in
             self?.searchBarWidthAnchor.constant = 0
             self?.view.layoutIfNeeded()
+            print("2")
         }
-        customSearchBar.resignFirstResponder()
-        customSearchBar.text = nil
+        
+        searchBarTextDidEndEditing(customSearchBar)
+        
     }
 }
 
@@ -290,6 +321,7 @@ extension SearchVC: UISearchBarDelegate{
     }
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
         updateSearchResults(for: nil)
+        
     }
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         updateSearchResults(for: nil)

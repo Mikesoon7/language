@@ -60,7 +60,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillTerminate(_ application: UIApplication) {
         saveContext()
     }
-        @objc func coreDataObjectsDidChange(notification: Notification) {
+    @objc func coreDataObjectsDidChange(notification: Notification) {
         guard let userInfo = notification.userInfo else { return }
         
                 
@@ -69,7 +69,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         
         if let updates = userInfo[NSUpdatedObjectsKey] as? Set<NSManagedObject>, !updates.isEmpty {
-            NotificationCenter.default.post(name: .appDataDidChange, object: nil, userInfo: ["changeType": NSManagedObject.ChangeType.delete ])
+            NotificationCenter.default.post(name: .appDataDidChange, object: nil, userInfo: ["changeType": NSManagedObject.ChangeType.update ])
         }
         
         if let deletes = userInfo[NSDeletedObjectsKey] as? Set<NSManagedObject>, !deletes.isEmpty {

@@ -7,15 +7,21 @@
 
 import UIKit
 
+enum Direction{
+    case left
+    case right
+}
+
 class TableViewCell: UITableViewCell{
 
     let identifier = "dictCell"
     var indexPath: IndexPath!
     
+    var direction: Direction!
     var isActionActive: Bool = false
     var isActionLooped: Bool = false
     
-//    var delegate: CustomCellDataDelegate!
+    var delegate: CustomCellDataDelegate!
     
     lazy var holderView: UIView = {
         let view = UIView()
@@ -104,7 +110,8 @@ class TableViewCell: UITableViewCell{
         configureMainView()
 
         configurePanGesture()
-
+        configureTapGesture()
+        
         NotificationCenter.default.addObserver(self, selector: #selector(languageDidChange(sender:)), name: .appLanguageDidChange, object: nil)
         
     }
@@ -200,7 +207,7 @@ class TableViewCell: UITableViewCell{
         
         actionView.addSubview(imageView)
         
-        imageView.centerXAnchor.constraint(equalTo: actionView.centerXAnchor).isActive = true
+        imageView.centerXAnchor.constraint(equalTo: actionView.centerXAnchor, constant: cornerRadius / 2).isActive = true
         imageView.centerYAnchor.constraint(equalTo: actionView.centerYAnchor).isActive = true
         
         return actionView
@@ -238,12 +245,17 @@ class TableViewCell: UITableViewCell{
     }
 
     func configurePanGesture(){
-        let pan = UIPanGestureRecognizer(target: self, action: #selector(viewDidPan(sender: )))
+        let pan = UIPanGestureRecognizer(target: self, action: #selector(viewDidPan(sender:)))
+                
         mainView.addGestureRecognizer(pan)
-        
-//        let tap = UITapGestureRecognizer(target: self, action: #selector(tap))
     }
-    
+    func configureTapGesture(){
+        let editTap = UITapGestureRecognizer(target: self, action: #selector(viewDidTap(sender: )))
+        let deleteTap = UITapGestureRecognizer(target: self, action: #selector(viewDidTap(sender: )))
+
+        editView.addGestureRecognizer(editTap)
+        deleteView.addGestureRecognizer(deleteTap)
+    }
     func launchHintAnimation(){
         let anim1 = UIViewPropertyAnimator(duration: 0.3, curve: .easeInOut) {
             self.transform = CGAffineTransform(translationX: 35, y: 0)
@@ -280,60 +292,90 @@ class TableViewCell: UITableViewCell{
             self.layoutIfNeeded()
             self.isActionActive = activate
         }
+                
         animation.startAnimation()
+        
+        currentHolderConstant = holderViewLeadingAnchor.constant
+        currentActionConstant = deleteViewLeadingAnchor.constant
     }
+//    override func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRequireFailureOf otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+//        <#code#>
+//    }
     //MARK: - Actions
     //Panning
     @objc func viewDidPan(sender: UIPanGestureRecognizer){
         let translation = sender.translation(in: mainView).x
+        let velocity = sender.velocity(in: mainView).x
         
         let holderConstant = currentHolderConstant + translation
         let actionConstant = currentActionConstant + -(translation / 2)
         
-        switch sender.state{
-        case .began, .changed:
-            
-//            delegate.panningBegan(for: indexPath)
+        direction = (0 < translation ? .right : .left)
 
-            if holderConstant >= finalHolderConstant &&  holderConstant <= 0{
+        switch sender.state{
+        case .began:
+            
+            print(direction)
+            delegate.panningBegan(for: indexPath)
+        case .changed:
+            if holderConstant >= finalHolderConstant && holderConstant <= 0{
                 holderViewLeadingAnchor.constant = holderConstant
                 deleteViewLeadingAnchor.constant = actionConstant
-            }
-            if isActionActive {
-                if holderConstant < finalHolderConstant{
-                    self.transform = CGAffineTransform(translationX: (holderConstant + abs(finalHolderConstant)) / 4, y: 0)
-                } else if holderConstant > -1 {
+                if direction == .left && holderConstant < -10{
                     isActionLooped = true
-                    isActionActive = false
                 }
-            } else {
-                if holderConstant < finalHolderConstant * 0.9{
-                    isActionActive = true
-                }
-                else if holderConstant > 0 && holderConstant < 100 && !isActionLooped {
-                    self.transform = CGAffineTransform(translationX: translation / 4, y: 0)
-                }
+            } else if holderConstant < finalHolderConstant{
+                self.transform = CGAffineTransform(translationX: (holderConstant + abs(finalHolderConstant)) / 4, y: 0)
+            } else if holderConstant > 0 && holderConstant < 100 && !isActionActive && !isActionLooped {
+                self.transform = CGAffineTransform(translationX: translation / 4, y: 0)
             }
+            
+//            if isActionActive {
+//                if holderConstant < finalHolderConstant{
+//                    self.transform = CGAffineTransform(translationX: (holderConstant + abs(finalHolderConstant)) / 4, y: 0)
+//                } else if holderConstant > -1 {
+//                    isActionLooped = true
+//                    isActionActive = false
+//                }
+//            } else {
+//                if holderConstant < finalHolderConstant * 0.9{
+//                    isActionActive = true
+//
+//                }
+//                else if holderConstant > 0 && holderConstant < 100 && !isActionLooped {
+//                    self.transform = CGAffineTransform(translationX: translation / 4, y: 0)
+//                }
+//            }
         default:
-            if holderConstant > 0 || holderConstant < finalHolderConstant {
+            print(holderConstant)
+            
+            if holderConstant > 0 && !isActionActive{
+                UIView.animate(withDuration: 0.2, delay: 0) {
+                    self.transform = .identity
+                }
+            } else if holderConstant < finalHolderConstant {
                 UIView.animate(withDuration: 0.2, delay: 0) {
                     self.transform = .identity
                 }
             }
-            if !isActionActive && holderConstant <= finalHolderConstant * 0.2
-                        || isActionActive && translation < finalHolderConstant * 1.2 {
+            if direction == .left && (holderConstant <= finalHolderConstant * 0.1 || abs(velocity) > 800){
                 activate(true)
-            } else {
+            } else if direction == .right && (holderConstant > finalHolderConstant * 0.9 || abs(velocity) > 800) {
                 activate(false)
-//                delegate.panningEnded(for: indexPath)
-
             }
-            currentActionConstant = deleteViewLeadingAnchor.constant
-            currentHolderConstant = holderViewLeadingAnchor.constant
             isActionLooped = false
+            
+            delegate.panningEnded(active: isActionActive)
         }
     }
     @objc func viewDidTap(sender: UITapGestureRecognizer){
+        guard let view = sender.view else { return }
+        if view == deleteView{
+            activate(false)
+            delegate.deleteButtonTapped()
+        } else {
+            delegate.editButtonTapped()
+        }
         
     }
     //LanguageChange
@@ -342,6 +384,3 @@ class TableViewCell: UITableViewCell{
         cardsLabel.text = LanguageChangeManager.shared.localizedString(forKey: "tableCellNumberOfCards")
     }
 }
-//extension TableViewCell: UIGestureRecognizerDelegate{
-//
-//}
