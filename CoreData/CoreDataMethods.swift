@@ -13,7 +13,21 @@ class CoreDataHelper {
     
     static let shared = CoreDataHelper()
 
-    private init() {}
+    var numberOfDictionaries: Int64 = 0
+    
+    private init() {
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
+
+        let context = appDelegate.persistentContainer.viewContext
+        let request = NSFetchRequest<DictionariesEntity>(entityName: "DictionariesEntity")
+        
+        do {
+            let dictionaries = try context.fetch(request)
+            self.numberOfDictionaries = Int64(dictionaries.count)
+        } catch {
+            print("Fetch failed: \(error)")
+        }
+    }
 
     func addDictionary(language: String, text: String) {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
@@ -29,10 +43,12 @@ class CoreDataHelper {
         newDictionary.words = NSSet(array: words)
 
         newDictionary.numberOfCards = String(words.count)
+        newDictionary.order = numberOfDictionaries
         do {
             try context.save()
+            numberOfDictionaries += 1
         } catch {
-            print("Failed to save dictionary: \(error)")
+            print("Failed: \(error)")
         }
     }
 
@@ -77,6 +93,10 @@ class CoreDataHelper {
 
         let context = appDelegate.persistentContainer.viewContext
         let fetchRequest = NSFetchRequest<DictionariesEntity>(entityName: "DictionariesEntity")
+
+        let sortDescriptor = NSSortDescriptor(key: "order", ascending: true)
+            
+        fetchRequest.sortDescriptors = [sortDescriptor]
 
         do {
             let dictionaries = try context.fetch(fetchRequest)

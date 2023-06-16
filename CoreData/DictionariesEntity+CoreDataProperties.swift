@@ -1,8 +1,8 @@
 //
 //  DictionariesEntity+CoreDataProperties.swift
-//  Language
+//  
 //
-//  Created by Star Lord on 22/04/2023.
+//  Created by Star Lord on 16/06/2023.
 //
 //
 
@@ -18,8 +18,8 @@ extension DictionariesEntity {
 
     @NSManaged public var language: String?
     @NSManaged public var numberOfCards: String?
+    @NSManaged public var order: Int64
     @NSManaged public var words: NSSet?
-    @NSManaged public var order: Int64?
 
 }
 
@@ -37,9 +37,5 @@ extension DictionariesEntity {
 
     @objc(removeWords:)
     @NSManaged public func removeFromWords(_ values: NSSet)
-
-}
-
-extension DictionariesEntity : Identifiable {
 
 }

@@ -125,6 +125,7 @@ class TableViewCell: UITableViewCell{
         deleteView.layer.mask = configureMaskFor(size: CGSize(width: contentView.frame.width * 0.2 , height: contentView.frame.height))
     }
     override func prepareForReuse() {
+        indexPath = nil
         guard !isActionActive else {
             activate(false)
             return
