@@ -12,7 +12,6 @@ class MenuVC: UIViewController {
     
     var dictionaries: [DictionariesEntity] = []
     
-    var cellTouched: Bool!
     var menuAccessedForCell: IndexPath?
     
     var tableView: UITableView = {
@@ -36,24 +35,18 @@ class MenuVC: UIViewController {
 //MARK: - Prepare Func
     override func viewDidLoad() {
         super.viewDidLoad()
+        fetchDictionaries()
         controllerCustomization()
         navBarCustomization()
         tableViewCustomization()
         tabBarCustomization()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        fetchDictionaries()
-    }
-    
-//    override func viewDidAppear(_ animated: Bool) {
-//        super.viewDidAppear(animated)
-//        if !dictionaries.isEmpty{
-//            let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? TableViewCell
-//            cell?.launchHintAnimation()
-//        }
+//    override func viewWillAppear(_ animated: Bool) {
+//        super.viewWillAppear(animated)
+//        fetchDictionaries()
 //    }
+    
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         strokeCustomization()
@@ -86,6 +79,11 @@ class MenuVC: UIViewController {
     // MARK: - Data fetching
     func fetchDictionaries() {
         dictionaries = CoreDataHelper.shared.fetchDictionaries()
+        
+        DispatchQueue.main.async{
+            self.tableView.reloadData()
+        }
+        
     }
     
     //MARK: - Stroke SetUp
@@ -135,11 +133,6 @@ class MenuVC: UIViewController {
         tabBarController?.tabBar.shadowImage = UIImage()
         tabBarController?.tabBar.backgroundImage = UIImage()
     }
-    func configureGestureForContextMenu(){
-        let gesture = UIPanGestureRecognizer()
-        gesture.addTarget(self, action: #selector(cellDidSwipe(sender: )))
-        tableView.addGestureRecognizer(gesture)
-    }
     //MARK: - Actions
     @objc func statiscticButTap(sender: Any){
         let vc = StatisticVC()
@@ -161,25 +154,35 @@ class MenuVC: UIViewController {
         }
         tableView.reloadData()
     }
-    @objc func cellDidSwipe(sender: UIPanGestureRecognizer){
-        guard let table = sender.view as? UITableView else {
-            return
-        }
-    }
+//    @objc func cellDidSwipe(sender: UIPanGestureRecognizer){
+//        guard let table = sender.view as? UITableView else {
+//            return
+//        }
+//    }
     @objc func appDataDidChange(sender: Notification){
         print("was called")
         if let type = sender.userInfo?["changeType"] as? NSManagedObject.ChangeType {
             switch type{
-            case .delete: fetchDictionaries()
-//                tableView.reloadData()
-//                if let section = menuAccessedForCell?.section{
-//                    tableView.deleteSections([section], with: .left)
-//
-//                }
+            case .delete:
+                fetchDictionaries()
+                tableView.reloadData()
+
+                dictionaries.forEach { dict in
+                    print(dict.language)
+                }
+                CoreDataHelper.shared.fetchDictionaries().forEach { dict in
+                    print("In coreData: \(dict.language)")
+                }
+
             case .insert, .update: fetchDictionaries()
                 tableView.reloadData()
             }
         }
+    }
+}
+extension MenuVC: UIGestureRecognizerDelegate{
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        true 
     }
 }
 //MARK: - UITableViewDelegate
@@ -222,25 +225,60 @@ extension MenuVC: CustomCellDataDelegate{
     func panningEnded(active: Bool) {
         guard active else {
             menuAccessedForCell = nil
-            print(menuAccessedForCell)
             return
         }
-        print(menuAccessedForCell)
     }
     
-    func deleteButtonTapped(){
-        print(dictionaries.count)
-        guard let section = menuAccessedForCell?.section else { return }
-        let dictionaryToDelete = CoreDataHelper.shared.fetchDictionaries()[section]
+    func deleteButtonTapped(for index: IndexPath){
+        let section = index.section
+        let dictionaryToDelete = dictionaries.remove(at: section)
         CoreDataHelper.shared.deleteDictionary(dictionary: dictionaryToDelete)
-        tableView.deleteSections([section], with: .left)
-        tableView.reloadData()
+//        dictionaries.forEach { dict in
+//            print(dict.language)
+//        }
+//        CoreDataHelper.shared.fetchDictionaries().forEach { dict in
+//            print("In coreData: \(dict.language)")
+//        }
+
+//        dictionaries.remove(at: section)
+//        tableView.deleteSections([section], with: .left)
         menuAccessedForCell = nil
-        
     }
+//    func deleteButtonTapped(for index: IndexPath){
+//
+//        let dictionaryToDelete = CoreDataHelper.shared.fetchDictionaries()[index.section]
+//
+//        CoreDataHelper.shared.deleteDictionary(dictionary: dictionaryToDelete)
+//
+//        dictionaries.forEach { dict in
+//            print(dict.language)
+//        }
+//        CoreDataHelper.shared.fetchDictionaries().forEach { dict in
+//            print("In coreData: \(dict.language)")
+//        }
+//        tableView.deleteSections([index.section], with: .left)
+//        tableView.reloadData()
+//        menuAccessedForCell = nil
+//
+//    }
+
     
-    func editButtonTapped(){
+    func editButtonTapped(for index: IndexPath){
+        guard let section = menuAccessedForCell?.section else { return }
+        let dictionaryToEdit = dictionaries[section]
+        let pairs = dictionaryToEdit.words as! Set<WordsEntity>
         
+        var wordsToEdit = ""
+        for pair in pairs {
+            wordsToEdit += "\(pair.word ?? "") \(UserSettings.shared.settings.separators.selectedValue) \(pair.meaning ?? "")" + "\n" + "\n"
+        }
+            
+        let vc = EditVC()
+        vc.textField.text = dictionaryToEdit.language
+        vc.textView.text = wordsToEdit
+            
+        self.navigationController?.pushViewController(vc, animated: true)
+        menuAccessedForCell = nil
     }
     
     
@@ -262,46 +300,6 @@ extension MenuVC: UITableViewDataSource{
             return cell!
         }
     }
-    
-//    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-//        if indexPath.section == tableView.numberOfSections - 1{
-//            return false
-//        }
-//        return true
-//    }
-    
-//    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-//        if editingStyle == .delete{
-//            tableView.deleteRows(at: [indexPath], with: .right)
-//        }
-//    }
-//    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-//
-//        let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { (action, view, handler) in
-//            let dictionaryToDelete = CoreDataHelper.shared.fetchDictionaries()[indexPath.row]
-//
-//            CoreDataHelper.shared.deleteDictionary(dictionary: dictionaryToDelete)
-//
-//            tableView.deleteSections([indexPath.section], with: .left)
-//            tableView.reloadData()
-//            handler(true)
-//        }
-//
-//        let shareAction = UIContextualAction(style: .normal, title: "Share") { (action, view, handler) in
-//
-//            handler(true)
-//        }
-//        let editAction = UIContextualAction(style: .normal, title: "Edit") { (action, view, handler) in
-//            handler(true)
-//        }
-//
-//        editAction.backgroundColor = .blue
-//        let configuration = UISwipeActionsConfiguration(actions: [editAction, deleteAction, shareAction])
-//            configuration.performsFirstActionWithFullSwipe = true
-//
-//        return configuration
-//    }
-//
 }
 
 protocol CustomCellDataDelegate: AnyObject{
@@ -309,8 +307,8 @@ protocol CustomCellDataDelegate: AnyObject{
         
     func panningEnded(active: Bool)
     
-    func deleteButtonTapped()
+    func deleteButtonTapped(for index: IndexPath)
     
-    func editButtonTapped()
+    func editButtonTapped(for index: IndexPath)
         
 }

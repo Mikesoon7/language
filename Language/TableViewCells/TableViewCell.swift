@@ -123,9 +123,13 @@ class TableViewCell: UITableViewCell{
         
         editView.layer.mask = configureMaskFor(size: CGSize(width: contentView.frame.width * 0.2 , height: contentView.frame.height))
         deleteView.layer.mask = configureMaskFor(size: CGSize(width: contentView.frame.width * 0.2 , height: contentView.frame.height))
-        
     }
-    
+    override func prepareForReuse() {
+        guard !isActionActive else {
+            activate(false)
+            return
+        }
+    }
     func configureHolderView(){
         contentView.addSubview(holderView)
         holderView.addSubviews(mainView, editView, deleteView)
@@ -246,7 +250,7 @@ class TableViewCell: UITableViewCell{
 
     func configurePanGesture(){
         let pan = UIPanGestureRecognizer(target: self, action: #selector(viewDidPan(sender:)))
-                
+        pan.delegate = self
         mainView.addGestureRecognizer(pan)
     }
     func configureTapGesture(){
@@ -298,9 +302,14 @@ class TableViewCell: UITableViewCell{
         currentHolderConstant = holderViewLeadingAnchor.constant
         currentActionConstant = deleteViewLeadingAnchor.constant
     }
-//    override func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRequireFailureOf otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-//        <#code#>
-//    }
+    
+    override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        if let panGestureRecognizer = gestureRecognizer as? UIPanGestureRecognizer {
+            let velocity = panGestureRecognizer.velocity(in: mainView)
+            return abs(velocity.y) < abs(velocity.x)
+        }
+        return true
+    }
     //MARK: - Actions
     //Panning
     @objc func viewDidPan(sender: UIPanGestureRecognizer){
@@ -314,8 +323,6 @@ class TableViewCell: UITableViewCell{
 
         switch sender.state{
         case .began:
-            
-            print(direction)
             delegate.panningBegan(for: indexPath)
         case .changed:
             if holderConstant >= finalHolderConstant && holderConstant <= 0{
@@ -330,25 +337,13 @@ class TableViewCell: UITableViewCell{
                 self.transform = CGAffineTransform(translationX: translation / 4, y: 0)
             }
             
-//            if isActionActive {
-//                if holderConstant < finalHolderConstant{
-//                    self.transform = CGAffineTransform(translationX: (holderConstant + abs(finalHolderConstant)) / 4, y: 0)
-//                } else if holderConstant > -1 {
-//                    isActionLooped = true
-//                    isActionActive = false
-//                }
-//            } else {
-//                if holderConstant < finalHolderConstant * 0.9{
-//                    isActionActive = true
-//
-//                }
-//                else if holderConstant > 0 && holderConstant < 100 && !isActionLooped {
-//                    self.transform = CGAffineTransform(translationX: translation / 4, y: 0)
-//                }
-//            }
+        case .cancelled:
+            if direction == .left {
+                activate(true)
+            } else {
+                activate(false)
+            }
         default:
-            print(holderConstant)
-            
             if holderConstant > 0 && !isActionActive{
                 UIView.animate(withDuration: 0.2, delay: 0) {
                     self.transform = .identity
@@ -372,9 +367,10 @@ class TableViewCell: UITableViewCell{
         guard let view = sender.view else { return }
         if view == deleteView{
             activate(false)
-            delegate.deleteButtonTapped()
+            delegate.deleteButtonTapped(for: indexPath)
         } else {
-            delegate.editButtonTapped()
+            activate(false)
+            delegate.editButtonTapped(for: indexPath)
         }
         
     }

@@ -19,6 +19,7 @@ extension DictionariesEntity {
     @NSManaged public var language: String?
     @NSManaged public var numberOfCards: String?
     @NSManaged public var words: NSSet?
+    @NSManaged public var order: Int64?
 
 }
 

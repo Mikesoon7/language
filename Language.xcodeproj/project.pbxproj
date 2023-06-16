@@ -10,6 +10,7 @@
 		02795F90A406A1776236D496 /* Pods_Language.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CB968C1BC0BCD6C51D7C2C9 /* Pods_Language.framework */; };
 		950CB66D35A3A66A8CBFD5C7 /* Pods_LanguageTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A8585DE4C793163678CE51E0 /* Pods_LanguageTests.framework */; };
 		9A02B2842A222B3D00652FC3 /* UIBezierPathTestController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A02B2832A222B3C00652FC3 /* UIBezierPathTestController.swift */; };
+		9A02B2862A38993F00652FC3 /* EditVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A02B2852A38993F00652FC3 /* EditVC.swift */; };
 		9A0BD53A29DC531F00845328 /* SettingsTextCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A0BD53929DC531F00845328 /* SettingsTextCell.swift */; };
 		9A1F67C829DFFD39003993C5 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 9A1F67CA29DFFD39003993C5 /* Localizable.strings */; };
 		9A1F67CF29E166C4003993C5 /* LanguageChangeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A1F67CE29E166C4003993C5 /* LanguageChangeManager.swift */; };
@@ -85,6 +86,7 @@
 		7CB968C1BC0BCD6C51D7C2C9 /* Pods_Language.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Language.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		92E1855A1F6B5D3EF2849FC2 /* Pods-Language-LanguageUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Language-LanguageUITests.release.xcconfig"; path = "Target Support Files/Pods-Language-LanguageUITests/Pods-Language-LanguageUITests.release.xcconfig"; sourceTree = "<group>"; };
 		9A02B2832A222B3C00652FC3 /* UIBezierPathTestController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIBezierPathTestController.swift; sourceTree = "<group>"; };
+		9A02B2852A38993F00652FC3 /* EditVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditVC.swift; sourceTree = "<group>"; };
 		9A0BD53929DC531F00845328 /* SettingsTextCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTextCell.swift; sourceTree = "<group>"; };
 		9A1F67C929DFFD39003993C5 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		9A1F67CC29E00253003993C5 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -92,6 +94,7 @@
 		9A1F67CE29E166C4003993C5 /* LanguageChangeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageChangeManager.swift; sourceTree = "<group>"; };
 		9A1F67D029E18BBE003993C5 /* SettingsImageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsImageCell.swift; sourceTree = "<group>"; };
 		9A1F67D329E3F69A003993C5 /* SettingsHeaderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsHeaderCell.swift; sourceTree = "<group>"; };
+		9A2092D62A3C822F00184124 /* LearnyLocalV2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = LearnyLocalV2.xcdatamodel; sourceTree = "<group>"; };
 		9A22B8E8299A9FDA00B1ED3A /* Data.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Data.swift; sourceTree = "<group>"; };
 		9A603FF829AF5B3200A65253 /* OldGameVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OldGameVC.swift; sourceTree = "<group>"; };
 		9A7B91C2298D6D9600E60CDD /* Language.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Language.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -298,6 +301,7 @@
 			isa = PBXGroup;
 			children = (
 				9AE50932299695B400D86DD7 /* Menu VC.swift */,
+				9A02B2852A38993F00652FC3 /* EditVC.swift */,
 				9AE509342997C07700D86DD7 /* AddDictionaryVC.swift */,
 				9AAECFC129B50A5300439C0B /* AddWordsVC.swift */,
 				9AFFCE8029A4DFEE00C12B94 /* DetailsVC.swift */,
@@ -610,6 +614,7 @@
 				9AB43A1929F40EA000984350 /* LearnyLocal.xcdatamodeld in Sources */,
 				9AA71C5B29C20894008A193B /* MainGameVC.swift in Sources */,
 				9A912FC62A06BB540004A91A /* NotificationTextCell.swift in Sources */,
+				9A02B2862A38993F00652FC3 /* EditVC.swift in Sources */,
 				9AFFCE7B299D073D00C12B94 /* TableViewAddCell.swift in Sources */,
 				9AE34A782A115DD300F8BB65 /* GameDetailsVC.swift in Sources */,
 				9AB9A96129FD71F000694FE8 /* SeparatorsVC.swift in Sources */,
@@ -996,9 +1001,10 @@
 		9AB43A1729F40EA000984350 /* LearnyLocal.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				9A2092D62A3C822F00184124 /* LearnyLocalV2.xcdatamodel */,
 				9AB43A1829F40EA000984350 /* LearnyLocal.xcdatamodel */,
 			);
-			currentVersion = 9AB43A1829F40EA000984350 /* LearnyLocal.xcdatamodel */;
+			currentVersion = 9A2092D62A3C822F00184124 /* LearnyLocalV2.xcdatamodel */;
 			path = LearnyLocal.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

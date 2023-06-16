@@ -29,7 +29,6 @@ class CoreDataHelper {
         newDictionary.words = NSSet(array: words)
 
         newDictionary.numberOfCards = String(words.count)
-
         do {
             try context.save()
         } catch {
@@ -119,7 +118,7 @@ class CoreDataHelper {
         do {
             try context.save()
         } catch {
-            print("Failed to delete dictionary: \(error)")
+            print("Failed to delete dictionary: ")
         }
     }
 }
