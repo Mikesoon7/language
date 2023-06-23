@@ -14,13 +14,16 @@ class MenuVC: UIViewController {
     
     var menuAccessedForCell: IndexPath?
     
+    //For ignoring updates after deleting.
+    var isPostDeletionUpdate: Bool = false
+    
     var tableView: UITableView = {
         var tableView = UITableView(frame: CGRect(x: 0, y: 0, width: 0, height: 0), style: .insetGrouped)
         tableView.register(TableViewCell.self, forCellReuseIdentifier: TableViewCell().identifier)
         tableView.register(TableViewAddCell.self, forCellReuseIdentifier: TableViewAddCell().identifier)
         tableView.rowHeight = 104
         tableView.backgroundColor = .clear
-
+        
         tableView.translatesAutoresizingMaskIntoConstraints = false
         
         tableView.subviews.forEach{ section in
@@ -32,19 +35,19 @@ class MenuVC: UIViewController {
     var topStroke = CAShapeLayer()
     var bottomStroke = CAShapeLayer()
     
-//MARK: - Prepare Func
+    //MARK: - Prepare Func
     override func viewDidLoad() {
         super.viewDidLoad()
         fetchDictionaries()
-        controllerCustomization()
-        navBarCustomization()
-        tableViewCustomization()
-        tabBarCustomization()
+        configureController()
+        configureNavBar()
+        configureTableView()
+        configureTabBar()
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        strokeCustomization()
+        configureStrokes()
     }
     //MARK: - StyleChange Responding
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -65,7 +68,7 @@ class MenuVC: UIViewController {
         }
     }
     //MARK: - Controleler SetUp
-    func controllerCustomization(){
+    func configureController(){
         view.backgroundColor = .systemBackground
         
         NotificationCenter.default.addObserver(self, selector: #selector(languageDidChange(sender:)), name: .appLanguageDidChange, object: nil)
@@ -74,23 +77,20 @@ class MenuVC: UIViewController {
     // MARK: - Data fetching
     func fetchDictionaries() {
         dictionaries = CoreDataHelper.shared.fetchDictionaries()
-//        DispatchQueue.main.async{
-//            self.tableView.reloadData()
-//        }
     }
     
     //MARK: - Stroke SetUp
-    func strokeCustomization(){
+    func configureStrokes(){
         topStroke = UIView().addTopStroke(vc: self)
         bottomStroke = UIView().addBottomStroke(vc: self)
-
+        
         view.layer.addSublayer(topStroke)
         view.layer.addSublayer(bottomStroke)
     }
     
     
     //MARK: - TableView SetUP
-    func tableViewCustomization(){
+    func configureTableView(){
         tableView.delegate = self
         tableView.dataSource = self
         view.addSubview(tableView)
@@ -102,9 +102,9 @@ class MenuVC: UIViewController {
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
         ])
     }
-
+    
     //MARK: - NavigationBar SetUp
-    func navBarCustomization(){
+    func configureNavBar(){
         navigationItem.title = "menuVCTitle".localized
         navigationController?.navigationBar.titleTextAttributes = NSAttributedString().fontWithoutString(bold: true, size: 23)
         //Statisctic BarButton
@@ -112,7 +112,7 @@ class MenuVC: UIViewController {
             image: UIImage(systemName: "chart.bar"),
             style: .plain,
             target: self,
-            action: #selector(statiscticButTap(sender:)))
+            action: #selector(statButtonDidTap(sender:)))
         self.navigationItem.setRightBarButton(rightButton, animated: true)
         
         navigationItem.backButtonDisplayMode = .minimal
@@ -120,17 +120,18 @@ class MenuVC: UIViewController {
         self.navigationController?.navigationBar.isTranslucent = true
     }
     //MARK: - TabBar SetUp
-    func tabBarCustomization(){
+    func configureTabBar(){
         tabBarController?.tabBar.backgroundColor = .systemBackground
         tabBarController?.tabBar.isTranslucent = false
         tabBarController?.tabBar.shadowImage = UIImage()
         tabBarController?.tabBar.backgroundImage = UIImage()
     }
     //MARK: - Actions
-    @objc func statiscticButTap(sender: Any){
+    @objc func statButtonDidTap(sender: Any){
         let vc = StatisticVC()
-        navigationController?.present(vc, animated: true)
-        }
+        self.present(vc, animated: true)
+    }
+    
     @objc func languageDidChange(sender: Any){
         navigationItem.title = "menuVCTitle".localized
         if let barItems = tabBarController?.tabBar.items{
@@ -147,24 +148,26 @@ class MenuVC: UIViewController {
         }
         tableView.reloadData()
     }
-
+    
     @objc func appDataDidChange(sender: Notification){
-        print("was called")
         if let type = sender.userInfo?["changeType"] as? NSManagedObject.ChangeType {
-            switch type{
+            switch type {
             case .delete:
-               print("was deleted")
-            case .insert, .update: fetchDictionaries()
+                print("was deleted")
+            case .insert, .update:
+                guard isPostDeletionUpdate != true else {
+                    print("was updated after deletion")
+                    isPostDeletionUpdate = false
+                    return
+                }
+                print("was updated")
+                fetchDictionaries()
                 tableView.reloadData()
             }
         }
     }
 }
-//extension MenuVC: UIGestureRecognizerDelegate{
-//    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-//        true
-//    }
-//}
+
 //MARK: - UITableViewDelegate
 extension MenuVC: UITableViewDelegate{
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
@@ -190,8 +193,10 @@ extension MenuVC: UITableViewDelegate{
         }
     }
 }
+//MARK: - Delegate for cells action.
 extension MenuVC: CustomCellDataDelegate{
-    func panningBegan(for index: IndexPath){
+    func panningBegan(for cell: UITableViewCell){
+        let index = tableView.indexPath(for: cell)
         guard index == menuAccessedForCell || menuAccessedForCell == nil else {
             if let cell = tableView.cellForRow(at: menuAccessedForCell!) as? TableViewCell{
                 cell.activate(false)
@@ -201,7 +206,6 @@ extension MenuVC: CustomCellDataDelegate{
         }
         menuAccessedForCell = index
     }
-    
     func panningEnded(active: Bool) {
         guard active else {
             menuAccessedForCell = nil
@@ -209,37 +213,44 @@ extension MenuVC: CustomCellDataDelegate{
         }
     }
     
-    func deleteButtonTapped(for index: IndexPath){
+    func deleteButtonDidTap(for cell: UITableViewCell){
+        guard let index = tableView.indexPath(for: cell) else { return }
         let section = index.section
-        CoreDataHelper.shared.deleteDictionary(dictionary: dictionaries[section])
-        fetchDictionaries()
+        
+        isPostDeletionUpdate = true
+        
+        let removedDict = dictionaries.remove(at: section)
+        CoreDataHelper.shared.deleteDictionary(dictionary: removedDict)
 
         tableView.beginUpdates()
         tableView.deleteSections([section], with: .left)
         tableView.endUpdates()
 
-        tableView.reloadSections(IndexSet(section...tableView.numberOfSections - 1), with: .none)
         menuAccessedForCell = nil
     }
     
-    func editButtonTapped(for index: IndexPath){
+    func editButtonDidTap(for cell: UITableViewCell){
         guard let section = menuAccessedForCell?.section else { return }
         let dictionaryToEdit = dictionaries[section]
         let pairs = dictionaryToEdit.words as! Set<WordsEntity>
         
-        var wordsToEdit = ""
+        var textToEdit = ""
+        var textByLines = [String]()
         for pair in pairs {
-            wordsToEdit += "\(pair.word ?? "") \(UserSettings.shared.settings.separators.selectedValue) \(pair.meaning ?? "")" + "\n" + "\n"
+            let line = "\(pair.word ?? "") \(UserSettings.shared.settings.separators.selectedValue) \(pair.meaning ?? "")"
+            textByLines.append(line)
+            textToEdit += line + "\n\n"
         }
-            
         let vc = EditVC()
+        vc.currentDictionary = dictionaryToEdit
+        vc.currentDictionaryPairs = Array(pairs)
+        vc.oldText = textByLines
         vc.textField.text = dictionaryToEdit.language
-        vc.textView.text = wordsToEdit
+        vc.textView.text = textToEdit
             
         self.navigationController?.pushViewController(vc, animated: true)
         menuAccessedForCell = nil
     }
-    
     
 }
 //MARK: - UITableViewDataSource
@@ -256,20 +267,19 @@ extension MenuVC: UITableViewDataSource{
             cell?.cardsResultLabel.text = dictionaries[indexPath.section].numberOfCards
             cell?.indexPath = indexPath
             cell?.delegate = self
+            print(dictionaries[indexPath.section].order)
             return cell!
         }
     }
 }
 
 protocol CustomCellDataDelegate: AnyObject{
-    func panningBegan(for index: IndexPath)
-        
-//    func panningBegan(for cell: UITableViewCell)
-    
+    func panningBegan(for cell: UITableViewCell)
+
     func panningEnded(active: Bool)
+
+    func deleteButtonDidTap(for cell: UITableViewCell)
     
-    func deleteButtonTapped(for index: IndexPath)
-    
-    func editButtonTapped(for index: IndexPath)
-        
+    func editButtonDidTap(for cell: UITableViewCell)
+
 }

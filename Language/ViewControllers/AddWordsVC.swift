@@ -5,11 +5,14 @@
 //  Created by Star Lord on 05/03/2023.
 //
 
+//TODO: Add localization for alerts.
 import UIKit
 
 class AddWordsVC: UIViewController {
 
     var editableDict : DictionariesEntity!
+    var wordsArray = [WordsEntity]()
+    
     var index = Int()
     
     let textView : UITextView = {
@@ -28,7 +31,7 @@ class AddWordsVC: UIViewController {
         textView.text = "Word - Meaning"
         return textView
     }()
-    let submitButton : UIButton = {
+    let saveButton : UIButton = {
         let button = UIButton()
         button.setUpCommotBut(false)
         button.setAttributedTitle(NSAttributedString().fontWithString(string: "Save",
@@ -40,15 +43,14 @@ class AddWordsVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        controllerCustomization()
-        navBarCustomization()
-        textViewCustomization()
-        submitButtonCustomization()
-        keybaordAppears()
+        configureController()
+        configureNavBar()
+        configureTextView()
+        configureSaveButton()
     }
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        strokeCustomization()
+        configureStrokes()
     }
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
@@ -63,34 +65,33 @@ class AddWordsVC: UIViewController {
             self.bottomStroke.strokeColor = UIColor.label.cgColor
             self.topStroke.strokeColor = UIColor.label.cgColor
             if traitCollection.userInterfaceStyle == .dark {
-                submitButton.layer.shadowColor = shadowColorForDarkIdiom
+                saveButton.layer.shadowColor = shadowColorForDarkIdiom
             } else {
-                submitButton.layer.shadowColor = shadowColorForLightIdiom
+                saveButton.layer.shadowColor = shadowColorForLightIdiom
             }
         }
     }
     //MARK: - Controller SetUp
-    func controllerCustomization(){
+    func configureController(){
         view.backgroundColor = .systemBackground
         
+        //Observer on keyboard.
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(sender:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(sender:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+        //Language change
         NotificationCenter.default.addObserver(self, selector: #selector(languageDidChange(sender:)), name: .appLanguageDidChange, object: nil)
     }
 
     //MARK: - Stroke SetUp
-    func strokeCustomization(){
+    func configureStrokes(){
         topStroke = UIView().addTopStroke(vc: self)
         bottomStroke = UIView().addBottomStroke(vc: self)
         
         view.layer.addSublayer(topStroke)
         view.layer.addSublayer(bottomStroke)
     }
-    //MARK: - KeyboardObserver
-    func keybaordAppears(){
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(sender:)), name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(sender:)), name: UIResponder.keyboardWillHideNotification, object: nil)
-    }
 //MARK: - NavBar SetUp
-    func navBarCustomization(){
+    func configureNavBar(){
         navigationItem.title = "Text Uploading"
         self.navigationController?.navigationBar.titleTextAttributes = NSAttributedString().fontWithoutString(bold: true, size: 23)
         self.navigationItem.backButtonTitle = "Details"
@@ -98,7 +99,7 @@ class AddWordsVC: UIViewController {
         self.navigationController?.navigationBar.isTranslucent = true
     }
 //MARK: - TextView SetUp
-    func textViewCustomization(){
+    func configureTextView(){
         view.addSubview(textView)
         textView.delegate = self
         textView.inputDelegate = self
@@ -112,28 +113,28 @@ class AddWordsVC: UIViewController {
             textView.heightAnchor.constraint(equalTo: textView.widthAnchor, multiplier: 0.79)
         ])
     }
-//MARK: - Submit Button SetUp
-    func submitButtonCustomization(){
-        view.addSubview(submitButton)
-        submitButton.translatesAutoresizingMaskIntoConstraints = false
+//MARK: - Save Button SetUp
+    func configureSaveButton(){
+        view.addSubview(saveButton)
+        saveButton.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            submitButton.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor, constant: -11),
-            submitButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            submitButton.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.91),
-            submitButton.heightAnchor.constraint(equalToConstant: 55),
+            saveButton.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor, constant: -11),
+            saveButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            saveButton.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.91),
+            saveButton.heightAnchor.constraint(equalToConstant: 55),
         ])
-        submitButton.addTargetTouchBegin()
-        submitButton.addTargetInsideTouchStop()
-        submitButton.addTargetOutsideTouchStop()
-        submitButton.addTarget(self, action: #selector(submitButTap(sender: )), for: .touchUpInside)
+        saveButton.addTargetTouchBegin()
+        saveButton.addTargetInsideTouchStop()
+        saveButton.addTargetOutsideTouchStop()
+        saveButton.addTarget(self, action: #selector(saveButtonDidTap(sender: )), for: .touchUpInside)
     }
 //MARK: - Actions
-    @objc func rightBarButTap(sender: Any){
+    @objc func rightBarButDidTap(sender: Any){
         navigationItem.rightBarButtonItem = nil
         textView.resignFirstResponder()
     }
-    @objc func submitButTap(sender: UIButton){
+    @objc func saveButtonDidTap(sender: UIButton){
         let alert = UIAlertController(title: "Enter the text", message: "Please, enter more than 1 pair of words.", preferredStyle: .alert)
         let action = UIAlertAction(title: "Understand", style: .cancel)
         alert.addAction(action)
@@ -141,7 +142,12 @@ class AddWordsVC: UIViewController {
         
         guard textView.hasText && textView.textColor != .lightGray else {return self.present(alert, animated: true)}
         
-        CoreDataHelper.shared.updateDictionary(dictionary: editableDict, text: textView.text)
+        let lines = textView.text.split(separator: "\n", omittingEmptySubsequences: true).map( {String($0)} )
+        for (index, line) in lines.enumerated() {
+            wordsArray.append(CoreDataHelper.shared.pairDivider(text: line,
+                                                                index: Int(editableDict.numberOfCards!)! + index))
+        }
+        CoreDataHelper.shared.addWordsToDictionary(dictionary: editableDict, words: wordsArray)
         self.navigationController?.popViewController(animated: true)
     }
     @objc func keyboardWillShow(sender: Notification){
@@ -165,7 +171,7 @@ class AddWordsVC: UIViewController {
     @objc func languageDidChange(sender: Any){
         textView.text = LanguageChangeManager.shared.localizedString(forKey: "viewPlaceholder")
         self.navigationItem.title = "addWordTitle".localized
-        submitButton.setAttributedTitle(NSAttributedString().fontWithString(
+        saveButton.setAttributedTitle(NSAttributedString().fontWithString(
             string: "save".localized,
             bold: true,
             size: 18), for: .normal)
@@ -180,7 +186,7 @@ extension AddWordsVC : UITextViewDelegate{
             textView.font = nil
             textView.typingAttributes = [NSAttributedString.Key.font : UIFont(name: "Times New Roman", size: 17) ?? UIFont(), NSAttributedString.Key.backgroundColor : UIColor.clear, NSAttributedString.Key.foregroundColor : UIColor.label]
         }
-        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(rightBarButTap(sender:)))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(rightBarButDidTap(sender:)))
     }
 }
 extension AddWordsVC : UITextInputDelegate{

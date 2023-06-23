@@ -37,7 +37,7 @@ class SearchViewCell: UITableViewCell {
     let descriptionLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "Helvetica Neue Medium", size: 11)
-        label.numberOfLines = 2
+        label.numberOfLines = 1
         label.tintColor = .systemGray3
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -79,7 +79,7 @@ class SearchViewCell: UITableViewCell {
             wordLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -15),
 
             descriptionLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 15),
-            descriptionLabel.topAnchor.constraint(equalTo: view.centerYAnchor),
+            descriptionLabel.centerYAnchor.constraint(equalTo: view.bottomAnchor, constant: -((contentView.bounds.height - inset * 2)) * 0.6),
             descriptionLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -15)
         ])
     }

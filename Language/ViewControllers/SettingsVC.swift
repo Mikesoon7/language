@@ -53,11 +53,9 @@ class SettingsVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .systemBackground
-        navBarCustomization()
-        tableViewCustomization()
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(languageDidChange(sender: )), name: .appLanguageDidChange, object: nil)
+        configureController()
+        configureNavBar()
+        configureTableView()
     }
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -65,7 +63,7 @@ class SettingsVC: UIViewController {
     }
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        strokeCustomization()
+        configureStrokes()
     }
     
     //MARK: - StyleChange Responding
@@ -88,9 +86,13 @@ class SettingsVC: UIViewController {
             }
         }
     }
-    
+    func configureController(){
+        view.backgroundColor = .systemBackground
+
+        NotificationCenter.default.addObserver(self, selector: #selector(languageDidChange(sender: )), name: .appLanguageDidChange, object: nil)
+    }
     //MARK: - Stroke SetUp
-    func strokeCustomization(){
+    func configureStrokes(){
         topStroke = UIView().addTopStroke(vc: self)
         bottomStroke = UIView().addBottomStroke(vc: self)
         
@@ -99,17 +101,15 @@ class SettingsVC: UIViewController {
     }
     
     //MARK: - NavigationBar SetUp
-    func navBarCustomization(){
+    func configureNavBar(){
         self.navigationItem.title = "settingsVCTitle".localized
         self.navigationController?.navigationBar.titleTextAttributes = NSAttributedString().fontWithoutString( bold: true, size: 23)
 
         self.navigationController?.navigationBar.tintColor = .label
         self.navigationController?.navigationBar.isTranslucent = true
-        
-        
     }
     //MARK: - TableView SetUp
-    func tableViewCustomization(){
+    func configureTableView(){
         view.addSubview(tableView)
         
         NSLayoutConstraint.activate([

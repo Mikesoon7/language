@@ -22,7 +22,6 @@ class TableViewCell: UITableViewCell{
     var isActionLooped: Bool = false
     
     var delegate: CustomCellDataDelegate!
-    
     lazy var holderView: UIView = {
         let view = UIView()
         view.backgroundColor = .clear
@@ -324,7 +323,7 @@ class TableViewCell: UITableViewCell{
 
         switch sender.state{
         case .began:
-            delegate.panningBegan(for: indexPath)
+            delegate.panningBegan(for: self)
         case .changed:
             if holderConstant >= finalHolderConstant && holderConstant <= 0{
                 holderViewLeadingAnchor.constant = holderConstant
@@ -368,10 +367,11 @@ class TableViewCell: UITableViewCell{
         guard let view = sender.view else { return }
         if view == deleteView{
             activate(false)
-            delegate.deleteButtonTapped(for: indexPath)
+            delegate.deleteButtonDidTap(for: self)
+
         } else {
             activate(false)
-            delegate.editButtonTapped(for: indexPath)
+            delegate.editButtonDidTap(for: self)
         }
         
     }

@@ -20,6 +20,7 @@ extension WordsEntity {
     @NSManaged public var word: String?
     @NSManaged public var meaning: String?
     @NSManaged public var dictionaries: NSSet?
+    @NSManaged public var order: Int64
 
 }
 

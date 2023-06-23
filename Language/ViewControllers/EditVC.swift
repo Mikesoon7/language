@@ -5,18 +5,31 @@
 //  Created by Star Lord on 13/06/2023.
 //
 
+//TODO: Add convertion for inserted in textView or textField text
+//TODO: Add limit for name.
+
 import UIKit
+import Differ
 
 class EditVC: UIViewController {
     
+    var currentDictionary: DictionariesEntity! 
+    var currentDictionaryPairs: [WordsEntity]!
+    
+    //Text representaition of existing words for comparison
+    var oldText: [String]!
+    var newText: [String]!
+        
     let textView: UITextView = {
         let view = UITextView()
-        view.textContainerInset = UIEdgeInsets(top: 10, left: 20, bottom: 10, right: 20)
+        view.textContainerInset = UIEdgeInsets(top: 20, left: 20, bottom: 10, right: 20)
         view.allowsEditingTextAttributes = true
         view.textColor = .label
         view.backgroundColor = .systemBackground
         view.font = UIFont(name: "Times New Roman", size: 17) ?? UIFont()
         view.text = "some very important text"
+        
+        view.alwaysBounceVertical = true
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -44,7 +57,7 @@ class EditVC: UIViewController {
     }
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        strokeCustomization()
+        configureStrokes()
     }
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
@@ -54,7 +67,7 @@ class EditVC: UIViewController {
             self.topStroke.strokeColor = UIColor.label.cgColor
         }
     }
-    func strokeCustomization(){
+    func configureStrokes(){
         topStroke = UIView().addTopStroke(vc: self)
         bottomStroke = UIView().addBottomStroke(vc: self)
 
@@ -65,7 +78,7 @@ class EditVC: UIViewController {
     func configureController(){
         view.backgroundColor = .systemBackground
     }
-
+    //MARK: - TextView SetUp
     func configureTextView(){
         textView.delegate = self
         view.addSubview(textView)
@@ -77,30 +90,62 @@ class EditVC: UIViewController {
             textView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
         ])
     }
+    //MARK: - TextField SetUp
     func configureTextField(){
         textField.delegate = self
         textField.frame = CGRect(x: 0, y: 0, width: view.bounds.width * 0.6,
                                  height: navigationController?.navigationBar.bounds.height ?? 30)
     }
+    //MARK: - NavBar SetUp
     func configureNavBar(){
         self.navigationItem.titleView = textField
         
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .save,
+                                                                 target: self,
+                                                                 action: #selector(saveButTap(sender:)))
         navigationItem.backButtonDisplayMode = .minimal
         self.navigationController?.navigationBar.tintColor = .label
         self.navigationController?.navigationBar.isTranslucent = true
 
     }
+    //MARK: - Actions
+    @objc func saveButTap(sender: Any){
+        guard textView.text != "" else {
+            //TODO: Add alert if text or name was vanished.
+            return
+        }
+
+        let lines = textView.text.split(separator: "\n", omittingEmptySubsequences: true)
+        newText = lines.map({ String($0) })
+        let patch = patch(from: oldText, to: newText)
+        for i in patch{
+            switch i {
+            case .deletion(index: let index):
+                print(i)
+                currentDictionaryPairs.remove(at: index)
+            case .insertion(index: let index, element: let text):
+                print(i)
+                currentDictionaryPairs.insert(CoreDataHelper.shared.pairDivider(text: text, index: index), at: index)
+            }
+        }
+        CoreDataHelper.shared.updateDictionary(dictionary: currentDictionary, words: currentDictionaryPairs, name: self.textField.text)
+        self.navigationController?.popViewController(animated: true)
+    }
     //Done button
     @objc func rightBarButTap(sender: Any){
-        navigationItem.rightBarButtonItem = nil
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .save,
+                                                            target: self,
+                                                            action: #selector(saveButTap(sender:)))
+
         if textView.isFirstResponder{
             textView.resignFirstResponder()
         } else if textField.isFirstResponder{
             textField.resignFirstResponder()
         }
     }
-
 }
+
+//MARK: - TextViewDelegate
 extension EditVC: UITextViewDelegate{
     func textViewDidBeginEditing(_ textView: UITextView) {
         if textView.textColor == .lightGray {
@@ -110,14 +155,22 @@ extension EditVC: UITextViewDelegate{
             textView.typingAttributes = [NSAttributedString.Key.font : UIFont(name: "Times New Roman", size: 17) ?? UIFont(), NSAttributedString.Key.backgroundColor : UIColor.clear, NSAttributedString.Key.foregroundColor : UIColor.label]
         }
         if self.navigationController?.navigationItem.rightBarButtonItem == nil{
-            navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(rightBarButTap(sender:)))
+            navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(rightBarButDidTap(sender:)))
         }
     }
+    func textViewDidChange(_ textView: UITextView) {
+        let range = NSMakeRange(textView.text.count - 1, 0)
+        textView.scrollRangeToVisible(range)
+    }
+    
+    
 }
+
+//MARK: - TextFieldDelegate
 extension EditVC: UITextFieldDelegate{
     func textFieldDidBeginEditing(_ textField: UITextField) {
         if self.navigationController?.navigationItem.rightBarButtonItem == nil{
-            self.navigationItem.setRightBarButton(UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(rightBarButTap(sender:))), animated: true)
+            self.navigationItem.setRightBarButton(UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(rightBarButDidTap(sender:))), animated: true)
         }
     }
 }

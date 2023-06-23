@@ -10,7 +10,7 @@ import UIKit
 class DetailsVC: UIViewController {
 
     var dictionary : DictionariesEntity!
-    var random : Bool!
+    var random: Bool!
     var numberOfCards : Int!
     var preselectedPickerNumber = Int()
     
@@ -28,14 +28,14 @@ class DetailsVC: UIViewController {
         return label
     }()
     
-    lazy var setTheGoalView : UIView = {
+    let goalView : UIView = {
         var view = UIView()
         view.setUpBorderedView(false)
         view.layer.masksToBounds = true
         return view
     }()
     
-    let setTheGoalLabel : UILabel = {
+    let goalLabel : UILabel = {
         let label = UILabel()
         label.attributedText = NSAttributedString().fontWithString(
             string: "goal".localized,
@@ -44,7 +44,7 @@ class DetailsVC: UIViewController {
         return label
     }()
 
-    let addNewWordsBut : UIButton = {
+    let addWordsBut : UIButton = {
         var button = UIButton()
         button.setUpCommotBut(false)
         button.setAttributedTitle(NSAttributedString().fontWithString(
@@ -71,12 +71,12 @@ class DetailsVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        controllerCustomization()
-        navBarCustomization()
-        randomizeCardCustomization()
-        setTheGoalCustomization()
-        beginButCustomization()
-        addNewWordsCustomization()
+        configureController()
+        configureNavBar()
+        configureRandomizeView()
+        configureGoalView()
+        configureStartButton()
+        configureAddWordsButton()
         }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -85,7 +85,7 @@ class DetailsVC: UIViewController {
     }
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        strokeCustomization()
+        configureStrokes()
     }
     //MARK: - StyleChange Responding
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -105,7 +105,7 @@ class DetailsVC: UIViewController {
         }
     }
     //MARK: - Stroke SetUp
-    func strokeCustomization(){
+    func configureStrokes(){
         topStroke = UIView().addTopStroke(vc: self)
         bottomStroke = UIView().addBottomStroke(vc: self)
         
@@ -113,13 +113,13 @@ class DetailsVC: UIViewController {
         view.layer.addSublayer(bottomStroke)
     }
     //MARK: - Controller SetUp
-    func controllerCustomization(){
+    func configureController(){
         view.backgroundColor = .systemBackground
         
         NotificationCenter.default.addObserver(self, selector: #selector(languageDidChange(sender:)), name: .appLanguageDidChange, object: nil)
     }
     //MARK: - NavigationBar SetUp
-    func navBarCustomization(){
+    func configureNavBar(){
         navigationItem.title = "detailsTitle".localized
         navigationController?.navigationBar.titleTextAttributes = NSAttributedString().fontWithoutString(bold: true, size: 23)
         
@@ -135,7 +135,7 @@ class DetailsVC: UIViewController {
     }
     
 //MARK: - RandomCardView SetUp
-    func randomizeCardCustomization(){
+    func configureRandomizeView(){
         view.addSubview(randomizeCardsView)
         
         let switchForState : UISwitch = {
@@ -166,18 +166,18 @@ class DetailsVC: UIViewController {
     }
     
 //MARK: - SetTheGoal SetUp
-    func setTheGoalCustomization(){
+    func configureGoalView(){
         var shadowView = UIView()
         shadowView.setUpBorderedView(false)
 
-        view.addSubviews(shadowView, setTheGoalView)
+        view.addSubviews(shadowView, goalView)
 
         picker.dataSource = self
         picker.delegate = self
         
         picker.translatesAutoresizingMaskIntoConstraints = false
         
-        setTheGoalView.addSubviews(setTheGoalLabel, picker)
+        goalView.addSubviews(goalLabel, picker)
         
         NSLayoutConstraint.activate([
             shadowView.topAnchor.constraint(equalTo: self.randomizeCardsView.bottomAnchor, constant: 23),
@@ -185,17 +185,17 @@ class DetailsVC: UIViewController {
             shadowView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.91),
             shadowView.heightAnchor.constraint(equalToConstant: 60),
             
-            setTheGoalView.topAnchor.constraint(equalTo: self.randomizeCardsView.bottomAnchor, constant: 23),
-            setTheGoalView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            setTheGoalView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.91),
-            setTheGoalView.heightAnchor.constraint(equalToConstant: 60),
+            goalView.topAnchor.constraint(equalTo: self.randomizeCardsView.bottomAnchor, constant: 23),
+            goalView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            goalView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.91),
+            goalView.heightAnchor.constraint(equalToConstant: 60),
             
-            setTheGoalLabel.leadingAnchor.constraint(equalTo: setTheGoalView.leadingAnchor, constant: 15),
-            setTheGoalLabel.centerYAnchor.constraint(equalTo: setTheGoalView.centerYAnchor),
+            goalLabel.leadingAnchor.constraint(equalTo: goalView.leadingAnchor, constant: 15),
+            goalLabel.centerYAnchor.constraint(equalTo: goalView.centerYAnchor),
             
-            picker.trailingAnchor.constraint(equalTo: setTheGoalView.trailingAnchor),
-            picker.centerYAnchor.constraint(equalTo: setTheGoalView.centerYAnchor),
-            picker.widthAnchor.constraint(equalTo: setTheGoalView.widthAnchor, multiplier: 0.3)
+            picker.trailingAnchor.constraint(equalTo: goalView.trailingAnchor),
+            picker.centerYAnchor.constraint(equalTo: goalView.centerYAnchor),
+            picker.widthAnchor.constraint(equalTo: goalView.widthAnchor, multiplier: 0.3)
         ])
         preselectedPickerNumber = {
             if dictionary.words!.count <= 49{
@@ -207,23 +207,23 @@ class DetailsVC: UIViewController {
     }
 
 //MARK: - AddNewWord SetUp
-    func addNewWordsCustomization(){
-        view.addSubview(addNewWordsBut)
-        addNewWordsBut.translatesAutoresizingMaskIntoConstraints = false
+    func configureAddWordsButton(){
+        view.addSubview(addWordsBut)
+        addWordsBut.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            addNewWordsBut.bottomAnchor.constraint(equalTo: self.beginBut.topAnchor, constant: -23),
-            addNewWordsBut.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            addNewWordsBut.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.91),
-            addNewWordsBut.heightAnchor.constraint(equalToConstant: 55)
+            addWordsBut.bottomAnchor.constraint(equalTo: self.beginBut.topAnchor, constant: -23),
+            addWordsBut.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            addWordsBut.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.91),
+            addWordsBut.heightAnchor.constraint(equalToConstant: 55)
         ])
-        addNewWordsBut.addTargetTouchBegin()
-        addNewWordsBut.addTargetOutsideTouchStop()
-        addNewWordsBut.addTargetInsideTouchStop()
-        addNewWordsBut.addTarget(self, action: #selector(addWordsButtonTap(sender:)), for: .touchUpInside)
+        addWordsBut.addTargetTouchBegin()
+        addWordsBut.addTargetOutsideTouchStop()
+        addWordsBut.addTargetInsideTouchStop()
+        addWordsBut.addTarget(self, action: #selector(addWordsButtonTap(sender:)), for: .touchUpInside)
     }
-//MARK: - Toolbar SetUp
-    func beginButCustomization(){
+//MARK: - StartBut SetUp
+    func configureStartButton(){
         view.addSubview(beginBut)
         beginBut.translatesAutoresizingMaskIntoConstraints = false
     
@@ -241,7 +241,7 @@ class DetailsVC: UIViewController {
 
 //MARK: - Actions
     @objc func statisticButTap(sender: Any){
-        let vc = LoadDataVC()
+        let vc = StatisticVC()
         self.present(vc, animated: true)
     }
     @objc func randomSwitchToggle(sender: UISwitch){
@@ -274,9 +274,9 @@ class DetailsVC: UIViewController {
     @objc func languageDidChange(sender: Any){
         self.navigationItem.title = "detailsTitle".localized
         randomizeLabel.text = "randomize".localized
-        setTheGoalLabel.text = "goal".localized
+        goalLabel.text = "goal".localized
         
-        addNewWordsBut.setAttributedTitle(NSAttributedString().fontWithString(
+        addWordsBut.setAttributedTitle(NSAttributedString().fontWithString(
             string: "addWords".localized,
             bold: true,
             size: 20), for: .normal)

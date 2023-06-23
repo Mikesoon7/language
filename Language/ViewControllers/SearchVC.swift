@@ -70,6 +70,8 @@ class SearchVC: UIViewController {
     private var searchBarWidthAnchor: NSLayoutConstraint!
     private var cancelButtonLeadingAnchor: NSLayoutConstraint!
 
+    private var searchControllerHeight: CGFloat = 50
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         controllerCustomization()
@@ -129,10 +131,11 @@ class SearchVC: UIViewController {
         self.navigationController?.navigationBar.tintColor = .label
         self.navigationController?.navigationBar.isTranslucent = true
     }
+    
     func tableViewCustomization(){
         view.addSubview(tableView)
         
-        tableViewBottomAnchor = tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: searchBarOnTop ? 0 : 44)
+        tableViewBottomAnchor = tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: searchBarOnTop ? 0 : searchControllerHeight)
 
         NSLayoutConstraint.activate([
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -154,7 +157,7 @@ class SearchVC: UIViewController {
             searchContainer.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor),
             searchContainer.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             searchContainer.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 100),
-            searchContainer.heightAnchor.constraint(equalToConstant: 44),
+            searchContainer.heightAnchor.constraint(equalToConstant: searchControllerHeight),
             
             customSearchBar.topAnchor.constraint(equalTo: searchContainer.topAnchor),
             searchBarWidthAnchor,
@@ -170,7 +173,7 @@ class SearchVC: UIViewController {
         let path = UIBezierPath()
         path.move(to: CGPoint(x: 0, y: 0))
         path.addLine(to: CGPoint(x: view.bounds.maxX, y: 0))
-        upperBottomStroke.lineWidth = 0.4
+        upperBottomStroke.lineWidth = 0.5
         upperBottomStroke.path = path.cgPath
         searchContainer.layer.addSublayer(upperBottomStroke)
 
@@ -201,7 +204,7 @@ class SearchVC: UIViewController {
             if !view.subviews.contains(searchContainer){
                 searchContainerCustomization()
             }
-            tableViewBottomAnchor?.constant = -44
+            tableViewBottomAnchor?.constant = -searchControllerHeight
         }
     }
         //MARK: - Actions
@@ -228,11 +231,6 @@ class SearchVC: UIViewController {
                 searchControllerForTop.searchBar.text = nil
                 searchControllerForTop.isActive = false
             }
-
-//            if searchControllerForTop.searchBar.text != nil{
-//                searchControllerForTop.searchBar.text = nil
-//                searchBarTextDidEndEditing(searchControllerForTop.searchBar)
-//            }
         }
         searchBarDidChanged = true
     }
@@ -362,6 +360,9 @@ extension SearchVC: UITableViewDelegate, UITableViewDataSource{
         cell.wordLabel.text = data.word
         cell.descriptionLabel.text = data.meaning
         return cell
+        
+    }
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
