@@ -1,8 +1,8 @@
 //
 //  DictionariesEntity+CoreDataProperties.swift
-//  
+//  Language
 //
-//  Created by Star Lord on 16/06/2023.
+//  Created by Star Lord on 25/06/2023.
 //
 //
 
@@ -19,7 +19,9 @@ extension DictionariesEntity {
     @NSManaged public var language: String?
     @NSManaged public var numberOfCards: String?
     @NSManaged public var order: Int64
+    @NSManaged public var timesRepeated: Int64
     @NSManaged public var words: NSSet?
+    @NSManaged public var accessLogs: NSSet?
 
 }
 
@@ -37,5 +39,26 @@ extension DictionariesEntity {
 
     @objc(removeWords:)
     @NSManaged public func removeFromWords(_ values: NSSet)
+
+}
+
+// MARK: Generated accessors for accessLogs
+extension DictionariesEntity {
+
+    @objc(addAccessLogsObject:)
+    @NSManaged public func addToAccessLogs(_ value: DictionariesAccessLog)
+
+    @objc(removeAccessLogsObject:)
+    @NSManaged public func removeFromAccessLogs(_ value: DictionariesAccessLog)
+
+    @objc(addAccessLogs:)
+    @NSManaged public func addToAccessLogs(_ values: NSSet)
+
+    @objc(removeAccessLogs:)
+    @NSManaged public func removeFromAccessLogs(_ values: NSSet)
+
+}
+
+extension DictionariesEntity : Identifiable {
 
 }

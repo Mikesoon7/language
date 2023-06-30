@@ -2,11 +2,13 @@
 "tabBarDictionaries" = "Словники";
 "tabBarSearch" = "Пошук";
 "tabBarSettings" = "Налаштування";
-//MARK: - DictionariesView
+//MARK: - MainVC
 "menuVCTitle" = "Словники";
 "tableCellName" = "Імʼя";
 "tableCellNumberOfCards" = "Всього карток";
 "tableCellImport" = "Додади словник";
+"statisticCellNumberOfUse" = "Відкривався";
+"statisticCellCreationDate" = "Створен";
 //MARK: - SettingsVC
 "settingsVCTitle" = "Налаштування";
 //Sections
@@ -38,7 +40,8 @@
 //MARK: - AddDictionary or WordsVC
 "addDictTitle" = "Створення";
 "addWordTitle" = "Додавання";
-"viewPlaceholder" = "Слово - опис";
+"viewPlaceholderWord" = "Слово ";
+"viewPlaceholderMeaning" = " опис";
 "fieldPlaceholder" = "Имʼя";
 "dictionaryName" = "Назва словника";
 

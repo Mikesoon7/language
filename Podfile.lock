@@ -1,16 +1,26 @@
 PODS:
   - CardSlider (0.1.0)
+  - Charts (4.1.0):
+    - Charts/Core (= 4.1.0)
+  - Charts/Core (4.1.0):
+    - SwiftAlgorithms (~> 1.0)
+  - SwiftAlgorithms (1.0.0)
 
 DEPENDENCIES:
   - CardSlider
+  - Charts
 
 SPEC REPOS:
   trunk:
     - CardSlider
+    - Charts
+    - SwiftAlgorithms
 
 SPEC CHECKSUMS:
   CardSlider: 0a8f5f17f5a76701771794b07fdaeddc512358c8
+  Charts: ce0768268078eee0336f122c3c4ca248e4e204c5
+  SwiftAlgorithms: 38dda4731d19027fdeee1125f973111bf3386b53
 
-PODFILE CHECKSUM: ea63a9037140d163cf40855ec1218aab7c4ad37f
+PODFILE CHECKSUM: 86279b1b716420e780c498688dd4e8fc2c6c98ca
 
 COCOAPODS: 1.12.0

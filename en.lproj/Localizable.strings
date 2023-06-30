@@ -2,11 +2,13 @@
 "tabBarDictionaries" = "Dictionaries";
 "tabBarSearch" = "Search";
 "tabBarSettings" = "Settings";
-//MARK: - DictionariesView
+//MARK: - MainVC
 "menuVCTitle" = "Dictionaries";
 "tableCellName" = "Name";
 "tableCellNumberOfCards" = "Total cards";
 "tableCellImport" = "Import new dictionary";
+"statisticCellNumberOfUse" = "Accessed";
+"statisticCellCreationDate" = "Since";
 //MARK: - SettingsVC
 "settingsVCTitle" = "Settings";
 //Sections
@@ -38,7 +40,8 @@
 //MARK: - AddDictionary or WordsVC
 "addDictTitle" = "Dictionary creation";
 "addWordTitle" = "Text Uploading";
-"viewPlaceholder" = "Word - Description";
+"viewPlaceholderWord" = "Word ";
+"viewPlaceholderMeaning" = " description";
 "fieldPlaceholder" = "Name";
 "dictionaryName" = "Dictionary name";
 
@@ -53,7 +56,7 @@
 //MARK: - AlertText
 "textAlert" = "Enter the text";
 "nameAlert" = "Enter the name";
-"textInfo" = "Please, enter more than 1 pair of words.";
+"textInfo" = "Please, enter at least 1 pair of words.";
 "nameInfo" = "Almost done. Please, name your dictionary";
 
 //MARK: - DetailsVC

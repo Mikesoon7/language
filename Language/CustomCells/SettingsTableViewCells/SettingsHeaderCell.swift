@@ -10,6 +10,13 @@ import UIKit
 class SettingsHeaderCell: UITableViewCell {
     let identifier = "settingsHeaderCell"
     
+    let view: UIView = {
+        let view = UIView()
+        view.backgroundColor = .systemGray6.withAlphaComponent(0.8)
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+
     let label: UILabel = {
         let label = UILabel()
         label.textColor = .systemGray2
@@ -19,12 +26,6 @@ class SettingsHeaderCell: UITableViewCell {
         return label
     }()
     
-    let view: UIView = {
-        let view = UIView()
-        view.backgroundColor = .systemGray6.withAlphaComponent(0.8)
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         cellViewCustomization()

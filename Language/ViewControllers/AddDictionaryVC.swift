@@ -15,16 +15,14 @@ class AddDictionaryVC: UIViewController {
         var textView = TextViewToCreate()
         textView.setUpBorderedView(false)
         textView.layer.masksToBounds = true
+        
         textView.layer.borderWidth = 0.5
         textView.layer.borderColor = UIColor.black.cgColor
         
         textView.textContainerInset = .init(top: 5, left: 5, bottom: 5, right: 5)
         textView.allowsEditingTextAttributes = true
           
-        textView.font = UIFont(name: "Times New Roman", size: 17) ?? UIFont()
-        textView.text = "viewPlaceholder".localized
-        textView.textColor = .lightGray
-        textView.layer.shadowColor = UIColor.clear.cgColor
+//        textView.layer.shadowColor = UIColor.clear.cgColor
         return textView
     }()
     
@@ -64,7 +62,6 @@ class AddDictionaryVC: UIViewController {
 
     var topStroke = CAShapeLayer()
     var bottomStroke = CAShapeLayer()
-    
 
     //MARK: - Prepare Func
     override func viewDidLoad() {
@@ -76,24 +73,24 @@ class AddDictionaryVC: UIViewController {
         configureSaveButton()
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        self.view.becomeFirstResponder()
-    }
+//    override func viewDidAppear(_ animated: Bool) {
+//        self.view.becomeFirstResponder()
+//    }
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         configureStrokes()
     }
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        if textView.isFirstResponder{
-            textView.resignFirstResponder()
-        }
-        if let navController = self.navigationController{
-            let menu = navController.viewControllers.first(where: { $0 is MenuVC}) as? MenuVC
-            menu?.fetchDictionaries()
-            menu?.tableView.reloadData()
-        }
-    }
+//    override func viewWillDisappear(_ animated: Bool) {
+//        super.viewWillDisappear(animated)
+//        if textView.isFirstResponder{
+//            textView.resignFirstResponder()
+//        }
+//        if let navController = self.navigationController{
+//            let menu = navController.viewControllers.first(where: { $0 is MenuVC}) as? MenuVC
+//            menu?.fetchDictionaries()
+//            menu?.tableView.reloadData()
+//        }
+//    }
     
     //MARK: - StyleChange Responding
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -118,7 +115,11 @@ class AddDictionaryVC: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(sender:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(sender:)), name: UIResponder.keyboardWillHideNotification, object: nil)
         //Language change
-        NotificationCenter.default.addObserver(self, selector: #selector(languageDidChange(sender:)), name: .appLanguageDidChange, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(languageDidChange(sender:)), name:
+                .appLanguageDidChange, object: nil)
+        //Separator chagne
+        NotificationCenter.default.addObserver(self, selector: #selector(separatorDidChange(sender:)), name:
+                .appSeparatorDidChange, object: nil)
     }
 
     //MARK: - Stroke SetUp
@@ -141,7 +142,15 @@ class AddDictionaryVC: UIViewController {
             textView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.91),
             textView.heightAnchor.constraint(equalTo: textView.widthAnchor, multiplier: 0.57)
         ])
+        configureTextViewPlaceholder(textOnly: false)
     }
+    func configureTextViewPlaceholder(textOnly: Bool){
+        textView.text = LanguageChangeManager.shared.localizedString(forKey: "viewPlaceholderWord") + " \(UserSettings.shared.settings.separators.selectedValue) " + LanguageChangeManager.shared.localizedString(forKey: "viewPlaceholderMeaning")
+        guard !textOnly else { return }
+        textView.textColor = .lightGray
+        textView.font = UIFont(name: "TimesNewRomanPSMT", size: 15) ?? UIFont()
+    }
+
     //MARK: - NameView SetUp
     func configureNameInputView(){
         view.addSubview(nameView)
@@ -206,11 +215,15 @@ class AddDictionaryVC: UIViewController {
         insertTextAllert.addAction(action)
         action.setValue(UIColor.label, forKey: "titleTextColor")
         
-        guard textView.hasText && textView.textColor != .lightGray else {return self.present(insertTextAllert, animated: true)}
-        guard nameInputField.hasText else { return self.present(insertNameAllert, animated: true)}
+        guard let text = textView.text, text != "" && textView.textColor != .lightGray else {
+            return self.present(insertTextAllert, animated: true)
+        }
+        guard nameInputField.hasText else {
+            return self.present(insertNameAllert, animated: true)
+        }
         
         CoreDataHelper.shared.createDictionary(language: nameInputField.text!,
-                                            text: textView.text!)
+                                            text: text)
         
         navigationItem.rightBarButtonItem = nil
         view.becomeFirstResponder()
@@ -247,7 +260,9 @@ class AddDictionaryVC: UIViewController {
         bottomStroke.add(animation, forKey: "strokeOpacity")
     }
     @objc func languageDidChange(sender: Any){
-        textView.text = LanguageChangeManager.shared.localizedString(forKey: "viewPlaceholder")
+        if textView.textColor == .lightGray {
+            configureTextViewPlaceholder(textOnly: true)
+        }
         nameLabel.text = LanguageChangeManager.shared.localizedString(forKey: "dictionaryName")
         self.navigationItem.title = "addDictTitle".localized
         nameInputField.placeholder = "fieldPlaceholder".localized
@@ -255,6 +270,11 @@ class AddDictionaryVC: UIViewController {
             string: "save".localized,
             bold: true,
             size: 18), for: .normal)
+    }
+    @objc func separatorDidChange(sender: Any){
+        if textView.textColor == .lightGray {
+            configureTextViewPlaceholder(textOnly: true)
+        }
     }
 }
 
@@ -286,6 +306,11 @@ extension AddDictionaryVC: UITextViewDelegate{
         //Showing button for keyboard dismissing
         if self.navigationController?.navigationItem.rightBarButtonItem == nil{
             navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(rightBarButDidTap(sender:)))
+        }
+    }
+    func textViewDidEndEditing(_ textView: UITextView) {
+        if textView.text.isEmpty {
+            configureTextViewPlaceholder(textOnly: false)
         }
     }
 }

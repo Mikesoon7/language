@@ -166,6 +166,12 @@ extension UIView{
         self.layer.shadowOpacity = over ? 0.4 : 0.8
     }
 }
+extension String{
+    enum SelectedFonts: String{
+        case georgiaBoldItalic = "Georgia-BoldItalic"
+        case georigaItalic = "Georgia-Italic"
+    }
+}
 extension NSManagedObject{
     enum ChangeType{
         case insert
@@ -180,6 +186,7 @@ extension Notification.Name{
     static let appSearchBarPositionDidChange = Notification.Name("appSearchBarPositionDidChange")
     static let appNotificationSettingsDidChange = Notification.Name("appNotificationSettingsDidChange")
     static let appDataDidChange = Notification.Name("appDataDidChange")
+    static let appSeparatorDidChange = Notification.Name("separatorDidChange")
 }
 
 extension String{

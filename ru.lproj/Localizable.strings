@@ -2,11 +2,13 @@
 "tabBarDictionaries" = "Словари";
 "tabBarSearch" = "Поиск";
 "tabBarSettings" = "Настройки";
-//MARK: - DictionariesView
+//MARK: - MainVC
 "menuVCTitle" = "Словари";
 "tableCellName" = "Название";
 "tableCellNumberOfCards" = "Всего карточек";
 "tableCellImport" = "Добавить словарь";
+"statisticCellNumberOfUse" = "Всего использован";
+"statisticCellCreationDate" = "Был создан";
 //MARK: - SettingsVC
 "settingsVCTitle" = "Настройки";
 //Sections
@@ -38,7 +40,8 @@
 //MARK: - AddDictionary or WordsVC
 "addDictTitle" = "Создание словаря";
 "addWordTitle" = "Добавление текста";
-"viewPlaceholder" = "Слово - описание";
+"viewPlaceholderWord" = "Слово ";
+"viewPlaceholderMeaning" = " описание";
 "fieldPlaceholder" = "Имя";
 "dictionaryName" = "Название словаря";
 

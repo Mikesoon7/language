@@ -10,9 +10,10 @@ import UIKit
 class DetailsVC: UIViewController {
 
     var dictionary : DictionariesEntity!
-    var random: Bool!
-    var numberOfCards : Int!
-    var preselectedPickerNumber = Int()
+    
+    var isRandom: Bool!
+    var selectedNumberOfCards : Int!
+    var preselectedNumberOfCards = Int()
     
     let randomizeCardsView : UIView = {
         var view = UIView()
@@ -78,15 +79,11 @@ class DetailsVC: UIViewController {
         configureStartButton()
         configureAddWordsButton()
         }
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        self.picker.reloadAllComponents()
-        self.numberOfCards = dictionary.words?.count
-    }
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         configureStrokes()
     }
+    
     //MARK: - StyleChange Responding
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
@@ -116,7 +113,11 @@ class DetailsVC: UIViewController {
     func configureController(){
         view.backgroundColor = .systemBackground
         
-        NotificationCenter.default.addObserver(self, selector: #selector(languageDidChange(sender:)), name: .appLanguageDidChange, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(appDataDidChange(sender:)), name:
+                .appDataDidChange, object: nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(languageDidChange(sender:)), name:
+                .appLanguageDidChange, object: nil)
     }
     //MARK: - NavigationBar SetUp
     func configureNavBar(){
@@ -167,7 +168,7 @@ class DetailsVC: UIViewController {
     
 //MARK: - SetTheGoal SetUp
     func configureGoalView(){
-        var shadowView = UIView()
+        let shadowView = UIView()
         shadowView.setUpBorderedView(false)
 
         view.addSubviews(shadowView, goalView)
@@ -197,7 +198,7 @@ class DetailsVC: UIViewController {
             picker.centerYAnchor.constraint(equalTo: goalView.centerYAnchor),
             picker.widthAnchor.constraint(equalTo: goalView.widthAnchor, multiplier: 0.3)
         ])
-        preselectedPickerNumber = {
+        preselectedNumberOfCards = {
             if dictionary.words!.count <= 49{
                 return dictionary.words!.count
             } else {
@@ -245,24 +246,24 @@ class DetailsVC: UIViewController {
         self.present(vc, animated: true)
     }
     @objc func randomSwitchToggle(sender: UISwitch){
-        random = sender.isOn
+        isRandom = sender.isOn
     }
     
     @objc func startButtonTap(sender: UIButton){
         let vc = MainGameVC()
-        if self.numberOfCards == nil{
-            self.numberOfCards = preselectedPickerNumber
+        if self.selectedNumberOfCards == nil{
+            self.selectedNumberOfCards = preselectedNumberOfCards
         }
-        if self.random == nil{
-            self.random = true
+        if self.isRandom == nil{
+            self.isRandom = true
         }
-        vc.currentDictionary = self.dictionary
-        if let randomDictionaries = dictionary.words?.allObjects as? [WordsEntity]{
-            vc.currentRandomDictionary = randomDictionaries.shuffled()
-            print("random getted")
-        }
-        vc.random = self.random
-        vc.numberOFCards = self.numberOfCards
+        
+        vc.words = CoreDataHelper.shared.fetchWordsForDispaying(dictionary: dictionary,
+                                                                number: selectedNumberOfCards,
+                                                                random: isRandom)
+
+        vc.initialNumber = self.dictionary.words?.count
+        vc.passedNumber = self.selectedNumberOfCards
         self.navigationController?.pushViewController(vc, animated: true)
     }
 
@@ -286,15 +287,19 @@ class DetailsVC: UIViewController {
             bold: true,
             size: 18), for: .normal)
     }
+    @objc func appDataDidChange(sender: Notification){
+        self.picker.reloadAllComponents()
+        self.selectedNumberOfCards = dictionary.words?.count
+    }
 }
 extension DetailsVC: UIPickerViewDelegate{
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         if dictionary.words!.count <= 50{
-            numberOfCards = dictionary.words!.count
+            selectedNumberOfCards = dictionary.words!.count
         } else if row == pickerView.numberOfRows(inComponent: component) - 1{
-            numberOfCards = dictionary.words!.count
+            selectedNumberOfCards = dictionary.words!.count
         } else {
-            numberOfCards = (row + 1) * 50
+            selectedNumberOfCards = (row + 1) * 50
         }
     }
 }

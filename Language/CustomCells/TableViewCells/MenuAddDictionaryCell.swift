@@ -7,7 +7,7 @@
 
 import UIKit
 
-class TableViewAddCell: UITableViewCell {
+class MenuAddDictionaryCell: UITableViewCell {
     
     let identifier = "addCell"
 

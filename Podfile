@@ -5,6 +5,8 @@ target 'Language' do
 
 pod 'CardSlider'
 
+pod 'Charts'
+
   target 'LanguageTests' do
     inherit! :search_paths
   end

@@ -81,6 +81,7 @@ class CollectionViewCell: UICollectionViewCell {
         super.prepareForReuse()
         translation.text = nil
         word.text = nil
+        self.gestureRecognizers = nil
     }
     func cardViewCustomiation(){
         self.contentView.addSubview(cardShadowView)
@@ -114,13 +115,20 @@ class CollectionViewCell: UICollectionViewCell {
             ])
         }
     }
-    
+        
     override func apply(_ layoutAttributes: UICollectionViewLayoutAttributes) {
         super.apply(layoutAttributes)
         let size = CGSize(
             width: max(((layoutAttributes.frame.width - staticCardSize.width) / 4) , initialShadowValue.width),
             height: max(((layoutAttributes.frame.height - staticCardSize.height) / 3), initialShadowValue.height))
-        cardShadowView.layer.shadowOffset = size
+        if cardShadowView.layer.shadowOffset == initialShadowValue {
+            UIView.animate(withDuration: 0.2, delay: 0) {
+                self.cardShadowView.layer.shadowOffset = size
+            }
+        } else {
+            cardShadowView.layer.shadowOffset = size
+
+        }
         if finalShadowValue.width < size.width{
             finalShadowValue = size
         }

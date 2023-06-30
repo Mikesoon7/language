@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="21512" systemVersion="22D68" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="DictionariesAccessLog" representedClassName="DictionariesAccessLog" syncable="YES">
+        <attribute name="accessCount" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="accessDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <relationship name="dictionary" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="DictionariesEntity" inverseName="accessLogs" inverseEntity="DictionariesEntity"/>
+    </entity>
     <entity name="DictionariesEntity" representedClassName="DictionariesEntity" syncable="YES">
         <attribute name="language" optional="YES" attributeType="String"/>
         <attribute name="numberOfCards" optional="YES" attributeType="String"/>
         <attribute name="order" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="timesRepeated" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="accessLogs" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="DictionariesAccessLog" inverseName="dictionary" inverseEntity="DictionariesAccessLog"/>
         <relationship name="words" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="WordsEntity"/>
     </entity>
     <entity name="WordsEntity" representedClassName="WordsEntity" syncable="YES">

@@ -7,20 +7,28 @@
 
 import UIKit
 import CoreData
+import Charts
 
+private enum Cells: String{
+    case dict = "dict"
+    case stat = "stat"
+    case add = "add"
+}
 class MenuVC: UIViewController {
     
     var dictionaries: [DictionariesEntity] = []
     
     var menuAccessedForCell: IndexPath?
     
+    var shouldDispayStatistic: Bool = false
     //For ignoring updates after deleting.
     var isPostDeletionUpdate: Bool = false
     
     var tableView: UITableView = {
         var tableView = UITableView(frame: CGRect(x: 0, y: 0, width: 0, height: 0), style: .insetGrouped)
-        tableView.register(TableViewCell.self, forCellReuseIdentifier: TableViewCell().identifier)
-        tableView.register(TableViewAddCell.self, forCellReuseIdentifier: TableViewAddCell().identifier)
+        tableView.register(MenuDictionaryCell.self, forCellReuseIdentifier: Cells.dict.rawValue)
+        tableView.register(MenuStatisticCell.self, forCellReuseIdentifier: Cells.stat.rawValue)
+        tableView.register(MenuAddDictionaryCell.self, forCellReuseIdentifier: Cells.add.rawValue)
         tableView.rowHeight = 104
         tableView.backgroundColor = .clear
         
@@ -126,10 +134,25 @@ class MenuVC: UIViewController {
         tabBarController?.tabBar.shadowImage = UIImage()
         tabBarController?.tabBar.backgroundImage = UIImage()
     }
+    func configureDataForDiagram(with data: [Date: Double]) -> ChartData {
+        var entries = [BarChartDataEntry]()
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd"
+        data.forEach { (key: Date, value: Double) in
+            entries.append(BarChartDataEntry(x: Double(formatter.string(from: key))!, y: value))
+        }
+        let barDataSet = BarChartDataSet(entries: entries)
+        let chart = ChartData(dataSet: barDataSet)
+        return  chart
+    }
     //MARK: - Actions
     @objc func statButtonDidTap(sender: Any){
-        let vc = StatisticVC()
-        self.present(vc, animated: true)
+        shouldDispayStatistic.toggle()
+        tableView.indexPathsForVisibleRows?.forEach({ index in
+            tableView.reloadRows(at: [index], with: .fade)
+        })
+        tableView.reloadData()
+        
     }
     
     @objc func languageDidChange(sender: Any){
@@ -146,23 +169,20 @@ class MenuVC: UIViewController {
                 }()
             }
         }
-        tableView.reloadData()
     }
     
     @objc func appDataDidChange(sender: Notification){
         if let type = sender.userInfo?["changeType"] as? NSManagedObject.ChangeType {
             switch type {
             case .delete:
-                print("was deleted")
+                isPostDeletionUpdate = true
             case .insert, .update:
-                guard isPostDeletionUpdate != true else {
-                    print("was updated after deletion")
+                if !isPostDeletionUpdate {
+                    fetchDictionaries()
+                    tableView.reloadData()
+                } else {
                     isPostDeletionUpdate = false
-                    return
                 }
-                print("was updated")
-                fetchDictionaries()
-                tableView.reloadData()
             }
         }
     }
@@ -198,7 +218,7 @@ extension MenuVC: CustomCellDataDelegate{
     func panningBegan(for cell: UITableViewCell){
         let index = tableView.indexPath(for: cell)
         guard index == menuAccessedForCell || menuAccessedForCell == nil else {
-            if let cell = tableView.cellForRow(at: menuAccessedForCell!) as? TableViewCell{
+            if let cell = tableView.cellForRow(at: menuAccessedForCell!) as? MenuDictionaryCell{
                 cell.activate(false)
                 menuAccessedForCell = index
             }
@@ -220,7 +240,7 @@ extension MenuVC: CustomCellDataDelegate{
         isPostDeletionUpdate = true
         
         let removedDict = dictionaries.remove(at: section)
-        CoreDataHelper.shared.deleteDictionary(dictionary: removedDict)
+        CoreDataHelper.shared.delete(dictionary: removedDict)
 
         tableView.beginUpdates()
         tableView.deleteSections([section], with: .left)
@@ -231,8 +251,8 @@ extension MenuVC: CustomCellDataDelegate{
     
     func editButtonDidTap(for cell: UITableViewCell){
         guard let section = menuAccessedForCell?.section else { return }
-        let dictionaryToEdit = dictionaries[section]
-        let pairs = dictionaryToEdit.words as! Set<WordsEntity>
+        let dictionary = dictionaries[section]
+        let pairs = CoreDataHelper.shared.fetchWords(dictionary: dictionary)
         
         var textToEdit = ""
         var textByLines = [String]()
@@ -241,34 +261,43 @@ extension MenuVC: CustomCellDataDelegate{
             textByLines.append(line)
             textToEdit += line + "\n\n"
         }
+        
         let vc = EditVC()
-        vc.currentDictionary = dictionaryToEdit
+        vc.currentDictionary = dictionary
         vc.currentDictionaryPairs = Array(pairs)
         vc.oldText = textByLines
-        vc.textField.text = dictionaryToEdit.language
+        vc.textField.text = dictionary.language
         vc.textView.text = textToEdit
             
         self.navigationController?.pushViewController(vc, animated: true)
         menuAccessedForCell = nil
     }
-    
 }
 //MARK: - UITableViewDataSource
 extension MenuVC: UITableViewDataSource{
-    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: TableViewCell().identifier, for: indexPath) as? TableViewCell
-        let addCell = tableView.dequeueReusableCell(withIdentifier: TableViewAddCell().identifier, for: indexPath) as? TableViewAddCell
+        guard indexPath.section != tableView.numberOfSections - 1 else {
+            let cell = tableView.dequeueReusableCell(withIdentifier: Cells.add.rawValue,
+                                                     for: indexPath) as! MenuAddDictionaryCell
+            return cell
+        }
         
-        if indexPath.section == tableView.numberOfSections - 1 {
-            return addCell!
-        } else {
-            cell?.languageResultLabel.text = dictionaries[indexPath.section].language
-            cell?.cardsResultLabel.text = dictionaries[indexPath.section].numberOfCards
-            cell?.indexPath = indexPath
-            cell?.delegate = self
-            print(dictionaries[indexPath.section].order)
+        let dictionary = dictionaries[indexPath.section]
+        if shouldDispayStatistic {
+            let cell = tableView.dequeueReusableCell(withIdentifier: Cells.stat.rawValue,
+                                                     for: indexPath) as? MenuStatisticCell
+            let logs = CoreDataHelper.shared.fetchAccessLogsFor(dictionary: dictionary)
+//            cell?.dictionary = dictionary
+            cell?.diagramView.data = configureDataForDiagram(with: logs)
+            cell?.nameResultLabel.text = dictionary.language
+            cell?.creationResultLabel.text = logs.keys.min()?.formatted(date: .abbreviated, time: .omitted)
+            cell?.statisticResultLabel.text = String(Int(logs.values.reduce(0, +)))
             return cell!
+        } else {
+            let cell = tableView.dequeueReusableCell(withIdentifier: Cells.dict.rawValue,
+                                                     for: indexPath) as! MenuDictionaryCell
+            cell.configureCellWith(dictionary, delegate: self)
+            return cell
         }
     }
 }

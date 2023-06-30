@@ -212,6 +212,7 @@ class UserSettings{
             NotificationCenter.default.post(name: .appSearchBarPositionDidChange, object: nil)
         } else if let separators = newValue as? AppDictionarySeparators{
             settings.separators = separators
+            NotificationCenter.default.post(name: .appSeparatorDidChange, object: nil)
         } else if let duplicates = newValue as? AppDuplicates{
             settings.duplicates = duplicates
         }

@@ -26,9 +26,6 @@ class AddWordsVC: UIViewController {
         textView.textContainerInset = .init(top: 5, left: 5, bottom: 0, right: 5)
         textView.allowsEditingTextAttributes = true
         
-        textView.textColor = .lightGray
-        textView.font = UIFont(name: "TimesNewRomanPSMT", size: 15) ?? UIFont()
-        textView.text = "Word - Meaning"
         return textView
     }()
     let saveButton : UIButton = {
@@ -80,6 +77,8 @@ class AddWordsVC: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(sender:)), name: UIResponder.keyboardWillHideNotification, object: nil)
         //Language change
         NotificationCenter.default.addObserver(self, selector: #selector(languageDidChange(sender:)), name: .appLanguageDidChange, object: nil)
+        //Separator change
+        NotificationCenter.default.addObserver(self, selector: #selector(separatorDidChagne(sender:)), name: .appSeparatorDidChange, object: nil)
     }
 
     //MARK: - Stroke SetUp
@@ -112,6 +111,13 @@ class AddWordsVC: UIViewController {
             textView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.91),
             textView.heightAnchor.constraint(equalTo: textView.widthAnchor, multiplier: 0.79)
         ])
+        configureTextViewPlaceholder(textOnly: false)
+    }
+    func configureTextViewPlaceholder(textOnly: Bool){
+        textView.text = LanguageChangeManager.shared.localizedString(forKey: "viewPlaceholderWord") + " \(UserSettings.shared.settings.separators.selectedValue) " + LanguageChangeManager.shared.localizedString(forKey: "viewPlaceholderMeaning")
+        guard !textOnly else { return }
+        textView.textColor = .lightGray
+        textView.font = UIFont(name: "TimesNewRomanPSMT", size: 15) ?? UIFont()
     }
 //MARK: - Save Button SetUp
     func configureSaveButton(){
@@ -134,22 +140,31 @@ class AddWordsVC: UIViewController {
         navigationItem.rightBarButtonItem = nil
         textView.resignFirstResponder()
     }
+    //Addding input text to the dictionary.
     @objc func saveButtonDidTap(sender: UIButton){
-        let alert = UIAlertController(title: "Enter the text", message: "Please, enter more than 1 pair of words.", preferredStyle: .alert)
+        let alert = UIAlertController(
+            title: "textAlert".localized,
+            message: "textInfo".localized ,
+            preferredStyle: .alert)
         let action = UIAlertAction(title: "Understand", style: .cancel)
+        
         alert.addAction(action)
         action.setValue(UIColor.label, forKey: "titleTextColor")
         
-        guard textView.hasText && textView.textColor != .lightGray else {return self.present(alert, animated: true)}
+        guard textView.hasText && textView.textColor != .lightGray else {
+            return self.present(alert, animated: true)
+        }
         
+        let numberOfCards = editableDict.words?.count
         let lines = textView.text.split(separator: "\n", omittingEmptySubsequences: true).map( {String($0)} )
         for (index, line) in lines.enumerated() {
-            wordsArray.append(CoreDataHelper.shared.pairDivider(text: line,
-                                                                index: Int(editableDict.numberOfCards!)! + index))
+            wordsArray.append(CoreDataHelper.shared.pairDivider(
+                text: line, index: numberOfCards ?? 0 + index))
         }
-        CoreDataHelper.shared.addWordsToDictionary(dictionary: editableDict, words: wordsArray)
+        CoreDataHelper.shared.addWordsTo(dictionary: editableDict, words: wordsArray)
         self.navigationController?.popViewController(animated: true)
     }
+    //For changing save button position
     @objc func keyboardWillShow(sender: Notification){
         let animation = CABasicAnimation(keyPath: "opacity")
         animation.fromValue = 1.0
@@ -169,16 +184,25 @@ class AddWordsVC: UIViewController {
         bottomStroke.add(animation, forKey: "strokeOpacity")
     }
     @objc func languageDidChange(sender: Any){
-        textView.text = LanguageChangeManager.shared.localizedString(forKey: "viewPlaceholder")
+        if textView.textColor == .lightGray {
+            configureTextViewPlaceholder(textOnly: true)
+        }
+    
         self.navigationItem.title = "addWordTitle".localized
         saveButton.setAttributedTitle(NSAttributedString().fontWithString(
             string: "save".localized,
             bold: true,
             size: 18), for: .normal)
     }
+    @objc func separatorDidChagne(sender: Any){
+        if textView.textColor == .lightGray {
+            configureTextViewPlaceholder(textOnly: true)
+        }
+    }
 }
 
 extension AddWordsVC : UITextViewDelegate{
+    //Vanishing placeholder imitation
     func textViewDidBeginEditing(_ textView: UITextView) {
         if textView.textColor == .lightGray {
             textView.text = nil
@@ -187,6 +211,11 @@ extension AddWordsVC : UITextViewDelegate{
             textView.typingAttributes = [NSAttributedString.Key.font : UIFont(name: "Times New Roman", size: 17) ?? UIFont(), NSAttributedString.Key.backgroundColor : UIColor.clear, NSAttributedString.Key.foregroundColor : UIColor.label]
         }
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(rightBarButDidTap(sender:)))
+    }
+    func textViewDidEndEditing(_ textView: UITextView) {
+        if textView.text.isEmpty {
+            configureTextViewPlaceholder(textOnly: false)
+        }
     }
 }
 extension AddWordsVC : UITextInputDelegate{

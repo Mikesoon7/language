@@ -80,6 +80,22 @@ class GameDetailsVC: UIViewController {
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
+    let editButton: UIButton = {
+        let button = UIButton()
+        button.configuration = .plain()
+        button.configuration?.baseForegroundColor = .systemBackground
+        button.configuration?.title = "Edit"
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+    let deleteButton: UIButton = {
+        let button = UIButton()
+        button.configuration = .plain()
+        button.configuration?.baseForegroundColor = .systemBackground
+        button.configuration?.title = "Delete"
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
     
     var initialAnchorConstant: CGFloat!
     var secondAnchorConstant: CGFloat!
@@ -93,6 +109,9 @@ class GameDetailsVC: UIViewController {
         super.viewDidLoad()
         controllerCustomization()
         textViewCustomization()
+        containerViewCustomization()
+        panGestureCustomization()
+        tapGestureRecognizer()
     }
     override func viewDidAppear(_ animated: Bool) {
         presentViewController()
@@ -118,11 +137,20 @@ class GameDetailsVC: UIViewController {
         initialAnchorConstant = view.bounds.height * 0.5
         secondAnchorConstant = initialAnchorConstant * 0.5
         finalAnchorConstant = 50
-        containerViewCustomization()
-        panGestureCustomization()
-        tapGestureRecognizer()
+            }
+    func configureActionButtons(){
+        containerView.addSubviews(deleteButton, editButton)
+        
+        NSLayoutConstraint.activate([
+            deleteButton.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor),
+            deleteButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 15),
+            deleteButton.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.1),
+            
+            editButton.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor),
+            editButton.trailingAnchor.constraint(equalTo: view.leadingAnchor, constant: -15),
+            editButton.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.1),
+        ])
     }
-
     func containerViewCustomization(){
         view.addSubviews(dimView, containerView)
         
@@ -262,6 +290,7 @@ class GameDetailsVC: UIViewController {
     }
     @objc func handlePanGesture(sender: UIPanGestureRecognizer){
         let translation = sender.translation(in: view).y
+        let velocity = sender.velocity(in: view).y
         let newConstant = currentAnchorConstant + translation
         
         switch sender.state{
@@ -276,7 +305,9 @@ class GameDetailsVC: UIViewController {
                 view.layoutIfNeeded()
             } else if newConstant > initialAnchorConstant * 0.5{
                 animateViewDismiss()
-            } else {
+            } else if velocity > 500 {
+                animateViewDismiss()
+            }else {
                 animateTransition(newValue: finalAnchorConstant)
             }
         default:

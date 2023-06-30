@@ -7,6 +7,7 @@
 
 //TODO: Add convertion for inserted in textView or textField text
 //TODO: Add limit for name.
+//TODO: Add input pointer tracking
 
 import UIKit
 import Differ
@@ -114,25 +115,29 @@ class EditVC: UIViewController {
             //TODO: Add alert if text or name was vanished.
             return
         }
-
+        
+        let actualNumber = currentDictionaryPairs.count
         let lines = textView.text.split(separator: "\n", omittingEmptySubsequences: true)
         newText = lines.map({ String($0) })
         let patch = patch(from: oldText, to: newText)
         for i in patch{
             switch i {
             case .deletion(index: let index):
-                print(i)
                 currentDictionaryPairs.remove(at: index)
             case .insertion(index: let index, element: let text):
-                print(i)
                 currentDictionaryPairs.insert(CoreDataHelper.shared.pairDivider(text: text, index: index), at: index)
             }
         }
-        CoreDataHelper.shared.updateDictionary(dictionary: currentDictionary, words: currentDictionaryPairs, name: self.textField.text)
+        if currentDictionaryPairs.count != actualNumber {
+            for (index, pair) in currentDictionaryPairs.enumerated(){
+                pair.order = Int64(index)
+            }
+        }
+        CoreDataHelper.shared.update(dictionary: currentDictionary, words: currentDictionaryPairs, name: self.textField.text)
         self.navigationController?.popViewController(animated: true)
     }
     //Done button
-    @objc func rightBarButTap(sender: Any){
+    @objc func rightBarButDidTap(sender: Any){
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .save,
                                                             target: self,
                                                             action: #selector(saveButTap(sender:)))

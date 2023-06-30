@@ -2,9 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:/Users/starlordsmac/Programming hard. /Language App/CoreData/DictionariesEntity+CoreDataProperties.swift">
-   </FileRef>
-   <FileRef
       location = "group:Language.xcodeproj">
    </FileRef>
    <FileRef
