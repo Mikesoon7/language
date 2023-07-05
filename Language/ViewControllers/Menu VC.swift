@@ -15,7 +15,7 @@ private enum Cells: String{
     case add = "add"
 }
 class MenuVC: UIViewController {
-    var controller : NSFetchedResultsController!
+    
     var dictionaries: [DictionariesEntity] = []
     
     var menuAccessedForCell: IndexPath?
@@ -24,6 +24,17 @@ class MenuVC: UIViewController {
     //For ignoring updates after deleting.
     var isPostDeletionUpdate: Bool = false
     
+    let fetchController : NSFetchedResultsController<DictionariesEntity> = {
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        let context = appDelegate.persistentContainer.viewContext
+
+        let request = NSFetchRequest<DictionariesEntity>(entityName: "DictionariesEntity")
+        let sortDescriptor = NSSortDescriptor(key: "order", ascending: true)
+        request.sortDescriptors = [sortDescriptor]
+        let controller = NSFetchedResultsController<DictionariesEntity>(fetchRequest: request, managedObjectContext: context, sectionNameKeyPath: "language", cacheName: nil)
+        return controller
+    }()
+
     var tableView: UITableView = {
         var tableView = UITableView(frame: CGRect(x: 0, y: 0, width: 0, height: 0), style: .insetGrouped)
         tableView.register(MenuDictionaryCell.self, forCellReuseIdentifier: Cells.dict.rawValue)
@@ -80,11 +91,18 @@ class MenuVC: UIViewController {
         view.backgroundColor = .systemBackground
         
         NotificationCenter.default.addObserver(self, selector: #selector(languageDidChange(sender:)), name: .appLanguageDidChange, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(appDataDidChange(sender: )), name: .appDataDidChange, object: nil)
     }
+    
     // MARK: - Data fetching
-    func fetchDictionaries() {
-        dictionaries = CoreDataHelper.shared.fetchDictionaries()
+    func fetchDictionaries(){
+        fetchController.delegate = self
+        do{
+            try fetchController.performFetch()
+        } catch {
+            let alert = UIAlertController().alertWithAction(alertTitle: "Error", alertMessage: "It's seems, that we have some problems trying to load the the data. Please, restart the app or contact support team.")
+            self.present(alert, animated: true)
+            print("Failed to fetch dictionaries for MenuVc bacause of \(error)")
+        }
     }
     
     //MARK: - Stroke SetUp
@@ -170,29 +188,6 @@ class MenuVC: UIViewController {
             }
         }
     }
-    
-    @objc func appDataDidChange(sender: Notification){
-        if let type = sender.userInfo?["changeType"] as? NSManagedObject.ChangeType {
-            switch type {
-            case .delete:
-                isPostDeletionUpdate = true
-            case .update:
-                print("Updated in menuVc" )
-                if !isPostDeletionUpdate {
-                    fetchDictionaries()
-                    tableView.reloadData()
-                } else {
-                    isPostDeletionUpdate = false
-                }
-            case .insert:
-                print("inserted in menuVC")
-                fetchDictionaries()
-                tableView.reloadData()
-
-            }
-            
-        }
-    }
 }
 
 //MARK: - UITableViewDelegate
@@ -206,7 +201,7 @@ extension MenuVC: UITableViewDelegate{
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return dictionaries.count + 1
+        return (fetchController.sections?.count ?? 0) + 1
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -214,7 +209,7 @@ extension MenuVC: UITableViewDelegate{
             self.navigationController?.pushViewController(AddDictionaryVC(), animated: true)
         } else {
             let vc = DetailsVC()
-            vc.dictionary = dictionaries[indexPath.section]
+            vc.dictionary = fetchController.object(at: indexPath)
             self.navigationController?.pushViewController(vc, animated: true)
         }
     }
@@ -238,32 +233,22 @@ extension MenuVC: CustomCellDataDelegate{
             return
         }
     }
-    
-    func deleteButtonDidTap(for cell: UITableViewCell){
+    func deleteButtonDidTap(for cell: UITableViewCell) {
         guard let index = tableView.indexPath(for: cell) else { return }
-        let section = index.section
-        
-        isPostDeletionUpdate = true
-        
-        let removedDict = dictionaries.remove(at: section)
-        CoreDataHelper.shared.delete(dictionary: removedDict)
-
-        tableView.beginUpdates()
-        tableView.deleteSections([section], with: .left)
-        tableView.endUpdates()
-
-        menuAccessedForCell = nil
+        let dictionaryToDelete = fetchController.object(at: index)
+        CoreDataHelper.shared.delete(dictionary: dictionaryToDelete)
     }
+
     
     func editButtonDidTap(for cell: UITableViewCell){
-        guard let section = menuAccessedForCell?.section else { return }
-        let dictionary = dictionaries[section]
+        guard menuAccessedForCell != nil else { return }
+        let dictionary = fetchController.object(at: menuAccessedForCell!)
         let pairs = CoreDataHelper.shared.fetchWords(dictionary: dictionary)
         
         var textToEdit = ""
         var textByLines = [String]()
         for pair in pairs {
-            let line = "\(pair.word) \(UserSettings.shared.settings.separators.selectedValue) \(pair.meaning ?? "")"
+            let line = "\(pair.word) \(UserSettings.shared.settings.separators.selectedValue) \(pair.meaning)"
             textByLines.append(line)
             textToEdit += line + "\n\n"
         }
@@ -288,7 +273,7 @@ extension MenuVC: UITableViewDataSource{
             return cell
         }
         
-        let dictionary = dictionaries[indexPath.section]
+        let dictionary = fetchController.object(at: indexPath)
         if shouldDispayStatistic {
             let cell = tableView.dequeueReusableCell(withIdentifier: Cells.stat.rawValue,
                                                      for: indexPath) as? MenuStatisticCell
@@ -307,6 +292,44 @@ extension MenuVC: UITableViewDataSource{
                                                      for: indexPath) as! MenuDictionaryCell
             cell.configureCellWith(dictionary, delegate: self)
             return cell
+        }
+    }
+
+}
+extension MenuVC: NSFetchedResultsControllerDelegate {
+    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange sectionInfo: NSFetchedResultsSectionInfo, atSectionIndex sectionIndex: Int, for type: NSFetchedResultsChangeType) {
+        let indexSet = IndexSet(integer: sectionIndex)
+        switch type {
+        case .insert:
+            print("sections attemts to insert")
+            tableView.insertSections(indexSet, with: .none)
+        case .delete:
+            print("sections attemts to delete")
+        case .update:
+            print("sections attemts to update")
+        case .move:
+            print("sections attemts to move")
+        @unknown default:
+            fatalError("Unhandled NSFetchedResultsChangeType case.")
+        }
+    }
+    
+    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
+        guard let indexPath = indexPath else { return }
+        let indexSet = IndexSet(integer: indexPath.section)
+        switch type {
+        case .insert:
+            print("row attemts to insert")
+        case .delete:
+            tableView.deleteSections(indexSet, with: .left)
+            print("row attemts to delete")
+        case .update:
+            print("row attemts to update")
+            tableView.reloadRows(at: [indexPath], with: .fade)
+        case .move:
+            print("row attemts to move")
+        @unknown default:
+            fatalError("Unhandled NSFetchedResultsChangeType case.")
         }
     }
 }

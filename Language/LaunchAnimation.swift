@@ -247,7 +247,7 @@ class LoadingAnimation: UIView {
 
         for i in 0..<3 {
             let dot = UIView(frame: CGRect(x: (dotDiameter + dotSpacing) * CGFloat(i), y: 0, width: dotDiameter, height: dotDiameter))
-            dot.backgroundColor = .black
+            dot.backgroundColor = .label
             dot.layer.cornerRadius = dotRadius
             addSubview(dot)
             dots.append(dot)

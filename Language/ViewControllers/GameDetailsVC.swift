@@ -374,7 +374,7 @@ class GameDetailsVC: UIViewController {
     }
     
     @objc func editButtonDidTap(sender: UIButton){
-        textView.text = (wordEntity.word ?? "") + " \(UserSettings.shared.settings.separators.selectedValue)" +  " \(wordEntity.meaning ?? "")"
+        textView.text = "\(wordEntity.word) \(UserSettings.shared.settings.separators.selectedValue) \(wordEntity.meaning)"
         transitionToEditing(activate: true)
     }
     
@@ -384,10 +384,8 @@ class GameDetailsVC: UIViewController {
             alert.message?.append("\n This is the last card, so you dictionary will be deleted as well.")
         }
         let confirm = UIAlertAction(title: "Yes", style: .destructive) { [weak self] _ in
-//            self?.wordEntity = nil
             guard let self = self else { return }
             CoreDataHelper.shared.delete(words: self.wordEntity!)
-//            print(self.wordEntity)
             print(self.words.count)
             self.wordEntity = nil
             print(self.words.count)
@@ -402,28 +400,20 @@ class GameDetailsVC: UIViewController {
         present(alert, animated: true)
     }
     @objc func doneButtonDidTap(sender: UIButton){
-        print(wordEntity)
         let id = wordEntity.identifier
         let order = wordEntity.order
-        self.wordEntity = CoreDataHelper.shared.pairDividerFor(dictionary: dictionary, text: self.textView.text, index: Int(order), id: id ?? UUID())
-        print(wordEntity)
+        self.wordEntity = CoreDataHelper.shared.pairDividerFor(dictionary: dictionary,
+                                                               text: self.textView.text,
+                                                               index: Int(order),
+                                                               id: id ?? UUID())
         words[pairIndex] = wordEntity
         textView.text = wordEntity.word + "\n" + "\n" + wordEntity.meaning
-//        CoreDataHelper.shared.update(dictionary: dictionary, words: words, name: nil)
+        CoreDataHelper.shared.update(dictionary: dictionary, words: words, name: nil)
         delegate?.updateCardCell(with: wordEntity)
         transitionToEditing(activate: false)
     }
     @objc func informationButtonDidTap(sender: UIButton){
         let vc = InformationSheetController()
-//        vc.modalPresentationStyle = .pageSheet
-//        vc.view.backgroundColor = .systemBackground
-//        let sheet = vc.sheetPresentationController
-//        let smallDetentID = UISheetPresentationController.Detent.Identifier("small")
-//        let smallDetent = UISheetPresentationController.Detent.custom(identifier: smallDetentID) { [weak self] context in
-//            guard self == self else { return 150}
-//            return self!.view.bounds.height * 0.4
-//        }
-//        sheet?.detents = [smallDetent]
         present(vc, animated: true)
         
     }
@@ -440,8 +430,6 @@ class GameDetailsVC: UIViewController {
 extension GameDetailsVC: UITextViewDelegate{
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if currentAnchorConstant == secondAnchorConstant {
-//            transitionToThirdStage()
-//            animationView.startAnimating()
             animateTransition(newValue: thirdAnchorConstant)
         }
     }
@@ -474,10 +462,6 @@ class InformationSheetController: UIViewController{
                                 ? .secondarySystemBackground
                                 : .systemBackground)
         self.modalPresentationStyle = .pageSheet
-//        sheetPresentationController?.detents = [.custom(resolver: { context in
-//            return 400
-//        })]
-
     }
     func configureInformationLabel(){
         view.addSubview(informationLabel)

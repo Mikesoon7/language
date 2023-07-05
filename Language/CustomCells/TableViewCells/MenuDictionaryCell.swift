@@ -116,7 +116,6 @@ class MenuDictionaryCell: UITableViewCell{
 //MARK: - Prepare Func
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        print("1")
         configureHolderView()
         configureMainView()
         configureStatisticView()

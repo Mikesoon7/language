@@ -59,7 +59,7 @@ class CollectionViewLastCell: UICollectionViewCell {
         let label = UILabel()
         label.textAlignment = .center
         label.font = UIFont(name: "Georgia-BoldItalic", size: 40)
-        label.textColor = .label
+        label.textColor = .black
         label.text = "???"
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -104,8 +104,8 @@ class CollectionViewLastCell: UICollectionViewCell {
 
             scoreLabel.centerXAnchor.constraint(equalTo: cardView.centerXAnchor),
             scoreLabel.centerYAnchor.constraint(equalTo: cardView.centerYAnchor),
-            scoreLabel.topAnchor.constraint(equalTo: cardView.topAnchor, constant: 30),
-            scoreLabel.bottomAnchor.constraint(equalTo: cardView.topAnchor, constant: 80),
+//            scoreLabel.topAnchor.constraint(equalTo: cardView.topAnchor, constant: 30),
+//            scoreLabel.bottomAnchor.constraint(equalTo: cardView.topAnchor, constant: 80),
         
             finishButton.bottomAnchor.constraint(equalTo: cardView.bottomAnchor, constant: -30 ),
             finishButton.centerXAnchor.constraint(equalTo: cardView.centerXAnchor),

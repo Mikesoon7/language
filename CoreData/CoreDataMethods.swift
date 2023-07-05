@@ -52,6 +52,7 @@ class CoreDataHelper {
         do {
             try context.save()
             numberOfDictionaries += 1
+            print("Debug purpose: CreateDictionary method worked with dictionary number equal \(numberOfDictionaries)")
         } catch {
             print("Failed: \(error)")
         }
@@ -82,6 +83,7 @@ class CoreDataHelper {
             }
             
             try context.save()
+            print("Debug purpose: CreateLogs method worked")
         } catch {
             print("Failed to log dictionary access: \(error)")
         }
@@ -97,6 +99,7 @@ class CoreDataHelper {
 
         do {
             let dictionaries = try context.fetch(fetchRequest)
+            print("Debug purpose: FetchDictionaries method worked with dictionary number equal \(dictionaries.count)")
             return dictionaries
         } catch {
             print("Failed to fetch dictionaries: \(error)")
@@ -113,6 +116,7 @@ class CoreDataHelper {
 
         do{
             let logs = try context.fetch(fetchRequest)
+            print("Debug purpose: FetchAccessLogs method worked")
             return logs
         } catch {
             print("Failed to fetch logs because of \(error)")
@@ -120,15 +124,6 @@ class CoreDataHelper {
         }
     
     }
-//    func fetchWordsForDispaying(dictionary: DictionariesEntity, number: Int, random: Bool) -> [WordsEntity]{
-//        createLogs(for: dictionary)
-//        var words = fetchWords(dictionary: dictionary)
-//        if random {
-//            words.shuffle()
-//        }
-//        return Array(words.prefix(upTo: number))
-//    }
-    
     //Fetches ordered words
     func fetchWords(dictionary: DictionariesEntity) -> [WordsEntity] {
         let fetchRequest = NSFetchRequest<WordsEntity>(entityName: "WordsEntity")
@@ -138,6 +133,7 @@ class CoreDataHelper {
         fetchRequest.sortDescriptors = [sortDescriptor]
         do {
            let words = try context.fetch(fetchRequest)
+            print("Debug purpose: FetchWords method worked for dictionary: \(dictionary.language) with number: \(words.count)")
             return words
         } catch {
             print("Unable to fetch dictionaries because of \(error)")
@@ -149,12 +145,12 @@ class CoreDataHelper {
     func textInitialDivider(for dictionary : DictionariesEntity, text: String) -> [WordsEntity] {
         var results = [WordsEntity]()
         let lines = text.split(separator: "\n", omittingEmptySubsequences: true)
-//        let context = dictionary.managedObjectContext
     
         for (index, line) in lines.enumerated() {
             let newWord = pairDividerFor(dictionary: dictionary, text: String(line), index: index)
             results.append(newWord)
         }
+        print("Debug purpose: TextInitialDivider method worked with number of returned words: \(results.count)")
         return results
     }
     //Divide one line
@@ -175,24 +171,33 @@ class CoreDataHelper {
             newWord.word = String(parts[0]).trimmingCharacters(in: CharacterSet(charactersIn: "[ ] ◦ - ")).capitalized
             newWord.meaning = ""
         }
-        print(newWord)
+        print("Debug purpose: PairDivider method worked with wordsEntity name: \(newWord.word)")
+
         return newWord
     }
     
     
+    func replace(oldWord: WordsEntity, with word: WordsEntity, in dictionary: DictionariesEntity){
+        let words = fetchWords(dictionary: dictionary)
+        let index = words.firstIndex(of: oldWord)
+//        words[index] = word
+        do {
+            
+        } catch {
+            
+        }
+    }
     //Assign new array
     func update(dictionary: DictionariesEntity, words: [WordsEntity], name: String?) {
-
         if name != nil {
             dictionary.language = name!
         }
         dictionary.words = Set(words) as? NSSet
         dictionary.numberOfCards = Int64(words.count)
         
-        print("dictionaries changed")
         do {
-            print("trying to save")
             try context?.save()
+            print("Debug purpose: Update(for: dictionary) method worked with dictionary name: \(dictionary.language)")
         } catch {
             print("Failed to update dictionary: \(error)")
         }
@@ -200,14 +205,12 @@ class CoreDataHelper {
     
     //MARK: - Add words array
     func addWordsTo(dictionary: DictionariesEntity, words: [WordsEntity]){
-//        let context = dictionary.managedObjectContext
-        
-        
         dictionary.addToWords(NSSet(array: words))
         dictionary.numberOfCards = Int64(dictionary.words?.count ?? 0)
         
         do {
             try context?.save()
+            print("Debug purpose: AddWordsTo(dictionary) method worked with dictionary name: \(dictionary.language)")
         } catch {
             print("AddWordsToDictionary throws \(error) ")
         }
@@ -215,7 +218,6 @@ class CoreDataHelper {
     }
 //    MARK: - Update order property for dictionaries
     func updateDictionaryOrder() {
-//        let context = getContext()
         let fetchRequest = NSFetchRequest<DictionariesEntity>(entityName: "DictionariesEntity")
         let sortDescriptor = NSSortDescriptor(key: "order", ascending: true)
         fetchRequest.sortDescriptors = [sortDescriptor]
@@ -226,14 +228,13 @@ class CoreDataHelper {
                 dictionary.order = Int64(index)
             }
             numberOfDictionaries = Int64(dictionaries.count)
-            print("context.save in update func")
             try context.save()
+            print("Debug purpose: UpdateDictionaryOrder method worked with number of dictioanries: \(numberOfDictionaries)")
         } catch {
             print("Failed to update dictionary order: \(error)")
         }
     }
     func updateWordsOrder(for dictionary: DictionariesEntity){
-//        let context = getContext()
         let fetchRequest = NSFetchRequest<WordsEntity>(entityName: "WordsEntity")
         let predicate = NSPredicate(format: "dictionary == %@", dictionary)
         fetchRequest.predicate = predicate
@@ -245,21 +246,18 @@ class CoreDataHelper {
             for (index, word) in words.enumerated() {
                 word.order = Int64(index)
             }
-            print("context.save in updateWordsOrder func")
             try context.save()
+            print("Debug purpose: UpdateWordsOrder method worked for dictionary: \(dictionary.language) with number of words: \(words.count)")
         } catch {
             print("Failed to update words order: \(error)")
         }
     }
     //MARK: - Delete dictionary with order update
     func delete(dictionary: DictionariesEntity) {
-//        let context = getContext()
-
         context.delete(dictionary)
-        print("context.delete")
         do {
             try context.save()
-            print("context.save in delete method")
+            print("Debug purpose: DeleteDictionary method worked with dictionary name: \(dictionary.language)")
             updateDictionaryOrder()
         } catch {
             print("Failed to delete dictionary: \(error)")
@@ -267,15 +265,13 @@ class CoreDataHelper {
     }
     func delete(words: WordsEntity) {
         let dictionary = words.dictionary
-//        let context = getContext()
         
         context.delete(words)
         do {
             try context.save()
-            print("context.save in delete method")
+            print("Debug purpose: DelteWords method worked with word : \(words.word)")
             guard dictionary != nil else {
                 context.rollback()
-                print("Didn't get dictionary")
                 return
             }
             updateWordsOrder(for: dictionary!)

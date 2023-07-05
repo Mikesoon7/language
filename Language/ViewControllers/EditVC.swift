@@ -53,7 +53,6 @@ class EditVC: UIViewController {
         configureController()
         configureTextField()
         configureTextView()
-
         configureNavBar()
     }
     override func viewDidLayoutSubviews() {

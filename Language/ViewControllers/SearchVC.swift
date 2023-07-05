@@ -236,6 +236,8 @@ class SearchVC: UIViewController {
     }
     @objc func appDataDidChange(sender: Notification){
         loadData()
+        let type = sender.userInfo?["changeType"] as? NSManagedObject.ChangeType
+        print("Debug purpose: SearchVC appDataDidChange worked with type: \(type)")
         if searchBarOnTop && searchControllerForTop.searchBar.text != nil{
             searchControllerForTop.searchBar.text = nil
             searchControllerForTop.resignFirstResponder()
