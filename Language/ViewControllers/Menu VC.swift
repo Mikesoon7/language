@@ -15,7 +15,7 @@ private enum Cells: String{
     case add = "add"
 }
 class MenuVC: UIViewController {
-    
+    var controller : NSFetchedResultsController!
     var dictionaries: [DictionariesEntity] = []
     
     var menuAccessedForCell: IndexPath?
@@ -176,14 +176,21 @@ class MenuVC: UIViewController {
             switch type {
             case .delete:
                 isPostDeletionUpdate = true
-            case .insert, .update:
+            case .update:
+                print("Updated in menuVc" )
                 if !isPostDeletionUpdate {
                     fetchDictionaries()
                     tableView.reloadData()
                 } else {
                     isPostDeletionUpdate = false
                 }
+            case .insert:
+                print("inserted in menuVC")
+                fetchDictionaries()
+                tableView.reloadData()
+
             }
+            
         }
     }
 }
@@ -201,7 +208,6 @@ extension MenuVC: UITableViewDelegate{
     func numberOfSections(in tableView: UITableView) -> Int {
         return dictionaries.count + 1
     }
-    
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.section == tableView.numberOfSections - 1{
@@ -257,7 +263,7 @@ extension MenuVC: CustomCellDataDelegate{
         var textToEdit = ""
         var textByLines = [String]()
         for pair in pairs {
-            let line = "\(pair.word ?? "") \(UserSettings.shared.settings.separators.selectedValue) \(pair.meaning ?? "")"
+            let line = "\(pair.word) \(UserSettings.shared.settings.separators.selectedValue) \(pair.meaning ?? "")"
             textByLines.append(line)
             textToEdit += line + "\n\n"
         }
@@ -287,11 +293,14 @@ extension MenuVC: UITableViewDataSource{
             let cell = tableView.dequeueReusableCell(withIdentifier: Cells.stat.rawValue,
                                                      for: indexPath) as? MenuStatisticCell
             let logs = CoreDataHelper.shared.fetchAccessLogsFor(dictionary: dictionary)
-//            cell?.dictionary = dictionary
-            cell?.diagramView.data = configureDataForDiagram(with: logs)
+            var convertedLogs = [Date: Double]()
+            logs.map { log in
+                convertedLogs[log.accessDate ?? Date()] = Double(log.accessCount)
+            }
+            cell?.diagramView.data = configureDataForDiagram(with: convertedLogs)
             cell?.nameResultLabel.text = dictionary.language
-            cell?.creationResultLabel.text = logs.keys.min()?.formatted(date: .abbreviated, time: .omitted)
-            cell?.statisticResultLabel.text = String(Int(logs.values.reduce(0, +)))
+            cell?.creationResultLabel.text = convertedLogs.keys.min()?.formatted(date: .abbreviated, time: .omitted)
+            cell?.statisticResultLabel.text = String(Int(convertedLogs.values.reduce(0, +)))
             return cell!
         } else {
             let cell = tableView.dequeueReusableCell(withIdentifier: Cells.dict.rawValue,

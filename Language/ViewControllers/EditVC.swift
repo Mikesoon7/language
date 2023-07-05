@@ -125,7 +125,7 @@ class EditVC: UIViewController {
             case .deletion(index: let index):
                 currentDictionaryPairs.remove(at: index)
             case .insertion(index: let index, element: let text):
-                currentDictionaryPairs.insert(CoreDataHelper.shared.pairDivider(text: text, index: index), at: index)
+                currentDictionaryPairs.insert(CoreDataHelper.shared.pairDividerFor(dictionary: currentDictionary, text: text, index: index), at: index)
             }
         }
         if currentDictionaryPairs.count != actualNumber {
@@ -162,10 +162,6 @@ extension EditVC: UITextViewDelegate{
         if self.navigationController?.navigationItem.rightBarButtonItem == nil{
             navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(rightBarButDidTap(sender:)))
         }
-    }
-    func textViewDidChange(_ textView: UITextView) {
-        let range = NSMakeRange(textView.text.count - 1, 0)
-        textView.scrollRangeToVisible(range)
     }
     
     

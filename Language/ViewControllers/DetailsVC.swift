@@ -258,9 +258,15 @@ class DetailsVC: UIViewController {
             self.isRandom = true
         }
         
-        vc.words = CoreDataHelper.shared.fetchWordsForDispaying(dictionary: dictionary,
-                                                                number: selectedNumberOfCards,
-                                                                random: isRandom)
+        vc.dictionary = dictionary
+        var words = CoreDataHelper.shared.fetchWords(dictionary: dictionary)
+        
+        vc.words = {
+            if self.isRandom {
+               words.shuffle()
+            }
+            return Array(words.prefix(upTo: selectedNumberOfCards))
+        }()
 
         vc.initialNumber = self.dictionary.words?.count
         vc.passedNumber = self.selectedNumberOfCards

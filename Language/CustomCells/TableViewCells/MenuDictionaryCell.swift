@@ -145,7 +145,7 @@ class MenuDictionaryCell: UITableViewCell{
     }
     func configureCellWith(_ dictionary: DictionariesEntity, delegate: CustomCellDataDelegate){
         self.languageResultLabel.text = dictionary.language
-        self.cardsResultLabel.text = dictionary.numberOfCards
+        self.cardsResultLabel.text = String(dictionary.numberOfCards)
         self.delegate = delegate
     }
     func configureHolderView(){

@@ -299,8 +299,8 @@ extension SearchVC: UISearchResultsUpdating{
         }()
         if !text.isEmpty {
             filteredData = allData.filter { words in
-                words.word!.lowercased().contains(text.lowercased()) ||
-                words.meaning!.lowercased().contains(text.lowercased())
+                words.word.lowercased().contains(text.lowercased()) ||
+                words.meaning.lowercased().contains(text.lowercased())
             }
         } else {
             filteredData = allData

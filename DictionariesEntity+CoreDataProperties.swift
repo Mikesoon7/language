@@ -2,7 +2,7 @@
 //  DictionariesEntity+CoreDataProperties.swift
 //  Language
 //
-//  Created by Star Lord on 25/06/2023.
+//  Created by Star Lord on 04/07/2023.
 //
 //
 
@@ -16,29 +16,11 @@ extension DictionariesEntity {
         return NSFetchRequest<DictionariesEntity>(entityName: "DictionariesEntity")
     }
 
-    @NSManaged public var language: String?
-    @NSManaged public var numberOfCards: String?
+    @NSManaged public var language: String
+    @NSManaged public var numberOfCards: Int64
     @NSManaged public var order: Int64
-    @NSManaged public var timesRepeated: Int64
-    @NSManaged public var words: NSSet?
     @NSManaged public var accessLogs: NSSet?
-
-}
-
-// MARK: Generated accessors for words
-extension DictionariesEntity {
-
-    @objc(addWordsObject:)
-    @NSManaged public func addToWords(_ value: WordsEntity)
-
-    @objc(removeWordsObject:)
-    @NSManaged public func removeFromWords(_ value: WordsEntity)
-
-    @objc(addWords:)
-    @NSManaged public func addToWords(_ values: NSSet)
-
-    @objc(removeWords:)
-    @NSManaged public func removeFromWords(_ values: NSSet)
+    @NSManaged public var words: NSSet?
 
 }
 
@@ -56,6 +38,23 @@ extension DictionariesEntity {
 
     @objc(removeAccessLogs:)
     @NSManaged public func removeFromAccessLogs(_ values: NSSet)
+
+}
+
+// MARK: Generated accessors for words
+extension DictionariesEntity {
+
+    @objc(addWordsObject:)
+    @NSManaged public func addToWords(_ value: WordsEntity)
+
+    @objc(removeWordsObject:)
+    @NSManaged public func removeFromWords(_ value: WordsEntity)
+
+    @objc(addWords:)
+    @NSManaged public func addToWords(_ values: NSSet)
+
+    @objc(removeWords:)
+    @NSManaged public func removeFromWords(_ values: NSSet)
 
 }
 

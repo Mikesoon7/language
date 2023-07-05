@@ -13,7 +13,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         setupCoreDataObserver()
-
+        DispatchQueue.main.async {
+            let _ = UIReferenceLibraryViewController(term: "preloading")
+        }
         return true
     }
 
@@ -32,6 +34,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     //MARK: - Core Data
     lazy var persistentContainer: NSPersistentContainer = {
+//        let url = try! FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true).appendingPathComponent("LearnyLocal.sqlite")
+//
+//            do {
+//                try FileManager.default.removeItem(at: url)
+//            } catch {
+//                print("Could not clear old persistent store: \(error)")
+//            }
         let container = NSPersistentContainer(name: "LearnyLocal")
         container.loadPersistentStores(completionHandler: { (storeDescription, error) in
             if let error = error as NSError? {
@@ -77,12 +86,4 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
 }
-
-//        if let updates = userInfo[NSUpdatedObjectsKey] as? Set<NSManagedObject>, !updates.isEmpty {
-//            for update in updates {
-//                let changeType: NSManagedObject.ChangeType = .update
-//                let entityType = type(of: update)
-//                NotificationCenter.default.post(name: .appDataDidChange, object: nil, userInfo: ["changeType": changeType, "entityType": entityType])
-//            }
-//}
 

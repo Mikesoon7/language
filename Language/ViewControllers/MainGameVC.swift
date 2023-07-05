@@ -8,12 +8,16 @@
 import UIKit
 
 protocol MainGameVCDelegate: AnyObject{
-    func restoreCardCell()
+    func restoreCardCell(with newValue: WordsEntity?)
+//    func deleteCardCell()
+    func updateCardCell(with newValue: WordsEntity)
 }
 
 class MainGameVC: UIViewController, MainGameVCDelegate{
     
+    var dictionary: DictionariesEntity!
     var words: [WordsEntity]!
+
     var initialNumber: Int!
     var passedNumber: Int!
     
@@ -118,18 +122,18 @@ class MainGameVC: UIViewController, MainGameVCDelegate{
     //MARK: - DataSource SetUp
     func dataSourceCustomization() -> DataSource{
         self.dataSource = DataSource(collectionView: collectionView) { [ weak self ] (collectionView,indexPath,item) -> UICollectionViewCell? in
-            guard self == self else { return UICollectionViewCell() }
+            guard let self = self else { return UICollectionViewCell() }
             if let item = item as? WordsEntity{
-                let cell = collectionView.dequeueConfiguredReusableCell(using: self!.mainCell,
+                let cell = collectionView.dequeueConfiguredReusableCell(using: self.mainCell,
                                                                         for: indexPath,
                                                                         item: item)
 //                let panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(self!.viewDidPan(sender:)))
 //                panGestureRecognizer.delegate = self!
 //                cell.addGestureRecognizer(panGestureRecognizer)
-                cell.addGestureRecognizer(self!.longGestureCustomization())
+                cell.addGestureRecognizer(self.longGestureCustomization())
                 return cell
             } else if let item = item as? DataForLastCell{
-                let cell = collectionView.dequeueConfiguredReusableCell(using: self!.lastCell,
+                let cell = collectionView.dequeueConfiguredReusableCell(using: self.lastCell,
                                                                         for: indexPath,
                                                                         item: item)
                 return cell
@@ -147,11 +151,12 @@ class MainGameVC: UIViewController, MainGameVCDelegate{
         return dataSource
     }
     
-    func restoreCardCell() {
+    func restoreCardCell(with newValue: WordsEntity?) {
         guard let cell = collectionView.cellForItem(at: selectedCell) as? CollectionViewCell else {
             print("problems with cell")
             return
         }
+        
         let dimming = UIViewPropertyAnimator(duration: 0.3, curve: .easeOut){
             cell.cardView.transform = .identity
             cell.cardShadowView.layer.shadowOffset = cell.finalShadowValue
@@ -160,9 +165,56 @@ class MainGameVC: UIViewController, MainGameVCDelegate{
                 view.alpha = 1
             }
         }
+        dimming.addCompletion { [weak self] _ in
+            guard let self = self else { return }
+            guard let currentValue = self.dataSource.itemIdentifier(for: self.selectedCell) as? WordsEntity else {
+                let  alert = UIAlertController().alertWithAction(alertTitle: "Something unexpected happend", alertMessage: "We have saved your changes, but they will display only in new game session")
+                self.present(alert, animated: true)
+                return
+            }
+            
+            var snapshot = self.dataSource.snapshot()
+            if newValue != nil {
+                currentValue.word = newValue!.word
+                currentValue.meaning = newValue!.meaning
+                
+                snapshot.reloadItems([currentValue as AnyHashable])
+            } else {
+                snapshot.deleteItems([currentValue as AnyHashable])
+                self.words.remove(at: self.selectedCell.row)
+            }
+            
+            self.dataSource.apply(snapshot, animatingDifferences: true)
+            guard self.words.count > 0 else {
+                self.navigationController?.popToRootViewController(animated: true)
+                return
+            }
+            self.selectedCell = nil
+
+        }
         dimming.startAnimation()
+        
         collectionView.isUserInteractionEnabled = true
     }
+    func updateCardCell(with newValue: WordsEntity) {
+        guard let cell = collectionView.cellForItem(at: selectedCell) as? CollectionViewCell else {
+            print("No selected cell to update")
+            return
+        }
+        cell.word.text = newValue.word
+        cell.translation.text = newValue.meaning
+        
+//        let oldValue = words[self.selectedCell.row]
+//        words[self.selectedCell.row] = newValue
+//
+//        var snapshot = dataSource.snapshot()
+//        snapshot.reloadItems([oldValue])
+//        dataSource.apply(snapshot, animatingDifferences: false)
+    }
+//    func updateCard {
+//        words[self.selectedCell.row] =
+//        collectionView.reloadItems(at: [selectedCell!])
+//    }
     func fllipTransition(for cell: CollectionViewCell){
         let rotationAnimation = CABasicAnimation(keyPath: "transform.rotation.y")
         rotationAnimation.fromValue = 0
@@ -180,7 +232,12 @@ class MainGameVC: UIViewController, MainGameVCDelegate{
         let controllerToPresent: UIViewController = {
             let vc = GameDetailsVC()
             vc.textToPresent = text
+            vc.dictionary = dictionary
+            vc.words = words
+            vc.pairIndex = selectedCell.row
+            vc.wordEntity = words[self.selectedCell.row]
             vc.delegate = self
+            vc.finalAnchorConstant = self.view.safeAreaInsets.top
             vc.modalPresentationStyle = .overFullScreen
             return vc
         }()
@@ -267,6 +324,13 @@ extension MainGameVC: UICollectionViewDelegateFlowLayout, CustomCellDelegate{
         self.tabBarController?.tabBar.isHidden = false
         self.navigationController?.popToRootViewController(animated: true)
     }
+//    func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+//        if indexPath == selectedCell{
+//            var snapshot = dataSource.snapshot()
+//                snapshot.reloadItems([words[indexPath.row]])
+//                dataSource.apply(snapshot, animatingDifferences: false)
+//        }
+//    }
 }
 extension MainGameVC: UIScrollViewDelegate{
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {

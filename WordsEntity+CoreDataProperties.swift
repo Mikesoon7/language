@@ -2,7 +2,7 @@
 //  WordsEntity+CoreDataProperties.swift
 //  Language
 //
-//  Created by Star Lord on 25/06/2023.
+//  Created by Star Lord on 04/07/2023.
 //
 //
 
@@ -17,10 +17,10 @@ extension WordsEntity {
     }
 
     @NSManaged public var identifier: UUID?
-    @NSManaged public var meaning: String?
+    @NSManaged public var meaning: String
     @NSManaged public var order: Int64
-    @NSManaged public var word: String?
-    @NSManaged public var dictionaries: NSSet?
+    @NSManaged public var word: String
+    @NSManaged public var dictionary: DictionariesEntity?
 
 }
 

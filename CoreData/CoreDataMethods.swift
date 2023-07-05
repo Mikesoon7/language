@@ -13,11 +13,13 @@ class CoreDataHelper {
     
     static let shared = CoreDataHelper()
 
+    //MARK: - Properties
     private var numberOfDictionaries: Int64 = 0
+    private var context: NSManagedObjectContext!
     
     private init() {
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        let context = appDelegate.persistentContainer.viewContext
+        self.context = appDelegate.persistentContainer.viewContext
         
         let request = NSFetchRequest<DictionariesEntity>(entityName: "DictionariesEntity")
         
@@ -28,9 +30,11 @@ class CoreDataHelper {
             print("Fetch failed: \(error)")
         }
     }
-    //MARK: - Crating dictionary and initializing logs
+    
+    //MARK: - Creating
+    //Dictionary from text.
     func createDictionary(language: String, text: String) {
-        let context = getContext()
+//        let context = getContext()
 
         let newDictionary = DictionariesEntity(context: context)
         newDictionary.language = language
@@ -40,10 +44,10 @@ class CoreDataHelper {
         newLog.accessCount = 0
         newLog.dictionary = newDictionary
 
-        let words = textInitialDivider(text: text)
+        let words = textInitialDivider(for: newDictionary, text: text)
         newDictionary.words = NSSet(array: words)
 
-        newDictionary.numberOfCards = String(words.count)
+        newDictionary.numberOfCards = Int64(words.count)
         newDictionary.order = numberOfDictionaries
         do {
             try context.save()
@@ -52,40 +56,9 @@ class CoreDataHelper {
             print("Failed: \(error)")
         }
     }
-
-    func fetchDictionaries() -> [DictionariesEntity] {
-        let context = getContext()
-        let fetchRequest = NSFetchRequest<DictionariesEntity>(entityName: "DictionariesEntity")
-
-        let sortDescriptor = NSSortDescriptor(key: "order", ascending: true)
-            
-        fetchRequest.sortDescriptors = [sortDescriptor]
-
-        do {
-            let dictionaries = try context.fetch(fetchRequest)
-            return dictionaries
-        } catch {
-            print("Failed to fetch dictionaries: \(error)")
-            return []
-        }
-    }
-    
-    func fetchWordsForDispaying(dictionary: DictionariesEntity, number: Int, random: Bool) -> [WordsEntity]{
-        createLogs(for: dictionary)
-        var words = fetchWords(dictionary: dictionary)
-        if random {
-            words.shuffle()
-        }
-        return Array(words.prefix(upTo: number))
-    }
-    //Fetches ordered words
-    func fetchWords(dictionary: DictionariesEntity) -> [WordsEntity] {
-        let words = (dictionary.words as? Set<WordsEntity>)?.sorted(by: { $0.order < $1.order })
-        return words ?? []
-    }
-    //MARK: - Updating logs for statistic
+    //Logs
     func createLogs(for dictionary: DictionariesEntity){
-        let context = getContext()
+//        let context = getContext()
         
         let calendar = Calendar.current
         let now = Date()
@@ -113,57 +86,83 @@ class CoreDataHelper {
             print("Failed to log dictionary access: \(error)")
         }
     }
-    //Fetches logs for dictioanry
-    func fetchAccessLogsFor(dictionary: DictionariesEntity) -> [Date: Double] {
-        guard let logs = dictionary.accessLogs as? Set<DictionariesAccessLog> else {
-            return [Date(): Double()]
-        }
-        var accessDictionary: [Date: Double] = [:]
-        for log in Array(logs) {
-            accessDictionary[log.accessDate] = Double(log.accessCount)
-            
-        }        
-        return accessDictionary
-    }
-        
-//        let context = getContext()
-//        let fetchRequest: NSFetchRequest<DictionariesAccessLog> = DictionariesAccessLog.fetchRequest()
-//
-//        fetchRequest.predicate = NSPredicate(format: "dictionary == %@", dictionary)
-//        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "accessDate", ascending: true)]
-//
-//        do {
-//            let logs = try context.fetch(fetchRequest)
-//            for log in logs{
-//                let log = log.
-//            }
-//            return logs
-//        } catch {
-//            print("Failed to fetch access logs: \(error)")
-//            return []
-//        }
-//    }
 
     
+    //MARK: - Fetching
+    func fetchDictionaries() -> [DictionariesEntity] {
+//        let context = getContext()
+        let fetchRequest = NSFetchRequest<DictionariesEntity>(entityName: "DictionariesEntity")
+        let sortDescriptor = NSSortDescriptor(key: "order", ascending: true)
+        fetchRequest.sortDescriptors = [sortDescriptor]
+
+        do {
+            let dictionaries = try context.fetch(fetchRequest)
+            return dictionaries
+        } catch {
+            print("Failed to fetch dictionaries: \(error)")
+            return []
+        }
+    }
+    //Fetches logs for dictioanry
+    func fetchAccessLogsFor(dictionary: DictionariesEntity) -> [DictionariesAccessLog] {
+        let fetchRequest = NSFetchRequest<DictionariesAccessLog>(entityName: "DictionariesAccessLog")
+        let predicate = NSPredicate(format: "dictionary == %@", dictionary)
+        let sortDescriptor = NSSortDescriptor(key: "accessDate", ascending: true)
+        fetchRequest.predicate = predicate
+        fetchRequest.sortDescriptors = [sortDescriptor]
+
+        do{
+            let logs = try context.fetch(fetchRequest)
+            return logs
+        } catch {
+            print("Failed to fetch logs because of \(error)")
+            return []
+        }
+    
+    }
+//    func fetchWordsForDispaying(dictionary: DictionariesEntity, number: Int, random: Bool) -> [WordsEntity]{
+//        createLogs(for: dictionary)
+//        var words = fetchWords(dictionary: dictionary)
+//        if random {
+//            words.shuffle()
+//        }
+//        return Array(words.prefix(upTo: number))
+//    }
+    
+    //Fetches ordered words
+    func fetchWords(dictionary: DictionariesEntity) -> [WordsEntity] {
+        let fetchRequest = NSFetchRequest<WordsEntity>(entityName: "WordsEntity")
+        let predicate = NSPredicate(format: "dictionary == %@", dictionary)
+        fetchRequest.predicate = predicate
+        let sortDescriptor = NSSortDescriptor(key: "order", ascending: true)
+        fetchRequest.sortDescriptors = [sortDescriptor]
+        do {
+           let words = try context.fetch(fetchRequest)
+            return words
+        } catch {
+            print("Unable to fetch dictionaries because of \(error)")
+            return []
+        }
+    }
+    
     //Method for dividing raw text
-    func textInitialDivider(text: String) -> [WordsEntity] {
+    func textInitialDivider(for dictionary : DictionariesEntity, text: String) -> [WordsEntity] {
         var results = [WordsEntity]()
         let lines = text.split(separator: "\n", omittingEmptySubsequences: true)
+//        let context = dictionary.managedObjectContext
     
         for (index, line) in lines.enumerated() {
-            let newWord = pairDivider(text: String(line), index: index)
-            newWord.order = Int64(index)
-            newWord.identifier = UUID()
+            let newWord = pairDividerFor(dictionary: dictionary, text: String(line), index: index)
             results.append(newWord)
         }
         return results
     }
     //Divide one line
-    func pairDivider(text: String, index: Int) -> WordsEntity {
-        let context = getContext()
-        
+    func pairDividerFor(dictionary: DictionariesEntity, text: String, index: Int, id: UUID = UUID()) -> WordsEntity {
         let newWord = WordsEntity(context: context)
         newWord.order = Int64(index)
+        newWord.identifier = id
+        newWord.dictionary = dictionary
         var parts = text.split(separator: " \(UserSettings.shared.settings.separators.selectedValue) ")
         if parts.count == 2{
             let word = String(parts[0]).trimmingCharacters(in: CharacterSet(charactersIn: "[ ] ◦ - "))
@@ -176,32 +175,36 @@ class CoreDataHelper {
             newWord.word = String(parts[0]).trimmingCharacters(in: CharacterSet(charactersIn: "[ ] ◦ - ")).capitalized
             newWord.meaning = ""
         }
+        print(newWord)
         return newWord
     }
     
-    //Assign new words array
+    
+    //Assign new array
     func update(dictionary: DictionariesEntity, words: [WordsEntity], name: String?) {
-        let context = dictionary.managedObjectContext
 
         if name != nil {
-            dictionary.language = name
+            dictionary.language = name!
         }
         dictionary.words = Set(words) as? NSSet
-        dictionary.numberOfCards = String(words.count)
+        dictionary.numberOfCards = Int64(words.count)
         
+        print("dictionaries changed")
         do {
+            print("trying to save")
             try context?.save()
         } catch {
             print("Failed to update dictionary: \(error)")
         }
     }
+    
     //MARK: - Add words array
     func addWordsTo(dictionary: DictionariesEntity, words: [WordsEntity]){
-        let context = dictionary.managedObjectContext
+//        let context = dictionary.managedObjectContext
         
         
         dictionary.addToWords(NSSet(array: words))
-        dictionary.numberOfCards = String(dictionary.words!.count)
+        dictionary.numberOfCards = Int64(dictionary.words?.count ?? 0)
         
         do {
             try context?.save()
@@ -212,7 +215,7 @@ class CoreDataHelper {
     }
 //    MARK: - Update order property for dictionaries
     func updateDictionaryOrder() {
-        let context = getContext()
+//        let context = getContext()
         let fetchRequest = NSFetchRequest<DictionariesEntity>(entityName: "DictionariesEntity")
         let sortDescriptor = NSSortDescriptor(key: "order", ascending: true)
         fetchRequest.sortDescriptors = [sortDescriptor]
@@ -229,9 +232,28 @@ class CoreDataHelper {
             print("Failed to update dictionary order: \(error)")
         }
     }
+    func updateWordsOrder(for dictionary: DictionariesEntity){
+//        let context = getContext()
+        let fetchRequest = NSFetchRequest<WordsEntity>(entityName: "WordsEntity")
+        let predicate = NSPredicate(format: "dictionary == %@", dictionary)
+        fetchRequest.predicate = predicate
+        let sortDescriptor = NSSortDescriptor(key: "order", ascending: true)
+        fetchRequest.sortDescriptors = [sortDescriptor]
+
+        do {
+            let words = try context.fetch(fetchRequest)
+            for (index, word) in words.enumerated() {
+                word.order = Int64(index)
+            }
+            print("context.save in updateWordsOrder func")
+            try context.save()
+        } catch {
+            print("Failed to update words order: \(error)")
+        }
+    }
     //MARK: - Delete dictionary with order update
     func delete(dictionary: DictionariesEntity) {
-        let context = getContext()
+//        let context = getContext()
 
         context.delete(dictionary)
         print("context.delete")
@@ -242,7 +264,24 @@ class CoreDataHelper {
         } catch {
             print("Failed to delete dictionary: \(error)")
         }
-
+    }
+    func delete(words: WordsEntity) {
+        let dictionary = words.dictionary
+//        let context = getContext()
+        
+        context.delete(words)
+        do {
+            try context.save()
+            print("context.save in delete method")
+            guard dictionary != nil else {
+                context.rollback()
+                print("Didn't get dictionary")
+                return
+            }
+            updateWordsOrder(for: dictionary!)
+        } catch {
+            print("Failed to delete dictionary: \(error)")
+        }
     }
     
     func getContext() -> NSManagedObjectContext{

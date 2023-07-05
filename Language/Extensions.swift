@@ -170,6 +170,7 @@ extension String{
     enum SelectedFonts: String{
         case georgiaBoldItalic = "Georgia-BoldItalic"
         case georigaItalic = "Georgia-Italic"
+        case charter = ""
     }
 }
 extension NSManagedObject{
@@ -203,5 +204,23 @@ extension String{
             
         }
         return UIImage()
+    }
+}
+extension UIAlertController {
+    func alertWithAction(alertTitle: String, alertMessage: String, alertStyle: UIAlertController.Style = .actionSheet,
+                         action1Title: String = "", action1Style: UIAlertAction.Style = .default,
+                         action2Title: String = "", action2Style: UIAlertAction.Style = .default) -> UIAlertController{
+        let alert = UIAlertController(title: alertTitle, message: alertMessage, preferredStyle: alertStyle)
+        if action1Title != ""{
+            let action = UIAlertAction(title: action1Title, style: action1Style)
+            action.setValue(UIColor.label, forKey: "titleTextColor")
+            alert.addAction(action)
+        }
+        if action2Title != ""{
+            let action = UIAlertAction(title: action2Title, style: action2Style)
+            action.setValue(UIColor.label, forKey: "titleTextColor")
+            alert.addAction(action)
+        }
+        return alert
     }
 }

@@ -31,8 +31,10 @@ class AddWordsVC: UIViewController {
     let saveButton : UIButton = {
         let button = UIButton()
         button.setUpCommotBut(false)
-        button.setAttributedTitle(NSAttributedString().fontWithString(string: "Save",
-                                                                      bold: true, size: 18), for: .normal)
+        button.setAttributedTitle(NSAttributedString().fontWithString(
+            string: "Save",
+            bold: true,
+            size: 18), for: .normal)
         return button
     }()
     var topStroke = CAShapeLayer()
@@ -158,7 +160,7 @@ class AddWordsVC: UIViewController {
         let numberOfCards = editableDict.words?.count
         let lines = textView.text.split(separator: "\n", omittingEmptySubsequences: true).map( {String($0)} )
         for (index, line) in lines.enumerated() {
-            wordsArray.append(CoreDataHelper.shared.pairDivider(
+            wordsArray.append(CoreDataHelper.shared.pairDividerFor(dictionary: editableDict,
                 text: line, index: numberOfCards ?? 0 + index))
         }
         CoreDataHelper.shared.addWordsTo(dictionary: editableDict, words: wordsArray)
@@ -210,7 +212,7 @@ extension AddWordsVC : UITextViewDelegate{
             textView.font = nil
             textView.typingAttributes = [NSAttributedString.Key.font : UIFont(name: "Times New Roman", size: 17) ?? UIFont(), NSAttributedString.Key.backgroundColor : UIColor.clear, NSAttributedString.Key.foregroundColor : UIColor.label]
         }
-        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(rightBarButDidTap(sender:)))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(rightBarButDidTap(sender:)))
     }
     func textViewDidEndEditing(_ textView: UITextView) {
         if textView.text.isEmpty {

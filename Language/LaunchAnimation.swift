@@ -222,4 +222,60 @@ class LaunchAnimation{
     }
 }
 
+class LoadingAnimation: UIView {
+    
+    private var dots: [UIView] = []
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        setup()
+    }
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        setup()
+    }
+    
+    private func setup() {
+        self.translatesAutoresizingMaskIntoConstraints = false
+        
+        let dotRadius: CGFloat = 5
+        let dotDiameter: CGFloat = dotRadius * 2
+        let dotSpacing: CGFloat = 5
 
+        let totalWidth: CGFloat = (dotDiameter * 3) + (dotSpacing * 2)
+
+        for i in 0..<3 {
+            let dot = UIView(frame: CGRect(x: (dotDiameter + dotSpacing) * CGFloat(i), y: 0, width: dotDiameter, height: dotDiameter))
+            dot.backgroundColor = .black
+            dot.layer.cornerRadius = dotRadius
+            addSubview(dot)
+            dots.append(dot)
+        }
+
+        frame = CGRect(x: frame.origin.x, y: frame.origin.y, width: totalWidth, height: dotDiameter)
+    }
+    
+    func startAnimating(){
+        for i in 0..<dots.count {
+            let dot = dots[i]
+            
+            let animation = CABasicAnimation(keyPath: "opacity")
+            animation.duration = 0.5
+            animation.fromValue = 1
+            animation.toValue = 0.1
+            animation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+            animation.repeatCount = .infinity
+            animation.autoreverses = true
+            animation.beginTime = CACurrentMediaTime() + (0.2 * Double(i))
+
+            dot.layer.add(animation, forKey: "loadingAnimation")
+        }
+    }
+    
+    func stopAnimating() {
+        for dot in dots {
+            dot.layer.removeAnimation(forKey: "loadingAnimation")
+        }
+    }
+}

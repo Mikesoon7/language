@@ -68,6 +68,8 @@
 
 //MARK: - GameVC
 "gameTitle" = "Cards";
+//MARK: - GameDetailsVc
+"gameDetails.information" = "Tap on any word to uncover its meaning using the built-in iOS dictionary. You can also edit or delete your card if necessary. This is your personalized learning space - make the most out of it.";
 
 //MARK: - Notification
 "allowNotification" = "Allow notification";

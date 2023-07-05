@@ -2,7 +2,7 @@
 //  DictionariesAccessLog+CoreDataProperties.swift
 //  Language
 //
-//  Created by Star Lord on 25/06/2023.
+//  Created by Star Lord on 04/07/2023.
 //
 //
 
@@ -16,8 +16,8 @@ extension DictionariesAccessLog {
         return NSFetchRequest<DictionariesAccessLog>(entityName: "DictionariesAccessLog")
     }
 
-    @NSManaged public var accessDate: Date
     @NSManaged public var accessCount: Int64
+    @NSManaged public var accessDate: Date?
     @NSManaged public var dictionary: DictionariesEntity?
 
 }

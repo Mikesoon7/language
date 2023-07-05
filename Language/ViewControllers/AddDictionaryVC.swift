@@ -73,24 +73,10 @@ class AddDictionaryVC: UIViewController {
         configureSaveButton()
     }
     
-//    override func viewDidAppear(_ animated: Bool) {
-//        self.view.becomeFirstResponder()
-//    }
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         configureStrokes()
     }
-//    override func viewWillDisappear(_ animated: Bool) {
-//        super.viewWillDisappear(animated)
-//        if textView.isFirstResponder{
-//            textView.resignFirstResponder()
-//        }
-//        if let navController = self.navigationController{
-//            let menu = navController.viewControllers.first(where: { $0 is MenuVC}) as? MenuVC
-//            menu?.fetchDictionaries()
-//            menu?.tableView.reloadData()
-//        }
-//    }
     
     //MARK: - StyleChange Responding
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
