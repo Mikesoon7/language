@@ -46,12 +46,17 @@
 "dictionaryName" = "Название словаря";
 
 //MARK: - System
-"cancel" = "Отменить";
-"agreeFormal" = "Согласен";
-"agreeInformal" = "Хорошо";
-"save" = "Сохранить";
-"create" = "Создать";
-"great" = "Круто";
+"system.cancel" = "Отменить";
+"system.agreeFormal" = "Согласен";
+"system.agreeInformal" = "Хорошо";
+"system.save" = "Сохранить";
+"system.create" = "Создать";
+"system.great" = "Круто";
+"system.edit" = "Редактировать";
+"system.delete" = "Удалить";
+"system.done" = "Готово";
+"system.yes" = "Да";
+"systme.no" = "Нет";
 
 //MARK: - AlertText
 "textAlert" = "Введите текст";
@@ -70,6 +75,9 @@
 "gameTitle" = "Карточки";
 //MARK: - GameDetailsVc
 "gameDetails.information" = "Коснитесь любого слова, чтобы раскрыть его значение с помощью встроенного словаря iOS. При необходимости, здесь же вы можете отредактировать или удалить свою карточку. Это ваш собственный учебный уголок - используйте все его возможности для эффективного обучения.";
+"gameDetails.deleteAlert.title" = "Удалить данную карточку";
+"gameDetails.deleteAlert.message" = "Вы уверены, что хотите безвозвратно удалить эту карточку?";
+"gameDetails.deleteAlert.message.warning" = "\n Она является последней, так что ее удаление приведет к удалению словаря.";
 
 //MARK: - Notification
 "allowNotification" = "Расрешить уведомления";

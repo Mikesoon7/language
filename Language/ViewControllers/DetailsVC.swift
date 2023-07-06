@@ -259,8 +259,13 @@ class DetailsVC: UIViewController {
         }
         
         vc.dictionary = dictionary
-        var words = CoreDataHelper.shared.fetchWords(dictionary: dictionary)
-        
+        var words: [WordsEntity]!
+        do {
+             words = try CoreDataHelper.shared.fetchWords(for: dictionary)
+        } catch {
+            self.presentError(error)
+            return
+        }
         vc.words = {
             if self.isRandom {
                words.shuffle()

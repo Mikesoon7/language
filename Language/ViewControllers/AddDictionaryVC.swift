@@ -207,10 +207,13 @@ class AddDictionaryVC: UIViewController {
         guard nameInputField.hasText else {
             return self.present(insertNameAllert, animated: true)
         }
-        
-        CoreDataHelper.shared.createDictionary(language: nameInputField.text!,
-                                            text: text)
-        
+        do {
+            try CoreDataHelper.shared.createDictionary(language: nameInputField.text!, text: text)
+        } catch {
+            self.presentError(error)
+            return
+        }
+                                                    
         navigationItem.rightBarButtonItem = nil
         view.becomeFirstResponder()
         navigationController?.popViewController(animated: true)

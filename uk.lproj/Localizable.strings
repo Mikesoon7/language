@@ -46,12 +46,17 @@
 "dictionaryName" = "Назва словника";
 
 //MARK: - System
-"cancel" = "Вiдменити";
-"agreeFormal" = "Згоден";
-"agreeInformal" = "Добре";
-"save" = "Зберегти";
-"create" = "Створити";
-"great" = "Чудово";
+"system.cancel" = "Cкасувати";
+"system.agreeFormal" = "Згоден";
+"system.agreeInformal" = "Добре";
+"system.save" = "Зберегти";
+"system.create" = "Створити";
+"system.great" = "Чудово";
+"system.edit" = "Редагувати";
+"system.delete" = "Видалити";
+"system.done" = "Готово";
+"system.yes" = "Так";
+"systme.no" = "Ні";
 
 //MARK: - AlertText
 "textAlert" = "Вкажіть текст";
@@ -70,6 +75,9 @@
 "gameTitle" = "Картки";
 //MARK: - GameDetailsVc
 "gameDetails.information" = "Торкніться будь-якого слова, щоб дізнатися його значення з вбудованого словника iOS. За потреби, ви можете відредагувати або видалити свою картку прямо тут. Це ваш особистий простір для навчання - використовуйте його можливості для кращого засвоєння інформації.";
+"gameDetails.deleteAlert.title" = "Видалити поточну пару";
+"gameDetails.deleteAlert.message" = "Ви впевнені, що хочете видалити цю пару?";
+"gameDetails.deleteAlert.message.warning" = "\n nЦе остання картка, тому ваш словник також буде видалено.";
 
 
 //MARK: - Notification

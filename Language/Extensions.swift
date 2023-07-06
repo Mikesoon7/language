@@ -224,3 +224,10 @@ extension UIAlertController {
         return alert
     }
 }
+extension UIViewController{
+    func presentError(_ error: Error) {
+        let alertController = UIAlertController(title: "Error", message: "An unexpected error occurred: \(error.localizedDescription). Please try again or contact the support team if the issue persists.", preferredStyle: .alert)
+        alertController.addAction(UIAlertAction(title: "OK", style: .default))
+        self.present(alertController, animated: true, completion: nil)
+    }
+}

@@ -46,12 +46,17 @@
 "dictionaryName" = "Dictionary name";
 
 //MARK: - System
-"cancel" = "Cancel";
-"agreeFormal" = "Agree";
-"agreeInformal" = "Okey";
-"save" = "Save";
-"create" = "Create";
-"great" = "Great";
+"system.cancel" = "Cancel";
+"system.agreeFormal" = "Agree";
+"system.agreeInformal" = "Okey";
+"system.save" = "Save";
+"system.create" = "Create";
+"system.great" = "Great";
+"system.edit" = "Edit";
+"system.delete" = "Delete";
+"system.done" = "Done";
+"system.yes" = "Yes";
+"systme.no" = "No";
 
 //MARK: - AlertText
 "textAlert" = "Enter the text";
@@ -70,6 +75,9 @@
 "gameTitle" = "Cards";
 //MARK: - GameDetailsVc
 "gameDetails.information" = "Tap on any word to uncover its meaning using the built-in iOS dictionary. You can also edit or delete your card if necessary. This is your personalized learning space - make the most out of it.";
+"gameDetails.deleteAlert.title" = "Delete current pair";
+"gameDetails.deleteAlert.message" = "Are you sure you want to delete this pair?";
+"gameDetails.deleteAlert.message.warning" = "\n This is the last card, so your dictionary will also be deleted.";
 
 //MARK: - Notification
 "allowNotification" = "Allow notification";

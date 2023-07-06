@@ -160,8 +160,7 @@ class AddWordsVC: UIViewController {
         let numberOfCards = editableDict.words?.count
         let lines = textView.text.split(separator: "\n", omittingEmptySubsequences: true).map( {String($0)} )
         for (index, line) in lines.enumerated() {
-            wordsArray.append(CoreDataHelper.shared.pairDividerFor(dictionary: editableDict,
-                text: line, index: numberOfCards ?? 0 + index))
+            wordsArray.append(CoreDataHelper.shared.createWordFromLine(for: editableDict, text: line, index: numberOfCards ?? 0 + index)) 
         }
         CoreDataHelper.shared.addWordsTo(dictionary: editableDict, words: wordsArray)
         self.navigationController?.popViewController(animated: true)

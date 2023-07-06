@@ -236,14 +236,24 @@ extension MenuVC: CustomCellDataDelegate{
     func deleteButtonDidTap(for cell: UITableViewCell) {
         guard let index = tableView.indexPath(for: cell) else { return }
         let dictionaryToDelete = fetchController.object(at: index)
-        CoreDataHelper.shared.delete(dictionary: dictionaryToDelete)
+        do {
+            try CoreDataHelper.shared.delete(dictionary: dictionaryToDelete)
+        } catch {
+            self.presentError(error)
+        }
     }
 
     
     func editButtonDidTap(for cell: UITableViewCell){
         guard menuAccessedForCell != nil else { return }
         let dictionary = fetchController.object(at: menuAccessedForCell!)
-        let pairs = CoreDataHelper.shared.fetchWords(dictionary: dictionary)
+        var pairs: [WordsEntity]!
+        do {
+            let pairs = try CoreDataHelper.shared.fetchWords(for: dictionary)
+        } catch {
+            self.presentError(error)
+            return
+        }
         
         var textToEdit = ""
         var textByLines = [String]()
@@ -277,7 +287,12 @@ extension MenuVC: UITableViewDataSource{
         if shouldDispayStatistic {
             let cell = tableView.dequeueReusableCell(withIdentifier: Cells.stat.rawValue,
                                                      for: indexPath) as? MenuStatisticCell
-            let logs = CoreDataHelper.shared.fetchAccessLogsFor(dictionary: dictionary)
+            var logs = [DictionariesAccessLog]()
+            do {
+                logs = try CoreDataHelper.shared.fetchAllLogs(for: dictionary)
+            } catch {
+                self.presentError(error)
+            }
             var convertedLogs = [Date: Double]()
             logs.map { log in
                 convertedLogs[log.accessDate ?? Date()] = Double(log.accessCount)

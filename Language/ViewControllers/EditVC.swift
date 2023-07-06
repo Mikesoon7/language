@@ -115,7 +115,6 @@ class EditVC: UIViewController {
             return
         }
         
-        let actualNumber = currentDictionaryPairs.count
         let lines = textView.text.split(separator: "\n", omittingEmptySubsequences: true)
         newText = lines.map({ String($0) })
         let patch = patch(from: oldText, to: newText)
@@ -124,15 +123,14 @@ class EditVC: UIViewController {
             case .deletion(index: let index):
                 currentDictionaryPairs.remove(at: index)
             case .insertion(index: let index, element: let text):
-                currentDictionaryPairs.insert(CoreDataHelper.shared.pairDividerFor(dictionary: currentDictionary, text: text, index: index), at: index)
+                currentDictionaryPairs.insert(CoreDataHelper.shared.createWordFromLine(for: currentDictionary, text: text, index: index), at: index)
             }
         }
-        if currentDictionaryPairs.count != actualNumber {
-            for (index, pair) in currentDictionaryPairs.enumerated(){
-                pair.order = Int64(index)
-            }
+        do {
+           try CoreDataHelper.shared.update(dictionary: currentDictionary, words: currentDictionaryPairs, name: self.textField.text)
+        } catch {
+            let alert = UIAlertController().alertWithAction(alertTitle: "Error", alertMessage: "An unexpected error occurred. Please try again or contact the support team if the issue persists")
         }
-        CoreDataHelper.shared.update(dictionary: currentDictionary, words: currentDictionaryPairs, name: self.textField.text)
         self.navigationController?.popViewController(animated: true)
     }
     //Done button

@@ -115,7 +115,13 @@ class SearchVC: UIViewController {
 
     }
     private func loadData() {
-        let dictionaries = CoreDataHelper.shared.fetchDictionaries()
+        let dictionaries: [DictionariesEntity]!
+        do {
+            try dictionaries = CoreDataHelper.shared.fetchDictionaries()
+        } catch {
+            self.presentError(error)
+            return
+        }
         allData = dictionaries.flatMap { dictionary in
             guard let words = dictionary.words as? Set<WordsEntity> else { return Set<WordsEntity>() }
             return words

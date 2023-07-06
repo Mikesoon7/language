@@ -8,30 +8,42 @@
 import UIKit
 
 class GameDetailsVC: UIViewController {
-
-    weak var delegate: MainGameVCDelegate?
-    var textToPresent: String!
-    var selectedText: String!
     
+    //MARK: - Parent related properties.
+    weak var delegate: MainGameVCDelegate?
     var dictionary: DictionariesEntity!
     var words: [WordsEntity]!
-    var wordEntity: WordsEntity!
+    var word: WordsEntity!
     var pairIndex: Int!
+    var navBarTopInset: CGFloat!
     
-    let animationView = LoadingAnimation()
-
-    let informationLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .label
-        label.text = "Tap for details"
-        label.textAlignment = .left
-        label.font = UIFont(name: .SelectedFonts.georgiaBoldItalic.rawValue , size: 18)
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
+    
+    private var selectedText = String()
+    private let animationView = LoadingAnimation()
+    private var needUpdate = false
+    
+    //MARK: Views
+    let dimView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .black
+        view.alpha = 0
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
     }()
-    lazy var textView: UITextView = {
+
+    lazy var containerView: UIView = {
+        let view = UIView()
+        view.layer.cornerRadius = 13
+        view.clipsToBounds = true
+        view.backgroundColor = ((traitCollection.userInterfaceStyle == .dark)
+                                ? .secondarySystemBackground
+                                : .systemBackground)
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+
+    let textView: UITextView = {
         let view = UITextView()
-        view.delegate = self
         view.translatesAutoresizingMaskIntoConstraints = false
         
         view.layer.cornerRadius = 9
@@ -44,24 +56,7 @@ class GameDetailsVC: UIViewController {
         view.tintColor = .label
         return view
     }()
-    lazy var containerView: UIView = {
-        let view = UIView()
-        view.layer.cornerRadius = 13
-        view.clipsToBounds = true
-        view.backgroundColor = ((traitCollection.userInterfaceStyle == .dark)
-                                ? .secondarySystemBackground
-                                : .systemBackground)
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
-    let dimView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .black
-        view.alpha = 0
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
-    
+        
     let informationButton: UIButton = {
         let button = UIButton()
         button.tintColor = .label
@@ -70,35 +65,32 @@ class GameDetailsVC: UIViewController {
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
-        
-    private lazy var editButton:    UIButton = configureButtonWith(title: "Edit")
-    private lazy var deleteButton:  UIButton = configureButtonWith(title: "Delete")
-    private lazy var doneButton:    UIButton = configureButtonWith(title: "Done")
     
+    private lazy var editButton:    UIButton = configureButtonWith(title: "system.edit".localized)
+    private lazy var deleteButton:  UIButton = configureButtonWith(title: "system.delete".localized)
+    private lazy var doneButton:    UIButton = configureButtonWith(title: "system.done".localized)
+    
+    //MARK: Gestures
     private var wordTapGesture: UITapGestureRecognizer! // For selecting word
     private var viewDismissTapGesture: UITapGestureRecognizer! // Dismiss the view if user taps on dimmedView
     private var viewPanGesture: UIPanGestureRecognizer!
     
-    let insetFromBottom: CGFloat = 30
-    var initialAnchorConstant:  CGFloat!
-    var secondAnchorConstant:   CGFloat!
-    var thirdAnchorConstant:    CGFloat!
-    var finalAnchorConstant:    CGFloat!
-    var currentAnchorConstant:  CGFloat!
+    //MARK: Constrait related properties
+    private let insetFromBottom: CGFloat = 30
+    private var initialAnchorConstant:  CGFloat!
+    private var secondAnchorConstant:   CGFloat!
+    private var thirdAnchorConstant:    CGFloat!
+    private var finalAnchorConstant:    CGFloat!
+    private var currentAnchorConstant:  CGFloat!
     
-    var contentViewBottomAnchor: NSLayoutConstraint!
-    var doneButtonTrailingAnchor: NSLayoutConstraint!
+    //Constraits
+    private var doneButtonTrailingAnchor: NSLayoutConstraint!
+    private var contentViewBottomAnchor: NSLayoutConstraint!
+    private var textViewBottomToContainer: NSLayoutConstraint!
+    private var deleteBottomToContainer: NSLayoutConstraint!
+    private var editBottomToContainer: NSLayoutConstraint!
     
-    var textViewBottomAnchor: NSLayoutConstraint!
-    var textViewBottomToContainer: NSLayoutConstraint!
-    
-    var deleteBottomConstrait: NSLayoutConstraint!
-    var deleteBottomToContainer: NSLayoutConstraint!
-    
-    var editBottomConstrait: NSLayoutConstraint!
-    var editBottomToContainer: NSLayoutConstraint!
-    
-    
+    //MARK: - Inherited methods
     override func viewDidLoad() {
         super.viewDidLoad()
         controllerCustomization()
@@ -123,14 +115,15 @@ class GameDetailsVC: UIViewController {
     }
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        delegate?.restoreCardCell(with: wordEntity)
+//        delegate?.restoreCardCell(with: word)
     }
-    
+    //MARK: - Controller SetUp
     func controllerCustomization(){
         view.backgroundColor = .clear
         initialAnchorConstant = view.bounds.height
         secondAnchorConstant = initialAnchorConstant * 0.6
         thirdAnchorConstant = initialAnchorConstant * 0.4
+        finalAnchorConstant = navBarTopInset + 5
     }
     //MARK: - ContainerView SetUp
     func containerViewCustomization(){
@@ -138,7 +131,6 @@ class GameDetailsVC: UIViewController {
         containerView.addSubview(animationView)
         
         contentViewBottomAnchor = containerView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: initialAnchorConstant)
-//        informationLabelTopAnchor = informationLabel.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 15)
         
         NSLayoutConstraint.activate([
             dimView.topAnchor.constraint(equalTo: view.topAnchor),
@@ -154,15 +146,15 @@ class GameDetailsVC: UIViewController {
             animationView.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 20),
             animationView.centerXAnchor.constraint(equalTo: containerView.centerXAnchor, constant: -animationView.frame.width / 2),
             animationView.heightAnchor.constraint(equalToConstant: animationView.frame.height)
-
+            
         ])
     }
     //MARK: - TextView SetUp
     func textViewCustomization(){
         containerView.addSubviews(textView)
-        textView.text = textToPresent
-
-        textViewBottomAnchor = textView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -insetFromBottom)
+        textView.delegate = self
+        textView.text = configureTextFor(editing: false)
+        
         textViewBottomToContainer = textView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -(secondAnchorConstant + insetFromBottom * 2.5))
         
         NSLayoutConstraint.activate([
@@ -171,18 +163,35 @@ class GameDetailsVC: UIViewController {
             textView.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
             textViewBottomToContainer
         ])
-
     }
-    //MARK: - Edit and Delete buttons SetUp
+    func configureTextFor(editing: Bool) -> String{
+        let text = "\(word.word) \(editing ? UserSettings.shared.settings.separators.selectedValue : "\n\n") \(word.meaning)"
+        return text
+    }
+    
+    //MARK: - Action buttons setUp
+    //Generic method
+    func configureButtonWith(title: String) -> UIButton{
+        let button = UIButton()
+        button.configuration = .plain()
+        button.setAttributedTitle( NSAttributedString(
+            string: title,
+            attributes: [NSAttributedString.Key.font:
+                            UIFont.systemFont(ofSize: 15,
+                                              weight: .bold)]),
+                                   for: .normal)
+        button.configuration?.baseForegroundColor = .label
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }
+
     func configureActionButtons(){
         containerView.addSubviews(deleteButton, editButton, doneButton, informationButton)
         
         doneButtonTrailingAnchor = doneButton.leadingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: 0)
         
-        deleteBottomConstrait = deleteButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -insetFromBottom)
         deleteBottomToContainer = deleteButton.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -(secondAnchorConstant + 40) )
         
-        editBottomConstrait = editButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -insetFromBottom)
         editBottomToContainer = editButton.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -(secondAnchorConstant + 40))
         
         NSLayoutConstraint.activate([
@@ -205,20 +214,15 @@ class GameDetailsVC: UIViewController {
         doneButton.addTarget(self, action: #selector(doneButtonDidTap(sender: )), for: .touchUpInside)
         informationButton.addTarget(self, action: #selector(informationButtonDidTap(sender: )), for: .touchUpInside)
     }
-    //MARK: -
-    func configureButtonWith(title: String) -> UIButton{
-        let button = UIButton()
-        button.configuration = .plain()
-        button.setAttributedTitle( NSAttributedString(
-            string: title,
-            attributes: [NSAttributedString.Key.font:
-                                            UIFont.systemFont(ofSize: 15,
-                                                              weight: .bold)]),
-                                       for: .normal)
-        button.configuration?.baseForegroundColor = .label
-        button.translatesAutoresizingMaskIntoConstraints = false
-        return button
+    
+    func doneButton(activate: Bool){
+        UIView.animate(withDuration: 0.2, delay: 0) { [weak self] in
+            self?.doneButtonTrailingAnchor.constant = activate ? -65 : 0
+            self?.informationButton.alpha = activate ? 0 : 1
+            self?.view.layoutIfNeeded()
+        }
     }
+
     //MARK: - Appearence Animation
     func presentViewController(){
         animateTransition(newValue: secondAnchorConstant)
@@ -228,6 +232,20 @@ class GameDetailsVC: UIViewController {
             self.dimView.alpha = 0.4
         }
     }
+    func transitionToEditing(activate: Bool){
+        animateTransition(newValue: activate ? finalAnchorConstant : thirdAnchorConstant )
+        viewPanGesture.isEnabled = !activate
+        wordTapGesture.isEnabled = !activate
+        viewDismissTapGesture.isEnabled = !activate
+        textView.isEditable = activate
+        doneButton(activate: activate)
+        if activate{
+            textView.becomeFirstResponder()
+        } else {
+            textView.resignFirstResponder()
+        }
+    }
+
     func animateTransition(newValue: CGFloat){
         UIView.animate(withDuration: 0.5, delay: 0){
             self.contentViewBottomAnchor.constant = newValue
@@ -245,7 +263,7 @@ class GameDetailsVC: UIViewController {
         }
     }
     //MARK: - Dissapearence Animation
-    func animateViewDismiss(){
+    func animateViewDismiss(with compilation: (() -> ())?){
         let viewDismiss = UIViewPropertyAnimator(duration: 0.3, curve: .easeInOut){
             self.dimView.alpha = 0
             self.contentViewBottomAnchor.constant = self.initialAnchorConstant
@@ -253,9 +271,13 @@ class GameDetailsVC: UIViewController {
         }
         viewDismiss.addCompletion { _ in
             self.dismiss(animated: false)
+            if compilation != nil {
+                compilation!()
+            }
         }
         viewDismiss.startAnimation()
     }
+    
     //MARK: Gestures
     func configureGestures(){
         wordTapGesture = UITapGestureRecognizer(target: self, action: #selector(textViewDidTap(sender:)))
@@ -263,33 +285,14 @@ class GameDetailsVC: UIViewController {
         
         viewDismissTapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTapGesture(sender: )))
         dimView.addGestureRecognizer(viewDismissTapGesture)
-
+        
         viewPanGesture = UIPanGestureRecognizer(target: self, action: #selector(viewDidPan(sender: )))
-        
-//        viewPanGesture.delaysTouchesBegan = false
-//        viewPanGesture.delaysTouchesEnded = false
-        
         view.addGestureRecognizer(viewPanGesture)
     }
-    func transitionToEditing(activate: Bool){
-        animateTransition(newValue: activate ? finalAnchorConstant : thirdAnchorConstant )
-        wordTapGesture.isEnabled = activate ? false : true
-        textView.isEditable = activate ? true : false
-        doneButton(activate: activate)
-        if activate{
-            textView.becomeFirstResponder()
-        } else {
-            textView.resignFirstResponder()
-        }
-    }
-    func doneButton(activate: Bool){
-        UIView.animate(withDuration: 0.2, delay: 0) { [weak self] in
-            self?.doneButtonTrailingAnchor.constant = activate ? -65 : 0
-            self?.informationButton.alpha = activate ? 0 : 1
-            self?.view.layoutIfNeeded()
-        }
-    }
-    //MARK: - Actions
+}
+
+//MARK: - Actions
+extension GameDetailsVC {
     //Recognises the word user tapped
     @objc func textViewDidTap(sender: UITapGestureRecognizer){
         let point = sender.location(in: textView)
@@ -306,11 +309,8 @@ class GameDetailsVC: UIViewController {
         if let textPosition = textView.closestPosition(to: point){
             if let rightRange = textView.tokenizer.rangeEnclosingPosition(textPosition, with: .word, inDirection: UITextDirection(rawValue: 1)){
                 wordRange = rightRange
-                print(textView.text(in: rightRange)! + "right")
             } else if let leftRange = textView.tokenizer.rangeEnclosingPosition(textPosition, with: .word, inDirection: UITextDirection(rawValue: 0)){
                 wordRange = leftRange
-                
-                print(textView.text(in: leftRange)! + "left")
             }
         }
         guard let wordRange = wordRange, let word = textView.text(in: wordRange) else {
@@ -345,88 +345,89 @@ class GameDetailsVC: UIViewController {
         
         switch sender.state{
         case .began, .changed:
-            
             if translation > -50 {
                 if translation < 0{
                     deleteBottomToContainer.constant = -(newConstant + insetFromBottom)
                     editBottomToContainer.constant = -(newConstant + insetFromBottom)
-                                    }
+                }
                 contentViewBottomAnchor.constant = newConstant
                 view.layoutIfNeeded()
             }
-                        
         case .ended:
             if velocity > 500 {
-                animateViewDismiss()
+                animateViewDismiss(with: needUpdate ? delegate?.updateCardCell : delegate?.restoreCardCell)
             }  else if ( newConstant > secondAnchorConstant + 50 ||
                          (newConstant > thirdAnchorConstant + 50 && currentAnchorConstant == thirdAnchorConstant ))
                         && translation > 0  {
-                animateViewDismiss()
+                animateViewDismiss(with: needUpdate ? delegate?.updateCardCell : delegate?.restoreCardCell)
             } else if (newConstant < secondAnchorConstant && newConstant > thirdAnchorConstant)
-                || newConstant < thirdAnchorConstant {
+                        || newConstant < thirdAnchorConstant {
                 animateTransition(newValue: thirdAnchorConstant)
             } else if newConstant > secondAnchorConstant {
                 animateTransition(newValue: secondAnchorConstant)
             }
-            default:
-                break
+        default:
+            break
         }
     }
     
+    //Buttons methods.
     @objc func editButtonDidTap(sender: UIButton){
-        textView.text = "\(wordEntity.word) \(UserSettings.shared.settings.separators.selectedValue) \(wordEntity.meaning)"
+        textView.text = configureTextFor(editing: true)
         transitionToEditing(activate: true)
     }
     
     @objc func deleteButtonDidTap(sender: UIButton){
-        let alert = UIAlertController(title: "Delete current pair", message: "Are you sure to delte delete this pair.", preferredStyle: .alert)
+        let alert = UIAlertController(
+            title: "gameDetails.deleteAlert.title".localized,
+            message: "gameDetails.deleteAlert.message".localized,
+            preferredStyle: .actionSheet)
+    
         if words.count == 1 {
-            alert.message?.append("\n This is the last card, so you dictionary will be deleted as well.")
+            alert.message?.append("gameDetails.deleteAlert.message.warning".localized)
         }
-        let confirm = UIAlertAction(title: "Yes", style: .destructive) { [weak self] _ in
+        let confirm = UIAlertAction(title: "system.delete".localized, style: .destructive) { [weak self] _ in
             guard let self = self else { return }
-            CoreDataHelper.shared.delete(words: self.wordEntity!)
-            print(self.words.count)
-            self.wordEntity = nil
-            print(self.words.count)
-            self.animateViewDismiss()
-            
+            do {
+                try CoreDataHelper.shared.deleteWord(word: self.word)
+            } catch {
+                self.presentError(error)
+                return
+            }
+            self.animateViewDismiss(with: self.delegate?.deleteCardCell)
         }
-        let deny = UIAlertAction(title: "No", style: .cancel) { _ in
-            print("canceled")
-        }
+        let deny = UIAlertAction(title: "system.cancel".localized, style: .cancel)
+        
         alert.addAction(deny)
         alert.addAction(confirm)
         present(alert, animated: true)
     }
+    
     @objc func doneButtonDidTap(sender: UIButton){
-        let id = wordEntity.identifier
-        let order = wordEntity.order
-        self.wordEntity = CoreDataHelper.shared.pairDividerFor(dictionary: dictionary,
-                                                               text: self.textView.text,
-                                                               index: Int(order),
-                                                               id: id ?? UUID())
-        words[pairIndex] = wordEntity
-        textView.text = wordEntity.word + "\n" + "\n" + wordEntity.meaning
-        CoreDataHelper.shared.update(dictionary: dictionary, words: words, name: nil)
-        delegate?.updateCardCell(with: wordEntity)
+        do {
+            try CoreDataHelper.shared.reassignWordsProperties(for: word, from: textView.text)
+        } catch {
+            self.presentError(error)
+        }
+        textView.text = configureTextFor(editing: false)
         transitionToEditing(activate: false)
+        needUpdate = true
     }
+    
     @objc func informationButtonDidTap(sender: UIButton){
         let vc = InformationSheetController()
         present(vc, animated: true)
-        
     }
+    
     //Tap gesture to cancel view.
     @objc func handleTapGesture(sender: UITapGestureRecognizer){
         let location = sender.location(in: view)
         if !containerView.frame.contains(location){
-            animateViewDismiss()
+            animateViewDismiss(with: needUpdate ? delegate?.updateCardCell : delegate?.restoreCardCell)
         }
-
     }
-
 }
+//MARK: - Delegates
 extension GameDetailsVC: UITextViewDelegate{
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if currentAnchorConstant == secondAnchorConstant {
@@ -434,13 +435,16 @@ extension GameDetailsVC: UITextViewDelegate{
         }
     }
 }
+
+//MARK: - Custom sheet controller for information presentaition.
 class InformationSheetController: UIViewController{
     
     let informationLabel: UILabel = {
         let label = UILabel()
         label.textColor = .label
-        label.text = LanguageChangeManager.shared.localizedString(forKey: "gameDetails.information")
-        label.font = UIFont(name: .SelectedFonts.georigaItalic.rawValue , size: 18)
+        label.attributedText = NSAttributedString(
+            string: "gameDetails.information".localized,
+            attributes: [NSAttributedString.Key.font : UIFont(name: .SelectedFonts.georigaItalic.rawValue, size: 18)!])
         label.numberOfLines = 0
         label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
