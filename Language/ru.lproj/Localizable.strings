@@ -96,3 +96,26 @@
 "firstMessage" = "Во-первых, введенный текст разделяется на блоки.";
 "secondMessage" = "Во-вторых, блоки разделяются с помощью выбранного символа на пары Слово и Определение.";
 "informMessage" = "Если у вас возникнли вопросы или предложения - пожалуйста, свяжитесь с нами.";
+//MARK: - SystemErrors
+//Dictionary
+"coreData.dictionaryCreation" = "Failed to create dictionary";
+"coreData.dictionaryDeletion" = "Failed to delete dictionary";
+"coreData.dictionaryFetch" = "Failed to load dictionaries";
+"coreData.dictionaryUpdate" = "Failed to update dictionary";
+"coreData.dictionaryOrderUpdate" = "Failed to update dictionaries order";
+//Words
+"coreData.wordsCreation" = "Failed to create pair";
+"coreData.wordsDeletion" = "Failed to delete pair";
+"coreData.wordsFetch" = "Failed to load dictionaries content";
+"coreData.wordsUpdate" = "Failed to update words";
+"coreData.wordUpdate" = "Failed to update current pair:";
+"coreData.wordsOrderUpdate" = "Failed to update words order";
+//MARK: - EditVC
+"edit.emptyField.title" = "The edit field is empty";
+"edit.emptyField.message" = "Saving dictionary in this state will cause it's deletion. \nAre you sure?";
+
+
+
+
+
+

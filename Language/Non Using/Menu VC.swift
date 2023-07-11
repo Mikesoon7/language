@@ -9,11 +9,6 @@ import UIKit
 import CoreData
 import Charts
 
-private enum Cells: String{
-    case dict = "dict"
-    case stat = "stat"
-    case add = "add"
-}
 class MenuVC: UIViewController {
     
     var dictionaries: [DictionariesEntity] = []
@@ -37,9 +32,9 @@ class MenuVC: UIViewController {
 
     var tableView: UITableView = {
         var tableView = UITableView(frame: CGRect(x: 0, y: 0, width: 0, height: 0), style: .insetGrouped)
-        tableView.register(MenuDictionaryCell.self, forCellReuseIdentifier: Cells.dict.rawValue)
-        tableView.register(MenuStatisticCell.self, forCellReuseIdentifier: Cells.stat.rawValue)
-        tableView.register(MenuAddDictionaryCell.self, forCellReuseIdentifier: Cells.add.rawValue)
+        tableView.register(MenuDictionaryCell.self, forCellReuseIdentifier: MenuDictionaryCell.identifier)
+        tableView.register(MenuStatisticCell.self, forCellReuseIdentifier: MenuStatisticCell.identifier)
+        tableView.register(MenuAddDictionaryCell.self, forCellReuseIdentifier: MenuAddDictionaryCell.identifier)
         tableView.rowHeight = 104
         tableView.backgroundColor = .clear
         
@@ -263,29 +258,29 @@ extension MenuVC: CustomCellDataDelegate{
             textToEdit += line + "\n\n"
         }
         
-        let vc = EditVC()
-        vc.currentDictionary = dictionary
-        vc.currentDictionaryPairs = Array(pairs)
-        vc.oldText = textByLines
-        vc.textField.text = dictionary.language
-        vc.textView.text = textToEdit
-            
-        self.navigationController?.pushViewController(vc, animated: true)
-        menuAccessedForCell = nil
+//        let vc = EditView()
+//        vc.currentDictionary = dictionary
+//        vc.currentDictionaryPairs = Array(pairs)
+//        vc.oldText = textByLines
+//        vc.textField.text = dictionary.language
+//        vc.textView.text = textToEdit
+//            
+//        self.navigationController?.pushViewController(vc, animated: true)
+//        menuAccessedForCell = nil
     }
 }
 //MARK: - UITableViewDataSource
 extension MenuVC: UITableViewDataSource{
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard indexPath.section != tableView.numberOfSections - 1 else {
-            let cell = tableView.dequeueReusableCell(withIdentifier: Cells.add.rawValue,
+            let cell = tableView.dequeueReusableCell(withIdentifier: MenuAddDictionaryCell.identifier,
                                                      for: indexPath) as! MenuAddDictionaryCell
             return cell
         }
         
         let dictionary = fetchController.object(at: indexPath)
         if shouldDispayStatistic {
-            let cell = tableView.dequeueReusableCell(withIdentifier: Cells.stat.rawValue,
+            let cell = tableView.dequeueReusableCell(withIdentifier: MenuStatisticCell.identifier,
                                                      for: indexPath) as? MenuStatisticCell
             var logs = [DictionariesAccessLog]()
             do {
@@ -303,7 +298,7 @@ extension MenuVC: UITableViewDataSource{
             cell?.statisticResultLabel.text = String(Int(convertedLogs.values.reduce(0, +)))
             return cell!
         } else {
-            let cell = tableView.dequeueReusableCell(withIdentifier: Cells.dict.rawValue,
+            let cell = tableView.dequeueReusableCell(withIdentifier: MenuDictionaryCell.identifier,
                                                      for: indexPath) as! MenuDictionaryCell
             cell.configureCellWith(dictionary, delegate: self)
             return cell
@@ -349,13 +344,13 @@ extension MenuVC: NSFetchedResultsControllerDelegate {
     }
 }
 
-protocol CustomCellDataDelegate: AnyObject{
-    func panningBegan(for cell: UITableViewCell)
-
-    func panningEnded(active: Bool)
-
-    func deleteButtonDidTap(for cell: UITableViewCell)
-    
-    func editButtonDidTap(for cell: UITableViewCell)
-
-}
+//protocol CustomCellDataDelegate: AnyObject{
+//    func panningBegan(for cell: UITableViewCell)
+//
+//    func panningEnded(active: Bool)
+//
+//    func deleteButtonDidTap(for cell: UITableViewCell)
+//    
+//    func editButtonDidTap(for cell: UITableViewCell)
+//
+//}

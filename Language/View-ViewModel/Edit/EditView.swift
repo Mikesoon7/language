@@ -10,17 +10,17 @@
 //TODO: Add input pointer tracking
 
 import UIKit
-import Differ
+import Combine
 
-class EditVC: UIViewController {
+class EditView: UIViewController {
     
-    var currentDictionary: DictionariesEntity! 
-    var currentDictionaryPairs: [WordsEntity]!
+    private var cancellables = Set<AnyCancellable>()
+    private var viewModel: EditViewModel!
     
     //Text representaition of existing words for comparison
     var oldText: [String]!
-    var newText: [String]!
-        
+    
+    //MARK: - Views
     let textView: UITextView = {
         let view = UITextView()
         view.textContainerInset = UIEdgeInsets(top: 20, left: 20, bottom: 10, right: 20)
@@ -45,11 +45,21 @@ class EditVC: UIViewController {
         return field
     }()
     
-    var topStroke = CAShapeLayer()
-    var bottomStroke = CAShapeLayer()
-
+    private var topStroke = CAShapeLayer()
+    private var bottomStroke = CAShapeLayer()
+    
+    
+    //MARK: - Inherited methods
+    required init(dictionary: DictionariesEntity){
+        viewModel = EditViewModel(dictionary: dictionary)
+        super.init(nibName: nil, bundle: nil)
+    }
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
+        bind()
         configureController()
         configureTextField()
         configureTextView()
@@ -67,17 +77,51 @@ class EditVC: UIViewController {
             self.topStroke.strokeColor = UIColor.label.cgColor
         }
     }
+    private func bind(){
+        viewModel.$textToDisplay
+            .receive(on: DispatchQueue.main)
+            .sink(receiveValue: { [weak self] data in
+                self?.configure(with: data.unsafelyUnwrapped)
+            })
+            .store(in: &cancellables)
+        
+        viewModel.output
+            .sink { [weak self] output in
+                switch output {
+                case .data(let parsedDictionary):
+                    self?.configure(with: parsedDictionary)
+                case .dictionaryError(let error):
+                    self?.presentError(error)
+                case .wordsError(let error):
+                    self?.presentError(error)
+                case .emtyText:
+                    self?.configureAlertMessage()
+                case .editSucceed:
+                    self?.navigationController?.popViewController(animated: true)
+                }
+            }
+            .store(in: &cancellables)
+        
+    }
+    //MARK: - Stroke SetUp
     func configureStrokes(){
         topStroke = UIView().addTopStroke(vc: self)
         bottomStroke = UIView().addBottomStroke(vc: self)
-
+        
         view.layer.addSublayer(topStroke)
         view.layer.addSublayer(bottomStroke)
     }
-    
+    //MARK: - Initial controller SetUp
     func configureController(){
         view.backgroundColor = .systemBackground
     }
+    //CustomStruct
+    func configure(with data: ParsedDictionary){
+        self.oldText = data.separatedText
+        self.textField.text = data.name
+        self.textView.text = data.text
+    }
+    
     //MARK: - TextView SetUp
     func configureTextView(){
         textView.delegate = self
@@ -90,6 +134,7 @@ class EditVC: UIViewController {
             textView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
         ])
     }
+    
     //MARK: - TextField SetUp
     func configureTextField(){
         textField.delegate = self
@@ -106,39 +151,34 @@ class EditVC: UIViewController {
         navigationItem.backButtonDisplayMode = .minimal
         self.navigationController?.navigationBar.tintColor = .label
         self.navigationController?.navigationBar.isTranslucent = true
+    }
+    
+    func configureAlertMessage(){
+        let alert = UIAlertController().alertWithAction(
+            alertTitle: "edit.emptyField.title".localized,
+            alertMessage: "edit.emptyField.message".localized,
+            alertStyle: .actionSheet,
+            action2Title: "system.cancel".localized, action2Style: .cancel)
+        let deleteAction = UIAlertAction(title: "system.delete".localized, style: .destructive){ [weak self] _ in
+            self?.viewModel?.deleteDictionary()
+        }
+        alert.addAction(deleteAction)
+        self.present(self, animated: true)
+    }
+}
 
-    }
-    //MARK: - Actions
+//MARK: - Actions
+extension EditView {
     @objc func saveButTap(sender: Any){
-        guard textView.text != "" else {
-            //TODO: Add alert if text or name was vanished.
-            return
-        }
-        
-        let lines = textView.text.split(separator: "\n", omittingEmptySubsequences: true)
-        newText = lines.map({ String($0) })
-        let patch = patch(from: oldText, to: newText)
-        for i in patch{
-            switch i {
-            case .deletion(index: let index):
-                currentDictionaryPairs.remove(at: index)
-            case .insertion(index: let index, element: let text):
-                currentDictionaryPairs.insert(CoreDataHelper.shared.createWordFromLine(for: currentDictionary, text: text, index: index), at: index)
-            }
-        }
-        do {
-           try CoreDataHelper.shared.update(dictionary: currentDictionary, words: currentDictionaryPairs, name: self.textField.text)
-        } catch {
-            let alert = UIAlertController().alertWithAction(alertTitle: "Error", alertMessage: "An unexpected error occurred. Please try again or contact the support team if the issue persists")
-        }
-        self.navigationController?.popViewController(animated: true)
+        let text = textView.text
+        viewModel.parseTextToArray(name: textField.text, newText: text ?? "", oldCollection: oldText)
     }
+    
     //Done button
     @objc func rightBarButDidTap(sender: Any){
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .save,
                                                             target: self,
                                                             action: #selector(saveButTap(sender:)))
-
         if textView.isFirstResponder{
             textView.resignFirstResponder()
         } else if textField.isFirstResponder{
@@ -148,7 +188,7 @@ class EditVC: UIViewController {
 }
 
 //MARK: - TextViewDelegate
-extension EditVC: UITextViewDelegate{
+extension EditView: UITextViewDelegate{
     func textViewDidBeginEditing(_ textView: UITextView) {
         if textView.textColor == .lightGray {
             textView.text = nil
@@ -160,12 +200,10 @@ extension EditVC: UITextViewDelegate{
             navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(rightBarButDidTap(sender:)))
         }
     }
-    
-    
 }
 
 //MARK: - TextFieldDelegate
-extension EditVC: UITextFieldDelegate{
+extension EditView: UITextFieldDelegate{
     func textFieldDidBeginEditing(_ textField: UITextField) {
         if self.navigationController?.navigationItem.rightBarButtonItem == nil{
             self.navigationItem.setRightBarButton(UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(rightBarButDidTap(sender:))), animated: true)

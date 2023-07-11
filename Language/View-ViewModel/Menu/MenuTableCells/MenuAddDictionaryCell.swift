@@ -9,7 +9,7 @@ import UIKit
 
 class MenuAddDictionaryCell: UITableViewCell {
     
-    let identifier = "addCell"
+    static let identifier = "addCell"
 
     var importLabel: UILabel = {
         var label = UILabel()

@@ -79,7 +79,6 @@
 "gameDetails.deleteAlert.message" = "Ви впевнені, що хочете видалити цю пару?";
 "gameDetails.deleteAlert.message.warning" = "\n nЦе остання картка, тому ваш словник також буде видалено.";
 
-
 //MARK: - Notification
 "allowNotification" = "Дозволити повідомлення";
 "frequency" = "Нагадувати";
@@ -97,4 +96,23 @@
 "firstMessage" = "По-перше, введений текст поділяється на блоки.";
 "secondMessage" = "По-друге, блоки поділяються за допомогою вибраного символу на пари Слово та Визначення.";
 "informMessage" = "Якщо у вас виникнули запитання чи пропозиції - будь ласка, зв'яжіться з нами.";
+//MARK: - SystemErrors
+//Dictionary
+"coreData.dictionaryCreation" = "Failed to create dictionary";
+"coreData.dictionaryDeletion" = "Failed to delete dictionary";
+"coreData.dictionaryFetch" = "Failed to load dictionaries";
+"coreData.dictionaryUpdate" = "Failed to update dictionary";
+"coreData.dictionaryOrderUpdate" = "Failed to update dictionaries order";
+//Words
+"coreData.wordsCreation" = "Failed to create pair";
+"coreData.wordsDeletion" = "Failed to delete pair";
+"coreData.wordsFetch" = "Failed to load dictionaries content";
+"coreData.wordsUpdate" = "Failed to update words";
+"coreData.wordUpdate" = "Failed to update current pair:";
+"coreData.wordsOrderUpdate" = "Failed to update words order";
+//MARK: - EditVC
+"edit.emptyField.title" = "The edit field is empty";
+"edit.emptyField.message" = "Saving dictionary in this state will cause it's deletion. \nAre you sure?";
+
+
 

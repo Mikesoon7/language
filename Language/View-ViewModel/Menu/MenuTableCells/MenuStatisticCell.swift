@@ -10,6 +10,7 @@ import Charts
 
 class MenuStatisticCell: UITableViewCell {
     
+    static let identifier = "statisCell"
     
     var isDisplayingStatistic: Bool = false
             

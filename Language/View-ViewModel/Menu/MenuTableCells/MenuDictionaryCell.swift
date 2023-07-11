@@ -14,7 +14,7 @@ enum Direction{
 
 class MenuDictionaryCell: UITableViewCell{
 
-    let identifier = "dictCell"
+    static let identifier = "dictCell"
     
     var direction: Direction!
     var isActionActive: Bool = false
@@ -23,16 +23,17 @@ class MenuDictionaryCell: UITableViewCell{
     var isDisplayingStatistic: Bool = false
     var delegate: CustomCellDataDelegate!
     
-    lazy var statisticView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .blue
-        
-        view.layer.cornerRadius = cornerRadius
-        view.clipsToBounds = true
-        
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
+    //MARK: - Views
+//    lazy var statisticView: UIView = {
+//        let view = UIView()
+//        view.backgroundColor = .blue
+//
+//        view.layer.cornerRadius = cornerRadius
+//        view.clipsToBounds = true
+//
+//        view.translatesAutoresizingMaskIntoConstraints = false
+//        return view
+//    }()
     lazy var holderView: UIView = {
         let view = UIView()
         view.backgroundColor = .clear
@@ -97,7 +98,10 @@ class MenuDictionaryCell: UITableViewCell{
     lazy var deleteView: UIView = configureCustomActions(imageName: "trash",
                                                          colour: .systemGray4)
     
-    //MARK: - Dimensions
+    lazy var statView: UIView = configureCustomActions(imageName: "chart.bar",
+                                                       colour: .systemGray3)
+    
+    //MARK: Constrait related properties
     let cornerRadius: CGFloat = 9
 
     var contentViewWidth: CGFloat!
@@ -113,13 +117,11 @@ class MenuDictionaryCell: UITableViewCell{
     var finalActionConstant: CGFloat!
 
         
-//MARK: - Prepare Func
+    //MARK: - Inherited Methods
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         configureHolderView()
         configureMainView()
-        configureStatisticView()
-
 
         configurePanGesture()
         configureTapGesture()
@@ -135,6 +137,7 @@ class MenuDictionaryCell: UITableViewCell{
         
         editView.layer.mask = configureMaskFor(size: CGSize(width: contentView.frame.width * 0.2 , height: contentView.frame.height))
         deleteView.layer.mask = configureMaskFor(size: CGSize(width: contentView.frame.width * 0.2 , height: contentView.frame.height))
+        statView.layer.mask = configureMaskFor(size: CGSize(width: contentView.frame.width * 0.2 , height: contentView.frame.height))
     }
     override func prepareForReuse() {
         guard !isActionActive else {
@@ -142,13 +145,14 @@ class MenuDictionaryCell: UITableViewCell{
             return
         }
     }
+    //MARK: - Cell SetUp
     func configureCellWith(_ dictionary: DictionariesEntity, delegate: CustomCellDataDelegate){
         self.languageResultLabel.text = dictionary.language
         self.cardsResultLabel.text = String(dictionary.numberOfCards)
         self.delegate = delegate
     }
+    //MARK: - HolderView SetUp
     func configureHolderView(){
-        contentView.addSubview(statisticView)
         contentView.addSubview(holderView)
         holderView.addSubviews(mainView, editView, deleteView)
 
@@ -168,11 +172,6 @@ class MenuDictionaryCell: UITableViewCell{
                                                                       constant: -cornerRadius)
         
         NSLayoutConstraint.activate([
-            statisticView.topAnchor.constraint(equalTo: contentView.topAnchor),
-            statisticView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            statisticView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
-            statisticView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-
             holderViewLeadingAnchor,
             holderView.topAnchor.constraint(equalTo: contentView.topAnchor),
             holderView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
@@ -193,42 +192,6 @@ class MenuDictionaryCell: UITableViewCell{
             editView.bottomAnchor.constraint(equalTo: mainView.bottomAnchor),
             editView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.2)
             ])
-    }
-    func configureStatistic(){
-        let bounds = contentView.bounds
-        
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Here is your statistic"
-        label.textColor = .label
-        
-        statisticView.frame = bounds
-        statisticView.addSubview(label)
-        self.addSubview(statisticView)
-
-        NSLayoutConstraint.activate([
-            label.centerYAnchor.constraint(equalTo: statisticView.centerYAnchor),
-            label.centerXAnchor.constraint(equalTo: statisticView.centerXAnchor)
-        ])
-    }
-    func configureStatisticView(){
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Here is your statistic"
-        label.textColor = .label
-        
-        statisticView.addSubview(label)
-        
-        NSLayoutConstraint.activate([
-            label.centerYAnchor.constraint(equalTo: statisticView.centerYAnchor),
-            label.centerXAnchor.constraint(equalTo: statisticView.centerXAnchor)
-        ])
-    }
-    func flip() {
-        UIView.transition(with: self.contentView, duration: 1.0, options: [.transitionFlipFromTop, .showHideTransitionViews], animations: { [weak self] in
-            self?.mainView.isHidden = !(self?.mainView.isHidden ?? false)
-            self?.statisticView.isHidden = !(self?.statisticView.isHidden ?? false)
-        }, completion: nil)
     }
     func configureMainView(){
         mainView.addSubviews(languageResultLabel, languageLabel, cardsLabel, cardsResultLabel)
