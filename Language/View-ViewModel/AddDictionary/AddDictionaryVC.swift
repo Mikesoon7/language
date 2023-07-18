@@ -8,8 +8,12 @@
 //TODO: Add limit for name
 import UIKit
 import CoreData
+import Combine
 
 class AddDictionaryVC: UIViewController {
+    
+    private var model: AddDictionaryModel!
+    private var cancellabel = Set<AnyCancellable>()
     
     var textView: UITextView = {
         var textView = TextViewToCreate()

@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SwiftUI
 
 enum Direction{
     case left
@@ -14,18 +15,25 @@ enum Direction{
 
 class MenuDictionaryCell: UITableViewCell{
 
+    private struct ViewConstants{
+        static let cornerRadius = CGFloat(9)
+//        static let offset = CGFloat(10) // due to the concavity of action buttons we use offset.
+        static let overlayPoints = CGFloat(2)
+    }
     static let identifier = "dictCell"
     
     var direction: Direction!
     var isActionActive: Bool = false
     var isActionLooped: Bool = false
     
+    var statiscticCharts: UIView!
+    
     var delegate: CustomCellDataDelegate!
     var isStatActive: Bool = false
     //MARK: - Views
     lazy var statisticView: UIView = {
         let view = UIView()
-        view.backgroundColor = .systemGray5
+        view.backgroundColor = .systemGray6
 
         view.layer.cornerRadius = cornerRadius
         view.clipsToBounds = true
@@ -105,6 +113,7 @@ class MenuDictionaryCell: UITableViewCell{
     let cornerRadius: CGFloat = 9
 
     var contentViewWidth: CGFloat!
+    var contentViewHeight: CGFloat!
     
     var holderViewLeadingAnchor: NSLayoutConstraint!
     var initialHolderConstant: CGFloat!
@@ -124,6 +133,9 @@ class MenuDictionaryCell: UITableViewCell{
     var statViewLeadingAnchor: NSLayoutConstraint!
     var initilStatConstant: CGFloat!
     var finalStatConstant: CGFloat!
+    
+    var statViewInitialLeadingAnchor: NSLayoutConstraint!
+    var statViewFinalLeadingAnchor: NSLayoutConstraint!
     
     var statViewWidthAnchor: NSLayoutConstraint!
     var statViewInitialWidth: CGFloat!
@@ -147,9 +159,15 @@ class MenuDictionaryCell: UITableViewCell{
     override func layoutSubviews() {
         super.layoutSubviews()
         
-        statView.layer.mask = configureMaskFor(size: CGSize(width: contentView.frame.width * 0.2 , height: contentView.frame.height))
-        editView.layer.mask = configureMaskFor(size: CGSize(width: contentView.frame.width * 0.2 , height: contentView.frame.height))
-        deleteView.layer.mask = configureMaskFor(size: CGSize(width: contentView.frame.width * 0.2 , height: contentView.frame.height))
+        statView.layer.mask = configureMaskFor(size: CGSize(
+            width: contentView.frame.width * 0.2 + ViewConstants.overlayPoints,
+            height: contentView.frame.height))
+        editView.layer.mask = configureMaskFor(size: CGSize(
+            width: contentView.frame.width * 0.2 + ViewConstants.overlayPoints,
+            height: contentView.frame.height))
+        deleteView.layer.mask = configureMaskFor(size: CGSize(
+            width: contentView.frame.width * 0.2 + ViewConstants.overlayPoints,
+            height: contentView.frame.height))
     }
     override func prepareForReuse() {
         guard !isActionActive else {
@@ -169,24 +187,25 @@ class MenuDictionaryCell: UITableViewCell{
         holderView.addSubviews(mainView, statisticView, statView, editView, deleteView)
 
         contentViewWidth = contentView.frame.width
+        contentViewHeight = contentView.frame.height
         initialActionConstant = -cornerRadius
 
         //Related to the holder
         initialHolderConstant = 0
         currentHolderConstant = 0
-        finalHolderConstant = -(contentViewWidth * 0.6 - cornerRadius)
+        finalHolderConstant = -(contentViewWidth * 0.6 - cornerRadius * 2)
         holderViewLeadingAnchor = holderView.leadingAnchor.constraint(
             equalTo: contentView.leadingAnchor, constant: currentHolderConstant)
         
         //Related to Delete
         currentDeleteConstant = -cornerRadius
-        finalDeleteConstant = contentViewWidth * 0.4 - cornerRadius * 1.55
+        finalDeleteConstant = contentViewWidth * 0.4 - cornerRadius * 2
         deleteViewLeadingAnchor = deleteView.leadingAnchor.constraint(
             equalTo: mainView.trailingAnchor, constant: initialActionConstant)
         
         //Related to Edit
         currentEditConstant = -cornerRadius
-        finalEditConstant = contentViewWidth * 0.2 - cornerRadius * 1.25
+        finalEditConstant = contentViewWidth * 0.2 - cornerRadius * 1.5
         editViewLeadingAnchor = editView.leadingAnchor.constraint(
             equalTo: mainView.trailingAnchor, constant: initialActionConstant)
         
@@ -197,6 +216,9 @@ class MenuDictionaryCell: UITableViewCell{
         statViewInitialWidth = -contentViewWidth
         statViewFinalWifth = 0
         statViewWidthAnchor = statisticView.widthAnchor.constraint(equalTo: contentView.widthAnchor, constant: statViewInitialWidth)
+        
+        statViewInitialLeadingAnchor = statisticView.leadingAnchor.constraint(equalTo: statView.leadingAnchor)
+        statViewFinalLeadingAnchor = statisticView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor)
         
         NSLayoutConstraint.activate([
             holderViewLeadingAnchor,
@@ -224,11 +246,13 @@ class MenuDictionaryCell: UITableViewCell{
             statView.bottomAnchor.constraint(equalTo: mainView.bottomAnchor),
             statView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.2),
             
-            statisticView.trailingAnchor.constraint(equalTo: statView.trailingAnchor),
+            statViewInitialLeadingAnchor,
             statisticView.topAnchor.constraint(equalTo: statView.topAnchor),
             statisticView.bottomAnchor.constraint(equalTo: statView.bottomAnchor),
-            statViewWidthAnchor
+//            statViewWidthAnchor
+            statisticView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.8, constant: ViewConstants.cornerRadius + ViewConstants.overlayPoints)
             ])
+//        addChart()
     }
     func configureMainView(){
         mainView.addSubviews(languageResultLabel, languageLabel, cardsLabel, cardsResultLabel)
@@ -348,16 +372,52 @@ class MenuDictionaryCell: UITableViewCell{
         }
         anim1.startAnimation(afterDelay: 0.5)
     }
+    func addChart(){
+        let view = UIHostingController(rootView: BarChart(data: fakeData, width: contentViewWidth * 0.8, height: contentViewHeight ))
+        guard let statiscticCharts = view.view else { return }
+        statiscticCharts.alpha = 0
+        statiscticCharts.backgroundColor = .clear
+        statiscticCharts.translatesAutoresizingMaskIntoConstraints = false
+        statisticView.addSubview(statiscticCharts)
+        
+        NSLayoutConstraint.activate([
+            statiscticCharts.centerYAnchor.constraint(equalTo: statisticView.centerYAnchor),
+            statiscticCharts.heightAnchor.constraint(equalTo: statisticView.heightAnchor),
+            statiscticCharts.centerXAnchor.constraint(equalTo: statisticView.centerXAnchor),
+            statiscticCharts.widthAnchor.constraint(equalTo: statisticView.widthAnchor)
+        ])
+        UIView.animate(withDuration: 0.3) {
+            statiscticCharts.alpha = 1
+        }
+    }
     func animateTransitionToStat(activate: Bool){
-        self.activate(!activate)
-        UIView.animate(withDuration: 0.5, delay: 0) {
+        let animation = UIViewPropertyAnimator(duration: 0.5, curve: .easeOut) {
             self.statViewLeadingAnchor.constant = activate ? self.finalStatConstant : self.initialActionConstant
             self.layoutIfNeeded()
             UIView.animate(withDuration: 0.4, delay: 0.2) {
-                self.statViewWidthAnchor.constant = activate ? self.statViewFinalWifth : self.statViewInitialWidth
+//                self.statViewWidthAnchor.constant = activate ? self.statViewFinalWifth : self.statViewInitialWidth
+                self.statViewInitialLeadingAnchor.isActive = !activate
+                self.statViewFinalLeadingAnchor.isActive = activate
                 self.layoutIfNeeded()
             }
         }
+        self.activate(!activate)
+        animation.addCompletion { _ in
+            if activate {
+                self.addChart()
+            } else {
+                self.statiscticCharts?.removeFromSuperview()
+            }
+        }
+        animation.startAnimation()
+//        UIView.animate(withDuration: 0.5, delay: 0) {
+//            self.statViewLeadingAnchor.constant = activate ? self.finalStatConstant : self.initialActionConstant
+//            self.layoutIfNeeded()
+//            UIView.animate(withDuration: 0.4, delay: 0.2) {
+//                self.statViewWidthAnchor.constant = activate ? self.statViewFinalWifth : self.statViewInitialWidth
+//                self.layoutIfNeeded()
+//            }
+//        }
     }
     //Animation for swipe transition
     func activate(_ activate: Bool){
@@ -462,3 +522,38 @@ class MenuDictionaryCell: UITableViewCell{
         cardsLabel.text = LanguageChangeManager.shared.localizedString(forKey: "tableCellNumberOfCards")
     }
 }
+let fakeData = [
+    FakeLogs(date: "10/10/2001", accessCount: 1),
+    FakeLogs(date: "11/10/2001", accessCount: 2),
+    FakeLogs(date: "12/10/2001", accessCount: 3),
+    FakeLogs(date: "13/10/2001", accessCount: 4),
+    FakeLogs(date: "14/10/2001", accessCount: 5),
+    FakeLogs(date: "15/10/2001", accessCount: 6),
+    FakeLogs(date: "16/10/2001", accessCount: 7),
+    FakeLogs(date: "17/10/2001", accessCount: 8),
+    FakeLogs(date: "18/10/2001", accessCount: 9),
+    FakeLogs(date: "19/10/2001", accessCount: 10),
+    FakeLogs(date: "20/10/2001", accessCount: 11),
+    FakeLogs(date: "21/10/2001", accessCount: 12),
+    FakeLogs(date: "22/10/2001", accessCount: 13),
+    FakeLogs(date: "23/10/2001", accessCount: 14),
+    FakeLogs(date: "24/10/2001", accessCount: 15),
+    FakeLogs(date: "25/10/2001", accessCount: 18),
+    FakeLogs(date: "10/11/2001", accessCount: 8),
+    FakeLogs(date: "11/11/2001", accessCount: 8),
+    FakeLogs(date: "12/11/2001", accessCount: 8),
+    FakeLogs(date: "13/11/2001", accessCount: 8),
+    FakeLogs(date: "14/11/2001", accessCount: 8),
+    FakeLogs(date: "15/11/2001", accessCount: 8),
+    FakeLogs(date: "16/11/2001", accessCount: 8),
+    FakeLogs(date: "17/11/2001", accessCount: 8),
+    FakeLogs(date: "18/11/2001", accessCount: 8),
+    FakeLogs(date: "19/11/2001", accessCount: 18),
+    FakeLogs(date: "20/11/2001", accessCount: 18),
+    FakeLogs(date: "21/11/2001", accessCount: 18),
+    FakeLogs(date: "22/11/2001", accessCount: 18),
+    FakeLogs(date: "23/11/2001", accessCount: 18),
+    FakeLogs(date: "24/11/2001", accessCount: 18),
+    FakeLogs(date: "25/11/2001", accessCount: 18)
+]
+

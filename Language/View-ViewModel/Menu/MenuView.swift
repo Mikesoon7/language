@@ -38,7 +38,7 @@ class MenuView: UIViewController {
         tableView.register(MenuAddDictionaryCell.self, forCellReuseIdentifier: MenuAddDictionaryCell.identifier)
         tableView.rowHeight = 104
         tableView.backgroundColor = .clear
-        
+    
         tableView.translatesAutoresizingMaskIntoConstraints = false
         
         tableView.subviews.forEach{ section in
@@ -178,6 +178,9 @@ extension MenuView: UITableViewDelegate{
             vc.dictionary = viewModel.dictionaries[section]
             self.navigationController?.pushViewController(vc, animated: true)
         }
+    }
+    func tableView(_ tableView: UITableView, selectionFollowsFocusForRowAt indexPath: IndexPath) -> Bool {
+        false
     }
 }
 //MARK: - UITableViewDataSource

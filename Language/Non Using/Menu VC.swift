@@ -7,7 +7,6 @@
 
 import UIKit
 import CoreData
-import Charts
 
 class MenuVC: UIViewController {
     
@@ -147,17 +146,17 @@ class MenuVC: UIViewController {
         tabBarController?.tabBar.shadowImage = UIImage()
         tabBarController?.tabBar.backgroundImage = UIImage()
     }
-    func configureDataForDiagram(with data: [Date: Double]) -> ChartData {
-        var entries = [BarChartDataEntry]()
-        let formatter = DateFormatter()
-        formatter.dateFormat = "dd"
-        data.forEach { (key: Date, value: Double) in
-            entries.append(BarChartDataEntry(x: Double(formatter.string(from: key))!, y: value))
-        }
-        let barDataSet = BarChartDataSet(entries: entries)
-        let chart = ChartData(dataSet: barDataSet)
-        return  chart
-    }
+//    func configureDataForDiagram(with data: [Date: Double]) -> ChartData {
+//        var entries = [BarChartDataEntry]()
+//        let formatter = DateFormatter()
+//        formatter.dateFormat = "dd"
+//        data.forEach { (key: Date, value: Double) in
+//            entries.append(BarChartDataEntry(x: Double(formatter.string(from: key))!, y: value))
+//        }
+//        let barDataSet = BarChartDataSet(entries: entries)
+//        let chart = ChartData(dataSet: barDataSet)
+//        return  chart
+//    }
     //MARK: - Actions
     @objc func statButtonDidTap(sender: Any){
         shouldDispayStatistic.toggle()
@@ -282,20 +281,20 @@ extension MenuVC: UITableViewDataSource{
         if shouldDispayStatistic {
             let cell = tableView.dequeueReusableCell(withIdentifier: MenuStatisticCell.identifier,
                                                      for: indexPath) as? MenuStatisticCell
-            var logs = [DictionariesAccessLog]()
-            do {
-                logs = try CoreDataHelper.shared.fetchAllLogs(for: dictionary)
-            } catch {
-                self.presentError(error)
-            }
-            var convertedLogs = [Date: Double]()
-            logs.map { log in
-                convertedLogs[log.accessDate ?? Date()] = Double(log.accessCount)
-            }
-            cell?.diagramView.data = configureDataForDiagram(with: convertedLogs)
-            cell?.nameResultLabel.text = dictionary.language
-            cell?.creationResultLabel.text = convertedLogs.keys.min()?.formatted(date: .abbreviated, time: .omitted)
-            cell?.statisticResultLabel.text = String(Int(convertedLogs.values.reduce(0, +)))
+//            var logs = [DictionariesAccessLog]()
+//            do {
+//                logs = try CoreDataHelper.shared.fetchAllLogs(for: dictionary)
+//            } catch {
+//                self.presentError(error)
+//            }
+//            var convertedLogs = [Date: Double]()
+//            logs.map { log in
+//                convertedLogs[log.accessDate ?? Date()] = Double(log.accessCount)
+//            }
+//            cell?.diagramView.data = configureDataForDiagram(with: convertedLogs)
+//            cell?.nameResultLabel.text = dictionary.language
+//            cell?.creationResultLabel.text = convertedLogs.keys.min()?.formatted(date: .abbreviated, time: .omitted)
+//            cell?.statisticResultLabel.text = String(Int(convertedLogs.values.reduce(0, +)))
             return cell!
         } else {
             let cell = tableView.dequeueReusableCell(withIdentifier: MenuDictionaryCell.identifier,

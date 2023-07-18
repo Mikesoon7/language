@@ -64,7 +64,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         return tabBArController
     }
     func observeLanguageChange(){
-        NotificationCenter.default.addObserver(self, selector: #selector(languageDidChange(sender:)), name: .appDataDidChange, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(languageDidChange(sender:)), name: .appLanguageDidChange, object: nil)
     }
     func sceneDidDisconnect(_ scene: UIScene) {
         // Called as the scene is being released by the system.

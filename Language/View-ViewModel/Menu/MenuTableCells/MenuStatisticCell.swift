@@ -25,7 +25,7 @@ class MenuStatisticCell: UITableViewCell {
         return view
     }()
     
-    var diagramView: StatisticChart!
+//    var diagramView: StatisticChart!
     let nameLabel: UILabel = {
         let label = UILabel()
         label.attributedText = NSAttributedString().fontWithString(
@@ -85,30 +85,30 @@ class MenuStatisticCell: UITableViewCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        var data: [Date: Double] = [
-            Date(timeInterval: 3600, since: Date.now): 18.0,
-            Date(timeInterval: 1600, since: Date.now): 9.0,
-            Date(timeInterval: 2600, since: Date.now): 4.0,
-            Date(timeInterval: 4400, since: Date.now): 19.0,
-            Date(timeInterval: 1100, since: Date.now): 11.0,
-
-        ]
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "dd"
-        var entries = [BarChartDataEntry]()
-        for i in data{
-            entries.append(BarChartDataEntry(x: Double(dateFormatter.string(from: i.key))!, y: i.value))
-        }
-        let set = BarChartDataSet(entries: entries )
-        set.colors = [UIColor.red]
-        let dataBar = BarChartData(dataSet: set)
-        diagramView = StatisticChart(frame: CGRect(), data: dataBar)
-        diagramView.notifyDataSetChanged()
-
-        diagramView.delegate = self
-
-        diagramView.translatesAutoresizingMaskIntoConstraints = false
-        
+//        var data: [Date: Double] = [
+//            Date(timeInterval: 3600, since: Date.now): 18.0,
+//            Date(timeInterval: 1600, since: Date.now): 9.0,
+//            Date(timeInterval: 2600, since: Date.now): 4.0,
+//            Date(timeInterval: 4400, since: Date.now): 19.0,
+//            Date(timeInterval: 1100, since: Date.now): 11.0,
+//
+//        ]
+//        let dateFormatter = DateFormatter()
+//        dateFormatter.dateFormat = "dd"
+//        var entries = [BarChartDataEntry]()
+//        for i in data{
+//            entries.append(BarChartDataEntry(x: Double(dateFormatter.string(from: i.key))!, y: i.value))
+//        }
+//        let set = BarChartDataSet(entries: entries )
+//        set.colors = [UIColor.red]
+//        let dataBar = BarChartData(dataSet: set)
+//        diagramView = StatisticChart(frame: CGRect(), data: dataBar)
+//        diagramView.notifyDataSetChanged()
+//
+//        diagramView.delegate = self
+//
+//        diagramView.translatesAutoresizingMaskIntoConstraints = false
+//
         configureView()
         contentView.backgroundColor = .clear
         NotificationCenter.default.addObserver(self, selector: #selector(languageDidChange(sender:)), name: .appLanguageDidChange, object: nil)
@@ -126,8 +126,8 @@ class MenuStatisticCell: UITableViewCell {
     }
     func configureView(){
         contentView.addSubview(view)
-        view.addSubviews(diagramView, nameLabel ,statisticLabel, statisticResultLabel, creationLabel,
-                         nameResultLabel, creationResultLabel, diagramView)
+        view.addSubviews(nameLabel ,statisticLabel, statisticResultLabel, creationLabel,
+                         nameResultLabel, creationResultLabel)
         
         NSLayoutConstraint.activate([
             view.topAnchor.constraint(equalTo: contentView.topAnchor),
@@ -135,10 +135,10 @@ class MenuStatisticCell: UITableViewCell {
             view.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             view.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             
-            diagramView.topAnchor.constraint(equalTo: view.topAnchor, constant: 5),
-            diagramView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -5),
-            diagramView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -5),
-            diagramView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.3),
+//            diagramView.topAnchor.constraint(equalTo: view.topAnchor, constant: 5),
+//            diagramView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -5),
+//            diagramView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -5),
+//            diagramView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.3),
             
             nameLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 10),
             nameLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 15),
@@ -153,15 +153,15 @@ class MenuStatisticCell: UITableViewCell {
             creationLabel.heightAnchor.constraint(equalToConstant: 25),
 
             nameResultLabel.centerYAnchor.constraint(equalTo: nameLabel.centerYAnchor),
-            nameResultLabel.trailingAnchor.constraint(equalTo: diagramView.leadingAnchor, constant: -10),
+//            nameResultLabel.trailingAnchor.constraint(equalTo: diagramView.leadingAnchor, constant: -10),
             nameResultLabel.heightAnchor.constraint(equalToConstant: 25),
 
             statisticResultLabel.centerYAnchor.constraint(equalTo: statisticLabel.centerYAnchor),
-            statisticResultLabel.trailingAnchor.constraint(equalTo: diagramView.leadingAnchor, constant: -10),
+//            statisticResultLabel.trailingAnchor.constraint(equalTo: diagramView.leadingAnchor, constant: -10),
             statisticResultLabel.heightAnchor.constraint(equalToConstant: 25),
             
             creationResultLabel.centerYAnchor.constraint(equalTo: creationLabel.centerYAnchor),
-            creationResultLabel.trailingAnchor.constraint(equalTo: diagramView.leadingAnchor, constant: -10),
+//            creationResultLabel.trailingAnchor.constraint(equalTo: diagramView.leadingAnchor, constant: -10),
             creationResultLabel.heightAnchor.constraint(equalToConstant: 25)
 
         ])
@@ -173,16 +173,16 @@ class MenuStatisticCell: UITableViewCell {
         creationLabel.text = LanguageChangeManager.shared.localizedString(forKey: "statisticCellCreationDate")
     }
 }
-extension MenuStatisticCell: ChartViewDelegate {
-
-}
-class StatisticChart: BarChartView {
-    
-    init(frame: CGRect, data: ChartData) {
-        super.init(frame: frame)
-        self.data = data
-    }
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("Could not load NSCoder")
-    }
-}
+//extension MenuStatisticCell: ChartViewDelegate {
+//
+//}
+//class StatisticChart: BarChartView {
+//
+//    init(frame: CGRect, data: ChartData) {
+//        super.init(frame: frame)
+//        self.data = data
+//    }
+//    required init?(coder aDecoder: NSCoder) {
+//        fatalError("Could not load NSCoder")
+//    }
+//}

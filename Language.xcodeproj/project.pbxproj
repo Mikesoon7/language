@@ -38,6 +38,7 @@
 		9A94B95B2A5ED84900DF6E4C /* StatiscticCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A94B95A2A5ED84900DF6E4C /* StatiscticCellView.swift */; };
 		9A9970FC29D9D662007EE635 /* SearchVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A9970FB29D9D661007EE635 /* SearchVC.swift */; };
 		9A9970FE29DB2D86007EE635 /* LaunchAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A9970FD29DB2D86007EE635 /* LaunchAnimation.swift */; };
+		9AA61BEF2A616D3200FACAD2 /* AddDictionaryModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AA61BEE2A616D3100FACAD2 /* AddDictionaryModel.swift */; };
 		9AA71C5B29C20894008A193B /* MainGameVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AA71C5A29C20894008A193B /* MainGameVC.swift */; };
 		9AA71C5F29C2FC76008A193B /* CardCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AA71C5E29C2FC76008A193B /* CardCell.swift */; };
 		9AA71C6129C34EA8008A193B /* CollectionViewLastCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AA71C6029C34EA8008A193B /* CollectionViewLastCell.swift */; };
@@ -130,6 +131,7 @@
 		9A94B95A2A5ED84900DF6E4C /* StatiscticCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatiscticCellView.swift; sourceTree = "<group>"; };
 		9A9970FB29D9D661007EE635 /* SearchVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchVC.swift; sourceTree = "<group>"; };
 		9A9970FD29DB2D86007EE635 /* LaunchAnimation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchAnimation.swift; sourceTree = "<group>"; };
+		9AA61BEE2A616D3100FACAD2 /* AddDictionaryModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDictionaryModel.swift; sourceTree = "<group>"; };
 		9AA71C5A29C20894008A193B /* MainGameVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainGameVC.swift; sourceTree = "<group>"; };
 		9AA71C5E29C2FC76008A193B /* CardCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardCell.swift; sourceTree = "<group>"; };
 		9AA71C6029C34EA8008A193B /* CollectionViewLastCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewLastCell.swift; sourceTree = "<group>"; };
@@ -257,6 +259,7 @@
 			isa = PBXGroup;
 			children = (
 				9AE509342997C07700D86DD7 /* AddDictionaryVC.swift */,
+				9AA61BEE2A616D3100FACAD2 /* AddDictionaryModel.swift */,
 			);
 			path = AddDictionary;
 			sourceTree = "<group>";
@@ -520,7 +523,6 @@
 				9A7B91BE298D6D9600E60CDD /* Sources */,
 				9A7B91BF298D6D9600E60CDD /* Frameworks */,
 				9A7B91C0298D6D9600E60CDD /* Resources */,
-				6833DE12B56F9D440E035CFA /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -561,7 +563,6 @@
 				9A7B91DE298D6D9A00E60CDD /* Sources */,
 				9A7B91DF298D6D9A00E60CDD /* Frameworks */,
 				9A7B91E0298D6D9A00E60CDD /* Resources */,
-				060B79BE9CBCE352ACF68CD2 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -649,23 +650,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		060B79BE9CBCE352ACF68CD2 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Language-LanguageUITests/Pods-Language-LanguageUITests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Language-LanguageUITests/Pods-Language-LanguageUITests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Language-LanguageUITests/Pods-Language-LanguageUITests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		377D9BF239EE084F2D729EFF /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -710,23 +694,6 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		6833DE12B56F9D440E035CFA /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Language/Pods-Language-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Language/Pods-Language-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Language/Pods-Language-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		99F4C2D668EF807E5EED818E /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -757,6 +724,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9A5642012A5DE65F00027BCD /* CoreDataProtocols.swift in Sources */,
+				9AA61BEF2A616D3200FACAD2 /* AddDictionaryModel.swift in Sources */,
 				9AE50933299695B400D86DD7 /* Menu VC.swift in Sources */,
 				9AA71C6129C34EA8008A193B /* CollectionViewLastCell.swift in Sources */,
 				9A22B8E9299A9FDA00B1ED3A /* Data.swift in Sources */,

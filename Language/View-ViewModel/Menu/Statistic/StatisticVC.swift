@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SwiftUI
 
 class StatisticVC: UIViewController {
 
@@ -52,6 +53,13 @@ class StatisticVC: UIViewController {
         label.textAlignment = .right
         label.text = "???"
         return label
+    }()
+    var statistic: UIView = {
+        
+//        let hostView = UIHostingController(rootView: StatiscticCellView())
+//        guard let view = hostView.view else { return UIView() }
+//
+        return UIView()
     }()
     
     override func viewDidLoad() {
