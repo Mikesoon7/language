@@ -12,7 +12,9 @@ import Combine
 
 class AddDictionaryVC: UIViewController {
     
-    private var model: AddDictionaryModel!
+    private lazy var model: AddDictionaryViewModel = {
+        return AddDictionaryViewModel()
+    }()
     private var cancellabel = Set<AnyCancellable>()
     
     var textView: UITextView = {
@@ -58,7 +60,7 @@ class AddDictionaryVC: UIViewController {
         var button = UIButton()
         button.setUpCommotBut(false)
         button.setAttributedTitle(NSAttributedString().fontWithString(
-            string: "save".localized,
+            string: "system.save".localized,
             bold: true,
             size: 18), for: .normal)
         return button
@@ -67,14 +69,17 @@ class AddDictionaryVC: UIViewController {
     var topStroke = CAShapeLayer()
     var bottomStroke = CAShapeLayer()
 
+    
     //MARK: - Prepare Func
     override func viewDidLoad() {
         super.viewDidLoad()
+        bind()
         configureController()
         configureTextView()
         configureNavBar()
         configureNameInputView()
         configureSaveButton()
+        configureText()
     }
     
     override func viewDidLayoutSubviews() {
@@ -97,6 +102,23 @@ class AddDictionaryVC: UIViewController {
             }
         }
     }
+    //MARK: - Bind
+    private func bind(){
+        model.output
+            .sink { output in
+                switch output {
+                case .shouldPop:
+                    self.navigationController?.popViewController(animated: true)
+                case .shouldPresentError(let error):
+                    self.presentError(error)
+                case .shouldUpdatePlaceholder:
+                    self.configureTextViewPlaceholder(textOnly: false)
+                case .shouldUpdateText:
+                    self.configureText()
+                }
+            }
+            .store(in: &cancellabel)
+    }
     //MARK: - Controleler SetUp
     func configureController(){
         view.backgroundColor = .systemBackground
@@ -110,6 +132,21 @@ class AddDictionaryVC: UIViewController {
         //Separator chagne
         NotificationCenter.default.addObserver(self, selector: #selector(separatorDidChange(sender:)), name:
                 .appSeparatorDidChange, object: nil)
+    }
+
+    private func configureText(){
+        self.navigationItem.title = "addDictTitle".localized
+        
+        if textView.textColor == .lightGray {
+            configureTextViewPlaceholder(textOnly: true)
+        }
+        nameLabel.text = LanguageChangeManager.shared.localizedString(forKey: "dictionaryName")
+        self.navigationItem.title = "addDictTitle".localized
+        nameInputField.placeholder = "fieldPlaceholder".localized
+        saveButton.setAttributedTitle(NSAttributedString().fontWithString(
+            string: "system.save".localized,
+            bold: true,
+            size: 18), for: .normal)
     }
 
     //MARK: - Stroke SetUp
@@ -134,6 +171,7 @@ class AddDictionaryVC: UIViewController {
         ])
         configureTextViewPlaceholder(textOnly: false)
     }
+    
     func configureTextViewPlaceholder(textOnly: Bool){
         textView.text = LanguageChangeManager.shared.localizedString(forKey: "viewPlaceholderWord") + " \(UserSettings.shared.settings.separators.selectedValue) " + LanguageChangeManager.shared.localizedString(forKey: "viewPlaceholderMeaning")
         guard !textOnly else { return }
@@ -182,18 +220,13 @@ class AddDictionaryVC: UIViewController {
         saveButton.addTargetInsideTouchStop()
     }
     
-//MARK: - NavBar SetUp
+    //MARK: - NavBar SetUp
     func configureNavBar(){
-        navigationItem.title = "addDictTitle".localized
         navigationController?.navigationBar.titleTextAttributes = NSAttributedString().fontWithoutString(bold: true, size: 23)
     }
     
-//MARK: - Actions
-    @objc func saveButtonDidTap(sender: Any){
-        let insertTextAllert = UIAlertController(
-            title: "textAlert".localized,
-            message: "textInfo".localized ,
-            preferredStyle: .alert)
+    //MARK: - Validate input
+    func validateName() -> String? {
         let insertNameAllert = UIAlertController(
             title: "nameAlert".localized,
             message: "nameInfo".localized,
@@ -202,25 +235,40 @@ class AddDictionaryVC: UIViewController {
             title: "agreeInformal".localized,
             style: .cancel)
         insertNameAllert.addAction(action)
-        insertTextAllert.addAction(action)
         action.setValue(UIColor.label, forKey: "titleTextColor")
         
-        guard let text = textView.text, text != "" && textView.textColor != .lightGray else {
-            return self.present(insertTextAllert, animated: true)
-        }
         guard nameInputField.hasText else {
-            return self.present(insertNameAllert, animated: true)
+            self.present(insertNameAllert, animated: true)
+            return nil
         }
-        do {
-            try CoreDataHelper.shared.createDictionary(language: nameInputField.text!, text: text)
-        } catch {
-            self.presentError(error)
-            return
+        return nameInputField.text
+    }
+    func validateText() -> String?{
+        let insertTextAllert = UIAlertController(
+            title: "textAlert".localized,
+            message: "textInfo".localized ,
+            preferredStyle: .alert)
+        let action = UIAlertAction(
+            title: "agreeInformal".localized,
+            style: .cancel)
+        insertTextAllert.addAction(action)
+        action.setValue(UIColor.label, forKey: "titleTextColor")
+
+        guard let text = textView.text, text != "" && textView.textColor != .lightGray else {
+            self.present(insertTextAllert, animated: true)
+            return nil
         }
-                                                    
+        return text
+    }
+//MARK: - Actions
+    @objc func saveButtonDidTap(sender: Any){
+        guard let name = validateName() else { return }
+        guard let text = validateText() else { return }
+        
+        model.createDictionary(name: name, text: text)
+                                            
         navigationItem.rightBarButtonItem = nil
         view.becomeFirstResponder()
-        navigationController?.popViewController(animated: true)
     }
     //Done buttom tap.
     @objc func rightBarButDidTap(sender: Any){
@@ -260,7 +308,7 @@ class AddDictionaryVC: UIViewController {
         self.navigationItem.title = "addDictTitle".localized
         nameInputField.placeholder = "fieldPlaceholder".localized
         saveButton.setAttributedTitle(NSAttributedString().fontWithString(
-            string: "save".localized,
+            string: "system.save".localized,
             bold: true,
             size: 18), for: .normal)
     }

@@ -7,6 +7,7 @@
 
 import UIKit
 import SwiftUI
+import Combine
 
 enum Direction{
     case left
@@ -17,16 +18,19 @@ class MenuDictionaryCell: UITableViewCell{
 
     private struct ViewConstants{
         static let cornerRadius = CGFloat(9)
-//        static let offset = CGFloat(10) // due to the concavity of action buttons we use offset.
         static let overlayPoints = CGFloat(2)
     }
     static let identifier = "dictCell"
+    
+    private var viewModel: MenuCellViewModel!
+    private var cancellables = Set<AnyCancellable>()
     
     var direction: Direction!
     var isActionActive: Bool = false
     var isActionLooped: Bool = false
     
     var statiscticCharts: UIView!
+    var statisticHostingController: UIHostingController<BarChart>!
     
     var delegate: CustomCellDataDelegate!
     var isStatActive: Bool = false
@@ -159,16 +163,17 @@ class MenuDictionaryCell: UITableViewCell{
     override func layoutSubviews() {
         super.layoutSubviews()
         
-        statView.layer.mask = configureMaskFor(size: CGSize(
+        statView.layer.mask = UIView().configureActionMaskWith(size: CGSize(
             width: contentView.frame.width * 0.2 + ViewConstants.overlayPoints,
-            height: contentView.frame.height))
-        editView.layer.mask = configureMaskFor(size: CGSize(
+            height: contentView.frame.height), cornerRadius: cornerRadius)
+        editView.layer.mask = UIView().configureActionMaskWith(size: CGSize(
             width: contentView.frame.width * 0.2 + ViewConstants.overlayPoints,
-            height: contentView.frame.height))
-        deleteView.layer.mask = configureMaskFor(size: CGSize(
+            height: contentView.frame.height), cornerRadius: cornerRadius)
+        deleteView.layer.mask = UIView().configureActionMaskWith(size: CGSize(
             width: contentView.frame.width * 0.2 + ViewConstants.overlayPoints,
-            height: contentView.frame.height))
+            height: contentView.frame.height), cornerRadius: cornerRadius)
     }
+    
     override func prepareForReuse() {
         guard !isActionActive else {
             activate(false)
@@ -176,10 +181,33 @@ class MenuDictionaryCell: UITableViewCell{
         }
     }
     //MARK: - Cell SetUp
-    func configureCellWith(_ dictionary: DictionariesEntity, delegate: CustomCellDataDelegate){
+    func configureCellWith(_ dictionary: DictionariesEntity, delegate: CustomCellDataDelegate, viewModel: MenuCellViewModel){
         self.languageResultLabel.text = dictionary.language
         self.cardsResultLabel.text = String(dictionary.numberOfCards)
+        self.viewModel = viewModel
         self.delegate = delegate
+    }
+    
+    func configureCellWith(viewModel: MenuCellViewModel, delegate: CustomCellDataDelegate) {
+        self.languageResultLabel.text = viewModel.dictionary.language
+        self.cardsResultLabel.text = String(viewModel.dictionary.numberOfCards)
+        self.viewModel = viewModel
+        self.delegate = delegate
+        
+        bind()
+    }
+    
+    func bind(){
+        viewModel.output
+            .sink { output in
+                switch output {
+                case .error(let error):
+                    print(error.localizedDescription)
+                case .data(let data):
+                    self.configureChartWith(data: data)
+                }
+            }
+            .store(in: &cancellables)
     }
     //MARK: - HolderView SetUp
     func configureHolderView(){
@@ -249,10 +277,8 @@ class MenuDictionaryCell: UITableViewCell{
             statViewInitialLeadingAnchor,
             statisticView.topAnchor.constraint(equalTo: statView.topAnchor),
             statisticView.bottomAnchor.constraint(equalTo: statView.bottomAnchor),
-//            statViewWidthAnchor
             statisticView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.8, constant: ViewConstants.cornerRadius + ViewConstants.overlayPoints)
             ])
-//        addChart()
     }
     func configureMainView(){
         mainView.addSubviews(languageResultLabel, languageLabel, cardsLabel, cardsResultLabel)
@@ -300,36 +326,36 @@ class MenuDictionaryCell: UITableViewCell{
         return actionView
     }
     
-    func configureMaskFor(size: CGSize) -> CAShapeLayer{
-        let cornerRadius: CGFloat = cornerRadius
-
-        let bezierPath = UIBezierPath()
-        let startPoint = CGPoint(x: 0, y: 0)
-        bezierPath.move(to: startPoint)
-
-        let point1 = CGPoint(x: size.width - cornerRadius, y: 0)
-        bezierPath.addLine(to: point1)
-        bezierPath.addArc(withCenter: CGPoint(x: point1.x, y: cornerRadius), radius: cornerRadius, startAngle: CGFloat(Double.pi / 2 * 3), endAngle: 0, clockwise: true)
-
-        let point2 = CGPoint(x: size.width, y: size.height - cornerRadius)
-        bezierPath.addLine(to: point2)
-        bezierPath.addArc(withCenter: CGPoint(x: point1.x, y: point2.y), radius: cornerRadius, startAngle: 0, endAngle: CGFloat.pi / 2, clockwise: true)
-
-
-        let point3 = CGPoint(x: 0, y: size.height)
-        bezierPath.addLine(to: point3)
-        bezierPath.addArc(withCenter: CGPoint(x: point3.x, y: point3.y - cornerRadius), radius: cornerRadius, startAngle: CGFloat.pi / 2 , endAngle: 0, clockwise: false)
-
-        let point4 = CGPoint(x: cornerRadius, y: cornerRadius)
-        bezierPath.addLine(to: point4)
-        bezierPath.addArc(withCenter: CGPoint(x: 0, y: cornerRadius), radius: cornerRadius, startAngle: 0, endAngle: CGFloat.pi / 2 * 3 , clockwise: false)
-
-        bezierPath.close()
-
-        let shapeLayer = CAShapeLayer()
-        shapeLayer.path = bezierPath.cgPath
-        return shapeLayer
-    }
+//    func configureActionMaskWith(size: CGSize, cornerRadius: CGFloat) -> CAShapeLayer{
+//        let cornerRadius: CGFloat = cornerRadius
+//
+//        let bezierPath = UIBezierPath()
+//        let startPoint = CGPoint(x: 0, y: 0)
+//        bezierPath.move(to: startPoint)
+//
+//        let point1 = CGPoint(x: size.width - cornerRadius, y: 0)
+//        bezierPath.addLine(to: point1)
+//        bezierPath.addArc(withCenter: CGPoint(x: point1.x, y: cornerRadius), radius: cornerRadius, startAngle: CGFloat(Double.pi / 2 * 3), endAngle: 0, clockwise: true)
+//
+//        let point2 = CGPoint(x: size.width, y: size.height - cornerRadius)
+//        bezierPath.addLine(to: point2)
+//        bezierPath.addArc(withCenter: CGPoint(x: point1.x, y: point2.y), radius: cornerRadius, startAngle: 0, endAngle: CGFloat.pi / 2, clockwise: true)
+//
+//
+//        let point3 = CGPoint(x: 0, y: size.height)
+//        bezierPath.addLine(to: point3)
+//        bezierPath.addArc(withCenter: CGPoint(x: point3.x, y: point3.y - cornerRadius), radius: cornerRadius, startAngle: CGFloat.pi / 2 , endAngle: 0, clockwise: false)
+//
+//        let point4 = CGPoint(x: cornerRadius, y: cornerRadius)
+//        bezierPath.addLine(to: point4)
+//        bezierPath.addArc(withCenter: CGPoint(x: 0, y: cornerRadius), radius: cornerRadius, startAngle: 0, endAngle: CGFloat.pi / 2 * 3 , clockwise: false)
+//
+//        bezierPath.close()
+//
+//        let shapeLayer = CAShapeLayer()
+//        shapeLayer.path = bezierPath.cgPath
+//        return shapeLayer
+//    }
 
     func configurePanGesture(){
         let pan = UIPanGestureRecognizer(target: self, action: #selector(viewDidPan(sender:)))
@@ -372,9 +398,9 @@ class MenuDictionaryCell: UITableViewCell{
         }
         anim1.startAnimation(afterDelay: 0.5)
     }
-    func addChart(){
-        let view = UIHostingController(rootView: BarChart(data: fakeData, width: contentViewWidth * 0.8, height: contentViewHeight ))
-        guard let statiscticCharts = view.view else { return }
+    func configureChartWith(data: [WeekLog] ){
+        statisticHostingController = UIHostingController(rootView: BarChart(data: data, width: contentViewWidth * 0.8, height: contentViewHeight ))
+        guard let statiscticCharts = statisticHostingController.view else { return }
         statiscticCharts.alpha = 0
         statiscticCharts.backgroundColor = .clear
         statiscticCharts.translatesAutoresizingMaskIntoConstraints = false
@@ -404,20 +430,12 @@ class MenuDictionaryCell: UITableViewCell{
         self.activate(!activate)
         animation.addCompletion { _ in
             if activate {
-                self.addChart()
+                self.viewModel.fetchDataForStatistic()
             } else {
-                self.statiscticCharts?.removeFromSuperview()
+                self.statisticHostingController.view.removeFromSuperview()
             }
         }
         animation.startAnimation()
-//        UIView.animate(withDuration: 0.5, delay: 0) {
-//            self.statViewLeadingAnchor.constant = activate ? self.finalStatConstant : self.initialActionConstant
-//            self.layoutIfNeeded()
-//            UIView.animate(withDuration: 0.4, delay: 0.2) {
-//                self.statViewWidthAnchor.constant = activate ? self.statViewFinalWifth : self.statViewInitialWidth
-//                self.layoutIfNeeded()
-//            }
-//        }
     }
     //Animation for swipe transition
     func activate(_ activate: Bool){

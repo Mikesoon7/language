@@ -78,7 +78,7 @@ class EditView: UIViewController {
         }
     }
     private func bind(){
-        viewModel.$textToDisplay
+        viewModel.$data
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] data in
                 self?.configure(with: data.unsafelyUnwrapped)
@@ -138,21 +138,25 @@ class EditView: UIViewController {
     //MARK: - TextField SetUp
     func configureTextField(){
         textField.delegate = self
-        textField.frame = CGRect(x: 0, y: 0, width: view.bounds.width * 0.6,
+        textField.frame = CGRect(x: 0, y: 0, width: view.bounds.width * 0.4,
                                  height: navigationController?.navigationBar.bounds.height ?? 30)
     }
     //MARK: - NavBar SetUp
     func configureNavBar(){
         self.navigationItem.titleView = textField
         
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .save,
-                                                                 target: self,
-                                                                 action: #selector(saveButTap(sender:)))
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "system.save".localized, style: .done, target: self, action: #selector(saveButTap(sender:)))
+//        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .save,
+//                                                                 target: self,
+//                                                                 action: #selector(saveButTap(sender:)))
         navigationItem.backButtonDisplayMode = .minimal
         self.navigationController?.navigationBar.tintColor = .label
         self.navigationController?.navigationBar.isTranslucent = true
     }
     
+    func configureText(){
+        
+    }
     func configureAlertMessage(){
         let alert = UIAlertController().alertWithAction(
             alertTitle: "edit.emptyField.title".localized,
@@ -176,9 +180,11 @@ extension EditView {
     
     //Done button
     @objc func rightBarButDidTap(sender: Any){
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .save,
-                                                            target: self,
-                                                            action: #selector(saveButTap(sender:)))
+//        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .save,
+//                                                            target: self,
+//                                                            action: #selector(saveButTap(sender:)))
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "system.save".localized, style: .plain, target: self, action: #selector(saveButTap(sender:)))
+
         if textView.isFirstResponder{
             textView.resignFirstResponder()
         } else if textField.isFirstResponder{
@@ -197,7 +203,7 @@ extension EditView: UITextViewDelegate{
             textView.typingAttributes = [NSAttributedString.Key.font : UIFont(name: "Times New Roman", size: 17) ?? UIFont(), NSAttributedString.Key.backgroundColor : UIColor.clear, NSAttributedString.Key.foregroundColor : UIColor.label]
         }
         if self.navigationController?.navigationItem.rightBarButtonItem == nil{
-            navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(rightBarButDidTap(sender:)))
+            navigationItem.rightBarButtonItem = UIBarButtonItem(title: "system.done".localized, style: .done, target: self, action: #selector(rightBarButDidTap(sender:)))
         }
     }
 }
@@ -206,7 +212,7 @@ extension EditView: UITextViewDelegate{
 extension EditView: UITextFieldDelegate{
     func textFieldDidBeginEditing(_ textField: UITextField) {
         if self.navigationController?.navigationItem.rightBarButtonItem == nil{
-            self.navigationItem.setRightBarButton(UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(rightBarButDidTap(sender:))), animated: true)
+            self.navigationItem.setRightBarButton(UIBarButtonItem(title: "system.done".localized, style: .done, target: self, action: #selector(rightBarButDidTap(sender:))), animated: true)
         }
     }
 }

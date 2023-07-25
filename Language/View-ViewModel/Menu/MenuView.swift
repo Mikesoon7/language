@@ -18,6 +18,8 @@ protocol CustomCellDataDelegate: AnyObject{
     func deleteButtonDidTap(for cell: UITableViewCell)
     
     func editButtonDidTap(for cell: UITableViewCell)
+    
+    func statisticButtonDidTap(for cell: UITableViewCell)
 }
 
 class MenuView: UIViewController {
@@ -85,8 +87,7 @@ class MenuView: UIViewController {
     
     //MARK: - Binding View and ViewModel
     func bind(){
-        let change = viewModel.objectDidChange.eraseToAnyPublisher()
-        change
+        viewModel.objectDidChange
             .receive(on: DispatchQueue.main)
             .sink { [weak self] changeType in
                 switch changeType{
@@ -95,6 +96,7 @@ class MenuView: UIViewController {
                 case .needDelete(let section):
                     self?.tableView.deleteSections([section], with: .left)
                 case .needUpdate(let section):
+                    print("Reloading \(section)")
                     self?.tableView.reloadSections([section], with: .automatic)
                 }
             }
@@ -174,8 +176,7 @@ extension MenuView: UITableViewDelegate{
         if section == tableView.numberOfSections - 1{
             self.navigationController?.pushViewController(AddDictionaryVC(), animated: true)
         } else {
-            let vc = DetailsVC()
-            vc.dictionary = viewModel.dictionaries[section]
+            let vc = DetailsVC(dictionary: viewModel.dictionaries[section])
             self.navigationController?.pushViewController(vc, animated: true)
         }
     }
@@ -195,7 +196,7 @@ extension MenuView: UITableViewDataSource{
         let data = viewModel.dataForCell(at: indexPath)
         let cell = tableView.dequeueReusableCell(
             withIdentifier: MenuDictionaryCell.identifier, for: indexPath) as! MenuDictionaryCell
-        cell.configureCellWith(data, delegate: self)
+        cell.configureCellWith(viewModel: data, delegate: self)
         return cell
     }
 }
@@ -234,4 +235,8 @@ extension MenuView: CustomCellDataDelegate{
         let vc = viewModel.editDictionary(at: index)
         self.navigationController?.pushViewController(vc, animated: true)
     }
+    func statisticButtonDidTap(for cell: UITableViewCell){
+        
+    }
+
 }

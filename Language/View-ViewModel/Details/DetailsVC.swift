@@ -6,15 +6,21 @@
 //
 
 import UIKit
+import Combine
 
 class DetailsVC: UIViewController {
 
-    var dictionary : DictionariesEntity!
+    //MARK: - modelView related
+    private var viewModel: DetailsViewModel!
+    private var cancellable = Set<AnyCancellable>()
     
-    var isRandom: Bool!
-    var selectedNumberOfCards : Int!
-    var preselectedNumberOfCards = Int()
     
+    private var isRandom: Bool = false
+    
+    private var numberOfCards: Int!
+    private var selectedNumberOfCards : Int!
+    
+    //MARK: - Views
     let randomizeCardsView : UIView = {
         var view = UIView()
         view.setUpBorderedView(false)
@@ -22,9 +28,6 @@ class DetailsVC: UIViewController {
     }()
     let randomizeLabel: UILabel = {
         let label = UILabel()
-        label.attributedText = NSAttributedString().fontWithString(
-            string: "randomize".localized,
-            bold: true, size: 18)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -38,9 +41,6 @@ class DetailsVC: UIViewController {
     
     let goalLabel : UILabel = {
         let label = UILabel()
-        label.attributedText = NSAttributedString().fontWithString(
-            string: "goal".localized,
-            bold: true, size: 18)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -48,20 +48,12 @@ class DetailsVC: UIViewController {
     let addWordsBut : UIButton = {
         var button = UIButton()
         button.setUpCommotBut(false)
-        button.setAttributedTitle(NSAttributedString().fontWithString(
-            string: "addWords".localized,
-            bold: true,
-            size: 20), for: .normal)
-                    return button
+        return button
     }()
     
     let beginBut : UIButton = {
         var button = UIButton()
         button.setUpCommotBut(false)
-        button.setAttributedTitle(NSAttributedString().fontWithString(
-            string: "start".localized,
-            bold: true,
-            size: 20), for: .normal)
         return button
     }()
     
@@ -70,15 +62,25 @@ class DetailsVC: UIViewController {
     var topStroke = CAShapeLayer()
     var bottomStroke = CAShapeLayer()
     
+    //MARK: - Inherited methods
+    required init(dictionary: DictionariesEntity){
+        viewModel = DetailsViewModel(dictionary: dictionary)
+        super.init(nibName: nil, bundle: nil)
+    }
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
+        bind()
         configureController()
         configureNavBar()
         configureRandomizeView()
         configureGoalView()
         configureStartButton()
         configureAddWordsButton()
-        }
+        configureText()
+    }
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         configureStrokes()
@@ -101,6 +103,25 @@ class DetailsVC: UIViewController {
             }
         }
     }
+    //MARK: - ViewModel bind
+    func bind(){
+        viewModel.output
+            .sink { output in
+                switch output{
+                case .shouldUpdateText:
+                    self.configureText()
+                case .error(let error):
+                    self.presentError(error)
+                }
+            }
+            .store(in: &cancellable)
+        viewModel.$dataForView
+            .sink { [weak self] data in
+                self?.numberOfCards = data?.pickerNumber
+                self?.picker.reloadAllComponents()
+            }
+            .store(in: &cancellable)
+    }
     //MARK: - Stroke SetUp
     func configureStrokes(){
         topStroke = UIView().addTopStroke(vc: self)
@@ -113,25 +134,10 @@ class DetailsVC: UIViewController {
     func configureController(){
         view.backgroundColor = .systemBackground
         
-        NotificationCenter.default.addObserver(self, selector: #selector(appDataDidChange(sender:)), name:
-                .appDataDidChange, object: nil)
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(languageDidChange(sender:)), name:
-                .appLanguageDidChange, object: nil)
     }
     //MARK: - NavigationBar SetUp
     func configureNavBar(){
-        navigationItem.title = "detailsTitle".localized
         navigationController?.navigationBar.titleTextAttributes = NSAttributedString().fontWithoutString(bold: true, size: 23)
-        
-        let rightButton = UIBarButtonItem(
-            image: UIImage(systemName: "chart.bar"),
-            style: .plain,
-            target: self,
-            action: #selector(statisticButTap(sender:)))
-        self.navigationItem.setRightBarButton(rightButton, animated: true)
-        navigationController?.navigationBar.tintColor = .label
-        navigationItem.backBarButtonItem?.menu = nil
         navigationItem.backButtonDisplayMode = .minimal
     }
     
@@ -143,7 +149,7 @@ class DetailsVC: UIViewController {
             let switchForState = UISwitch()
             switchForState.onTintColor = .systemGray2
             switchForState.tintColor = .systemBackground
-            switchForState.setOn(true, animated: true)
+            switchForState.setOn(false, animated: true)
             switchForState.addTarget(self, action: #selector(randomSwitchToggle(sender:)), for: .valueChanged)
             return switchForState
         }()
@@ -198,9 +204,9 @@ class DetailsVC: UIViewController {
             picker.centerYAnchor.constraint(equalTo: goalView.centerYAnchor),
             picker.widthAnchor.constraint(equalTo: goalView.widthAnchor, multiplier: 0.3)
         ])
-        preselectedNumberOfCards = {
-            if dictionary.words!.count <= 49{
-                return dictionary.words!.count
+        selectedNumberOfCards = {
+            if numberOfCards <= 49{
+                return numberOfCards
             } else {
                 return 50
             }
@@ -239,54 +245,17 @@ class DetailsVC: UIViewController {
         beginBut.addTargetOutsideTouchStop()
         beginBut.addTargetInsideTouchStop()
     }
-
-//MARK: - Actions
-    @objc func statisticButTap(sender: Any){
-        let vc = StatisticVC()
-        self.present(vc, animated: true)
-    }
-    @objc func randomSwitchToggle(sender: UISwitch){
-        isRandom = sender.isOn
-    }
-    
-    @objc func startButtonTap(sender: UIButton){
-        let vc = MainGameVC()
-        if self.selectedNumberOfCards == nil{
-            self.selectedNumberOfCards = preselectedNumberOfCards
-        }
-        if self.isRandom == nil{
-            self.isRandom = true
-        }
-        
-        vc.dictionary = dictionary
-        var words: [WordsEntity]!
-        do {
-             words = try CoreDataHelper.shared.fetchWords(for: dictionary)
-        } catch {
-            self.presentError(error)
-            return
-        }
-        vc.words = {
-            if self.isRandom {
-               words.shuffle()
-            }
-            return Array(words.prefix(upTo: selectedNumberOfCards))
-        }()
-
-        vc.initialNumber = self.dictionary.words?.count
-        vc.passedNumber = self.selectedNumberOfCards
-        self.navigationController?.pushViewController(vc, animated: true)
-    }
-
-    @objc func addWordsButtonTap(sender: UIButton){
-        let vc = AddWordsVC()
-        vc.editableDict = dictionary
-        navigationController?.pushViewController(vc, animated: true)
-    }
-    @objc func languageDidChange(sender: Any){
+    //Assigning text on initializing and if language changes
+    func configureText(){
         self.navigationItem.title = "detailsTitle".localized
-        randomizeLabel.text = "randomize".localized
-        goalLabel.text = "goal".localized
+        
+        randomizeLabel.attributedText = NSAttributedString().fontWithString(
+            string: "randomize".localized,
+            bold: true, size: 18)
+
+        goalLabel.attributedText = NSAttributedString().fontWithString(
+            string: "goal".localized,
+            bold: true, size: 18)
         
         addWordsBut.setAttributedTitle(NSAttributedString().fontWithString(
             string: "addWords".localized,
@@ -298,35 +267,45 @@ class DetailsVC: UIViewController {
             bold: true,
             size: 18), for: .normal)
     }
-    @objc func appDataDidChange(sender: Notification){
-        self.picker.reloadAllComponents()
-        self.selectedNumberOfCards = dictionary.words?.count
+    
+//MARK: - Actions
+    @objc func randomSwitchToggle(sender: UISwitch){
+        isRandom = sender.isOn
+    }
+    
+    @objc func startButtonTap(sender: UIButton){
+        let vc = viewModel.provideGameView(with: isRandom, numberOfCards: selectedNumberOfCards)
+        self.navigationController?.pushViewController(vc, animated: true)
+    }
+
+    @objc func addWordsButtonTap(sender: UIButton){
+        let vc = viewModel.provideAddWordsView()
+        navigationController?.pushViewController(vc, animated: true)
     }
 }
 extension DetailsVC: UIPickerViewDelegate{
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        if dictionary.words!.count <= 50{
-            selectedNumberOfCards = dictionary.words!.count
-        } else if row == pickerView.numberOfRows(inComponent: component) - 1{
-            selectedNumberOfCards = dictionary.words!.count
+        if numberOfCards <= 50 || row == pickerView.numberOfRows(inComponent: component) - 1 {
+            selectedNumberOfCards = numberOfCards
         } else {
             selectedNumberOfCards = (row + 1) * 50
         }
     }
 }
+
 extension DetailsVC: UIPickerViewDataSource{
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
     }
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        guard let number = dictionary.words?.count else { return 0}
+        guard let number = numberOfCards else { return 0}
         switch number % 50{
         case 0: return number / 50
         default: return (number / 50) + 1
         }
     }
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        guard let number = dictionary.words?.count else { return " " }
+        guard let number = numberOfCards else { return " " }
         let overal = pickerView.numberOfRows(inComponent: 0)
         if row != overal - 1{
             return String((row + 1) * 50)
@@ -334,6 +313,5 @@ extension DetailsVC: UIPickerViewDataSource{
             return String(number)
 
         }
-        
-            }
+     }
 }

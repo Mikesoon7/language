@@ -7,11 +7,12 @@
 
 //TODO: Add localization for alerts.
 import UIKit
+import Combine
 
-class AddWordsVC: UIViewController {
+class AddWordsView: UIViewController {
 
-    var editableDict : DictionariesEntity!
-    var wordsArray = [WordsEntity]()
+    private var model: AddWordsViewModel!
+    private var cancellable = Set<AnyCancellable>()
     
     var index = Int()
     
@@ -40,8 +41,17 @@ class AddWordsVC: UIViewController {
     var topStroke = CAShapeLayer()
     var bottomStroke = CAShapeLayer()
     
+    required init(dictionary: DictionariesEntity){
+        model = AddWordsViewModel(dictionary: dictionary)
+        super.init(nibName:  nil, bundle: nil)
+    }
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        fatalError("Coder wasn't imported")
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
+        bind()
         configureController()
         configureNavBar()
         configureTextView()
@@ -70,6 +80,18 @@ class AddWordsVC: UIViewController {
             }
         }
     }
+    private func bind(){
+        model.output
+            .sink { output in
+                switch output {
+                case .shouldPresentEerror(let error):
+                    self.presentError(error)
+                case .shouldPop:
+                    self.navigationController?.popViewController(animated: true)
+                }
+            }
+            .store(in: &cancellable)
+    }
     //MARK: - Controller SetUp
     func configureController(){
         view.backgroundColor = .systemBackground
@@ -93,9 +115,8 @@ class AddWordsVC: UIViewController {
     }
 //MARK: - NavBar SetUp
     func configureNavBar(){
-        navigationItem.title = "Text Uploading"
+        navigationItem.title = "addWordTitle".localized
         self.navigationController?.navigationBar.titleTextAttributes = NSAttributedString().fontWithoutString(bold: true, size: 23)
-        self.navigationItem.backButtonTitle = "Details"
         self.navigationController?.navigationBar.tintColor = .label
         self.navigationController?.navigationBar.isTranslucent = true
     }
@@ -137,6 +158,24 @@ class AddWordsVC: UIViewController {
         saveButton.addTargetOutsideTouchStop()
         saveButton.addTarget(self, action: #selector(saveButtonDidTap(sender: )), for: .touchUpInside)
     }
+    func validateText() -> String?{
+        let insertTextAllert = UIAlertController(
+            title: "textAlert".localized,
+            message: "textInfo".localized ,
+            preferredStyle: .alert)
+        let action = UIAlertAction(
+            title: "agreeInformal".localized,
+            style: .cancel)
+        insertTextAllert.addAction(action)
+        action.setValue(UIColor.label, forKey: "titleTextColor")
+
+        guard let text = textView.text, text != "" && textView.textColor != .lightGray else {
+            self.present(insertTextAllert, animated: true)
+            return nil
+        }
+        return text
+
+    }
 //MARK: - Actions
     @objc func rightBarButDidTap(sender: Any){
         navigationItem.rightBarButtonItem = nil
@@ -144,26 +183,9 @@ class AddWordsVC: UIViewController {
     }
     //Addding input text to the dictionary.
     @objc func saveButtonDidTap(sender: UIButton){
-        let alert = UIAlertController(
-            title: "textAlert".localized,
-            message: "textInfo".localized ,
-            preferredStyle: .alert)
-        let action = UIAlertAction(title: "Understand", style: .cancel)
+        guard let text = validateText() else { return }
         
-        alert.addAction(action)
-        action.setValue(UIColor.label, forKey: "titleTextColor")
-        
-        guard textView.hasText && textView.textColor != .lightGray else {
-            return self.present(alert, animated: true)
-        }
-        
-        let numberOfCards = editableDict.words?.count
-        let lines = textView.text.split(separator: "\n", omittingEmptySubsequences: true).map( {String($0)} )
-        for (index, line) in lines.enumerated() {
-            wordsArray.append(CoreDataHelper.shared.createWordFromLine(for: editableDict, text: line, index: numberOfCards ?? 0 + index)) 
-        }
-        CoreDataHelper.shared.addWordsTo(dictionary: editableDict, words: wordsArray)
-        self.navigationController?.popViewController(animated: true)
+        model.getNewWordsFrom(text)
     }
     //For changing save button position
     @objc func keyboardWillShow(sender: Notification){
@@ -202,7 +224,7 @@ class AddWordsVC: UIViewController {
     }
 }
 
-extension AddWordsVC : UITextViewDelegate{
+extension AddWordsView : UITextViewDelegate{
     //Vanishing placeholder imitation
     func textViewDidBeginEditing(_ textView: UITextView) {
         if textView.textColor == .lightGray {
@@ -219,7 +241,7 @@ extension AddWordsVC : UITextViewDelegate{
         }
     }
 }
-extension AddWordsVC : UITextInputDelegate{
+extension AddWordsView : UITextInputDelegate{
     func selectionWillChange(_ textInput: UITextInput?) {
         
     }

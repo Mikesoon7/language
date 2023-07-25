@@ -225,13 +225,58 @@ extension UIAlertController {
     }
 }
 extension UIViewController{
-    func presentError(_ error: Error) {
+    func presentUnknownError(){
         let alertController = UIAlertController(
-            title: error.localizedDescription,
-            message: "Please try again or contact the support team if the issue persists.",
+            title: "unknownError.title".localized,
+            message: "unknownError.message".localized,
             preferredStyle: .alert)
         
-        alertController.addAction(UIAlertAction(title: "OK", style: .default))
+        alertController.addAction(UIAlertAction(title: "system.agreeFormal".localized, style: .default))
         self.present(alertController, animated: true, completion: nil)
+    }
+    func presentError(_ error: Error) {
+        var description = String()
+        switch error{
+        case let error as DictionaryErrorType:
+            switch error{
+            case .creationFailed:
+                description = "coreData.dictionaryCreation".localized
+            case .fetchFailed:
+                description = "coreData.dictionaryFetch".localized
+            case .updateFailed:
+                description = "coreData.dictionaryUpdate ".localized
+            case .additionFailed:
+                description = "coreData.dictionaryAddition".localized
+            case .updateOrderFailed:
+                description = "coreData.dictionaryOrderUpdate".localized
+            case .deleteFailed:
+                description = "coreData.dictionaryDeletion".localized
+            }
+        case let error as LogsErrorType:
+            switch error {
+            case .creationFailed:
+                description = "coreData.logCreation".localized
+            case .accessFailed:
+                description = "coreData.logAccess".localized
+            case .fetchFailed:
+                description = "coreData.logFetch".localized
+            }
+            
+        default:
+            description = "unknownError.title".localized
+        }
+        let alertController = UIAlertController(
+            title: description,
+            message: "unknownError.message".localized,
+            preferredStyle: .alert)
+        
+        alertController.addAction(UIAlertAction(title: "system.agreeFormal".localized, style: .default))
+        self.present(alertController, animated: true, completion: nil)
+    }
+}
+extension Date {
+    var timeStripped: Date {
+        let components = Calendar.current.dateComponents([.year, .month, .day], from: self)
+        return Calendar.current.date(from: components) ?? self
     }
 }

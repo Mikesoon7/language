@@ -10,16 +10,16 @@ import Combine
 import Differ
 import UIKit
 
-
-enum Output{
-    case data(ParsedDictionary)
-    case emtyText
-    case dictionaryError(CoreDataHelper.DictionaryErrorType)
-    case wordsError(CoreDataHelper.WordsErrorType)
-    case editSucceed
-}
 class EditViewModel {
     
+    enum Output{
+        case data(ParsedDictionary)
+        case emtyText
+        case dictionaryError(DictionaryErrorType)
+        case wordsError(CoreDataHelper.WordsErrorType)
+        case editSucceed
+    }
+
     //MARK: - Properties
     private let model: CoreDataHelper
     private let dictionary: DictionariesEntity
@@ -27,7 +27,7 @@ class EditViewModel {
     private var words: [WordsEntity]!
     private var cancellables = Set<AnyCancellable>()
 
-    @Published var textToDisplay: ParsedDictionary!
+    @Published var data: ParsedDictionary!
     var output = PassthroughSubject<Output, Never>()
     
 
@@ -38,7 +38,7 @@ class EditViewModel {
         do {
             words = try model.fetchWords(for: dictionary)
             let parsedDictionary = parseArrayToText(with: words, name: dictionary.language)
-            self.textToDisplay = parsedDictionary
+            self.data = parsedDictionary
         } catch let error as CoreDataHelper.WordsErrorType{
             words = []
             output.send(.wordsError(error))
@@ -91,7 +91,7 @@ class EditViewModel {
             try model.delete(dictionary: dictionary)
             output.send(.editSucceed)
         } catch {
-            let error = error as! CoreDataHelper.DictionaryErrorType
+            let error = error as! DictionaryErrorType
             output.send(.dictionaryError(error))
         }
     }
@@ -102,7 +102,7 @@ class EditViewModel {
             try model.update(dictionary: dictionary, words: words, name: dictionaryName ?? nil)
             output.send(.editSucceed)
         } catch {
-            let error = error as! CoreDataHelper.DictionaryErrorType
+            let error = error as! DictionaryErrorType
             output.send(.dictionaryError(error))
         }
     }

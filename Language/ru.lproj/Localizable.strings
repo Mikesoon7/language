@@ -47,12 +47,12 @@
 
 //MARK: - System
 "system.cancel" = "Отменить";
-"system.agreeFormal" = "Согласен";
+"system.agreeFormal" = "Понятно";
 "system.agreeInformal" = "Хорошо";
 "system.save" = "Сохранить";
 "system.create" = "Создать";
 "system.great" = "Круто";
-"system.edit" = "Редактировать";
+"system.edit" = "Править";
 "system.delete" = "Удалить";
 "system.done" = "Готово";
 "system.yes" = "Да";
@@ -102,6 +102,7 @@
 "coreData.dictionaryDeletion" = "Failed to delete dictionary";
 "coreData.dictionaryFetch" = "Failed to load dictionaries";
 "coreData.dictionaryUpdate" = "Failed to update dictionary";
+"coreData.dictionaryAddition" = "Failed to extend the dictioanry";
 "coreData.dictionaryOrderUpdate" = "Failed to update dictionaries order";
 //Words
 "coreData.wordsCreation" = "Failed to create pair";
@@ -110,6 +111,13 @@
 "coreData.wordsUpdate" = "Failed to update words";
 "coreData.wordUpdate" = "Failed to update current pair:";
 "coreData.wordsOrderUpdate" = "Failed to update words order";
+//Logs
+"coreData.logCreation" = "Failed to create access inforamtion";
+"coreData.logAccess" = "Failed to update access information for the dictionary";
+"coreData.logFetch" = "Failed to load statisctic data for the dictionary";
+//Unknown
+"unknownError.title" = "An unknown error occured.";
+"unknownError.message" = "Please try again or contact the support team if the issue persists";
 //MARK: - EditVC
 "edit.emptyField.title" = "The edit field is empty";
 "edit.emptyField.message" = "Saving dictionary in this state will cause it's deletion. \nAre you sure?";

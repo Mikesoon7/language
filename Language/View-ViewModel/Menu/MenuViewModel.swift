@@ -10,6 +10,10 @@ import CoreData
 import Combine
 
 final class MenuViewModel{
+    enum Output {
+        case error(Error)
+        case configureStat([DictionariesAccessLog])
+    }
     enum ChangeType{
         case needReload
         case needDelete(Int)
@@ -23,7 +27,8 @@ final class MenuViewModel{
     private var displayStatistic = false
     
     @Published var objectDidChange = PassthroughSubject<ChangeType, Never>()
-    @Published var error: CoreDataHelper.CoreDataError?
+    var output = PassthroughSubject<Output, Never>()
+//    @Published var error: CoreDataHelper.CoreDataError?
     
     init(model: CoreDataHelper = CoreDataHelper.shared) {
         self.model = model
@@ -32,30 +37,39 @@ final class MenuViewModel{
                 switch type {
                 case .wasDeleted(let section):
                     self?.fetch()
+                    print("deleted \(section)")
                     self?.objectDidChange.send(.needDelete(section))
                 case .wasAdded:
                     self?.fetch()
                     self?.objectDidChange.send(.needReload)
                 case .wasUpdated(let section):
                     self?.fetch()
+                    print("updated \(section)")
                     self?.objectDidChange.send(.needUpdate(section))
                 }
             }
             .store(in: &cancellables)
         fetch()
     }
-    func configureStatistic(){
-        
+    func fetchStatiscticDataFor(cellIndex: IndexPath) throws {
+        let dictionary = dictionaries[cellIndex.section]
+        do {
+            let logs = try model.fetchAllLogs(for: dictionary)
+            output.send(.configureStat(logs))
+//            return DataConverter(logs: logs).getDataDividedByWeeks()
+        } catch {
+            output.send(.error(error))
+        }
     }
     func fetch(){
         do {
             dictionaries = try model.fetchDictionaries()
         } catch {
-            self.error = error as? CoreDataHelper.CoreDataError
+            output.send(.error(error))
+            
         }
     }
-        
-    
+
     func deleteDictionary(at index: IndexPath) {
         let dictionary = dictionaries[index.section]
         do {
@@ -64,6 +78,7 @@ final class MenuViewModel{
             print("dictionary not found")
         }
     }
+    
     func editDictionary(at index: IndexPath) -> EditView{
         let dictionary = dictionaries[index.section]
         let vc = EditView(dictionary: dictionary)
@@ -71,13 +86,14 @@ final class MenuViewModel{
     }
     
     //MARK: - Methods for tableView
-    func dataForCell(at index: IndexPath) -> DictionariesEntity{
-        return dictionaries[index.section]
+    func dataForCell(at index: IndexPath) -> MenuCellViewModel{
+        let viewModel = MenuCellViewModel(dictionary: dictionaries[index.section])
+        return viewModel
     }
+    
     func numberOfCells() -> Int{
         return dictionaries.count + 1
     }
-
 }
 
 //func configureDataForDiagram(with data: [Date: Double]) -> ChartData {
