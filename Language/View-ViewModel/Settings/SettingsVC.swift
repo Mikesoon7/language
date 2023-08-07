@@ -36,7 +36,7 @@ class SettingsVC: UIViewController {
         UserSettingsPresented.header("generalSection"),
         UserSettingsPresented.theme(UserSettings.shared.settings.theme),
         UserSettingsPresented.language(UserSettings.shared.settings.language),
-        UserSettingsPresented.notifications(UserSettings.shared.settings.notification)]),
+        UserSettingsPresented.notificationsNew(UserSettings.shared.settings.notifications)]),
         
         Sections(title: "second", data: [
         UserSettingsPresented.header("searchSection"),
@@ -187,7 +187,7 @@ class SettingsVC: UIViewController {
 extension SettingsVC: UITableViewDelegate{
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let alertMessage = UIAlertController(title: "There is no action", message: nil, preferredStyle: .actionSheet)
-        let cancelAction = UIAlertAction(title: "cancel".localized, style: .cancel)
+        let cancelAction = UIAlertAction(title: "system.cancel".localized, style: .cancel)
         alertMessage.addAction(cancelAction)
         switch (indexPath.section, indexPath.row){
         case (0, 1):
@@ -200,7 +200,7 @@ extension SettingsVC: UITableViewDelegate{
             present(alertMessage, animated: true)
 
         case (0, 3):
-            let vc = NotificationVC()
+            let vc = NotificationView()
             vc.modalPresentationStyle = .overFullScreen
             self.present(vc, animated: false)
         case (1, 1):
@@ -239,7 +239,7 @@ extension SettingsVC: UITableViewDataSource{
                 return headerCell
             case .language(_),
                     .theme(_),
-                    .notifications(_),
+                    .notificationsNew(_),
                     .duplicates(_):
                 let textCell = tableView.dequeueReusableCell(
                     withIdentifier: SettingsTextCell().identifier,

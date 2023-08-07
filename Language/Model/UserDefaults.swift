@@ -22,10 +22,8 @@ class UserSettings{
     struct Settings: Codable{
         var theme: AppTheme
         var language: AppLanguage
-        var notification: AppNotification
         
-        var notificationFrequency: AppNotificationFrequency
-        var notificationTime: AppNotificationTime
+        var notifications: PushNotifications
         
         var searchBar: AppSearchBarOnTop
         
@@ -66,53 +64,6 @@ class UserSettings{
             case .english:      return "English"
             case .russian:      return "Русский"
             case .ukrainian:    return "Українська"
-            }
-        }
-    }
-    enum AppNotification: Codable{
-        case allowed
-        case notAllowed
-        
-        var title: String{
-            return "allowNotification".localized
-        }
-        var value: Bool{
-            switch self{
-            case .allowed:      return true
-            case .notAllowed:   return false
-            }
-        }
-    }
-    enum AppNotificationFrequency: Codable{
-        case everyDay
-        case onceAWeek
-        case onTheWeekday
-        case onTheWeekend
-        
-        var title: String{
-            return "frequency".localized
-        }
-        
-        var value: (value: String, index: IndexPath){
-            switch self{
-            case .everyDay:     return ("everyDay".localized, IndexPath(row: 0, section: 0))
-            case .onceAWeek:    return ("onceAWeek".localized, IndexPath(row: 1, section: 0))
-            case .onTheWeekday: return ("onWeekdays".localized, IndexPath(row: 2, section: 0))
-            case .onTheWeekend: return ("onTheWeekend".localized, IndexPath(row: 3, section: 0))
-            }
-        }
-    }
-    enum AppNotificationTime: Codable{
-        case initialTime
-        case setTime(Date)
-        
-        var title: String{
-            return "chooseTime".localized
-        }
-        var value: Date{
-            switch self{
-            case .initialTime: return Date()
-            case .setTime(let time): return time
             }
         }
     }
@@ -164,7 +115,17 @@ class UserSettings{
         }
     }
     func load() -> Settings{
-        let standartSettings = Settings(theme: .system, language: .english, notification: .notAllowed, notificationFrequency: .everyDay, notificationTime: .initialTime, searchBar: .onTop, separators: .selected("-"), availabelSeparators: ["-", "–", "~", "="], duplicates: .keep)
+        let standartSettings = Settings(theme: .system,
+                                        language: .english,
+                                        notifications: PushNotifications(
+//                                            permissionGranted: .denied,
+                                                                         notificationState: .off,
+                                                                         notificationFrequency: .everyDay,
+                                                                         time: .initialTime),
+                                        searchBar: .onTop,
+                                        separators: .selected("-"),
+                                        availabelSeparators: ["-", "–", "~", "="],
+                                        duplicates: .keep)
         
         if let userData = UserDefaults.standard.data(forKey: UserSettings.settingsKey){
             let decodedData = try? JSONDecoder().decode(Settings.self, from: userData)
@@ -201,12 +162,8 @@ class UserSettings{
                 }
             }()
             (UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate)?.window?.overrideUserInterfaceStyle = userInterfaceStyle
-        } else if let notificationAvailability = newValue as? AppNotification{
-            settings.notification = notificationAvailability
-        } else if let notificationFrequency = newValue as? AppNotificationFrequency{
-            settings.notificationFrequency = notificationFrequency
-        } else if let notificationTime = newValue as? Date{
-            settings.notificationTime = AppNotificationTime.setTime(notificationTime)
+        } else if let notification = newValue as? PushNotifications{
+            settings.notifications = notification
         } else if let searchBarPosition = newValue as? AppSearchBarOnTop{
             settings.searchBar = searchBarPosition
             NotificationCenter.default.post(name: .appSearchBarPositionDidChange, object: nil)
@@ -259,8 +216,9 @@ enum UserSettingsPresented{
     
     case theme(UserSettings.AppTheme)
     case language(UserSettings.AppLanguage)
-    case notifications(UserSettings.AppNotification)
     
+    case notificationsNew(PushNotifications)
+
     case searchBar(UserSettings.AppSearchBarOnTop)
     
     case separators(UserSettings.AppDictionarySeparators)
@@ -274,8 +232,8 @@ enum UserSettingsPresented{
             return title.title
         case .language(let title):
             return title.title
-        case .notifications(let title):
-            return title.title
+        case .notificationsNew:
+            return "notificationItem".localized
         case .searchBar(let title):
             return title.title
         case .separators(let title):
@@ -292,14 +250,91 @@ enum UserSettingsPresented{
             return value.value
         case .language(let value):
             return value.value
-        case .notifications(let value):
-            return value.value
+        case .notificationsNew:
+            return ""
         case .searchBar(let value):
             return value.value
         case .separators(_):
             return " "
         case .duplicates(let value):
             return value.value
+        }
+    }
+}
+
+struct PushNotifications: Codable{
+    
+    var notificationState: NotificationState
+    var notificationFrequency: NotificationFrequency
+    var time: NotificationTime
+        
+    enum NotificationState: Codable{
+        case on
+        case off
+        
+        var title: String {
+            return "notification.allowNotification".localized
+        }
+        var value: Bool {
+            return (self == .on)
+        }
+    }
+    enum NotificationFrequency: Codable{
+            
+        var allCases: [NotificationFrequency] {
+            [  .everyDay,
+               .onTheWeekday,
+               .onTheWeekend,
+               .custom([]) ]
+        }
+        
+        case everyDay
+        case onTheWeekday
+        case onTheWeekend
+        case custom([Int])
+        
+        var title: String{
+            return "frequency".localized
+        }
+        
+        var selectedDays: [Int] {
+            switch self{
+            case .everyDay: return [1, 2, 3, 4, 5, 6, 7]
+            case .onTheWeekday: return [1, 2, 3, 4, 5]
+            case .onTheWeekend: return [6, 7]
+            case .custom(let days): return days
+            }
+        }
+    
+        var value: String {
+            switch self{
+            case .everyDay:     return "everyDay".localized
+            case .onTheWeekday: return "onWeekdays".localized
+            case .onTheWeekend: return "onTheWeekend".localized
+            case .custom:       return "custom".localized
+            }
+        }
+        var index: IndexPath {
+            switch self{
+            case .everyDay:     return IndexPath(item: 0, section: 0)
+            case .onTheWeekday: return IndexPath(item: 1, section: 0)
+            case .onTheWeekend: return IndexPath(item: 2, section: 0)
+            case .custom:       return IndexPath(item: 3, section: 0)
+            }
+        }
+    }
+    enum NotificationTime: Codable{
+        case initialTime
+        case setTime(Date)
+        
+        var title: String{
+            return "chooseTime".localized
+        }
+        var value: Date{
+            switch self{
+            case .initialTime: return Date()
+            case .setTime(let time): return time
+            }
         }
     }
 }

@@ -42,7 +42,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             title: LanguageChangeManager.shared.localizedString(forKey: "tabBarDictionaries"),
             image: UIImage(systemName: "books.vertical"),
             selectedImage: UIImage(systemName: "books.vertical.fill")?.withTintColor(.black))
-        let secondVC = SearchVC()
+        let secondVC = SearchView()
         let secondNC = UINavigationController(rootViewController: secondVC)
         secondNC.tabBarItem = UITabBarItem(
             title: LanguageChangeManager.shared.localizedString(forKey: "tabBarSearch"),

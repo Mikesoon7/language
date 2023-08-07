@@ -57,6 +57,7 @@
 "system.done" = "Done";
 "system.yes" = "Yes";
 "systme.no" = "No";
+"system.settings" = "Settings";
 
 //MARK: - AlertText
 "textAlert" = "Enter the text";
@@ -80,7 +81,7 @@
 "gameDetails.deleteAlert.message.warning" = "\n This is the last card, so your dictionary will also be deleted.";
 
 //MARK: - Notification
-"allowNotification" = "Allow notification";
+"notification.allowNotification" = "Allow notification";
 "frequency" = "Frequency";
 "chooseTime" = "Time";
 //Frequency Option
@@ -88,6 +89,13 @@
 "onceAWeek" = "Once a week";
 "onWeekdays" = "On the weekday";
 "onTheWeekend" = "On the weekend";
+"custom" = "Custom";
+//Notification message
+"notification.notificationTitle" = "Memory Check-In Time";
+"notification.notificationMessage" = "Hey there! Remember those important things you wanted to master? Your flashcards are waiting for a quick review. Swipe now to stay sharp!";
+//Notification Denied Alert
+"notification.alertTitle" = "Enable Notifications to stay connected";
+"notification.alertMessage" = "We understand your concerns, and we won't overwhelm you with notifications. We'll send only one message per day to keep you updated and remind you about us. You can always change your preferences in the settings";
 //MARK: - SearchVC
 "searchVCTitle" = "Search";
 "yourWord" = "Insert your text";

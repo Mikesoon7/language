@@ -57,6 +57,7 @@
 "system.done" = "Готово";
 "system.yes" = "Да";
 "systme.no" = "Нет";
+"system.settings" = "Настройки";
 
 //MARK: - AlertText
 "textAlert" = "Введите текст";
@@ -80,7 +81,7 @@
 "gameDetails.deleteAlert.message.warning" = "\n Она является последней, так что ее удаление приведет к удалению словаря.";
 
 //MARK: - Notification
-"allowNotification" = "Расрешить уведомления";
+"notification.allowNotification" = "Разрешить уведомления";
 "frequency" = "Повторять";
 "chooseTime" = "Время";
 //Frequency Option
@@ -88,6 +89,13 @@
 "onceAWeek" = "Раз в неделю";
 "onWeekdays" = "В будние";
 "onTheWeekend" = "На выходных";
+"custom" = "Свой вариант";
+//Notification message
+"notification.notificationTitle" = "5 минут в день - это 2,5 часа в месяц";
+"notification.notificationMessage" = "Небольшое напоминание о ваших карточках. Потратьте всего 5 минут в день, чтобы усилить память и знания. Вперёд к успеху!";
+//Notification Denied Alert
+"notification.alertTitle" = "Включите уведомления, чтобы оставаться на связи";
+"notification.alertMessage" = "В день мы будем отправлять всего одно уведомление, чтобы напомнить о ваших карточках и словарях. Вы всегда можете изменить свои предпочтения в настройках.";
 //MARK: - SearchVC
 "searchVCTitle" = "Поиск";
 "yourWord" = "Введите ваш текст";

@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-class DataForCells: Hashable {
+fileprivate class DataForCells: Hashable {
     
     var identifier : UUID
     var word: String
@@ -34,7 +34,7 @@ class DataForCells: Hashable {
     
 }
 
-class DataForDictionaries{
+fileprivate class DataForDictionaries{
     static let shared = DataForDictionaries()
 
     var availableDictionary = [DictionaryDetails]()
@@ -65,7 +65,7 @@ class DataForDictionaries{
     }
     
 }
-class DictionaryDetails{
+fileprivate class DictionaryDetails{
     
     var dictionary : [DataForCells]?{
         didSet{
@@ -89,7 +89,7 @@ class DictionaryDetails{
         self.numberOfCards = String(dictionary.count)
     }
 }
-class Statistic{
+fileprivate class Statistic{
     
     static let shared = Statistic()
     

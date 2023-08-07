@@ -17,6 +17,7 @@ class AddDictionaryVC: UIViewController {
     }()
     private var cancellabel = Set<AnyCancellable>()
     
+    //MARK: - Views
     var textView: UITextView = {
         var textView = TextViewToCreate()
         textView.setUpBorderedView(false)
@@ -27,8 +28,6 @@ class AddDictionaryVC: UIViewController {
         
         textView.textContainerInset = .init(top: 5, left: 5, bottom: 5, right: 5)
         textView.allowsEditingTextAttributes = true
-          
-//        textView.layer.shadowColor = UIColor.clear.cgColor
         return textView
     }()
     

@@ -28,9 +28,25 @@ extension UIButton {
         self.addShadowWhichOverlays(overlays)
         self.backgroundColor = .secondarySystemBackground
     }
+}
+// MARK: CGFloat
+extension CGFloat{
+    enum Multipliers {
+        case forViews
+        case forPickers
+    
+        var multiplier: CGFloat{
+            switch self{
+            case .forPickers: return 0.95
+            case .forViews  : return 0.91
+            }
+        }
+    }
+    static func widthMultiplerFor(type: Multipliers) -> CGFloat{
+        return type.multiplier
+    }
     
 }
-
 extension UINavigationController{
     func pushViewControllerFromRight (controller: UIViewController) {
         let transition = CATransition ()
@@ -185,6 +201,7 @@ extension Notification.Name{
     static let appLanguageDidChange = Notification.Name("appLanguageDidChange")
     static let appThemeDidChange = Notification.Name("appThemeDidChange")
     static let appSearchBarPositionDidChange = Notification.Name("appSearchBarPositionDidChange")
+//    static let appNotificationTimeDidChange = Notification.Name(
     static let appNotificationSettingsDidChange = Notification.Name("appNotificationSettingsDidChange")
     static let appDataDidChange = Notification.Name("appDataDidChange")
     static let appSeparatorDidChange = Notification.Name("separatorDidChange")

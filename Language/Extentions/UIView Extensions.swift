@@ -41,4 +41,13 @@ extension UIView {
         shapeLayer.path = bezierPath.cgPath
         return shapeLayer
     }
+    func configureOneSideRoundedMask(for view: UIView, left: Bool, cornerRadius: CGFloat) -> CAShapeLayer{
+        let path = UIBezierPath(roundedRect: view.bounds,
+                                byRoundingCorners: left ? [.topLeft, .bottomLeft] : [.bottomRight, .topRight],
+                                        cornerRadii: CGSize(width: cornerRadius, height: cornerRadius))
+        
+        let mask = CAShapeLayer()
+        mask.path = path.cgPath
+        return mask
+    }
 }

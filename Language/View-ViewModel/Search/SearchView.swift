@@ -7,19 +7,39 @@
 
 import UIKit
 import CoreData
-class SearchVC: UIViewController {
+import Combine
 
-    var searchBarOnTop: Bool!
-    var searchBarDidChanged = false
+class SearchView: UIViewController {
+
+    private var searchBarOnTop: Bool!
+    private var searchBarDidChanged = false
     
+    private let model = SearchViewModel()
+    private var cancellable = Set<AnyCancellable>()
+    private let input: PassthroughSubject<SearchViewModel.Input, Never> = .init()
+
+    private var expandedCellIndexSet: IndexSet = []
+    
+    //MARK: - Views
     lazy var tableView: UITableView = {
-        let table = UITableView(frame: .zero, style: .grouped)
+        let table = UITableView(frame: .zero, style: .insetGrouped)
         table.backgroundColor = .clear
-        table.register(SearchViewCell.self, forCellReuseIdentifier: SearchViewCell().identifier)
+        table.register(SearchViewCell.self, forCellReuseIdentifier: SearchViewCell.identifier)
         table.translatesAutoresizingMaskIntoConstraints = false
         table.separatorStyle = .none
+                
         table.delegate = self
         table.dataSource = self
+        
+        table.rowHeight = UITableView.automaticDimension
+        table.estimatedRowHeight = 60
+        
+        table.sectionHeaderHeight = 10
+        table.sectionFooterHeight = 10
+        
+        table.subviews.forEach { section in
+            section.addCenterSideShadows(false)
+        }
         return table
     }()
     lazy var searchControllerForTop: UISearchController = {
@@ -59,13 +79,11 @@ class SearchVC: UIViewController {
         return view
     }()
     
-    private var allData: [WordsEntity] = []
-    private var filteredData: [WordsEntity] = []
-    
     private var topStroke = CAShapeLayer()
     private var bottomStroke = CAShapeLayer()
     private var upperBottomStroke = CAShapeLayer()
-    
+
+    //MARK: Constrait related properties
     private var tableViewBottomAnchor: NSLayoutConstraint!
     private var searchBarWidthAnchor: NSLayoutConstraint!
     private var cancelButtonLeadingAnchor: NSLayoutConstraint!
@@ -74,15 +92,18 @@ class SearchVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        bind()
         controllerCustomization()
         tableViewCustomization()
-        navBarCustomization()
+        configureNavBar()
         searchBarCustomisation(onTop: searchBarOnTop)
-        loadData()
+        configureLabel()
+//        loadData()
         
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        input.send(.viewWillAppear)
         if searchBarDidChanged{
             searchBarCustomisation(onTop: searchBarOnTop)
             view.layoutSubviews()
@@ -98,40 +119,50 @@ class SearchVC: UIViewController {
             upperBottomStroke.strokeColor = UIColor.label.cgColor
             bottomStroke.strokeColor = UIColor.label.cgColor
             topStroke.strokeColor = UIColor.label.cgColor
+            if traitCollection.userInterfaceStyle == .dark {
+                tableView.subviews.forEach { section in
+                    section.layer.shadowColor = shadowColorForDarkIdiom
+                }
+            } else {
+                tableView.subviews.forEach { section in
+                    section.layer.shadowColor = shadowColorForLightIdiom
+                }
+            }
         }
+    }
+    func bind(){
+        let output = model.transform(input: input.eraseToAnyPublisher())
+        output
+            .receive(on: DispatchQueue.main)
+            .sink { changeType in
+                switch changeType{
+                case .shouldUpdateResults:
+                    print("Worked")
+                    self.tableView.reloadData()
+                case .error(let error):
+                    self.presentError(error)
+                case .shouldReloadView:
+                    self.reloadSearchBars()
+                    self.tableView.reloadData()
+                case .shouldUpdateLabels:
+                    self.configureLabel()
+                case .shouldReplaceSearchBarOnTop(let onTop):
+                    self.changeSearchBarPosition(onTop: onTop)
+                }
+            }
+            .store(in: &cancellable)
     }
     //MARK: - Controller SetUp
     func controllerCustomization(){
         searchBarOnTop = UserSettings.shared.settings.searchBar.value
         view.backgroundColor = .systemBackground
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(languageDidChange(sender: )), name: .appLanguageDidChange, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(positionDidChange(sender: )), name: .appSearchBarPositionDidChange, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(appDataDidChange(sender: )), name:
-                .appDataDidChange, object: nil)
-        
+                
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
 
     }
-    private func loadData() {
-        let dictionaries: [DictionariesEntity]!
-        do {
-            try dictionaries = CoreDataHelper.shared.fetchDictionaries()
-        } catch {
-            self.presentError(error)
-            return
-        }
-        allData = dictionaries.flatMap { dictionary in
-            guard let words = dictionary.words as? Set<WordsEntity> else { return Set<WordsEntity>() }
-            return words
-        }
-        filteredData = allData
-        tableView.reloadData()
-    }
-    
-    func navBarCustomization(){
-        title = "searchVCTitle".localized
+    //MARK: - NavBar SetUp
+    func configureNavBar(){
         navigationController?.navigationBar.titleTextAttributes = NSAttributedString().fontWithoutString(bold: true, size: 23)
 
         self.navigationController?.navigationBar.tintColor = .label
@@ -213,6 +244,42 @@ class SearchVC: UIViewController {
             tableViewBottomAnchor?.constant = -searchControllerHeight
         }
     }
+    func reloadSearchBars(){
+        if searchBarOnTop && searchControllerForTop.searchBar.text != nil{
+            searchControllerForTop.searchBar.text = nil
+            searchControllerForTop.resignFirstResponder()
+        } else if !searchBarOnTop && customSearchBar.text != nil{
+            customSearchBar.resignFirstResponder()
+            customSearchBar.text = nil
+        }
+    }
+    func configureLabel(){
+        title = "searchVCTitle".localized
+        searchControllerForTop.searchBar.placeholder = "yourWord".localized
+        customSearchBar.placeholder = "yourWord".localized
+    }
+    func changeSearchBarPosition(onTop: Bool){
+        searchBarOnTop = onTop
+        if searchBarOnTop {
+            view.layer.addSublayer(bottomStroke)
+            topStroke.removeFromSuperlayer()
+            if customSearchBar.text != nil {
+                customSearchBar.text = nil
+                searchBarTextDidEndEditing(customSearchBar)
+            }
+        } else {
+            view.layer.addSublayer(topStroke)
+            bottomStroke.removeFromSuperlayer()
+            
+            if searchControllerForTop.searchBar.text != nil {
+                searchControllerForTop.searchBar.resignFirstResponder()
+                searchControllerForTop.searchBar.text = nil
+                searchControllerForTop.isActive = false
+            }
+        }
+        searchBarDidChanged = true
+    }
+    
         //MARK: - Actions
     @objc func languageDidChange(sender: AnyObject){
         title = "searchVCTitle".localized
@@ -240,18 +307,17 @@ class SearchVC: UIViewController {
         }
         searchBarDidChanged = true
     }
-    @objc func appDataDidChange(sender: Notification){
-        loadData()
-        let type = sender.userInfo?["changeType"] as? NSManagedObject.ChangeType
-        print("Debug purpose: SearchVC appDataDidChange worked with type: \(type)")
-        if searchBarOnTop && searchControllerForTop.searchBar.text != nil{
-            searchControllerForTop.searchBar.text = nil
-            searchControllerForTop.resignFirstResponder()
-        } else if !searchBarOnTop && customSearchBar.text != nil{
-            customSearchBar.resignFirstResponder()
-            customSearchBar.text = nil
-        }
-    }
+//    @objc func appDataDidChange(sender: Notification){
+//        let type = sender.userInfo?["changeType"] as? NSManagedObject.ChangeType
+//        print("Debug purpose: SearchVC appDataDidChange worked with type: \(type)")
+//        if searchBarOnTop && searchControllerForTop.searchBar.text != nil{
+//            searchControllerForTop.searchBar.text = nil
+//            searchControllerForTop.resignFirstResponder()
+//        } else if !searchBarOnTop && customSearchBar.text != nil{
+//            customSearchBar.resignFirstResponder()
+//            customSearchBar.text = nil
+//        }
+//    }
     @objc func keyboardWillShow(notification: Notification) {
         guard !searchBarOnTop else { return }
         guard let userInfo = notification.userInfo,
@@ -287,13 +353,11 @@ class SearchVC: UIViewController {
             self?.view.layoutIfNeeded()
             print("2")
         }
-        
         searchBarTextDidEndEditing(customSearchBar)
-        
     }
 }
 
-extension SearchVC: UISearchResultsUpdating{
+extension SearchView: UISearchResultsUpdating{
     
     func updateSearchResults(for searchController: UISearchController?){
         let text = {
@@ -305,25 +369,14 @@ extension SearchVC: UISearchResultsUpdating{
                 return text
             }
         }()
-        if !text.isEmpty {
-            filteredData = allData.filter { words in
-                words.word.lowercased().contains(text.lowercased()) ||
-                words.meaning.lowercased().contains(text.lowercased())
-            }
-        } else {
-            filteredData = allData
-        }
-        tableView.reloadData()
+        print("Update result worked")
+        input.send(.reciveText(text))
     }
 }
-extension SearchVC: UISearchBarDelegate{
+
+extension SearchView: UISearchBarDelegate{
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         updateSearchResults(for: nil)
-    }
-    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
-        if searchBar.tag == 2 {
-            updateSearchResults(for: nil)
-        }
     }
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
         updateSearchResults(for: nil)
@@ -342,7 +395,7 @@ extension SearchVC: UISearchBarDelegate{
         }
     }
 }
-extension SearchVC: UIScrollViewDelegate {
+extension SearchView: UIScrollViewDelegate {
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if searchBarOnTop {
@@ -357,30 +410,33 @@ extension SearchVC: UIScrollViewDelegate {
     }
 }
 
-extension SearchVC: UITableViewDelegate, UITableViewDataSource{
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return filteredData.count
+extension SearchView: UITableViewDelegate, UITableViewDataSource{
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return model.numberOfCells()
     }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        1
+    }
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: SearchViewCell().identifier, for: indexPath) as? SearchViewCell else { return UITableViewCell()}
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: SearchViewCell.identifier, for: indexPath) as? SearchViewCell else { return UITableViewCell()}
         
-        let data = filteredData[indexPath.row]
-        cell.wordLabel.text = data.word
-        cell.descriptionLabel.text = data.meaning
+        cell.configureCellWith(data: model.dataForCell(at: indexPath))
         return cell
         
     }
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
+        guard let cell = tableView.cellForRow(at: indexPath) as? SearchViewCell else { return }
+        tableView.beginUpdates()
+        cell.isExpanded.toggle()
+        tableView.endUpdates()
     }
+    
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        75
-    }
-    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        1
-    }
-    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        1
+        return UITableView.automaticDimension
     }
 }
 

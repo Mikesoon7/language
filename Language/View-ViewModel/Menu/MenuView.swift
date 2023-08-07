@@ -142,6 +142,7 @@ class MenuView: UIViewController {
         self.navigationItem.setRightBarButton(rightButton, animated: true)
         
         navigationItem.backButtonDisplayMode = .minimal
+        
         self.navigationController?.navigationBar.tintColor = .label
         self.navigationController?.navigationBar.isTranslucent = true
     }

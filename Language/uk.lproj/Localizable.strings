@@ -57,6 +57,8 @@
 "system.done" = "Готово";
 "system.yes" = "Так";
 "systme.no" = "Ні";
+"system.settings" = "Налаштування";
+
 
 //MARK: - AlertText
 "textAlert" = "Вкажіть текст";
@@ -80,7 +82,7 @@
 "gameDetails.deleteAlert.message.warning" = "\n nЦе остання картка, тому ваш словник також буде видалено.";
 
 //MARK: - Notification
-"allowNotification" = "Дозволити повідомлення";
+"notification.allowNotification" = "Дозволити повідомлення";
 "frequency" = "Нагадувати";
 "chooseTime" = "Час";
 //Frequency Option
@@ -88,6 +90,13 @@
 "onceAWeek" = "Раз на тиждень";
 "onWeekdays" = "У будні";
 "onTheWeekend" = "На вихідних";
+"custom" = "Обрати свій";
+//Notification message
+"notification.notificationTitle" = "5 хвилин щоденно - 2,5 години за місяць";
+"notification.notificationMessage" = "Невелике нагадування про ваші картки. Витративши лише 5 хвилин щоденно, ви можете покращити пам'ять та знання. Бажаємо успіхів у вивченні!";
+//Notification Denied Alert
+"notification.alertTitle" = "Увімкніть сповіщення, щоб бути в курсі";
+"notification.alertMessage" = "Знаємо, що час цінний, тому надсилатимемо лише одне повідомлення в день. Це ваш нагадувач про можливість практикувати та вдосконалювати знання з допомогою наших карток. Завжди можна змінити налаштування в додатку";
 //MARK: - SearchVC
 "searchVCTitle" = "Пошук";
 "yourWord" = "Введіть текст";
