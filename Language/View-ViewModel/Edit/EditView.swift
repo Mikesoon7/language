@@ -71,7 +71,6 @@ class EditView: UIViewController {
     }
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
-        
         if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
             self.bottomStroke.strokeColor = UIColor.label.cgColor
             self.topStroke.strokeColor = UIColor.label.cgColor

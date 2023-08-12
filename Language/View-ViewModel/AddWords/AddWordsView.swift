@@ -11,38 +11,31 @@ import Combine
 
 class AddWordsView: UIViewController {
 
-    private var model: AddWordsViewModel!
+    //MARK: - ViewModel related
+    private var viewModel: AddWordsViewModel!
     private var cancellable = Set<AnyCancellable>()
     
-    var index = Int()
-    
-    let textView : UITextView = {
-        let textView = TextViewToAdd()
-        textView.setUpBorderedView(false)
-        textView.layer.masksToBounds = true
+    //MARK: - Views
+    private lazy var textInputView: TextInputView = TextInputView(delegate: self)
 
-        textView.layer.borderWidth = 0.5
-        textView.layer.borderColor = UIColor.black.cgColor
-        
-        textView.textContainerInset = .init(top: 5, left: 5, bottom: 0, right: 5)
-        textView.allowsEditingTextAttributes = true
-        
-        return textView
-    }()
-    let saveButton : UIButton = {
+    private let saveButton : UIButton = {
         let button = UIButton()
-        button.setUpCommotBut(false)
-        button.setAttributedTitle(NSAttributedString().fontWithString(
-            string: "Save",
-            bold: true,
-            size: 18), for: .normal)
+        button.setUpCustomButton()
         return button
     }()
     var topStroke = CAShapeLayer()
     var bottomStroke = CAShapeLayer()
     
+    //MARK: Constraints related
+    private var textInputViewHeightAnchor: NSLayoutConstraint!
+    private var textInputViewBottomAnchor: NSLayoutConstraint!
+    
+    private var subviewsVerticalInset: CGFloat = 13
+    private var buttonHeight: CGFloat = 60
+
+    //MARK: Inherited
     required init(dictionary: DictionariesEntity){
-        model = AddWordsViewModel(dictionary: dictionary)
+        viewModel = AddWordsViewModel(dictionary: dictionary)
         super.init(nibName:  nil, bundle: nil)
     }
     required init?(coder: NSCoder) {
@@ -54,20 +47,16 @@ class AddWordsView: UIViewController {
         bind()
         configureController()
         configureNavBar()
-        configureTextView()
+        configureTextInputView()
+        configureText()
         configureSaveButton()
     }
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         configureStrokes()
     }
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        if textView.isFirstResponder{
-            textView.resignFirstResponder()
-        }
-    }
-//MARK: - StyleChange Responding
+
+    //MARK: - StyleChange Responding
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
         if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
@@ -75,19 +64,28 @@ class AddWordsView: UIViewController {
             self.topStroke.strokeColor = UIColor.label.cgColor
             if traitCollection.userInterfaceStyle == .dark {
                 saveButton.layer.shadowColor = shadowColorForDarkIdiom
+                textInputView.layer.shadowColor = shadowColorForDarkIdiom
             } else {
                 saveButton.layer.shadowColor = shadowColorForLightIdiom
+                textInputView.layer.shadowColor = shadowColorForLightIdiom
+
             }
         }
     }
+    //MARK: Binding
     private func bind(){
-        model.output
+        viewModel.output
             .sink { output in
                 switch output {
                 case .shouldPresentEerror(let error):
                     self.presentError(error)
                 case .shouldPop:
                     self.navigationController?.popViewController(animated: true)
+                case .shouldUpdatePlaceholder:
+                    self.textInputView.updatePlaceholder()
+                case .shouldUpdateText:
+                    self.textInputView.updatePlaceholder()
+                    self.configureText()
                 }
             }
             .store(in: &cancellable)
@@ -99,10 +97,6 @@ class AddWordsView: UIViewController {
         //Observer on keyboard.
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(sender:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(sender:)), name: UIResponder.keyboardWillHideNotification, object: nil)
-        //Language change
-        NotificationCenter.default.addObserver(self, selector: #selector(languageDidChange(sender:)), name: .appLanguageDidChange, object: nil)
-        //Separator change
-        NotificationCenter.default.addObserver(self, selector: #selector(separatorDidChagne(sender:)), name: .appSeparatorDidChange, object: nil)
     }
 
     //MARK: - Stroke SetUp
@@ -113,81 +107,91 @@ class AddWordsView: UIViewController {
         view.layer.addSublayer(topStroke)
         view.layer.addSublayer(bottomStroke)
     }
-//MARK: - NavBar SetUp
+    //MARK: - NavBar SetUp
     func configureNavBar(){
-        navigationItem.title = "addWordTitle".localized
         self.navigationController?.navigationBar.titleTextAttributes = NSAttributedString().fontWithoutString(bold: true, size: 23)
         self.navigationController?.navigationBar.tintColor = .label
         self.navigationController?.navigationBar.isTranslucent = true
     }
-//MARK: - TextView SetUp
-    func configureTextView(){
-        view.addSubview(textView)
-        textView.delegate = self
-        textView.inputDelegate = self
+    //MARK: - TextInputView SetUp
+    func configureTextInputView(){
+        view.addSubview(textInputView)
         
-        textView.translatesAutoresizingMaskIntoConstraints = false
-        
+        textInputViewHeightAnchor = textInputView.heightAnchor.constraint(equalTo: textInputView.widthAnchor, multiplier: 0.66)
+        textInputViewBottomAnchor = textInputView.bottomAnchor.constraint(equalTo: saveButton.topAnchor, constant: -subviewsVerticalInset)
         NSLayoutConstraint.activate([
-            textView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 35),
-            textView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            textView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.91),
-            textView.heightAnchor.constraint(equalTo: textView.widthAnchor, multiplier: 0.79)
+            textInputView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 35),
+            textInputView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            textInputView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: .widthMultiplerFor(type: .forViews)),
+            textInputViewHeightAnchor
         ])
-        configureTextViewPlaceholder(textOnly: false)
     }
-    func configureTextViewPlaceholder(textOnly: Bool){
-        textView.text = LanguageChangeManager.shared.localizedString(forKey: "viewPlaceholderWord") + " \(UserSettings.shared.settings.separators.selectedValue) " + LanguageChangeManager.shared.localizedString(forKey: "viewPlaceholderMeaning")
-        guard !textOnly else { return }
-        textView.textColor = .lightGray
-        textView.font = UIFont(name: "TimesNewRomanPSMT", size: 15) ?? UIFont()
-    }
-//MARK: - Save Button SetUp
+    //MARK: - Save Button SetUp
     func configureSaveButton(){
         view.addSubview(saveButton)
         saveButton.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            saveButton.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor, constant: -11),
+            saveButton.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor, constant: -subviewsVerticalInset),
             saveButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            saveButton.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.91),
-            saveButton.heightAnchor.constraint(equalToConstant: 55),
+            saveButton.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: .widthMultiplerFor(type: .forViews)),
+            saveButton.heightAnchor.constraint(equalToConstant: buttonHeight),
         ])
         saveButton.addTargetTouchBegin()
         saveButton.addTargetInsideTouchStop()
         saveButton.addTargetOutsideTouchStop()
         saveButton.addTarget(self, action: #selector(saveButtonDidTap(sender: )), for: .touchUpInside)
     }
+    
+    //MARK: - Other
+    //When user trying to save information, checks is it empty and return String if not.
     func validateText() -> String?{
         let insertTextAllert = UIAlertController(
             title: "textAlert".localized,
             message: "textInfo".localized ,
             preferredStyle: .alert)
         let action = UIAlertAction(
-            title: "agreeInformal".localized,
+            title: "system.agreeInformal".localized,
             style: .cancel)
         insertTextAllert.addAction(action)
         action.setValue(UIColor.label, forKey: "titleTextColor")
 
-        guard let text = textView.text, text != "" && textView.textColor != .lightGray else {
+        guard let text = textInputView.textView.text, text != "" else {
             self.present(insertTextAllert, animated: true)
             return nil
         }
         return text
-
     }
+    //Uses as initial configurator for text values and in order to update them.
+    func configureText(){
+        navigationItem.title = "addWordTitle".localized
+        saveButton.setAttributedTitle(
+            .attributedString(string: "system.save".localized, with: .georgianBoldItalic, ofSize: 18), for: .normal)
+
+        if let doneButton = navigationItem.rightBarButtonItem {
+            doneButton.title = "system.done".localized
+        }
+    }
+    //Switch between standalone contrait and attached to saveButton
+    func updateTextViewConstraits(keyboardIsvisable: Bool){
+        textInputViewHeightAnchor.isActive = !keyboardIsvisable
+        textInputViewBottomAnchor.isActive = keyboardIsvisable
+        view.layoutIfNeeded()
+    }
+
 //MARK: - Actions
+    //Done button, which appears when user activate keyboard.
     @objc func rightBarButDidTap(sender: Any){
         navigationItem.rightBarButtonItem = nil
-        textView.resignFirstResponder()
+        textInputView.textView.resignFirstResponder()
     }
     //Addding input text to the dictionary.
     @objc func saveButtonDidTap(sender: UIButton){
         guard let text = validateText() else { return }
         
-        model.getNewWordsFrom(text)
+        viewModel.getNewWordsFrom(text)
     }
-    //For changing save button position
+    //Small animation of bottom stroke dissapearence
     @objc func keyboardWillShow(sender: Notification){
         let animation = CABasicAnimation(keyPath: "opacity")
         animation.fromValue = 1.0
@@ -196,7 +200,10 @@ class AddWordsView: UIViewController {
         animation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
 
         bottomStroke.add(animation, forKey: "strokeOpacity")
+        
+        updateTextViewConstraits(keyboardIsvisable: true)
     }
+    //Animate bottom stroke back to 1 alpha.
     @objc func keyboardWillHide(sender: Notification){
         let animation = CABasicAnimation(keyPath: "opacity")
         animation.fromValue = 0.0
@@ -205,72 +212,20 @@ class AddWordsView: UIViewController {
         animation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
 
         bottomStroke.add(animation, forKey: "strokeOpacity")
-    }
-    @objc func languageDidChange(sender: Any){
-        if textView.textColor == .lightGray {
-            configureTextViewPlaceholder(textOnly: true)
-        }
-    
-        self.navigationItem.title = "addWordTitle".localized
-        saveButton.setAttributedTitle(NSAttributedString().fontWithString(
-            string: "save".localized,
-            bold: true,
-            size: 18), for: .normal)
-    }
-    @objc func separatorDidChagne(sender: Any){
-        if textView.textColor == .lightGray {
-            configureTextViewPlaceholder(textOnly: true)
-        }
+        
+        updateTextViewConstraits(keyboardIsvisable: false)
     }
 }
 
-extension AddWordsView : UITextViewDelegate{
-    //Vanishing placeholder imitation
-    func textViewDidBeginEditing(_ textView: UITextView) {
-        if textView.textColor == .lightGray {
-            textView.text = nil
-            textView.textColor = nil
-            textView.font = nil
-            textView.typingAttributes = [NSAttributedString.Key.font : UIFont(name: "Times New Roman", size: 17) ?? UIFont(), NSAttributedString.Key.backgroundColor : UIColor.clear, NSAttributedString.Key.foregroundColor : UIColor.label]
-        }
-        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(rightBarButDidTap(sender:)))
-    }
-    func textViewDidEndEditing(_ textView: UITextView) {
-        if textView.text.isEmpty {
-            configureTextViewPlaceholder(textOnly: false)
+extension AddWordsView: PlaceholderTextViewDelegate{
+    func textViewWillAppear() {
+        if self.navigationController?.navigationItem.rightBarButtonItem == nil{
+            self.navigationItem.setRightBarButton(UIBarButtonItem(title: "system.done".localized, style: .plain, target: self, action: #selector(rightBarButDidTap(sender:))), animated: true)
         }
     }
-}
-extension AddWordsView : UITextInputDelegate{
-    func selectionWillChange(_ textInput: UITextInput?) {
-        
+    
+    func configurePlaceholderText() -> String {
+        self.viewModel.configureTextPlaceholder()
     }
     
-    func selectionDidChange(_ textInput: UITextInput?) {
-        
-    }
-    
-    func textWillChange(_ textInput: UITextInput?) {
-        
-    }
-    
-    func textDidChange(_ textInput: UITextInput?) {
-        
-    }
-    
-    
-}
-class TextViewToAdd: UITextView {
-
-    override func paste(_ sender: Any?) {
-        if let pasteboardString = UIPasteboard.general.string {
-            let currentAttributes = typingAttributes
-
-            let attributedString = NSAttributedString(string: pasteboardString, attributes: currentAttributes)
-
-            textStorage.insert(attributedString, at: selectedRange.location)
-
-            selectedRange = NSRange(location: selectedRange.location + pasteboardString.count, length: 0)
-        }
-    }
 }

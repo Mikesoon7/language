@@ -69,6 +69,9 @@ final class MenuViewModel{
             
         }
     }
+    func importButtonWasTapped(){
+        
+    }
 
     func deleteDictionary(at index: IndexPath) {
         let dictionary = dictionaries[index.section]

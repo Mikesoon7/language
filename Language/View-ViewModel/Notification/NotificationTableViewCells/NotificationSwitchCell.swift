@@ -35,7 +35,7 @@ class NotificationSwitchCell: UITableViewCell {
     }()
     var control : UISwitch = {
         let control = UISwitch()
-        control.translatesAutoresizingMaskIntoConstraints = false
+        control.setUpCustomSwitch(isOn: false)
         return control
     }()
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {

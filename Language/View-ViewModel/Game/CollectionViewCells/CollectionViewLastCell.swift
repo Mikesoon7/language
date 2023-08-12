@@ -67,7 +67,7 @@ class CollectionViewLastCell: UICollectionViewCell {
     
     let finishButton : UIButton = {
         let button = UIButton()
-        button.setUpBorderedView(false)
+        button.setUpCustomView()
         button.layer.borderWidth = 0
         button.setTitle(
             "great".localized,

@@ -42,7 +42,7 @@ class SearchView: UIViewController {
         }
         return table
     }()
-    lazy var searchControllerForTop: UISearchController = {
+    lazy var topSearchBarController: UISearchController = {
         let controller = UISearchController(searchResultsController: nil)
         controller.searchBar.placeholder = "yourWord".localized
         controller.searchBar.delegate = self
@@ -51,7 +51,7 @@ class SearchView: UIViewController {
         controller.obscuresBackgroundDuringPresentation = false
         return controller
     }()
-    lazy var customSearchBar: UISearchBar = {
+    lazy var bottomSearchBar: UISearchBar = {
         let searchBar = UISearchBar()
         searchBar.placeholder = "yourWord".localized
         searchBar.delegate = self
@@ -72,7 +72,7 @@ class SearchView: UIViewController {
         return button
     }()
 
-    let searchContainer: UIView = {
+    let bottomSearchBarContainer: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.backgroundColor = .systemBackground
@@ -90,14 +90,16 @@ class SearchView: UIViewController {
 
     private var searchControllerHeight: CGFloat = 50
     
+    
+    //MARK: - Inherited
     override func viewDidLoad() {
         super.viewDidLoad()
         bind()
-        controllerCustomization()
-        tableViewCustomization()
+        configureController()
+        configureTableView()
         configureNavBar()
-        searchBarCustomisation(onTop: searchBarOnTop)
-        configureLabel()
+        configureSearchBar(positionOnTop: searchBarOnTop)
+        configureLabels()
 //        loadData()
         
     }
@@ -105,13 +107,13 @@ class SearchView: UIViewController {
         super.viewWillAppear(animated)
         input.send(.viewWillAppear)
         if searchBarDidChanged{
-            searchBarCustomisation(onTop: searchBarOnTop)
+            configureSearchBar(positionOnTop: searchBarOnTop)
             view.layoutSubviews()
         }
     }
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        strokeCustomization()
+        configureStrokes()
     }
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
@@ -130,6 +132,7 @@ class SearchView: UIViewController {
             }
         }
     }
+    //MARK: - Binding View and VM
     func bind(){
         let output = model.transform(input: input.eraseToAnyPublisher())
         output
@@ -145,15 +148,15 @@ class SearchView: UIViewController {
                     self.reloadSearchBars()
                     self.tableView.reloadData()
                 case .shouldUpdateLabels:
-                    self.configureLabel()
+                    self.configureLabels()
                 case .shouldReplaceSearchBarOnTop(let onTop):
-                    self.changeSearchBarPosition(onTop: onTop)
+                    self.reloadSearchBar(positionOnTop: onTop)
                 }
             }
             .store(in: &cancellable)
     }
     //MARK: - Controller SetUp
-    func controllerCustomization(){
+    func configureController(){
         searchBarOnTop = UserSettings.shared.settings.searchBar.value
         view.backgroundColor = .systemBackground
                 
@@ -169,7 +172,8 @@ class SearchView: UIViewController {
         self.navigationController?.navigationBar.isTranslucent = true
     }
     
-    func tableViewCustomization(){
+    //MARK: - TableView SetUP
+    func configureTableView(){
         view.addSubview(tableView)
         
         tableViewBottomAnchor = tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: searchBarOnTop ? 0 : searchControllerHeight)
@@ -181,28 +185,29 @@ class SearchView: UIViewController {
             tableViewBottomAnchor!
         ])
     }
-    func searchContainerCustomization() {
-        view.addSubview(searchContainer)
-        searchContainer.addSubviews(customSearchBar, cancelButton)
+    //MARK: - ContainerForBottomSearchBar SetUp
+    func configureContainerForBottomSearchBar() {
+        view.addSubview(bottomSearchBarContainer)
+        bottomSearchBarContainer.addSubviews(bottomSearchBar, cancelButton)
         
-        searchBarWidthAnchor = customSearchBar.widthAnchor.constraint(
+        searchBarWidthAnchor = bottomSearchBar.widthAnchor.constraint(
             equalTo: view.widthAnchor, multiplier: 0.95)
 
-        cancelButtonLeadingAnchor = cancelButton.leadingAnchor.constraint(equalTo: customSearchBar.trailingAnchor, constant: 10)
+        cancelButtonLeadingAnchor = cancelButton.leadingAnchor.constraint(equalTo: bottomSearchBar.trailingAnchor, constant: 10)
         
         NSLayoutConstraint.activate([
-            searchContainer.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor),
-            searchContainer.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            searchContainer.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 100),
-            searchContainer.heightAnchor.constraint(equalToConstant: searchControllerHeight),
+            bottomSearchBarContainer.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor),
+            bottomSearchBarContainer.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            bottomSearchBarContainer.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 100),
+            bottomSearchBarContainer.heightAnchor.constraint(equalToConstant: searchControllerHeight),
             
-            customSearchBar.topAnchor.constraint(equalTo: searchContainer.topAnchor),
+            bottomSearchBar.topAnchor.constraint(equalTo: bottomSearchBarContainer.topAnchor),
             searchBarWidthAnchor,
-            customSearchBar.bottomAnchor.constraint(equalTo: searchContainer.bottomAnchor),
-            customSearchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: (view.bounds.width - view.bounds.width * 0.95) / 2),
+            bottomSearchBar.bottomAnchor.constraint(equalTo: bottomSearchBarContainer.bottomAnchor),
+            bottomSearchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: (view.bounds.width - view.bounds.width * 0.95) / 2),
                                                      
-            cancelButton.topAnchor.constraint(equalTo: searchContainer.topAnchor),
-            cancelButton.bottomAnchor.constraint(equalTo: searchContainer.bottomAnchor),
+            cancelButton.topAnchor.constraint(equalTo: bottomSearchBarContainer.topAnchor),
+            cancelButton.bottomAnchor.constraint(equalTo: bottomSearchBarContainer.bottomAnchor),
             cancelButton.widthAnchor.constraint(equalToConstant: 80),
             cancelButtonLeadingAnchor
         ])
@@ -212,11 +217,11 @@ class SearchView: UIViewController {
         path.addLine(to: CGPoint(x: view.bounds.maxX, y: 0))
         upperBottomStroke.lineWidth = 0.5
         upperBottomStroke.path = path.cgPath
-        searchContainer.layer.addSublayer(upperBottomStroke)
+        bottomSearchBarContainer.layer.addSublayer(upperBottomStroke)
 
     }
         
-    func strokeCustomization(){
+    func configureStrokes(){
         if topStroke.superlayer == nil && bottomStroke.superlayer == nil {
             topStroke = UIView().addTopStroke(vc: self)
             bottomStroke = UIView().addBottomStroke(vc: self)
@@ -229,52 +234,52 @@ class SearchView: UIViewController {
         }
     }
     
-    func searchBarCustomisation(onTop: Bool) {
-        if onTop {
-            navigationItem.searchController = searchControllerForTop
-            if view.subviews.contains(searchContainer) {
-                searchContainer.removeFromSuperview()
+    func configureSearchBar(positionOnTop: Bool) {
+        if positionOnTop {
+            navigationItem.searchController = topSearchBarController
+            if view.subviews.contains(bottomSearchBarContainer) {
+                bottomSearchBarContainer.removeFromSuperview()
             }
             tableViewBottomAnchor?.constant = 0
         } else {
             navigationItem.searchController = nil
-            if !view.subviews.contains(searchContainer){
-                searchContainerCustomization()
+            if !view.subviews.contains(bottomSearchBarContainer){
+                configureContainerForBottomSearchBar()
             }
             tableViewBottomAnchor?.constant = -searchControllerHeight
         }
     }
     func reloadSearchBars(){
-        if searchBarOnTop && searchControllerForTop.searchBar.text != nil{
-            searchControllerForTop.searchBar.text = nil
-            searchControllerForTop.resignFirstResponder()
-        } else if !searchBarOnTop && customSearchBar.text != nil{
-            customSearchBar.resignFirstResponder()
-            customSearchBar.text = nil
+        if searchBarOnTop && topSearchBarController.searchBar.text != nil{
+            topSearchBarController.searchBar.text = nil
+            topSearchBarController.resignFirstResponder()
+        } else if !searchBarOnTop && bottomSearchBar.text != nil{
+            bottomSearchBar.resignFirstResponder()
+            bottomSearchBar.text = nil
         }
     }
-    func configureLabel(){
+    func configureLabels(){
         title = "searchVCTitle".localized
-        searchControllerForTop.searchBar.placeholder = "yourWord".localized
-        customSearchBar.placeholder = "yourWord".localized
+        topSearchBarController.searchBar.placeholder = "yourWord".localized
+        bottomSearchBar.placeholder = "yourWord".localized
     }
-    func changeSearchBarPosition(onTop: Bool){
-        searchBarOnTop = onTop
+    func reloadSearchBar(positionOnTop: Bool){
+        searchBarOnTop = positionOnTop
         if searchBarOnTop {
             view.layer.addSublayer(bottomStroke)
             topStroke.removeFromSuperlayer()
-            if customSearchBar.text != nil {
-                customSearchBar.text = nil
-                searchBarTextDidEndEditing(customSearchBar)
+            if bottomSearchBar.text != nil {
+                bottomSearchBar.text = nil
+                searchBarTextDidEndEditing(bottomSearchBar)
             }
         } else {
             view.layer.addSublayer(topStroke)
             bottomStroke.removeFromSuperlayer()
             
-            if searchControllerForTop.searchBar.text != nil {
-                searchControllerForTop.searchBar.resignFirstResponder()
-                searchControllerForTop.searchBar.text = nil
-                searchControllerForTop.isActive = false
+            if topSearchBarController.searchBar.text != nil {
+                topSearchBarController.searchBar.resignFirstResponder()
+                topSearchBarController.searchBar.text = nil
+                topSearchBarController.isActive = false
             }
         }
         searchBarDidChanged = true
@@ -283,26 +288,26 @@ class SearchView: UIViewController {
         //MARK: - Actions
     @objc func languageDidChange(sender: AnyObject){
         title = "searchVCTitle".localized
-        searchControllerForTop.searchBar.placeholder = "yourWord".localized
-        customSearchBar.placeholder = "yourWord".localized
+        topSearchBarController.searchBar.placeholder = "yourWord".localized
+        bottomSearchBar.placeholder = "yourWord".localized
     }
     @objc func positionDidChange(sender: AnyObject){
         searchBarOnTop = UserSettings.shared.settings.searchBar.value
         if searchBarOnTop {
             view.layer.addSublayer(bottomStroke)
             topStroke.removeFromSuperlayer()
-            if customSearchBar.text != nil {
-                customSearchBar.text = nil
-                searchBarTextDidEndEditing(customSearchBar)
+            if bottomSearchBar.text != nil {
+                bottomSearchBar.text = nil
+                searchBarTextDidEndEditing(bottomSearchBar)
             }
         } else {
             view.layer.addSublayer(topStroke)
             bottomStroke.removeFromSuperlayer()
             
-            if searchControllerForTop.searchBar.text != nil {
-                searchControllerForTop.searchBar.resignFirstResponder()
-                searchControllerForTop.searchBar.text = nil
-                searchControllerForTop.isActive = false
+            if topSearchBarController.searchBar.text != nil {
+                topSearchBarController.searchBar.resignFirstResponder()
+                topSearchBarController.searchBar.text = nil
+                topSearchBarController.isActive = false
             }
         }
         searchBarDidChanged = true
@@ -335,7 +340,7 @@ class SearchView: UIViewController {
         guard let userInfo = notification.userInfo,
               let animationDuration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval
         else { return }
-        if customSearchBar.text == "" {
+        if bottomSearchBar.text == "" {
             UIView.animate(withDuration: animationDuration) { [weak self] in
                 self?.searchBarWidthAnchor.constant = 0
                 self?.view.layoutIfNeeded()
@@ -345,15 +350,15 @@ class SearchView: UIViewController {
         }
     }
     @objc func cancelButtonTapped(sender: UIButton){
-        customSearchBar.resignFirstResponder()
-        customSearchBar.text = nil
+        bottomSearchBar.resignFirstResponder()
+        bottomSearchBar.text = nil
 
         UIView.animate(withDuration: 0.5) { [weak self] in
             self?.searchBarWidthAnchor.constant = 0
             self?.view.layoutIfNeeded()
             print("2")
         }
-        searchBarTextDidEndEditing(customSearchBar)
+        searchBarTextDidEndEditing(bottomSearchBar)
     }
 }
 
@@ -362,10 +367,10 @@ extension SearchView: UISearchResultsUpdating{
     func updateSearchResults(for searchController: UISearchController?){
         let text = {
             if searchBarOnTop{
-                guard let text = searchControllerForTop.searchBar.text else { return String() }
+                guard let text = topSearchBarController.searchBar.text else { return String() }
                 return text
             } else {
-                guard let text = customSearchBar.text else { return String() }
+                guard let text = bottomSearchBar.text else { return String() }
                 return text
             }
         }()
@@ -385,7 +390,7 @@ extension SearchView: UISearchBarDelegate{
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         updateSearchResults(for: nil)
         if searchBar.tag == 2 {
-            customSearchBar.resignFirstResponder()
+            bottomSearchBar.resignFirstResponder()
         }
     }
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
@@ -400,11 +405,11 @@ extension SearchView: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if searchBarOnTop {
             let offsetY = scrollView.contentOffset.y
-            let searchBarHeight = searchControllerForTop.searchBar.frame.height
+            let searchBarHeight = topSearchBarController.searchBar.frame.height
             if offsetY >= searchBarHeight {
-                searchControllerForTop.searchBar.isHidden = true
+                topSearchBarController.searchBar.isHidden = true
             } else {
-                searchControllerForTop.searchBar.isHidden = false
+                topSearchBarController.searchBar.isHidden = false
             }
         }
     }

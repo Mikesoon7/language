@@ -11,6 +11,8 @@ class MenuAddDictionaryCell: UITableViewCell {
     
     static let identifier = "addCell"
 
+    var delegate: CustomCellDataDelegate!
+    
     var importLabel: UILabel = {
         var label = UILabel()
         label.attributedText = NSAttributedString().fontWithString(
@@ -21,8 +23,8 @@ class MenuAddDictionaryCell: UITableViewCell {
     }()
     var addButton : UIButton = {
         var button = UIButton()
-        button.backgroundColor = .systemGray3
-        button.setImage(UIImage(systemName: "square.and.arrow.up"), for: .normal)
+        button.backgroundColor = .systemGray5
+        button.setImage(UIImage(systemName: "square.and.arrow.up", withConfiguration: UIImage.SymbolConfiguration(weight: .medium)), for: .normal)
         button.imageView?.center = button.center
         button.tintColor = .label
         
@@ -33,18 +35,22 @@ class MenuAddDictionaryCell: UITableViewCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        NotificationCenter.default.addObserver(self, selector: #selector(languageChanged(sender:)), name: .appLanguageDidChange, object: nil)
-        self.backgroundColor = .systemGray5
-        self.layer.cornerRadius = 9
-        self.clipsToBounds = true
-        
-        setUpAccessories()
+                
+        configureSubviews()
     }
     required init?(coder: NSCoder) {
         fatalError("coder wasn't imported")
     }
-    
-    func setUpAccessories(){
+    func configureCellWith(delegate: CustomCellDataDelegate){
+        self.delegate = delegate
+        self.backgroundColor = .systemGray6
+        self.layer.cornerRadius = 9
+        self.clipsToBounds = true
+        self.selectionStyle = .none
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(languageChanged(sender:)), name: .appLanguageDidChange, object: nil)
+    }
+    func configureSubviews(){
         self.addSubviews(importLabel, addButton)
         importLabel.translatesAutoresizingMaskIntoConstraints = false
         addButton.translatesAutoresizingMaskIntoConstraints = false
@@ -59,6 +65,10 @@ class MenuAddDictionaryCell: UITableViewCell {
             addButton.widthAnchor.constraint(equalToConstant: 50),
             addButton.heightAnchor.constraint(equalToConstant: 50)
         ])
+    }
+    //Waiting for an API to import notes from built in Notes App
+    @objc func addButtonDidTap(sende: Any){
+        delegate.importButtonDidTap()
     }
     @objc func languageChanged(sender: Any){
         importLabel.text = LanguageChangeManager.shared.localizedString(forKey: "tableCellImport")

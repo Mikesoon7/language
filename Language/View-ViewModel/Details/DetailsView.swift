@@ -5,36 +5,40 @@
 //  Created by Star Lord on 21/02/2023.
 //
 
+
 import UIKit
 import Combine
 
-class DetailsVC: UIViewController {
+class DetailsView: UIViewController {
 
-    //MARK: - modelView related
+    //MARK: - ViewModel related
     private var viewModel: DetailsViewModel!
     private var cancellable = Set<AnyCancellable>()
     
-    
-    private var isRandom: Bool = false
-    
-    private var numberOfCards: Int!
-    private var selectedNumberOfCards : Int!
-    
     //MARK: - Views
+    //View fot changing cards order
     let randomizeCardsView : UIView = {
         var view = UIView()
-        view.setUpBorderedView(false)
+        view.setUpCustomView()
         return view
     }()
+    
     let randomizeLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
+    let randmizeSwitch : UISwitch = {
+        let switcher = UISwitch()
+        switcher.setUpCustomSwitch(isOn: false)
+        return switcher
+    }()
+    
+    //View to define number of cards
     let goalView : UIView = {
         var view = UIView()
-        view.setUpBorderedView(false)
+        view.setUpCustomView()
         view.layer.masksToBounds = true
         return view
     }()
@@ -47,13 +51,13 @@ class DetailsVC: UIViewController {
 
     let addWordsBut : UIButton = {
         var button = UIButton()
-        button.setUpCommotBut(false)
+        button.setUpCustomButton()
         return button
     }()
     
     let beginBut : UIButton = {
         var button = UIButton()
-        button.setUpCommotBut(false)
+        button.setUpCustomButton()
         return button
     }()
     
@@ -61,6 +65,12 @@ class DetailsVC: UIViewController {
 
     var topStroke = CAShapeLayer()
     var bottomStroke = CAShapeLayer()
+    
+    //MARK: - Local variables.
+    private var randomIsOn: Bool = false
+    
+    private var numberOfCards: Int!
+    private var selectedNumberOfCards : Int!
     
     //MARK: - Inherited methods
     required init(dictionary: DictionariesEntity){
@@ -141,21 +151,12 @@ class DetailsVC: UIViewController {
         navigationItem.backButtonDisplayMode = .minimal
     }
     
-//MARK: - RandomCardView SetUp
+    //MARK: - RandomCardView SetUp
     func configureRandomizeView(){
         view.addSubview(randomizeCardsView)
         
-        let switchForState : UISwitch = {
-            let switchForState = UISwitch()
-            switchForState.onTintColor = .systemGray2
-            switchForState.tintColor = .systemBackground
-            switchForState.setOn(false, animated: true)
-            switchForState.addTarget(self, action: #selector(randomSwitchToggle(sender:)), for: .valueChanged)
-            return switchForState
-        }()
-        
-        switchForState.translatesAutoresizingMaskIntoConstraints = false
-        randomizeCardsView.addSubviews(randomizeLabel, switchForState)
+        randmizeSwitch.translatesAutoresizingMaskIntoConstraints = false
+        randomizeCardsView.addSubviews(randomizeLabel, randmizeSwitch)
         
         NSLayoutConstraint.activate([
             randomizeCardsView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 35),
@@ -166,18 +167,20 @@ class DetailsVC: UIViewController {
             randomizeLabel.centerYAnchor.constraint(equalTo: randomizeCardsView.centerYAnchor),
             randomizeLabel.leadingAnchor.constraint(equalTo: randomizeCardsView.leadingAnchor, constant: 15),
             
-            switchForState.centerYAnchor.constraint(equalTo: randomizeCardsView.centerYAnchor),
-            switchForState.trailingAnchor.constraint(equalTo: randomizeCardsView.trailingAnchor, constant: -25)
+            randmizeSwitch.centerYAnchor.constraint(equalTo: randomizeCardsView.centerYAnchor),
+            randmizeSwitch.trailingAnchor.constraint(equalTo: randomizeCardsView.trailingAnchor, constant: -25)
         ])
-        switchForState.addTarget(self, action: #selector(randomSwitchToggle(sender:)), for: .valueChanged)
+        randmizeSwitch.addTarget(self, action: #selector(randomSwitchToggle(sender:)), for: .valueChanged)
     }
     
 //MARK: - SetTheGoal SetUp
     func configureGoalView(){
+        //Cause of picker to archive desirable appearence, we need to set bounds masking, blocking shadow view. So we need to add custom one.
         let shadowView = UIView()
-        shadowView.setUpBorderedView(false)
+        shadowView.setUpCustomView()
 
         view.addSubviews(shadowView, goalView)
+        view.addSubviews( goalView)
 
         picker.dataSource = self
         picker.delegate = self
@@ -189,13 +192,14 @@ class DetailsVC: UIViewController {
         NSLayoutConstraint.activate([
             shadowView.topAnchor.constraint(equalTo: self.randomizeCardsView.bottomAnchor, constant: 23),
             shadowView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            shadowView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.91),
+            shadowView.widthAnchor.constraint(equalTo: view.widthAnchor,
+                                              multiplier: CGFloat.widthMultiplerFor(type: .forViews)),
             shadowView.heightAnchor.constraint(equalToConstant: 60),
             
-            goalView.topAnchor.constraint(equalTo: self.randomizeCardsView.bottomAnchor, constant: 23),
-            goalView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            goalView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.91),
-            goalView.heightAnchor.constraint(equalToConstant: 60),
+            goalView.topAnchor.constraint(equalTo: shadowView.topAnchor) ,
+            goalView.leadingAnchor.constraint(equalTo: shadowView.leadingAnchor),
+            goalView.bottomAnchor.constraint(equalTo: shadowView.bottomAnchor),
+            goalView.trailingAnchor.constraint(equalTo: shadowView.trailingAnchor),
             
             goalLabel.leadingAnchor.constraint(equalTo: goalView.leadingAnchor, constant: 15),
             goalLabel.centerYAnchor.constraint(equalTo: goalView.centerYAnchor),
@@ -270,11 +274,11 @@ class DetailsVC: UIViewController {
     
 //MARK: - Actions
     @objc func randomSwitchToggle(sender: UISwitch){
-        isRandom = sender.isOn
+        randomIsOn = sender.isOn
     }
     
     @objc func startButtonTap(sender: UIButton){
-        let vc = viewModel.provideGameView(with: isRandom, numberOfCards: selectedNumberOfCards)
+        let vc = viewModel.provideGameView(with: randomIsOn, numberOfCards: selectedNumberOfCards)
         self.navigationController?.pushViewController(vc, animated: true)
     }
 
@@ -283,7 +287,7 @@ class DetailsVC: UIViewController {
         navigationController?.pushViewController(vc, animated: true)
     }
 }
-extension DetailsVC: UIPickerViewDelegate{
+extension DetailsView: UIPickerViewDelegate{
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         if numberOfCards <= 50 || row == pickerView.numberOfRows(inComponent: component) - 1 {
             selectedNumberOfCards = numberOfCards
@@ -293,7 +297,7 @@ extension DetailsVC: UIPickerViewDelegate{
     }
 }
 
-extension DetailsVC: UIPickerViewDataSource{
+extension DetailsView: UIPickerViewDataSource{
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
     }

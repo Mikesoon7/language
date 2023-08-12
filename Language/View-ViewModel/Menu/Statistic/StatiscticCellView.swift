@@ -9,19 +9,6 @@
 import SwiftUI
 import Charts
 
-//struct ChartData: Identifiable{
-//    let id = UUID()
-//    let week: String
-//    let weekByDays: [DayLog]
-//}
-//struct ChartData1: Identifiable {
-//    var day: String
-//    var value: Int
-//    var id: String { "\(day)" }
-//
-//}
-//
-
 struct BarChart: View {
     private var viewWidth: CGFloat
     private var viewHeight: CGFloat
@@ -31,7 +18,6 @@ struct BarChart: View {
     @State private var selectedWeek: WeekLog
     
     init(data: [WeekLog], width: CGFloat, height: CGFloat) {
-//        let weekLogs = DataConverter(logs: data).getDataDividedByWeeks()
 
         self.data = data
         self.viewWidth = width

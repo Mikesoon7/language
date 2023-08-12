@@ -15,11 +15,10 @@ class AddDictionaryViewModel {
         case shouldUpdateText
         case shouldUpdatePlaceholder
         case shouldPop
-        
     }
     
     private var model: DictionaryManaging
-//    private var cancallable = Set<AnyCancellable>()
+    private var userDefault = UserSettings.shared
     var output = PassthroughSubject<Output, Never>()
     
     init(model: DictionaryManaging = CoreDataHelper.shared) {
@@ -27,8 +26,10 @@ class AddDictionaryViewModel {
         
         NotificationCenter.default.addObserver(self, selector: #selector(appLanguageDidChange(sender: )), name: .appLanguageDidChange, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(appSeparatorDidChange(sender: )), name: .appSeparatorDidChange, object: nil)
-
         
+    }
+    func configureTextPlaceholder() -> String{
+        return "viewPlaceholderWord".localized + " \(userDefault.settings.separators.selectedValue) " + "viewPlaceholderMeaning".localized
     }
     
     func createDictionary(name: String, text: String){
@@ -38,7 +39,6 @@ class AddDictionaryViewModel {
         } catch {
             output.send(.shouldPresentError(error))
         }
-        
     }
     @objc func appLanguageDidChange(sender: Any){
         output.send(.shouldUpdateText)

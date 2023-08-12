@@ -20,6 +20,8 @@ protocol CustomCellDataDelegate: AnyObject{
     func editButtonDidTap(for cell: UITableViewCell)
     
     func statisticButtonDidTap(for cell: UITableViewCell)
+    
+    func importButtonDidTap()
 }
 
 class MenuView: UIViewController {
@@ -36,7 +38,7 @@ class MenuView: UIViewController {
     var tableView: UITableView = {
         var tableView = UITableView(frame: CGRect(x: 0, y: 0, width: 0, height: 0), style: .insetGrouped)
         tableView.register(MenuDictionaryCell.self, forCellReuseIdentifier: MenuDictionaryCell.identifier)
-        tableView.register(MenuStatisticCell.self, forCellReuseIdentifier: MenuStatisticCell.identifier)
+//        tableView.register(MenuStatisticCell.self, forCellReuseIdentifier: MenuStatisticCell.identifier)
         tableView.register(MenuAddDictionaryCell.self, forCellReuseIdentifier: MenuAddDictionaryCell.identifier)
         tableView.rowHeight = 104
         tableView.backgroundColor = .clear
@@ -158,12 +160,8 @@ class MenuView: UIViewController {
         //TODO: Call new vc with the model.
     }
 }
-//MARK: - UITableViewDelegate
-extension MenuView: UITableViewDelegate{
-    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 0
-    }
-    
+//MARK: - UITableView Delegate & DataSource
+extension MenuView: UITableViewDelegate, UITableViewDataSource{
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 1
     }
@@ -171,27 +169,13 @@ extension MenuView: UITableViewDelegate{
     func numberOfSections(in tableView: UITableView) -> Int {
         return viewModel.numberOfCells()
     }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let section = indexPath.section
-        if section == tableView.numberOfSections - 1{
-            self.navigationController?.pushViewController(AddDictionaryVC(), animated: true)
-        } else {
-            let vc = DetailsVC(dictionary: viewModel.dictionaries[section])
-            self.navigationController?.pushViewController(vc, animated: true)
-        }
-    }
-    func tableView(_ tableView: UITableView, selectionFollowsFocusForRowAt indexPath: IndexPath) -> Bool {
-        false
-    }
-}
-//MARK: - UITableViewDataSource
-extension MenuView: UITableViewDataSource{
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let section = indexPath.section
         if section == numberOfSections(in: tableView) - 1 {
             let cell = tableView.dequeueReusableCell(
                 withIdentifier: MenuAddDictionaryCell.identifier, for: indexPath) as! MenuAddDictionaryCell
+            cell.configureCellWith(delegate: self)
             return cell
         }
         let data = viewModel.dataForCell(at: indexPath)
@@ -200,6 +184,41 @@ extension MenuView: UITableViewDataSource{
         cell.configureCellWith(viewModel: data, delegate: self)
         return cell
     }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let section = indexPath.section
+        if section == tableView.numberOfSections - 1{
+            self.navigationController?.pushViewController(AddDictionaryVC(), animated: true)
+        } else {
+            let vc = DetailsView(dictionary: viewModel.dictionaries[section])
+            self.navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+
+
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 0
+    }
+    
+    func tableView(_ tableView: UITableView, selectionFollowsFocusForRowAt indexPath: IndexPath) -> Bool {
+        false
+    }
+//    func tableView(_ tableView: UITableView, didHighlightRowAt indexPath: IndexPath) {
+//        guard let cell = tableView.cellForRow(at: indexPath) else {
+//            return
+//        }
+//        let subview = tableView.subviews.first { view in
+//            view as? UITableViewCell == cell
+//        }
+//        cell.cellTouchDownAnimation()
+//        UIView.animate(withDuration: 0.2) {
+//            subview?.layer.shadowOffset = CGSize(width: 0, height: 0)
+//        }
+//                
+//    }
+//    func tableView(_ tableView: UITableView, didUnhighlightRowAt indexPath: IndexPath) {
+//        tableView.cellForRow(at: indexPath)?.cellTouchUpAnimation()
+//    }
 }
 
 //MARK: - Delegate for cells action.
@@ -238,6 +257,9 @@ extension MenuView: CustomCellDataDelegate{
     }
     func statisticButtonDidTap(for cell: UITableViewCell){
         
+    }
+    func importButtonDidTap() {
+        viewModel.importButtonWasTapped()
     }
 
 }

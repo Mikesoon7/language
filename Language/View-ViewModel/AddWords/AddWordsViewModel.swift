@@ -15,16 +15,26 @@ class AddWordsViewModel {
     enum Output {
         case shouldPresentEerror(Error)
         case shouldPop
+        case shouldUpdateText
+        case shouldUpdatePlaceholder
     }
     
     private let model: Dictionary_WordsManager
     private let dictionary: DictionariesEntity
+    private var userDefault = UserSettings.shared
     private var newArray: [WordsEntity] = []
     var output = PassthroughSubject<Output, Never>()
     
     init(model: Dictionary_WordsManager = CoreDataHelper.shared, dictionary: DictionariesEntity){
         self.dictionary = dictionary
         self.model = model
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(appLanguageDidChange(sender: )), name: .appLanguageDidChange, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(appSeparatorDidChange(sender: )), name: .appSeparatorDidChange, object: nil)
+    }
+    
+    func configureTextPlaceholder() -> String{
+        return "viewPlaceholderWord".localized + " \(userDefault.settings.separators.selectedValue) " + "viewPlaceholderMeaning".localized
     }
     
     private func extendDictionary(_ dictionary: DictionariesEntity, with words: [WordsEntity]){
@@ -46,4 +56,11 @@ class AddWordsViewModel {
         }
         extendDictionary(dictionary, with: newArray)
     }
+    @objc func appLanguageDidChange(sender: Any){
+        output.send(.shouldUpdateText)
+    }
+    @objc func appSeparatorDidChange(sender: Any){
+        output.send(.shouldUpdatePlaceholder)
+    }
+
 }

@@ -14,19 +14,29 @@ public let shadowColorForLightIdiom = UIColor.systemGray2.cgColor
 
 
 extension UIView {
-    func setUpBorderedView(_ overlays: Bool){
+    func setUpCustomView(){
         self.layer.cornerRadius = 9
-        self.addShadowWhichOverlays(overlays)
+        self.addShadowWhichOverlays(false)
         self.backgroundColor = .secondarySystemBackground
         self.translatesAutoresizingMaskIntoConstraints = false
     }
 }
 extension UIButton {
-    func setUpCommotBut(_ overlays: Bool){
+    func setUpCustomButton(){
         self.layer.cornerRadius = 9
         self.tintColor = .label
-        self.addShadowWhichOverlays(overlays)
+        self.addShadowWhichOverlays(false)
         self.backgroundColor = .secondarySystemBackground
+        self.translatesAutoresizingMaskIntoConstraints = false
+    }
+}
+
+extension UISwitch {
+    func setUpCustomSwitch(isOn: Bool){
+        self.onTintColor = .systemGray2
+        self.tintColor = .systemBackground
+        self.setOn(isOn, animated: true)
+        self.translatesAutoresizingMaskIntoConstraints = false
     }
 }
 // MARK: CGFloat
@@ -75,16 +85,34 @@ extension UIButton{
     @objc func animationBegin( sender: UIButton){
         UIView.animate(withDuration: 0.20, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 0, options: .curveEaseIn, animations: {
             sender.transform = CGAffineTransform(scaleX: 0.92, y: 0.92)
+            sender.layer.shadowOffset = CGSize(width: 0, height: 0)
         })
     }
     @objc func animationEnded( sender: UIButton){
-        UIView.animate(withDuration: 0.10, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseIn, animations: {
+        UIView.animate(withDuration: 0.15, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 0, options: .curveEaseIn, animations: {
             sender.transform = CGAffineTransform(scaleX: 1, y: 1)
+            sender.layer.shadowOffset = CGSize(width: 4, height: 5)
+        })
+    }
+}
+
+extension UITableViewCell{
+    func cellTouchDownAnimation(){
+        UIView.animate(withDuration: 0.20, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseIn, animations: {
+            self.transform = CGAffineTransform(scaleX: 0.92, y: 0.92)
+            self.contentView.layer.shadowOffset = CGSize(width: 0, height: 0)
+
+        })
+
+    }
+    func cellTouchUpAnimation(){
+        UIView.animate(withDuration: 0.15, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 0, options: .curveEaseIn, animations: {
+            self.transform = CGAffineTransform(scaleX: 1, y: 1)
+            self.contentView.layer.shadowOffset = CGSize(width: 4, height: 5)
         })
     }
 }
 extension UIView{
-    
     func addTopStroke(vc: UIViewController) -> CAShapeLayer{
         let topStroke = CAShapeLayer()
         let path = UIBezierPath()
@@ -156,6 +184,64 @@ extension NSAttributedString{
                             UIColor.label]
         return attributes as [NSAttributedString.Key : Any]
     }
+    static func fontWithString(string: String, bold: Bool, size: CGFloat) -> NSAttributedString{
+        let font : String!
+        if bold {
+            font = "Georgia-BoldItalic"
+        } else {
+            font = "Georgia-Italic"
+        }
+        let attributes = NSAttributedString(string: string,
+                                            attributes: [NSAttributedString.Key.font :
+                                                            UIFont(name: font ,
+                                                                   size: size)!,
+                                                         NSAttributedString.Key.foregroundColor:
+                                                            UIColor.label])
+        return attributes
+    }
+    static func fontWithoutString(bold: Bool, size: CGFloat) -> [NSAttributedString.Key : Any]{
+        let font : String!
+        if bold {
+            font = "Georgia-BoldItalic"
+        } else {
+            font = "Georgia-Italic"
+        }
+        let attributes = [NSAttributedString.Key.font:
+                            UIFont(name: font,
+                                   size: size)!,
+                          NSAttributedString.Key.foregroundColor:
+                            UIColor.label]
+        return attributes as [NSAttributedString.Key : Any]
+    }
+    
+    static func textAttributes(with font: UIFont, ofSize: CGFloat, foregroundColour: UIColor = .label, backgroundColour: UIColor = .clear) -> [NSAttributedString.Key : Any]{
+        let attributes = [NSAttributedString.Key.font:
+                            font.withSize(ofSize),
+                          NSAttributedString.Key.foregroundColor:
+                             foregroundColour,
+                          NSAttributedString.Key.backgroundColor:
+                             backgroundColour]
+        return attributes as [NSAttributedString.Key : Any]
+    }
+//    static func attributedStringWithoutText(with font: UIFont, ofSize: CGFloat, colour: UIColor = .label) -> NSAttributedString{
+//        let attributes = NSAttributedString(string: "",
+//                                            attributes: [NSAttributedString.Key.font :
+//                                                            font.withSize(ofSize),
+//                                                         NSAttributedString.Key.foregroundColor:
+//                                                            UIColor.label])
+//        return attributes
+//    }
+//
+    static func attributedString(string: String, with font: UIFont, ofSize: CGFloat, foregroundColour: UIColor = .label, backgroundColour: UIColor = .clear) -> NSAttributedString{
+        let attributes = NSAttributedString(string: string,
+                                            attributes: [NSAttributedString.Key.font :
+                                                            font.withSize(ofSize),
+                                                         NSAttributedString.Key.foregroundColor:
+                                                            foregroundColour,
+                                                         NSAttributedString.Key.backgroundColor:
+                                                            backgroundColour])
+        return attributes
+    }
 }
 //MARK: -AddSubviews method.
 extension UIView{
@@ -189,6 +275,7 @@ extension String{
         case charter = ""
     }
 }
+
 extension NSManagedObject{
     enum ChangeType{
         case insert
@@ -295,5 +382,21 @@ extension Date {
     var timeStripped: Date {
         let components = Calendar.current.dateComponents([.year, .month, .day], from: self)
         return Calendar.current.date(from: components) ?? self
+    }
+}
+extension UITextView {
+    override open func paste(_ sender: Any?) {
+        if let pasteboardText = UIPasteboard.general.string {
+            let attributes = self.typingAttributes
+            let attributedString = NSAttributedString(string: pasteboardText, attributes: attributes)
+            
+            textStorage.insert(attributedString, at: selectedRange.location)
+            
+            selectedRange = NSRange(location: selectedRange.location + pasteboardText.count, length: 0)
+            if delegate != nil {
+                delegate?.textViewDidChange?(self)
+            }
+            print("Extenstion worked")
+        }
     }
 }
