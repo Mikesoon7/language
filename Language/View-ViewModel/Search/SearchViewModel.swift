@@ -92,7 +92,9 @@ class SearchViewModel {
         }
         return dictionaries
     }
-    
+    func searchBarPositionIsOnTop() -> Bool {
+        UserSettings.shared.settings.appSearchBarPosition == .onTop ? true : false
+    }
     func configureData(){
         let dictionaries = fetchDictionaries()
         var data = [WordsEntity]()
@@ -126,7 +128,7 @@ class SearchViewModel {
         output.send(.shouldUpdateLabels)
     }
     @objc func searchBarPositionDidChange(sender: Notification){
-        let onTop = UserSettings.shared.settings.searchBar.value
+        let onTop = (UserSettings.shared.settings.appSearchBarPosition == .onTop) ? true : false
         output.send(.shouldReplaceSearchBarOnTop(onTop))
     }
 }

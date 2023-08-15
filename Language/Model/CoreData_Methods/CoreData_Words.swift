@@ -50,7 +50,7 @@ extension CoreDataHelper: WordsManaging{
     }
     //Method to end initializing or update existing entity
     func assignWordsProperties(for newWord: WordsEntity, from text: String){
-        let parts = text.split(separator: " \(UserSettings.shared.settings.separators.selectedValue) ")
+        let parts = text.split(separator: " \(UserSettings.shared.settings.appSeparators.value) ")
         if parts.count == 2{
             let word = String(parts[0]).trimmingCharacters(in: CharacterSet(charactersIn: "[ ] ◦ - "))
             newWord.word = word.trimmingCharacters(in: .whitespacesAndNewlines).capitalized

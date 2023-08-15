@@ -55,7 +55,7 @@ class EditViewModel {
         var textToEdit = ""
         var textByLines = [String]()
         for pair in words {
-            let line = "\(pair.word) \(UserSettings.shared.settings.separators.selectedValue) \(pair.meaning)"
+            let line = "\(pair.word) \(UserSettings.shared.settings.appSeparators.value) \(pair.meaning)"
             textByLines.append(line)
             textToEdit += line + "\n\n"
         }

@@ -15,7 +15,7 @@ class LaunchAnimation{
     var label1 : UILabel!
     var label2 : UILabel!
     
-    var userInterfaceStyle = UserSettings.shared.settings.theme
+//    var userInterfaceStyle = UserSettings.shared.settings.appTheme
     
     init(bounds: CGRect){
         animationView = {
@@ -121,15 +121,16 @@ class LaunchAnimation{
             }
             
             let layer = CAShapeLayer()
-            layer.strokeColor = {
-                switch userInterfaceStyle{
-                case .light:
-                    return UIColor.black.cgColor
-                case .dark:
-                    return UIColor.white.cgColor
-                default: return UIColor.label.cgColor
-                }
-            }()
+            layer.strokeColor = UIColor.label.cgColor
+//            {
+//                switch userInterfaceStyle{
+//                case .light:
+//                    return UIColor.black.cgColor
+//                case .dark:
+//                    return UIColor.white.cgColor
+//                default: return UIColor.label.cgColor
+//                }
+//            }()
             layer.fillColor = UIColor.clear.cgColor
             layer.lineWidth = 3
             let path = UIBezierPath()

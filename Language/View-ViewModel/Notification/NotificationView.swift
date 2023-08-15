@@ -138,8 +138,9 @@ class NotificationView: UIViewController {
             .store(in: &cancellable)
     }
     //MARK: - ViewController SetUp
-   private func configureController(){
+    private func configureController(){
         view.backgroundColor = .clear
+        self.modalPresentationStyle = .overFullScreen
         configureGestures()
     }
     //MARK: - TableViewSetUp

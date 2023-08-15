@@ -68,6 +68,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     func applicationWillTerminate(_ application: UIApplication) {
         saveContext()
+        UserSettings.shared.save()
     }
     @objc func coreDataObjectsDidChange(notification: Notification) {
         guard let userInfo = notification.userInfo else { return }

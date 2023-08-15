@@ -25,13 +25,13 @@
 
 "notificationItem" = "Notifications";
 //Items for Search
-"searchBarPosition" = "Search bar position";
+"searchBarPositionItem" = "Search bar position";
 "top" = "Top";
 "bottom" = "Bottom";
 //Items for Dictionary
 "dictionaries" = "Dictionaries";
-"dividor" = "Symbols for pairs dividing";
-"duplicates" = "Duplicates";
+"separatorItem" = "Symbols for pairs dividing";
+"duplicatesItem" = "Duplicates";
     //Options
 "keep" = "Keep";
 "remove" = "Remove";

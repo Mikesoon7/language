@@ -7,8 +7,13 @@
 
 import UIKit
 
+struct DataForSettingsHeaderCell{
+    var title: String
+}
+
 class SettingsHeaderCell: UITableViewCell {
-    let identifier = "settingsHeaderCell"
+    static let identifier = "settingsHeaderCell"
+    static let dataType = DataForSettingsHeaderCell.self
     
     let view: UIView = {
         let view = UIView()
@@ -38,7 +43,9 @@ class SettingsHeaderCell: UITableViewCell {
         super.prepareForReuse()
         label.text = nil
     }
-        
+    func configureCell(with data: DataForSettingsHeaderCell){
+        label.text = data.title
+    }
     func cellViewCustomization(){
         contentView.addSubview(view)
         view.addSubview(label)

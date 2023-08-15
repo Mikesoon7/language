@@ -7,17 +7,22 @@
 
 import UIKit
 
-class SettingsTextCell: UITableViewCell {
-    
-    let identifier = "settingsTextCell"
+struct DataForSettingsTextCell{
+    var title: String
+    var value: String
+}
 
+class SettingsTextCell: UITableViewCell {
+    static let identifier = "settingsTextCell"
+    static let dataType = DataForSettingsTextCell.self
+    
     let view : UIView = {
         let view = UIView()
         view.backgroundColor = .systemGray6.withAlphaComponent(0.8)
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
-    let label : UILabel = {
+    let titleLabel : UILabel = {
         let label = UILabel()
         label.textColor = .label
         label.textAlignment = .left
@@ -25,7 +30,7 @@ class SettingsTextCell: UITableViewCell {
 
         return label
     }()
-    let value : UILabel = {
+    let valueLabel : UILabel = {
         let label = UILabel()
         label.textColor = .label
         label.textAlignment = .right
@@ -48,14 +53,18 @@ class SettingsTextCell: UITableViewCell {
     }
     override func prepareForReuse() {
         super.prepareForReuse()
-        label.text = nil
-        value.text = nil
+        titleLabel.text = nil
+        valueLabel.text = nil
         image.image = UIImage(systemName: "chevron.right")
+    }
+    func configureCell(with data: DataForSettingsTextCell){
+        self.titleLabel.text = data.title
+        self.valueLabel.text = data.value
     }
 
     func cellViewsCustomization(){
         self.contentView.addSubview(view)
-        view.addSubviews(label, value,image)
+        view.addSubviews(titleLabel, valueLabel,image)
         
         NSLayoutConstraint.activate([
             view.topAnchor.constraint(equalTo: contentView.topAnchor),
@@ -63,14 +72,14 @@ class SettingsTextCell: UITableViewCell {
             view.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             view.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
 
-            label.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 15),
-            label.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 15),
+            titleLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             
             image.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             image.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -15),
             
-            value.trailingAnchor.constraint(equalTo: image.leadingAnchor, constant: -5),
-            value.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+            valueLabel.trailingAnchor.constraint(equalTo: image.leadingAnchor, constant: -5),
+            valueLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor)
         ])
     }
 }

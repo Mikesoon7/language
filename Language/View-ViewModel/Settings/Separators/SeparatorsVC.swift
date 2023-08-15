@@ -9,8 +9,8 @@ import UIKit
 
 class SeparatorsVC: UIViewController{
     
-    var selectedValue = UserSettings.shared.settings.separators.selectedValue
-    var informationToPresent = UserSettings.shared.settings.availabelSeparators
+    var selectedValue = UserSettings.shared.settings.appSeparators.value
+    var informationToPresent = UserSettings.shared.settings.appSeparators.availableSeparators
     
     lazy var tableView: UITableView = {
         let view = UITableView(frame: .zero, style: .insetGrouped)
@@ -300,8 +300,8 @@ class SeparatorsVC: UIViewController{
                     return
                 }
 
-                UserSettings.shared.updateCustomSeparators(newSeparator: text, indexPath: nil)
-                self.informationToPresent = UserSettings.shared.settings.availabelSeparators
+//                UserSettings.shared.updateCustomSeparators(newSeparator: text, indexPath: nil)
+                self.informationToPresent = UserSettings.shared.settings.appSeparators.availableSeparators
                 if self.informationToPresent.count != 5{
                     self.updateTableConstraits(isDeleted: false)
                 } else {
@@ -357,11 +357,11 @@ extension SeparatorsVC: UITableViewDelegate, UITableViewDataSource{
         if indexPath.row == tableView.numberOfRows(inSection: 0) - 1 && indexPath.row > informationToPresent.count - 1{
             addAlertMessage()
         } else {
-            UserSettings.shared.reload(
-                newValue: UserSettings.AppDictionarySeparators.selected(informationToPresent[indexPath.row]))
-            selectedValue = informationToPresent[indexPath.row]
-            exampleViewLabelCustomization()
-            tableView.reloadData()
+//            UserSettings.shared.reload(
+//                newValue: UserSettings.AppDictionarySeparators.selected(informationToPresent[indexPath.row]))
+//            selectedValue = informationToPresent[indexPath.row]
+//            exampleViewLabelCustomization()
+//            tableView.reloadData()
         }
     }
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
@@ -374,7 +374,7 @@ extension SeparatorsVC: UITableViewDelegate, UITableViewDataSource{
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         return UISwipeActionsConfiguration(actions: [UIContextualAction(style: .destructive, title: "Delete", handler: { action, view, completion in
             self.informationToPresent.remove(at: indexPath.row)
-            UserSettings.shared.updateCustomSeparators(newSeparator: "", indexPath: indexPath)
+//            UserSettings.shared.updateCustomSeparators(newSeparator: "", indexPath: indexPath)
             if self.informationToPresent.count < 4 {
                 self.updateTableConstraits(isDeleted: true)
             } else {

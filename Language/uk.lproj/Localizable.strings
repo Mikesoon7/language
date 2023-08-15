@@ -25,13 +25,13 @@
 
 "notificationItem" = "Повідомлення";
 //Items for Search
-"searchBarPosition" = "Розташування пошуку";
+"searchBarPositionItem" = "Розташування пошуку";
 "top" = "Зверху";
 "bottom" = "Знизу";
 //Items for Dictionary
 "dictionaries" = "Словники";
-"dividor" = "Символи для поділу";
-"duplicates" = "Дублікати";
+"separatorItem" = "Символи для поділу";
+"duplicatesItem" = "Дублікати";
     //Options
 "keep" = "Залишати";
 "remove" = "Видаляти";

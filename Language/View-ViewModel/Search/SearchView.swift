@@ -14,7 +14,7 @@ class SearchView: UIViewController {
     private var searchBarOnTop: Bool!
     private var searchBarDidChanged = false
     
-    private let model = SearchViewModel()
+    private let viewModel = SearchViewModel()
     private var cancellable = Set<AnyCancellable>()
     private let input: PassthroughSubject<SearchViewModel.Input, Never> = .init()
 
@@ -134,7 +134,7 @@ class SearchView: UIViewController {
     }
     //MARK: - Binding View and VM
     func bind(){
-        let output = model.transform(input: input.eraseToAnyPublisher())
+        let output = viewModel.transform(input: input.eraseToAnyPublisher())
         output
             .receive(on: DispatchQueue.main)
             .sink { changeType in
@@ -157,7 +157,7 @@ class SearchView: UIViewController {
     }
     //MARK: - Controller SetUp
     func configureController(){
-        searchBarOnTop = UserSettings.shared.settings.searchBar.value
+        searchBarOnTop = viewModel.searchBarPositionIsOnTop()
         view.backgroundColor = .systemBackground
                 
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
@@ -286,43 +286,6 @@ class SearchView: UIViewController {
     }
     
         //MARK: - Actions
-    @objc func languageDidChange(sender: AnyObject){
-        title = "searchVCTitle".localized
-        topSearchBarController.searchBar.placeholder = "yourWord".localized
-        bottomSearchBar.placeholder = "yourWord".localized
-    }
-    @objc func positionDidChange(sender: AnyObject){
-        searchBarOnTop = UserSettings.shared.settings.searchBar.value
-        if searchBarOnTop {
-            view.layer.addSublayer(bottomStroke)
-            topStroke.removeFromSuperlayer()
-            if bottomSearchBar.text != nil {
-                bottomSearchBar.text = nil
-                searchBarTextDidEndEditing(bottomSearchBar)
-            }
-        } else {
-            view.layer.addSublayer(topStroke)
-            bottomStroke.removeFromSuperlayer()
-            
-            if topSearchBarController.searchBar.text != nil {
-                topSearchBarController.searchBar.resignFirstResponder()
-                topSearchBarController.searchBar.text = nil
-                topSearchBarController.isActive = false
-            }
-        }
-        searchBarDidChanged = true
-    }
-//    @objc func appDataDidChange(sender: Notification){
-//        let type = sender.userInfo?["changeType"] as? NSManagedObject.ChangeType
-//        print("Debug purpose: SearchVC appDataDidChange worked with type: \(type)")
-//        if searchBarOnTop && searchControllerForTop.searchBar.text != nil{
-//            searchControllerForTop.searchBar.text = nil
-//            searchControllerForTop.resignFirstResponder()
-//        } else if !searchBarOnTop && customSearchBar.text != nil{
-//            customSearchBar.resignFirstResponder()
-//            customSearchBar.text = nil
-//        }
-//    }
     @objc func keyboardWillShow(notification: Notification) {
         guard !searchBarOnTop else { return }
         guard let userInfo = notification.userInfo,
@@ -418,7 +381,7 @@ extension SearchView: UIScrollViewDelegate {
 extension SearchView: UITableViewDelegate, UITableViewDataSource{
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return model.numberOfCells()
+        return viewModel.numberOfCells()
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -428,7 +391,7 @@ extension SearchView: UITableViewDelegate, UITableViewDataSource{
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: SearchViewCell.identifier, for: indexPath) as? SearchViewCell else { return UITableViewCell()}
         
-        cell.configureCellWith(data: model.dataForCell(at: indexPath))
+        cell.configureCellWith(data: viewModel.dataForCell(at: indexPath))
         return cell
         
     }

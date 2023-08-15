@@ -43,7 +43,7 @@ class NotificationViewModel{
     }
       
     //MARK: - Properties
-    private var notification = UserSettings.shared.settings.notifications
+    private var notification = UserSettings.shared.settings.appNotifications
     private var notificationHelper: NotificationHelper = NotificationHelper()
     
     public var output = PassthroughSubject<Output, Never>()
@@ -59,7 +59,7 @@ class NotificationViewModel{
     ]
     //If the saved frequency was custom, we saving array of days indexes.
     private var selectedNotificationDays: [Int] = {
-        switch UserSettings.shared.settings.notifications.notificationFrequency {
+        switch UserSettings.shared.settings.appNotifications.notificationFrequency {
         case .custom(let array):
             return array
         default:
@@ -175,9 +175,7 @@ class NotificationViewModel{
     //If any changed were made, we clear existing and creating new notifications.
     func save(){
         if needUpdate {
-            UserSettings.shared.reload(newValue: notification)
-            notificationHelper.invalidateExistingNotification()
-            notificationHelper.scheduleNotifications(for: notification.notificationFrequency.selectedDays, at: notification.time.value)
+            UserSettings.shared.settings.reload(newValue: .notifications(notification))
         }
     }
 }
@@ -225,36 +223,5 @@ class NotificationHelper{
                 completion(false, nil)
             }
         }
-    }
-    //Scheduling new notification.
-    func scheduleNotifications(for days: [Int], at time: Date){
-        let calendar = Calendar.current
-        let hour = calendar.component(.hour, from: time)
-        let minute = calendar.component(.minute, from: time)
-        
-        for day in days {
-            var dateComponents = DateComponents()
-            dateComponents.hour = hour
-            dateComponents.minute = minute
-            dateComponents.weekday = day
-            
-            let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
-            
-            let content = UNMutableNotificationContent()
-            content.title = "notification.notificationTitle".localized
-            content.body = "notification.notificationMessage".localized
-            content.sound = UNNotificationSound.default
-            
-            let request = UNNotificationRequest(identifier: "notification\(day)", content: content, trigger: trigger)
-            UNUserNotificationCenter.current().add(request) { (error) in
-                if let error = error {
-                    print("Failed to schedule notification: \(error)")
-                }
-            }
-        }
-    }
-    //Invalidating old notifications
-    func invalidateExistingNotification(){
-        UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
     }
 }

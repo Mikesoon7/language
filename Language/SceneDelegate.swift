@@ -12,6 +12,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+//        UserSettings.shared.use()
+        UserSettings.shared = configureDataStorage()
         UserSettings.shared.use()
         //Initializing TabBarController
         guard let window = (scene as? UIWindowScene) else { return }
@@ -19,6 +21,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         self.window?.windowScene = window
         self.window?.rootViewController = setUpTabBarController()
         self.window?.makeKeyAndVisible()
+//        UserSettings.shared.use()
         UserSettings.shared.use()
         var animationView: LaunchAnimation? = LaunchAnimation(bounds: UIWindow().bounds)
         animationView?.animate()
@@ -62,6 +65,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         tabBArController.tabBar.tintColor = .label
         
         return tabBArController
+    }
+    func configureDataStorage() -> UserSettingsManager {
+        let currentUserSettings = CustomUserSettings()
+        let currentSettingsManager: UserSettingsManager = DefaultUserSettingsManager(defaultSettings: currentUserSettings)
+        return currentSettingsManager
     }
     func observeLanguageChange(){
         NotificationCenter.default.addObserver(self, selector: #selector(languageDidChange(sender:)), name: .appLanguageDidChange, object: nil)

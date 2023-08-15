@@ -58,6 +58,8 @@
 		9AA7AB5429AE3CF400CCC9F4 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AA7AB5329AE3CF400CCC9F4 /* Extensions.swift */; };
 		9AABAEAC2A8527060032C008 /* UIFont.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AABAEAB2A8527060032C008 /* UIFont.swift */; };
 		9AABAEB02A87D3E00032C008 /* TextInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AABAEAF2A87D3E00032C008 /* TextInputView.swift */; };
+		9AABAEB22A88E5D40032C008 /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AABAEB12A88E5D40032C008 /* SettingsViewModel.swift */; };
+		9AAC8A072A88E9E00068828C /* CustomUserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AAC8A062A88E9E00068828C /* CustomUserDefaults.swift */; };
 		9AAECFBE29B5052F00439C0B /* SettingsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AAECFBD29B5052F00439C0B /* SettingsVC.swift */; };
 		9AAECFC029B5055100439C0B /* EndVc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AAECFBF29B5055100439C0B /* EndVc.swift */; };
 		9AAECFC229B50A5300439C0B /* AddWordsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AAECFC129B50A5300439C0B /* AddWordsView.swift */; };
@@ -167,6 +169,8 @@
 		9AA7AB5329AE3CF400CCC9F4 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		9AABAEAB2A8527060032C008 /* UIFont.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIFont.swift; sourceTree = "<group>"; };
 		9AABAEAF2A87D3E00032C008 /* TextInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextInputView.swift; sourceTree = "<group>"; };
+		9AABAEB12A88E5D40032C008 /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
+		9AAC8A062A88E9E00068828C /* CustomUserDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomUserDefaults.swift; sourceTree = "<group>"; };
 		9AAECFBD29B5052F00439C0B /* SettingsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsVC.swift; sourceTree = "<group>"; };
 		9AAECFBF29B5055100439C0B /* EndVc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndVc.swift; sourceTree = "<group>"; };
 		9AAECFC129B50A5300439C0B /* AddWordsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddWordsView.swift; sourceTree = "<group>"; };
@@ -269,6 +273,7 @@
 			isa = PBXGroup;
 			children = (
 				9AB2454229E9498A00E05E59 /* UserDefaults.swift */,
+				9AAC8A062A88E9E00068828C /* CustomUserDefaults.swift */,
 				9A883CE42A6C6889008682F3 /* CoreData_Methods */,
 				9AB43A1A29F4669900984350 /* CoreData_Subclass */,
 			);
@@ -315,6 +320,7 @@
 			isa = PBXGroup;
 			children = (
 				9AAECFBD29B5052F00439C0B /* SettingsVC.swift */,
+				9AABAEB12A88E5D40032C008 /* SettingsViewModel.swift */,
 				9A1F67D229E18C0E003993C5 /* SettingsTableViewCells */,
 				9A5642032A5E153300027BCD /* Separators */,
 			);
@@ -789,6 +795,7 @@
 			files = (
 				9A75413D2A70042D0064BE4E /* SearchViewModel.swift in Sources */,
 				9A5642012A5DE65F00027BCD /* CoreDataProtocols.swift in Sources */,
+				9AAC8A072A88E9E00068828C /* CustomUserDefaults.swift in Sources */,
 				9AA61BEF2A616D3200FACAD2 /* AddDictionaryViewModel.swift in Sources */,
 				9AE50933299695B400D86DD7 /* Menu VC.swift in Sources */,
 				9AA71C6129C34EA8008A193B /* CollectionViewLastCell.swift in Sources */,
@@ -858,6 +865,7 @@
 				9AB9A95F29FD70A800694FE8 /* SeparatorsCell.swift in Sources */,
 				9AA71C5F29C2FC76008A193B /* CardCell.swift in Sources */,
 				9ABDE1D32A4C696900EA37B9 /* BarChartView.swift in Sources */,
+				9AABAEB22A88E5D40032C008 /* SettingsViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
