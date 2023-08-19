@@ -18,7 +18,7 @@ class AddDictionaryViewModel {
     }
     
     private var model: DictionaryManaging
-    private var userDefault = UserSettings.shared.settings
+//    private var userDefault = UserSettings.shared
     var output = PassthroughSubject<Output, Never>()
     
     init(model: DictionaryManaging = CoreDataHelper.shared) {
@@ -29,7 +29,7 @@ class AddDictionaryViewModel {
         
     }
     func configureTextPlaceholder() -> String{
-        return "viewPlaceholderWord".localized + " \(userDefault.appSeparators.value) " + "viewPlaceholderMeaning".localized
+        return "viewPlaceholderWord".localized + " \(UserSettings.shared.appSeparators.value) " + "viewPlaceholderMeaning".localized
     }
     
     func createDictionary(name: String, text: String){

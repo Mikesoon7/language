@@ -10,14 +10,16 @@ import UIKit
 class LaunchAnimation{
     
     var animationView : UIView!
-    var cardView: UIView!
+    private var cardView: UIView!
     
-    var label1 : UILabel!
-    var label2 : UILabel!
+    private var label1 : UILabel!
+    private var label2 : UILabel!
     
-//    var userInterfaceStyle = UserSettings.shared.settings.appTheme
+    private var userInterfaceStyle: UIUserInterfaceStyle
+//    var userInterfaceStyle: UIUserInterfaceStyle = UserSettings.shared.appTheme.userInterfaceStyle
     
-    init(bounds: CGRect){
+    init(bounds: CGRect, interfaceStyle: UIUserInterfaceStyle){
+        self.userInterfaceStyle = interfaceStyle
         animationView = {
             let view = UIView(frame: bounds)
             view.backgroundColor = .systemBackground
@@ -121,16 +123,16 @@ class LaunchAnimation{
             }
             
             let layer = CAShapeLayer()
-            layer.strokeColor = UIColor.label.cgColor
-//            {
-//                switch userInterfaceStyle{
-//                case .light:
-//                    return UIColor.black.cgColor
-//                case .dark:
-//                    return UIColor.white.cgColor
-//                default: return UIColor.label.cgColor
-//                }
-//            }()
+            layer.strokeColor =
+            {
+                switch userInterfaceStyle{
+                case .light:
+                    return UIColor.black.cgColor
+                case .dark:
+                    return UIColor.white.cgColor
+                default: return UIColor.label.cgColor
+                }
+            }()
             layer.fillColor = UIColor.clear.cgColor
             layer.lineWidth = 3
             let path = UIBezierPath()

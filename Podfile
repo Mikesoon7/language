@@ -7,6 +7,8 @@ target 'Language' do
 
   # Pods for Language
 
+pod 'CLTypingLabel'
+
   target 'LanguageTests' do
     inherit! :search_paths
     # Pods for testing

@@ -165,7 +165,7 @@ class GameDetailsVC: UIViewController {
         ])
     }
     func configureTextFor(editing: Bool) -> String{
-        let text = "\(word.word) \(editing ? UserSettings.shared.settings.appSeparators.value : "\n\n") \(word.meaning)"
+        let text = "\(word.word) \(editing ? UserSettings.shared.appSeparators.value : "\n\n") \(word.meaning)"
         return text
     }
     

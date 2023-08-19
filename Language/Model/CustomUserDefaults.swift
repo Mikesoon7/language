@@ -8,13 +8,35 @@
 import Foundation
 import UIKit
 
-class UserSettings{
-    static var shared: UserSettingsManager!
-}
-
+//class UserSettings{
+//    static var shared: UserSettingsStorageProtocol!
+//}
 //MARK: - Protocols
-//Protcol for class, which will contain all values for apps settings
-protocol UserSettingsStorage: Codable{
+protocol UserSettingsManagerProtocol{
+    func update <T: Codable>(_ value: T, forKey key: String)
+    func load   <T: Codable>(_ type: T.Type, forKey key: String) -> T?
+    func use(theme: AppTheme, language: AppLanguage)
+}
+extension UserSettingsManagerProtocol{
+    func update <T: Codable>(_ value: T, forKey key: String){
+        if let data = try? JSONEncoder().encode(value){
+            UserDefaults.standard.set(data, forKey: key)
+        }
+    }
+    func load   <T: Codable>(_ type: T.Type, forKey key: String) -> T? {
+        if let savedData = UserDefaults.standard.data(forKey: key) {
+            return try? JSONDecoder().decode(T.self, from: savedData)
+        }
+        return nil
+    }
+    func use(theme: AppTheme, language: AppLanguage){
+        (UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate)?.window?.overrideUserInterfaceStyle = theme.userInterfaceStyle
+        LanguageChangeManager.shared.changeLanguage(to: language.languageCode)
+    }
+}
+protocol UserSettingsStorageProtocol{
+    var manager: UserSettingsManagerProtocol        { get }
+    var helper: UserSettingsUpdateHelper            { get }
     var appTheme: AppTheme                          { get set }
     var appLanguage : AppLanguage                   { get set }
     var appNotifications: AppPushNotifications      { get set }
@@ -22,58 +44,174 @@ protocol UserSettingsStorage: Codable{
     var appSeparators: AppPairSeparators            { get set }
     var appDuplicates: AppDuplicates                { get set }
     
+    init(manager: UserSettingsManagerProtocol, helper: UserSettingsUpdateHelper)
+    
     func reload(newValue: SettingsOptions)
 }
 
-//Protocol for class, which will contain method to load and save settings
-protocol UserSettingsManager{
-    var settings: UserSettingsStorage       { get set }
-
-    func save() -> Bool
-    func use()
-    func reload(newValue: SettingsOptions)
+protocol UserSettingsUpdateHelper{
+    func apply(newValue: SettingsOptions)
 }
 
-//MARK: - SettingsManager class
-class DefaultUserSettingsManager<T: UserSettingsStorage>: UserSettingsManager {
-    var settings: UserSettingsStorage
+//MARK: - Classes
+class UserSettingsManager: UserSettingsManagerProtocol{ }
+
+class UserSettings: UserSettingsStorageProtocol{
     
-    private let userSettingsKey = "UserSettings"
+    static var shared = UserSettings()
     
-    init(defaultSettings: T) {
-        self.settings = Self.load(userSettingsKey: userSettingsKey) ?? defaultSettings
-    }
-    
-    private static func load(userSettingsKey: String) -> UserSettingsStorage? {
-        if let data = UserDefaults.standard.data(forKey: userSettingsKey),
-           let userSettings = try? JSONDecoder().decode(T.self, from: data) {
-            return userSettings
-        } else {
-            return nil
+    var manager: UserSettingsManagerProtocol
+    var helper: UserSettingsUpdateHelper
+    var appTheme: AppTheme{
+        get{
+            manager.load(AppTheme.self, forKey: AppTheme.key) ?? .system
+        }
+        set{
+            manager.update(newValue, forKey: AppTheme.key)
+            apply(newValue: .theme(newValue))
         }
     }
-    func reload(newValue: SettingsOptions){
-        settings.reload(newValue: newValue)
-
-    }
-    func save() -> Bool {
-        do {
-            let encodedData = try JSONEncoder().encode(settings)
-            UserDefaults.standard.set(encodedData, forKey: userSettingsKey)
-            return true
-        } catch {
-            print("Failed to save user settings: \(error)")
-            return false
+    
+    var appLanguage: AppLanguage{
+        get{
+            manager.load(AppLanguage.self, forKey: AppLanguage.key) ?? .english
+        }
+        set{
+            manager.update(newValue, forKey: AppLanguage.key)
+            apply(newValue: .language(newValue))
         }
     }
+    
+    var appNotifications: AppPushNotifications{
+        get{
+            manager.load(AppPushNotifications.self, forKey: AppPushNotifications.key) ?? .init(notificationState: .off, notificationFrequency: .everyDay, time: .initialTime)
+        }
+        set{
+            manager.update(newValue, forKey: AppPushNotifications.key)
+            apply(newValue: .notifications(newValue))
+        }
+    }
+    
+    var appSearchBarPosition: AppSearchBarPosition{
+        get{
+            manager.load(AppSearchBarPosition.self, forKey: AppSearchBarPosition.key) ?? .atTheBottom
+        }
+        set{
+            manager.update(newValue, forKey: AppSearchBarPosition.key)
+            apply(newValue: .searchBarPosition(newValue))
+        }
+    }
+    
+    var appSeparators: AppPairSeparators{
+        get{
+            manager.load(AppPairSeparators.self, forKey: AppPairSeparators.key) ?? .init(availableSeparators: ["-", "–", "~", "="], value: "-")
+        }
+        set{
+            manager.update(newValue, forKey: AppPairSeparators.key)
+            apply(newValue: .separators(newValue))
+        }
+    }
+    
+    var appDuplicates: AppDuplicates{
+        get{
+            manager.load(AppDuplicates.self, forKey: AppDuplicates.key) ?? .keep
+            
+        }
+        set{
+            manager.update(newValue, forKey: AppDuplicates.key)
+            apply(newValue: .duplicates(newValue))
+        }
+    }
+    
+    required init(manager: UserSettingsManagerProtocol = UserSettingsManager(), helper: UserSettingsUpdateHelper = SettingsUpdateHelper()){
+        self.manager = manager
+        self.helper = helper
+    }
+    
+    func reload(newValue: SettingsOptions) {
+        
+        switch newValue{
+        case .language(let language):
+            self.appLanguage = language
+        case .theme(let theme):
+            self.appTheme = theme
+        case .notifications(let notifications):
+            self.appNotifications = notifications
+        case .searchBarPosition(let position):
+            self.appSearchBarPosition = position
+        case .separators(let separator):
+            self.appSeparators = separator
+        case .duplicates(let duplicate):
+            self.appDuplicates = duplicate
+        case .sectionHeader(_):
+            break
+        }
 
-    func use(){
-        (UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate)?.window?.overrideUserInterfaceStyle = settings.appTheme.userInterfaceStyle
-        LanguageChangeManager.shared.changeLanguage(to: settings.appLanguage.languageCode)
+    }
+    private func apply(newValue: SettingsOptions){
+        helper.apply(newValue: newValue)
+    }
+}
+class SettingsUpdateHelper: UserSettingsUpdateHelper{
+    func apply(newValue: SettingsOptions){
+        switch newValue{
+        case .language(let language):
+            let languageCode = language.languageCode
+            LanguageChangeManager.shared.changeLanguage(to: languageCode)
+        case .theme(let theme):
+            let userInterfaceStyle = theme.userInterfaceStyle
+            (UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate)?.window?.overrideUserInterfaceStyle = userInterfaceStyle
+        case .notifications(let notifications):
+            NotificationUpdateHelper.invalidateExistingNotification()
+            NotificationUpdateHelper.scheduleNotifications(for: notifications.notificationFrequency.selectedDays, at: notifications.time.value)
+        case .searchBarPosition(_):
+            NotificationCenter.default.post(name: .appSearchBarPositionDidChange, object: nil)
+        case .separators(_):
+            NotificationCenter.default.post(name: .appSeparatorDidChange, object: nil)
+        case .duplicates(_):
+            print("Duplicates functionality wasn't imported")
+        case .sectionHeader(_):
+            break
+        }
+    }
+}
+class NotificationUpdateHelper{
+    //Scheduling new notification.
+    static func scheduleNotifications(for days: [Int], at time: Date){
+        let calendar = Calendar.current
+        let hour = calendar.component(.hour, from: time)
+        let minute = calendar.component(.minute, from: time)
+        
+        for day in days {
+            var dateComponents = DateComponents()
+            dateComponents.hour = hour
+            dateComponents.minute = minute
+            dateComponents.weekday = day
+            
+            let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
+            
+            let content = UNMutableNotificationContent()
+            content.title = "notification.notificationTitle".localized
+            content.body = "notification.notificationMessage".localized
+            content.sound = UNNotificationSound.default
+            
+            let request = UNNotificationRequest(identifier: "notification\(day)", content: content, trigger: trigger)
+            UNUserNotificationCenter.current().add(request) { (error) in
+                if let error = error {
+                    print("Failed to schedule notification: \(error)")
+                }
+            }
+        }
+    }
+    //Invalidating old notifications
+    static func invalidateExistingNotification(){
+        UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
     }
 }
 
-enum SettingsOptions{
+
+//MARK: - UserSettings CustomObjects.
+enum SettingsOptions: Codable{
     case sectionHeader(String)
     case theme(AppTheme)
     case language(AppLanguage)
@@ -81,8 +219,11 @@ enum SettingsOptions{
     case searchBarPosition(AppSearchBarPosition)
     case separators(AppPairSeparators)
     case duplicates(AppDuplicates)
+    
 }
+
 enum AppTheme: String, Codable, CaseIterable {
+    static let key = "AppTheme"
     case dark, light, system
     
     var title: String{
@@ -107,6 +248,7 @@ enum AppTheme: String, Codable, CaseIterable {
     }
 }
 enum AppLanguage: String, Codable, CaseIterable{
+    static let key = "AppLanguage"
     case english, russian, ukrainian
     
     var title: String{
@@ -129,15 +271,19 @@ enum AppLanguage: String, Codable, CaseIterable{
 }
 
 struct AppPairSeparators: Codable{
+    static let key = "AppSeparators"
+
     var availableSeparators: [String]
     
     var title: String{
         return "separatorItem".localized
     }
     var value: String
+    var maxCapacity: Int = 8
 }
 
 enum AppSearchBarPosition: String, Codable{
+    static let key = "AppSearchBarPosition"
     case onTop, atTheBottom
     
     var title: String{
@@ -148,6 +294,7 @@ enum AppSearchBarPosition: String, Codable{
     }
 }
 enum AppDuplicates: String, Codable, CaseIterable{
+    static let key = "AppDuplicates"
     case remove, keep
     
     var title: String{
@@ -162,6 +309,7 @@ enum AppDuplicates: String, Codable, CaseIterable{
 }
 
 struct AppPushNotifications: Codable{
+    static let key = "AppNotifications"
     var title: String{
         return "notificationItem".localized
     }
@@ -181,14 +329,12 @@ struct AppPushNotifications: Codable{
         }
     }
     enum NotificationFrequency: Codable{
-            
         var allCases: [NotificationFrequency] {
             [  .everyDay,
                .onTheWeekday,
                .onTheWeekend,
                .custom([]) ]
         }
-        
         case everyDay
         case onTheWeekday
         case onTheWeekend
@@ -238,112 +384,263 @@ struct AppPushNotifications: Codable{
             }
         }
     }
+
 }
 
-class CustomUserSettings: UserSettingsStorage, Codable {
-    var appTheme: AppTheme
-    
-    var appLanguage: AppLanguage
-    
-    var appNotifications: AppPushNotifications
-    
-    var appSearchBarPosition: AppSearchBarPosition
-    
-    var appSeparators: AppPairSeparators
-    
-    var appDuplicates: AppDuplicates
-    
-    init(){
-        appTheme = AppTheme.system
-        appLanguage = AppLanguage.english
-        appNotifications = AppPushNotifications(notificationState: .off, notificationFrequency: .everyDay, time: .initialTime)
-        
-        appSearchBarPosition = AppSearchBarPosition.onTop
-        
-        appSeparators = AppPairSeparators(availableSeparators: ["-", "–", "~", "="], value: "-")
-        appDuplicates = AppDuplicates.keep
-    }
-    
-    func reload(newValue: SettingsOptions){
-        switch newValue{
-        case .theme(let theme):
-            self.appTheme = theme
-        case .language(let language):
-            self.appLanguage = language
-        case .notifications(let notifications):
-            self.appNotifications = notifications
-        case .searchBarPosition(let position):
-            self.appSearchBarPosition = position
-        case .separators(let separators):
-            self.appSeparators = separators
-        case .duplicates(let duplicates):
-            self.appDuplicates = duplicates
-        case.sectionHeader(_):
-            break
-        }
-        SettingsApplingHelper.reload(newValue: newValue)
-    }
-//    func provideDefaultvalues() -> UserSettingsStorage {
-//        return CustomUserSettings()
+
+//final class AppUserSettings{
+//    static let shared = AppUserSettings()
+//
+//    var storage: UserSettingsStorage
+//    var manager: UserSettingsManager
+//
+//    init(manager: UserSettingsManager = DefaultUserSettingsManager(defaultSettings: CustomUserSettings())){
+//        self.manager = manager
+//        self.storage = manager.settings
 //    }
-}
+//}
+//protocol AppUserSettings{
+//    static var shared: Self             { get set }
+//    var storage: UserSettingsStorage    { get set }
+//    var manager: UserSettingsManager    { get set }
+//
+//    static func createInstance() -> AppUserSettings
+//}
+//
+//class AppSettings: AppUserSettings{
+//
+//    static func createInstance() -> AppUserSettings {
+//        <#code#>
+//    }
+//
+//    static var shared: AppSettings = AppSettings()
+//
+//    var storage: UserSettingsStorage
+//
+//    var manager: UserSettingsManager
+//    init(
+//    static func createInstance() -> AppUserSettings {
+//        <#code#>
+//    }
+//
+//
+//}
+//protocol SettingsManager{
+//    var settings: UserSettingsStorage       { get set }
+//
+//    func updateValue(newValue: SettingsOptions)
+//    func save()
+//    func use()
+//}
+//extension SettingsManager{
+//    mutating func updateValue(newValue: SettingsOptions){
+//        switch newValue{
+//        case .theme(let theme):
+//            settings.appTheme = theme
+//            UserDefaults.standard.set(theme, forKey: AppTheme.key)
+//        case .language(let language):
+//            UserDefaults.standard.set(language, forKey: AppLanguage.key)
+//            settings.appLanguage = language
+//        case .notifications(let notifications):
+//            settings.appNotifications = notifications
+//        case .searchBarPosition(let position):
+//            settings.appSearchBarPosition = position
+//        case .separators(let separators):
+//            settings.appSeparators = separators
+//        case .duplicates(let duplicates):
+//            settings.appDuplicates = duplicates
+//        case.sectionHeader(_):
+//            break
+//        }
+//    }
+//    mutating func load(){
+//        settings = .init(appTheme: UserDefaults.standard.value(forKey: AppTheme.key) as! AppTheme,
+//                         appLanguage: UserDefaults.standard.value(forKey: AppLanguage.key) as! AppLanguage,
+//                         appNotifications: UserDefaults.standard.value(forKey: AppPushNotifications.key) as! AppPushNotifications)
+//    }
+//}
+//class UserSettings{
+//    static var shared: UserSettingsManager!
+//}
 
-class SettingsApplingHelper{
-    static func reload(newValue: SettingsOptions){
-        switch newValue{
-        case .language(let language):
-            let languageCode = language.languageCode
-            LanguageChangeManager.shared.changeLanguage(to: languageCode)
-        case .theme(let theme):
-            let userInterfaceStyle = theme.userInterfaceStyle
-            (UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate)?.window?.overrideUserInterfaceStyle = userInterfaceStyle
-        case .notifications(let notifications):
-            NotificationUpdateHelper.invalidateExistingNotification()
-            NotificationUpdateHelper.scheduleNotifications(for: notifications.notificationFrequency.selectedDays, at: notifications.time.value)
-        case .searchBarPosition(_):
-            NotificationCenter.default.post(name: .appSearchBarPositionDidChange, object: nil)
-        case .separators(_):
-            NotificationCenter.default.post(name: .appSeparatorDidChange, object: nil)
-        case .duplicates(_):
-            print("Duplicates functionality wasn't imported")
-        case .sectionHeader(_):
-            break
-        }
-    }
-}
+//MARK: - Protocols
+//Protcol for class, which will contain all values for apps settings
+//protocol UserSettingsStorage: Codable{
+//    var appTheme: AppTheme                          { get set }
+//    var appLanguage : AppLanguage                   { get set }
+//    var appNotifications: AppPushNotifications      { get set }
+//    var appSearchBarPosition: AppSearchBarPosition  { get set }
+//    var appSeparators: AppPairSeparators            { get set }
+//    var appDuplicates: AppDuplicates                { get set }
+//
+////    init(appTheme: AppTheme, appLanguage: AppLanguage, appNotifications: AppPushNotifications)
+//
+//    func reload(newValue: SettingsOptions) -> UserSettingsStorage
+//}
 
-class NotificationUpdateHelper{
-    //Scheduling new notification.
-    static func scheduleNotifications(for days: [Int], at time: Date){
-        let calendar = Calendar.current
-        let hour = calendar.component(.hour, from: time)
-        let minute = calendar.component(.minute, from: time)
-        
-        for day in days {
-            var dateComponents = DateComponents()
-            dateComponents.hour = hour
-            dateComponents.minute = minute
-            dateComponents.weekday = day
-            
-            let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
-            
-            let content = UNMutableNotificationContent()
-            content.title = "notification.notificationTitle".localized
-            content.body = "notification.notificationMessage".localized
-            content.sound = UNNotificationSound.default
-            
-            let request = UNNotificationRequest(identifier: "notification\(day)", content: content, trigger: trigger)
-            UNUserNotificationCenter.current().add(request) { (error) in
-                if let error = error {
-                    print("Failed to schedule notification: \(error)")
-                }
-            }
-        }
-    }
-    //Invalidating old notifications
-    static func invalidateExistingNotification(){
-        UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
-    }
-}
+//Protocol for class, which will contain method to load and save settings
+//protocol UserSettingsManager{
+//    var settings: UserSettingsStorage       { get set }
+//
+//    init(dataStorage: UserSettingsStorage)
+//
+//    func save() -> Bool
+//    func use()
+//    func reload(newValue: SettingsOptions)
+//}
+//
+//class SettingsManager: UserSettingsManager{
+//    var settings: UserSettingsStorage
+//
+//    required init(dataStorage: UserSettingsStorage) {
+//        self.settings = dataStorage
+//    }
+//
+//    func save() -> Bool {
+//        do {
+//            let encodedData = try JSONEncoder().encode(settings)
+//            UserDefaults.standard.set(encodedData, forKey: userSettingsKey)
+//            return true
+//        } catch {
+//            print("Failed to save user settings: \(error)")
+//            return false
+//        }
+//        true
+//    }
+//
+//    func use() {
+//        <#code#>
+//    }
+//
+//    func reload(newValue: SettingsOptions) {
+//        <#code#>
+//    }
+//
+//
+//}
+//MARK: - SettingsManager class
+//class DefaultUserSettingsManager<T: UserSettingsStorage>: UserSettingsManager {
+//
+//    var settings: UserSettingsStorage
+//
+//    private let userSettingsKey = "UserSettings"
+//
+//    init(defaultSettings: T) {
+//        self.settings = Self.load(userSettingsKey: userSettingsKey) ?? defaultSettings
+//    }
+//
+//    private static func load(userSettingsKey: String) -> UserSettingsStorage? {
+//        if let data = UserDefaults.standard.data(forKey: userSettingsKey),
+//           let userSettings = try? JSONDecoder().decode(T.self, from: data) {
+//            print("decoded")
+//            return userSettings
+//        } else {
+//            print("default")
+//            return nil
+//        }
+//    }
+//    func reload(newValue: SettingsOptions){
+//        self.settings = settings.reload(newValue: newValue)
+//
+//    }
+//    func save() -> Bool {
+//        do {
+//            let encodedData = try JSONEncoder().encode(settings)
+//            UserDefaults.standard.set(encodedData, forKey: userSettingsKey)
+//            return true
+//        } catch {
+//            print("Failed to save user settings: \(error)")
+//            return false
+//        }
+//    }
+//
+//    func use(){
+//        (UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate)?.window?.overrideUserInterfaceStyle = settings.appTheme.userInterfaceStyle
+//        LanguageChangeManager.shared.changeLanguage(to: settings.appLanguage.languageCode)
+//    }
+//}
 
 
+
+//class CustomUserSettings: UserSettingsStorage, Codable {
+//    static let key = "UserSettings"
+//    var appTheme: AppTheme
+//
+//    var appLanguage: AppLanguage
+//
+//    var appNotifications: AppPushNotifications
+//
+//    var appSearchBarPosition: AppSearchBarPosition
+//
+//    var appSeparators: AppPairSeparators
+//
+//    var appDuplicates: AppDuplicates
+//
+////    var settingaManager: UserSettingsManager
+//    required init(){
+//        appTheme = AppTheme.system
+//        appLanguage = AppLanguage.english
+//        appNotifications = AppPushNotifications(notificationState: .off, notificationFrequency: .everyDay, time: .initialTime)
+//
+//        appSearchBarPosition = AppSearchBarPosition.onTop
+//
+//        appSeparators = AppPairSeparators(availableSeparators: ["-", "–", "~", "="], value: "-")
+//        appDuplicates = AppDuplicates.keep
+//    }
+//    static func load() -> CustomUserSettings{
+//        if let userData = UserDefaults.standard.data(forKey: key){
+//            if let decodedData = try? JSONDecoder().decode(CustomUserSettings.self, from: userData) {
+//                return decodedData
+//            }
+//        }
+//        return self.init()
+//    }
+//    func reload(newValue: SettingsOptions) -> UserSettingsStorage{
+//        switch newValue{
+//        case .theme(let theme):
+//            self.appTheme = theme
+//        case .language(let language):
+//            self.appLanguage = language
+//        case .notifications(let notifications):
+//            self.appNotifications = notifications
+//        case .searchBarPosition(let position):
+//            self.appSearchBarPosition = position
+//        case .separators(let separators):
+//            self.appSeparators = separators
+//        case .duplicates(let duplicates):
+//            self.appDuplicates = duplicates
+//        case.sectionHeader(_):
+//            break
+//        }
+//        SettingsApplingHelper.reload(newValue: newValue)
+//        return self
+//    }
+////    func provideDefaultvalues() -> UserSettingsStorage {
+////        return CustomUserSettings()
+////    }
+//}
+//
+//class SettingsApplingHelper{
+//    static func reload(newValue: SettingsOptions){
+//        switch newValue{
+//        case .language(let language):
+//            let languageCode = language.languageCode
+//            LanguageChangeManager.shared.changeLanguage(to: languageCode)
+//        case .theme(let theme):
+//            let userInterfaceStyle = theme.userInterfaceStyle
+//            (UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate)?.window?.overrideUserInterfaceStyle = userInterfaceStyle
+//        case .notifications(let notifications):
+//            NotificationUpdateHelper.invalidateExistingNotification()
+//            NotificationUpdateHelper.scheduleNotifications(for: notifications.notificationFrequency.selectedDays, at: notifications.time.value)
+//        case .searchBarPosition(_):
+//            NotificationCenter.default.post(name: .appSearchBarPositionDidChange, object: nil)
+//        case .separators(_):
+//            NotificationCenter.default.post(name: .appSeparatorDidChange, object: nil)
+//        case .duplicates(_):
+//            print("Duplicates functionality wasn't imported")
+//        case .sectionHeader(_):
+//            break
+//        }
+//    }
+//}
+//

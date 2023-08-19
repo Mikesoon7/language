@@ -40,7 +40,7 @@ class NotificationView: UIViewController {
         view.automaticallyAdjustsScrollIndicatorInsets = false
         view.contentInset = .zero
         view.subviews.forEach { section in
-            view.addShadowWhichOverlays(false)
+            view.addRightSideShadow()
         }
         return view
     }()
@@ -271,6 +271,7 @@ class NotificationView: UIViewController {
     }
     
     //MARK: - Specific animations for pickers
+    //Since day and frequnccy pickers have same position, check if second is hidden
     private func animateToFrequencyPicker(){
         UIView.animate(withDuration: 0.3) {
             self.frequencyPicker.alpha = 1
@@ -390,7 +391,7 @@ extension NotificationView: UITableViewDelegate, UITableViewDataSource{
             switchCell.delegate = viewModel
             return switchCell
         case 1:
-            textCell.configureCellWith(data: viewModel.dataForCellAt(indexPath: indexPath))
+            textCell.configureCellWithData(viewModel.dataForCellAt(indexPath: indexPath))
             return textCell
         default: return UITableViewCell()
         }

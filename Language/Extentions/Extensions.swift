@@ -13,19 +13,19 @@ public let shadowColorForDarkIdiom = UIColor.clear.cgColor
 public let shadowColorForLightIdiom = UIColor.systemGray2.cgColor
 
 
-extension UIView {
-    func setUpCustomView(){
-        self.layer.cornerRadius = 9
-        self.addShadowWhichOverlays(false)
-        self.backgroundColor = .secondarySystemBackground
-        self.translatesAutoresizingMaskIntoConstraints = false
-    }
-}
+//extension UIView {
+//    func setUpCustomView(){
+//        self.layer.cornerRadius = 9
+//        self.addShadowWhichOverlays(false)
+//        self.backgroundColor = .secondarySystemBackground
+//        self.translatesAutoresizingMaskIntoConstraints = false
+//    }
+//}
 extension UIButton {
     func setUpCustomButton(){
         self.layer.cornerRadius = 9
         self.tintColor = .label
-        self.addShadowWhichOverlays(false)
+        self.addRightSideShadow()
         self.backgroundColor = .secondarySystemBackground
         self.translatesAutoresizingMaskIntoConstraints = false
     }
@@ -113,46 +113,46 @@ extension UITableViewCell{
     }
 }
 extension UIView{
-    func addTopStroke(vc: UIViewController) -> CAShapeLayer{
-        let topStroke = CAShapeLayer()
-        let path = UIBezierPath()
-        let y = {
-            if vc.navigationController != nil {
-                return vc.view.safeAreaInsets.top
-            } else {
-                return 0
-            }
-        }()
-        path.move(to: CGPoint(x: 0, y: y ))
-        path.addLine(to: CGPoint(x: vc.view.bounds.maxX, y: y))
-        topStroke.path = path.cgPath
-        topStroke.lineWidth = 0.8
-        topStroke.strokeColor = UIColor.label.cgColor
-        topStroke.fillColor = UIColor.clear.cgColor
-        topStroke.opacity = 0.8
-        
-        return topStroke
-    }
-    func addBottomStroke(vc: UIViewController) -> CAShapeLayer{
-        let path = UIBezierPath()
-        let y = {
-            if vc.tabBarController?.tabBar != nil{
-                return vc.tabBarController!.tabBar.frame.minY
-            } else {
-                return 0
-            }
-        }()
-        path.move(to: CGPoint(x: 0, y: y))
-        path.addLine(to: CGPoint(x: vc.view.bounds.maxX, y: y))
-        let stroke = CAShapeLayer()
-        stroke.path = path.cgPath
-        stroke.lineWidth = 0.8
-        stroke.strokeColor = UIColor.label.cgColor
-        stroke.fillColor = UIColor.clear.cgColor
-        stroke.opacity = 0.8
-        
-        return stroke
-    }
+//    func addTopStroke(vc: UIViewController) -> CAShapeLayer{
+//        let topStroke = CAShapeLayer()
+//        let path = UIBezierPath()
+//        let y = {
+//            if vc.navigationController != nil {
+//                return vc.view.safeAreaInsets.top
+//            } else {
+//                return 0
+//            }
+//        }()
+//        path.move(to: CGPoint(x: 0, y: y ))
+//        path.addLine(to: CGPoint(x: vc.view.bounds.maxX, y: y))
+//        topStroke.path = path.cgPath
+//        topStroke.lineWidth = 0.8
+//        topStroke.strokeColor = UIColor.label.cgColor
+//        topStroke.fillColor = UIColor.clear.cgColor
+//        topStroke.opacity = 0.8
+//
+//        return topStroke
+//    }
+//    func addBottomStroke(vc: UIViewController) -> CAShapeLayer{
+//        let path = UIBezierPath()
+//        let y = {
+//            if vc.tabBarController?.tabBar != nil{
+//                return vc.tabBarController!.tabBar.frame.minY
+//            } else {
+//                return 0
+//            }
+//        }()
+//        path.move(to: CGPoint(x: 0, y: y))
+//        path.addLine(to: CGPoint(x: vc.view.bounds.maxX, y: y))
+//        let stroke = CAShapeLayer()
+//        stroke.path = path.cgPath
+//        stroke.lineWidth = 0.8
+//        stroke.strokeColor = UIColor.label.cgColor
+//        stroke.fillColor = UIColor.clear.cgColor
+//        stroke.opacity = 0.8
+//        
+//        return stroke
+//    }
 }
 extension NSAttributedString{
     func fontWithString(string: String, bold: Bool, size: CGFloat) -> NSAttributedString{
@@ -245,28 +245,28 @@ extension NSAttributedString{
 }
 //MARK: -AddSubviews method.
 extension UIView{
-    func addSubviews(_ views: UIView...){
-        for i in views{
-            self.addSubview(i)
-        }
-    }
-    func addCenterSideShadows(_ over: Bool){
-        self.layer.masksToBounds = false
-        self.layer.shadowOffset = over ? CGSize(width: 0, height: 10) : CGSize(width: 0, height: 5)
-        self.layer.shadowColor = ((traitCollection.userInterfaceStyle == .dark)
-                                  ? shadowColorForDarkIdiom
-                                  : shadowColorForLightIdiom)
-        self.layer.shadowOpacity = over ? 0.4 : 0.8
-    }
-
-    func addShadowWhichOverlays( _ over: Bool){
-        self.layer.masksToBounds = false
-        self.layer.shadowOffset = over ? CGSize(width: 9, height: 10) : CGSize(width: 4, height: 5)
-        self.layer.shadowColor = ((traitCollection.userInterfaceStyle == .dark)
-                                  ? shadowColorForDarkIdiom
-                                  : shadowColorForLightIdiom)
-        self.layer.shadowOpacity = over ? 0.4 : 0.8
-    }
+//    func addSubviews(_ views: UIView...){
+//        for i in views{
+//            self.addSubview(i)
+//        }
+//    }
+//    func addCenterSideShadows(_ over: Bool){
+//        self.layer.masksToBounds = false
+//        self.layer.shadowOffset = over ? CGSize(width: 0, height: 10) : CGSize(width: 0, height: 5)
+//        self.layer.shadowColor = ((traitCollection.userInterfaceStyle == .dark)
+//                                  ? shadowColorForDarkIdiom
+//                                  : shadowColorForLightIdiom)
+//        self.layer.shadowOpacity = over ? 0.4 : 0.8
+//    }
+//
+//    func addShadowWhichOverlays( _ over: Bool){
+//        self.layer.masksToBounds = false
+//        self.layer.shadowOffset = over ? CGSize(width: 9, height: 10) : CGSize(width: 4, height: 5)
+//        self.layer.shadowColor = ((traitCollection.userInterfaceStyle == .dark)
+//                                  ? shadowColorForDarkIdiom
+//                                  : shadowColorForLightIdiom)
+//        self.layer.shadowOpacity = over ? 0.4 : 0.8
+//    }
 }
 extension String{
     enum SelectedFonts: String{

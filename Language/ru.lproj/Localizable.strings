@@ -100,10 +100,16 @@
 "searchVCTitle" = "Поиск";
 "yourWord" = "Введите ваш текст";
 //MARK: - SeparatorsVC
-"howIt'sWorking" = "Как это работает ?";
-"firstMessage" = "Во-первых, введенный текст разделяется на блоки.";
-"secondMessage" = "Во-вторых, блоки разделяются с помощью выбранного символа на пары Слово и Определение.";
-"informMessage" = "Если у вас возникнли вопросы или предложения - пожалуйста, свяжитесь с нами.";
+"separators.addChar" = "Добавить символ";
+"separators.placeholder" = "Текст";
+"separators.alertErrorTitle" = "Некорректный ввод";
+"separators.alertTitle" = "Введите от 1 до 3 символов";
+"separators.alertDuplicateMessage" = "Пожалуйста, не используйте дубликаты";
+"separators.alertSpaceMessage" = "Пожалуйста, не используйте только пробелы";
+"separators.title" = "Как это работает ?";
+"separators.infoFirstPart" = "Во-первых, введенный текст разделяется на блоки, используя абзацы как разделители.";
+"separators.infoSecondPart" = "Во-вторых, блоки разделяются с помощью выбранного символа на пары Слово и Определение.";
+"separators.infoFinalPart" = "Если у вас возникнли вопросы или предложения - пожалуйста, свяжитесь с нами.";
 //MARK: - SystemErrors
 //Dictionary
 "coreData.dictionaryCreation" = "Failed to create dictionary";

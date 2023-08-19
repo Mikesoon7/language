@@ -100,10 +100,16 @@
 "searchVCTitle" = "Search";
 "yourWord" = "Insert your text";
 //MARK: - SeparatorsVC
-"howIt'sWorking" = "How is it working ?";
-"firstMessage" = "Firstly, inputed text devides into blocks.";
-"secondMessage" = "Secondly, blocks are deviding by separator mark into Word and Description pairs.";
-"informMessage" = "If you have any seggestions or questions - please, constact us.";
+"separators.addChar" = "Add character";
+"separators.placeholder" = "Text";
+"separators.alertErrorTitle" = "Invalid input";
+"separators.alertTitle" = "Type from 1 to 3 characters";
+"separators.alertDuplicateMessage" = "Please, don't use duplicates";
+"separators.alertSpaceMessage" = "Please, don't use spaces only";
+"separators.title" = "How is it working ?";
+"separators.infoFirstPart" = "Firstly, inputed text devides into blocks, using a paragraph as a separator.";
+"separators.infoSecondPart" = "Secondly, blocks are deviding by separator mark into Word and Description pairs.";
+"separators.infoFinalPart" = "If you have any seggestions or questions - please, constact us.";
 //MARK: - SystemErrors
 //Dictionary
 "coreData.dictionaryCreation" = "Failed to create dictionary";

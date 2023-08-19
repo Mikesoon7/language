@@ -21,7 +21,7 @@ class AddWordsViewModel {
     
     private let model: Dictionary_WordsManager
     private let dictionary: DictionariesEntity
-    private var userDefault = UserSettings.shared.settings
+    private var userDefault = UserSettings.shared
     private var newArray: [WordsEntity] = []
     var output = PassthroughSubject<Output, Never>()
     
@@ -34,7 +34,7 @@ class AddWordsViewModel {
     }
     
     func configureTextPlaceholder() -> String{
-        return "viewPlaceholderWord".localized + " \(userDefault.appSeparators.value) " + "viewPlaceholderMeaning".localized
+        return "viewPlaceholderWord".localized + " \(UserSettings.shared.appSeparators.value) " + "viewPlaceholderMeaning".localized
     }
     
     private func extendDictionary(_ dictionary: DictionariesEntity, with words: [WordsEntity]){

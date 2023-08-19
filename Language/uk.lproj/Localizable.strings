@@ -59,7 +59,6 @@
 "systme.no" = "Ні";
 "system.settings" = "Налаштування";
 
-
 //MARK: - AlertText
 "textAlert" = "Вкажіть текст";
 "nameAlert" = "Вкажіть назву";
@@ -101,10 +100,16 @@
 "searchVCTitle" = "Пошук";
 "yourWord" = "Введіть текст";
 //MARK: - SeparatorsVC
-"howIt'sWorking" = "Як це працюе ?";
-"firstMessage" = "По-перше, введений текст поділяється на блоки.";
-"secondMessage" = "По-друге, блоки поділяються за допомогою вибраного символу на пари Слово та Визначення.";
-"informMessage" = "Якщо у вас виникнули запитання чи пропозиції - будь ласка, зв'яжіться з нами.";
+"separators.addChar" = "Додати знак";
+"separators.placeholder" = "Текст";
+"separators.alertErrorTitle" = "Некоректний ввід";
+"separators.alertTitle" = "Введіть від 1 до 3 символів";
+"separators.alertDuplicateMessage" = "Будь ласка, не використовуйте дублікати";
+"separators.alertSpaceMessage" = "Будь ласка, не використовуйте лише пробіли";
+"separators.title" = "Як це працюе ?";
+"separators.infoFirstPart" = "По-перше, введений текст поділяється на блоки, використовуючи абзац як роздільник.";
+"separators.infoSecondPart" = "По-друге, блоки поділяються за допомогою вибраного символу на пари Слово та Визначення.";
+"separators.infoFinalPart" = "Якщо у вас виникнули запитання чи пропозиції - будь ласка, зв'яжіться з нами.";
 //MARK: - SystemErrors
 //Dictionary
 "coreData.dictionaryCreation" = "Failed to create dictionary";

@@ -60,9 +60,12 @@
 		9AABAEB02A87D3E00032C008 /* TextInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AABAEAF2A87D3E00032C008 /* TextInputView.swift */; };
 		9AABAEB22A88E5D40032C008 /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AABAEB12A88E5D40032C008 /* SettingsViewModel.swift */; };
 		9AAC8A072A88E9E00068828C /* CustomUserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AAC8A062A88E9E00068828C /* CustomUserDefaults.swift */; };
+		9AADA5142A8C48280044708E /* SeparatorsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AADA5132A8C48280044708E /* SeparatorsViewModel.swift */; };
+		9AADA5162A8E298C0044708E /* SeparatorsExampleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AADA5152A8E298C0044708E /* SeparatorsExampleView.swift */; };
 		9AAECFBE29B5052F00439C0B /* SettingsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AAECFBD29B5052F00439C0B /* SettingsVC.swift */; };
 		9AAECFC029B5055100439C0B /* EndVc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AAECFBF29B5055100439C0B /* EndVc.swift */; };
 		9AAECFC229B50A5300439C0B /* AddWordsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AAECFC129B50A5300439C0B /* AddWordsView.swift */; };
+		9AB039D62A9175A6003FE10C /* CustomSearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB039D52A9175A6003FE10C /* CustomSearchBar.swift */; };
 		9AB2453D29E6A5E900E05E59 /* NotificationVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB2453C29E6A5E900E05E59 /* NotificationVC.swift */; };
 		9AB2453F29E8556100E05E59 /* NotificationSwitchCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB2453E29E8556100E05E59 /* NotificationSwitchCell.swift */; };
 		9AB2454329E9498A00E05E59 /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB2454229E9498A00E05E59 /* UserDefaults.swift */; };
@@ -74,7 +77,7 @@
 		9AB43A4429F4760700984350 /* WordsEntity+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB43A4029F4760700984350 /* WordsEntity+CoreDataProperties.swift */; };
 		9AB43A4529F4760700984350 /* DictionariesEntity+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB43A4129F4760700984350 /* DictionariesEntity+CoreDataClass.swift */; };
 		9AB9A95F29FD70A800694FE8 /* SeparatorsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB9A95E29FD70A800694FE8 /* SeparatorsCell.swift */; };
-		9AB9A96129FD71F000694FE8 /* SeparatorsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB9A96029FD71F000694FE8 /* SeparatorsVC.swift */; };
+		9AB9A96129FD71F000694FE8 /* SeparatorsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB9A96029FD71F000694FE8 /* SeparatorsView.swift */; };
 		9ABAEE172A72B7950065494A /* NotificationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ABAEE162A72B7950065494A /* NotificationViewModel.swift */; };
 		9ABAEE1A2A76A20B0065494A /* NotificationWeekCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ABAEE192A76A20A0065494A /* NotificationWeekCell.swift */; };
 		9ABAEE1C2A79BFA10065494A /* NotificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ABAEE1B2A79BFA10065494A /* NotificationView.swift */; };
@@ -171,9 +174,12 @@
 		9AABAEAF2A87D3E00032C008 /* TextInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextInputView.swift; sourceTree = "<group>"; };
 		9AABAEB12A88E5D40032C008 /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
 		9AAC8A062A88E9E00068828C /* CustomUserDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomUserDefaults.swift; sourceTree = "<group>"; };
+		9AADA5132A8C48280044708E /* SeparatorsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeparatorsViewModel.swift; sourceTree = "<group>"; };
+		9AADA5152A8E298C0044708E /* SeparatorsExampleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeparatorsExampleView.swift; sourceTree = "<group>"; };
 		9AAECFBD29B5052F00439C0B /* SettingsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsVC.swift; sourceTree = "<group>"; };
 		9AAECFBF29B5055100439C0B /* EndVc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndVc.swift; sourceTree = "<group>"; };
 		9AAECFC129B50A5300439C0B /* AddWordsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddWordsView.swift; sourceTree = "<group>"; };
+		9AB039D52A9175A6003FE10C /* CustomSearchBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomSearchBar.swift; sourceTree = "<group>"; };
 		9AB2453C29E6A5E900E05E59 /* NotificationVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationVC.swift; sourceTree = "<group>"; };
 		9AB2453E29E8556100E05E59 /* NotificationSwitchCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationSwitchCell.swift; sourceTree = "<group>"; };
 		9AB2454229E9498A00E05E59 /* UserDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaults.swift; sourceTree = "<group>"; };
@@ -185,7 +191,7 @@
 		9AB43A4029F4760700984350 /* WordsEntity+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WordsEntity+CoreDataProperties.swift"; sourceTree = SOURCE_ROOT; };
 		9AB43A4129F4760700984350 /* DictionariesEntity+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DictionariesEntity+CoreDataClass.swift"; sourceTree = SOURCE_ROOT; };
 		9AB9A95E29FD70A800694FE8 /* SeparatorsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeparatorsCell.swift; sourceTree = "<group>"; };
-		9AB9A96029FD71F000694FE8 /* SeparatorsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeparatorsVC.swift; sourceTree = "<group>"; };
+		9AB9A96029FD71F000694FE8 /* SeparatorsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeparatorsView.swift; sourceTree = "<group>"; };
 		9ABAEE162A72B7950065494A /* NotificationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationViewModel.swift; sourceTree = "<group>"; };
 		9ABAEE192A76A20A0065494A /* NotificationWeekCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationWeekCell.swift; sourceTree = "<group>"; };
 		9ABAEE1B2A79BFA10065494A /* NotificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationView.swift; sourceTree = "<group>"; };
@@ -259,16 +265,6 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		9A1F67D229E18C0E003993C5 /* SettingsTableViewCells */ = {
-			isa = PBXGroup;
-			children = (
-				9A1F67D329E3F69A003993C5 /* SettingsHeaderCell.swift */,
-				9A0BD53929DC531F00845328 /* SettingsTextCell.swift */,
-				9A1F67D029E18BBE003993C5 /* SettingsImageCell.swift */,
-			);
-			path = SettingsTableViewCells;
-			sourceTree = "<group>";
-		};
 		9A5641F82A5D744900027BCD /* Model */ = {
 			isa = PBXGroup;
 			children = (
@@ -321,8 +317,9 @@
 			children = (
 				9AAECFBD29B5052F00439C0B /* SettingsVC.swift */,
 				9AABAEB12A88E5D40032C008 /* SettingsViewModel.swift */,
-				9A1F67D229E18C0E003993C5 /* SettingsTableViewCells */,
+				9AB039D22A9154CF003FE10C /* SettingsSubviews */,
 				9A5642032A5E153300027BCD /* Separators */,
+				9A5642022A5E151300027BCD /* Notification */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -332,8 +329,7 @@
 			children = (
 				9ABAEE1B2A79BFA10065494A /* NotificationView.swift */,
 				9ABAEE162A72B7950065494A /* NotificationViewModel.swift */,
-				9A999CA62A7DA4050017C30C /* NotificationDayPicker.swift */,
-				9ABAEE182A72BBCB0065494A /* NotificationTableViewCells */,
+				9ABAEE182A72BBCB0065494A /* NotificationSubviews */,
 			);
 			path = Notification;
 			sourceTree = "<group>";
@@ -341,8 +337,9 @@
 		9A5642032A5E153300027BCD /* Separators */ = {
 			isa = PBXGroup;
 			children = (
-				9A85416E2A461B13000E2DA2 /* SeparatorsCell */,
-				9AB9A96029FD71F000694FE8 /* SeparatorsVC.swift */,
+				9AB9A96029FD71F000694FE8 /* SeparatorsView.swift */,
+				9AADA5132A8C48280044708E /* SeparatorsViewModel.swift */,
+				9AB039D42A915524003FE10C /* SeparatorsSubviews */,
 			);
 			path = Separators;
 			sourceTree = "<group>";
@@ -352,7 +349,7 @@
 			children = (
 				9A9970FB29D9D661007EE635 /* SearchView.swift */,
 				9A75413C2A70042D0064BE4E /* SearchViewModel.swift */,
-				9AB43A1429F3E6D400984350 /* SearchTableViewCells */,
+				9AB43A1429F3E6D400984350 /* SearchSubviews */,
 			);
 			path = Search;
 			sourceTree = "<group>";
@@ -439,14 +436,6 @@
 			path = LanguageUITests;
 			sourceTree = "<group>";
 		};
-		9A85416E2A461B13000E2DA2 /* SeparatorsCell */ = {
-			isa = PBXGroup;
-			children = (
-				9AB9A95E29FD70A800694FE8 /* SeparatorsCell.swift */,
-			);
-			path = SeparatorsCell;
-			sourceTree = "<group>";
-		};
 		9A883CE42A6C6889008682F3 /* CoreData_Methods */ = {
 			isa = PBXGroup;
 			children = (
@@ -494,6 +483,25 @@
 			path = CollectionViewCells;
 			sourceTree = "<group>";
 		};
+		9AB039D22A9154CF003FE10C /* SettingsSubviews */ = {
+			isa = PBXGroup;
+			children = (
+				9A1F67D329E3F69A003993C5 /* SettingsHeaderCell.swift */,
+				9A0BD53929DC531F00845328 /* SettingsTextCell.swift */,
+				9A1F67D029E18BBE003993C5 /* SettingsImageCell.swift */,
+			);
+			path = SettingsSubviews;
+			sourceTree = "<group>";
+		};
+		9AB039D42A915524003FE10C /* SeparatorsSubviews */ = {
+			isa = PBXGroup;
+			children = (
+				9AB9A95E29FD70A800694FE8 /* SeparatorsCell.swift */,
+				9AADA5152A8E298C0044708E /* SeparatorsExampleView.swift */,
+			);
+			path = SeparatorsSubviews;
+			sourceTree = "<group>";
+		};
 		9AB40FEF29CC52B700353FFC /* Non Using */ = {
 			isa = PBXGroup;
 			children = (
@@ -520,20 +528,20 @@
 				9A5641FB2A5D758A00027BCD /* AddWords */,
 				9A5641FC2A5D759E00027BCD /* Details */,
 				9A5642042A5E155000027BCD /* Search */,
-				9A5642022A5E151300027BCD /* Notification */,
 				9A5641FD2A5D75AD00027BCD /* Settings */,
 				9A5642052A5E157800027BCD /* Game */,
 			);
 			path = "View-ViewModel";
 			sourceTree = "<group>";
 		};
-		9AB43A1429F3E6D400984350 /* SearchTableViewCells */ = {
+		9AB43A1429F3E6D400984350 /* SearchSubviews */ = {
 			isa = PBXGroup;
 			children = (
 				9AB43A1529F3E72D00984350 /* SearchViewCell.swift */,
 				9A912FC72A078E250004A91A /* SearchViewAICell.swift */,
+				9AB039D52A9175A6003FE10C /* CustomSearchBar.swift */,
 			);
-			path = SearchTableViewCells;
+			path = SearchSubviews;
 			sourceTree = "<group>";
 		};
 		9AB43A1A29F4669900984350 /* CoreData_Subclass */ = {
@@ -551,13 +559,14 @@
 			path = CoreData_Subclass;
 			sourceTree = "<group>";
 		};
-		9ABAEE182A72BBCB0065494A /* NotificationTableViewCells */ = {
+		9ABAEE182A72BBCB0065494A /* NotificationSubviews */ = {
 			isa = PBXGroup;
 			children = (
+				9A999CA62A7DA4050017C30C /* NotificationDayPicker.swift */,
 				9AB2453E29E8556100E05E59 /* NotificationSwitchCell.swift */,
 				9A912FC52A06BB540004A91A /* NotificationTextCell.swift */,
 			);
-			path = NotificationTableViewCells;
+			path = NotificationSubviews;
 			sourceTree = "<group>";
 		};
 		9ABC83A22A582C0D00E630F5 /* Menu */ = {
@@ -593,6 +602,7 @@
 				9A7B91BE298D6D9600E60CDD /* Sources */,
 				9A7B91BF298D6D9600E60CDD /* Frameworks */,
 				9A7B91C0298D6D9600E60CDD /* Resources */,
+				75B8F2551463FDB769E1227D /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -633,6 +643,7 @@
 				9A7B91DE298D6D9A00E60CDD /* Sources */,
 				9A7B91DF298D6D9A00E60CDD /* Frameworks */,
 				9A7B91E0298D6D9A00E60CDD /* Resources */,
+				77628E4832999680A511C31D /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -764,6 +775,40 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
+		75B8F2551463FDB769E1227D /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Language/Pods-Language-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Language/Pods-Language-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Language/Pods-Language-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		77628E4832999680A511C31D /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Language-LanguageUITests/Pods-Language-LanguageUITests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Language-LanguageUITests/Pods-Language-LanguageUITests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Language-LanguageUITests/Pods-Language-LanguageUITests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		99F4C2D668EF807E5EED818E /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -812,21 +857,24 @@
 				9A02B2862A38993F00652FC3 /* EditView.swift in Sources */,
 				9AFFCE7B299D073D00C12B94 /* MenuAddDictionaryCell.swift in Sources */,
 				9AE34A782A115DD300F8BB65 /* GameDetailsVC.swift in Sources */,
-				9AB9A96129FD71F000694FE8 /* SeparatorsVC.swift in Sources */,
+				9AB9A96129FD71F000694FE8 /* SeparatorsView.swift in Sources */,
 				9A9970FE29DB2D86007EE635 /* LaunchAnimation.swift in Sources */,
 				9AB43A3629F4695B00984350 /* CoreDataMethods.swift in Sources */,
 				9A1F67D429E3F69A003993C5 /* SettingsHeaderCell.swift in Sources */,
 				9A5D51D52A6808CC00F85720 /* DetailsViewModel.swift in Sources */,
 				9AA71C6829C9CE9B008A193B /* CollectionViewCell.swift in Sources */,
 				9A603FF929AF5B3200A65253 /* OldGameVC.swift in Sources */,
+				9AADA5142A8C48280044708E /* SeparatorsViewModel.swift in Sources */,
 				9A5D51D32A67E05300F85720 /* AddWordsViewModel.swift in Sources */,
 				9AE509352997C07700D86DD7 /* AddDictionaryView.swift in Sources */,
 				9AA71C6429C84C65008A193B /* ViewModel.swift in Sources */,
+				9AB039D62A9175A6003FE10C /* CustomSearchBar.swift in Sources */,
 				9A883CE82A6C6BC1008682F3 /* CoreData_Dictionary.swift in Sources */,
 				9A02B2842A222B3D00652FC3 /* UIBezierPathTestController.swift in Sources */,
 				9A883CEA2A6D375C008682F3 /* CoreData_Words.swift in Sources */,
 				9A999CA72A7DA4050017C30C /* NotificationDayPicker.swift in Sources */,
 				9A85417C2A4776B8000E2DA2 /* DictionariesAccessLog+CoreDataProperties.swift in Sources */,
+				9AADA5162A8E298C0044708E /* SeparatorsExampleView.swift in Sources */,
 				9A5641FF2A5D779400027BCD /* EditViewModel.swift in Sources */,
 				9AB43A4429F4760700984350 /* WordsEntity+CoreDataProperties.swift in Sources */,
 				9AB2454329E9498A00E05E59 /* UserDefaults.swift in Sources */,

@@ -10,7 +10,8 @@
 import UIKit
 
 
-struct DataForTextCell{
+//MARK: Data for textCell
+struct DataForNotificationTextCell{
     var label: String
     var value: String?
     
@@ -21,15 +22,8 @@ class NotificationTextCell: UITableViewCell {
     
     static let identifier = "notificationTextCell"
     
-    lazy var view : UIView = {
-        let view = UIView()
-        view.backgroundColor = ((traitCollection.userInterfaceStyle == .dark)
-                                ? UIColor.systemGray5
-                                : UIColor.systemGray6.withAlphaComponent(0.8))
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
-    let label : UILabel = {
+    //MARK: Views
+    private let label : UILabel = {
         let label = UILabel()
         label.textColor = .label
         label.textAlignment = .left
@@ -37,23 +31,26 @@ class NotificationTextCell: UITableViewCell {
         
         return label
     }()
-    let value : UILabel = {
+    private let value : UILabel = {
         let label = UILabel()
         label.textColor = .label
         label.textAlignment = .right
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
-    let image : UIImageView = {
+    private let image : UIImageView = {
         let view = UIImageView()
         view.image = UIImage(systemName: "chevron.right")
         view.tintColor = .label
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
+    
+    //MARK: Inherited
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        cellViewsCustomization()
+        configureCellView()
+        configureCellSubviews()
     }
     required init?(coder: NSCoder) {
         fatalError("Unable to use Coder")
@@ -67,35 +64,37 @@ class NotificationTextCell: UITableViewCell {
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
         if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection){
-            if traitCollection.userInterfaceStyle == .dark{
-                view.backgroundColor = .systemGray5
-            } else {
-                view.backgroundColor = .systemGray6.withAlphaComponent(0.8)
-            }
+            configureCellView()
         }
     }
-    func configureCellWith(data: DataForTextCell){
+    
+    //MARK: Setting up properties of view.
+    private func configureCellView(){
+        contentView.backgroundColor = ((traitCollection.userInterfaceStyle == .dark)
+                                                                       ? UIColor.systemGray5
+                                                                       : UIColor.systemGray6.withAlphaComponent(0.8))
+
+    }
+    
+    //MARK: Configure cell with passed data.
+    func configureCellWithData(_ data: DataForNotificationTextCell){
         self.label.text = data.label
         self.value.text = data.value
     }
-    func cellViewsCustomization(){
-        self.contentView.addSubview(view)
-        view.addSubviews(label, value,image)
+    
+    //MARK: Configure layout
+    private func configureCellSubviews(){
+        contentView.addSubviews(label, value,image)
         
         NSLayoutConstraint.activate([
-            view.topAnchor.constraint(equalTo: contentView.topAnchor),
-            view.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            view.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
-            view.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            label.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 15),
+            label.centerYAnchor.constraint(equalTo: centerYAnchor),
             
-            label.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 15),
-            label.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            
-            image.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            image.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -15),
+            image.centerYAnchor.constraint(equalTo: centerYAnchor),
+            image.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -15),
             
             value.trailingAnchor.constraint(equalTo: image.leadingAnchor, constant: -5),
-            value.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+            value.centerYAnchor.constraint(equalTo: centerYAnchor)
         ])
     }
 }

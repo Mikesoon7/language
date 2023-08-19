@@ -46,7 +46,7 @@ class MenuView: UIViewController {
         tableView.translatesAutoresizingMaskIntoConstraints = false
         
         tableView.subviews.forEach{ section in
-            section.addShadowWhichOverlays(false)
+            section.addRightSideShadow()
         }
         return tableView
     }()
@@ -203,22 +203,6 @@ extension MenuView: UITableViewDelegate, UITableViewDataSource{
     func tableView(_ tableView: UITableView, selectionFollowsFocusForRowAt indexPath: IndexPath) -> Bool {
         false
     }
-//    func tableView(_ tableView: UITableView, didHighlightRowAt indexPath: IndexPath) {
-//        guard let cell = tableView.cellForRow(at: indexPath) else {
-//            return
-//        }
-//        let subview = tableView.subviews.first { view in
-//            view as? UITableViewCell == cell
-//        }
-//        cell.cellTouchDownAnimation()
-//        UIView.animate(withDuration: 0.2) {
-//            subview?.layer.shadowOffset = CGSize(width: 0, height: 0)
-//        }
-//                
-//    }
-//    func tableView(_ tableView: UITableView, didUnhighlightRowAt indexPath: IndexPath) {
-//        tableView.cellForRow(at: indexPath)?.cellTouchUpAnimation()
-//    }
 }
 
 //MARK: - Delegate for cells action.

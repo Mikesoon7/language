@@ -16,7 +16,7 @@ class SearchView: UIViewController {
     
     private let viewModel = SearchViewModel()
     private var cancellable = Set<AnyCancellable>()
-    private let input: PassthroughSubject<SearchViewModel.Input, Never> = .init()
+    private let input =  PassthroughSubject<SearchViewModel.Input, Never>()
 
     private var expandedCellIndexSet: IndexSet = []
     
@@ -38,7 +38,7 @@ class SearchView: UIViewController {
         table.sectionFooterHeight = 10
         
         table.subviews.forEach { section in
-            section.addCenterSideShadows(false)
+            section.addCenterShadows()
         }
         return table
     }()
@@ -132,6 +132,10 @@ class SearchView: UIViewController {
             }
         }
     }
+    deinit {
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
     //MARK: - Binding View and VM
     func bind(){
         let output = viewModel.transform(input: input.eraseToAnyPublisher())
@@ -151,6 +155,7 @@ class SearchView: UIViewController {
                     self.configureLabels()
                 case .shouldReplaceSearchBarOnTop(let onTop):
                     self.reloadSearchBar(positionOnTop: onTop)
+                    print("Attempt to reload")
                 }
             }
             .store(in: &cancellable)

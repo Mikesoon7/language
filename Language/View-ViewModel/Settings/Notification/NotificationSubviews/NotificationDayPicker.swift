@@ -13,6 +13,7 @@ class NotificationDayPicker: UIView{
     private var selectedDaysSet : [Int]!
     private weak var viewModel: NotificationViewModel!
     
+    //Array of names for each day, starts from the same as in system day.
     private let arrayOfDays: [String] = {
         let calendar = Calendar.current
         let firstDay = calendar.firstWeekday
@@ -25,6 +26,7 @@ class NotificationDayPicker: UIView{
         return array
     }()
 
+    //MARK: Inherited
     init(viewModel: NotificationViewModel){
         super.init(frame: .zero)
         self.selectedDaysSet = viewModel.getSelectedDays()
@@ -56,7 +58,7 @@ class NotificationDayPicker: UIView{
         self.backgroundColor = ((traitCollection.userInterfaceStyle == .dark)
                                 ? UIColor.systemGray5
                                 : UIColor.secondarySystemBackground)
-        self.addShadowWhichOverlays(false)
+        self.addRightSideShadow()
     }
     //MARK: - StackView SetUp and populating buttons
     private func configureStackView(){

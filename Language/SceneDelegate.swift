@@ -12,18 +12,18 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-//        UserSettings.shared.use()
-        UserSettings.shared = configureDataStorage()
-        UserSettings.shared.use()
+
         //Initializing TabBarController
         guard let window = (scene as? UIWindowScene) else { return }
         self.window = UIWindow(frame: window.coordinateSpace.bounds)
         self.window?.windowScene = window
+        
+        setUpEnvironment()
+
         self.window?.rootViewController = setUpTabBarController()
         self.window?.makeKeyAndVisible()
-//        UserSettings.shared.use()
-        UserSettings.shared.use()
-        var animationView: LaunchAnimation? = LaunchAnimation(bounds: UIWindow().bounds)
+        
+        var animationView: LaunchAnimation? = LaunchAnimation(bounds: UIWindow().bounds, interfaceStyle: UserSettings.shared.appTheme.userInterfaceStyle)
         animationView?.animate()
         animationView?.makeKeyView()
         DispatchQueue.main.asyncAfter(deadline: .now() + 3.5) {
@@ -66,10 +66,17 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         return tabBArController
     }
-    func configureDataStorage() -> UserSettingsManager {
-        let currentUserSettings = CustomUserSettings()
-        let currentSettingsManager: UserSettingsManager = DefaultUserSettingsManager(defaultSettings: currentUserSettings)
-        return currentSettingsManager
+    func configureUserStorage(with storage: UserSettings? = nil){
+        if let settings = storage {
+            UserSettings.shared = settings
+        }
+    }
+//    func configureStorage(with storage: UserSettingsStorageProtocol = UserSettings1(manager: UserSettingsManager())) -> UserSettingsStorageProtocol{
+//        return storage
+//    }
+    func setUpEnvironment(){
+        let currentSettings = UserSettings.shared
+        UserSettings.shared.manager.use(theme: currentSettings.appTheme, language: currentSettings.appLanguage)
     }
     func observeLanguageChange(){
         NotificationCenter.default.addObserver(self, selector: #selector(languageDidChange(sender:)), name: .appLanguageDidChange, object: nil)

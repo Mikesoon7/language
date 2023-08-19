@@ -43,7 +43,7 @@ class NotificationViewModel{
     }
       
     //MARK: - Properties
-    private var notification = UserSettings.shared.settings.appNotifications
+    private var notification = UserSettings.shared.appNotifications
     private var notificationHelper: NotificationHelper = NotificationHelper()
     
     public var output = PassthroughSubject<Output, Never>()
@@ -59,7 +59,7 @@ class NotificationViewModel{
     ]
     //If the saved frequency was custom, we saving array of days indexes.
     private var selectedNotificationDays: [Int] = {
-        switch UserSettings.shared.settings.appNotifications.notificationFrequency {
+        switch UserSettings.shared.appNotifications.notificationFrequency {
         case .custom(let array):
             return array
         default:
@@ -95,15 +95,15 @@ class NotificationViewModel{
         return settingReference.count
     }
     //Generic data method for Cells assigned to picker.
-    func dataForCellAt(indexPath: IndexPath) -> DataForTextCell{
+    func dataForCellAt(indexPath: IndexPath) -> DataForNotificationTextCell{
         switch settingReference[indexPath.section][indexPath.row] {
         case .frequency:
             let frequency = notification.notificationFrequency
-            return DataForTextCell(label: frequency.title,
+            return DataForNotificationTextCell(label: frequency.title,
                                    value: frequency.value)
         default:
             let time = notification.time
-            return DataForTextCell(label: time.title,
+            return DataForNotificationTextCell(label: time.title,
                                    value: time.value.formatted(date: .omitted, time: .shortened))
         }
     }
@@ -175,7 +175,7 @@ class NotificationViewModel{
     //If any changed were made, we clear existing and creating new notifications.
     func save(){
         if needUpdate {
-            UserSettings.shared.settings.reload(newValue: .notifications(notification))
+            UserSettings.shared.reload(newValue: .notifications(notification))
         }
     }
 }

@@ -7,12 +7,25 @@
 
 import UIKit
 
+struct DataForSearchCell{
+    var word: String
+    var description: String
+    
+    init(){
+        word = ""
+        description = ""
+    }
+    init(word: String, description: String){
+        self.word = word
+        self.description = description
+    }
+}
+
 class SearchViewCell: UITableViewCell {
     
     static let identifier = "searchCell"
 
-    private let inset = CGFloat(10)
-    
+    //Stores cells dimentions state.
     var isExpanded: Bool = false {
         didSet {
             changeLabelsAppearence(expand: isExpanded)
@@ -43,11 +56,13 @@ class SearchViewCell: UITableViewCell {
     private var descriptionLabelConstraints: [NSLayoutConstraint] = []
     private var wordLabelConstraints: [NSLayoutConstraint] = []
     
+    private let inset = CGFloat(10)
+
     //MARK: - Inherited Methods
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         configureContentView()
-        configureCellView()
+        configureCellSubviews()
     }
     required init?(coder: NSCoder) {
         fatalError("Unable to use Coder")
@@ -72,14 +87,14 @@ class SearchViewCell: UITableViewCell {
             NSLayoutConstraint.activate(wordLabelConstraints)
         }
     }
-    
+    //MARK: Setting up cells properties
     func configureContentView(){
         contentView.backgroundColor = .secondarySystemBackground
         contentView.layer.cornerRadius = 9
     }
 
     //MARK: - Cell SetUp
-    func configureCellView(){
+    func configureCellSubviews(){
         contentView.addSubviews(wordLabel, descriptionLabel)
         
         wordLabelConstraints = [
