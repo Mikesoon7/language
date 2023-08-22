@@ -26,8 +26,8 @@ class SearchViewModel {
     private var model: Dictionary_WordsManager
     private var cancellable = Set<AnyCancellable>()
     
-    private var allWords: [WordsEntity]!
-    private var filteredWords: [WordsEntity]!
+    private var allWords: [WordsEntity] = []
+    private var filteredWords: [WordsEntity] = []
     
     var output: PassthroughSubject<Output, Never> = .init()
     
@@ -50,11 +50,11 @@ class SearchViewModel {
             self, selector: #selector(searchBarPositionDidChange(sender: )),
             name: .appSearchBarPositionDidChange, object: nil)
     }
+    
     deinit{
         NotificationCenter.default.removeObserver(self, name: .appLanguageDidChange, object: nil)
         NotificationCenter.default.removeObserver(self, name: .appSearchBarPositionDidChange, object: nil)
     }
-    
     
     func transform(input: AnyPublisher<Input, Never>) -> AnyPublisher<Output, Never> {
         input
@@ -103,6 +103,7 @@ class SearchViewModel {
     }
 
     //Filtering array of existing pairs to match promt.
+    //If user types text, we filtering results from previous result. If text is smaller than previous filter promt, filter ftom all data.
     private func filter(for text: String){
         if text.isEmpty {
             filteredWords = allWords
