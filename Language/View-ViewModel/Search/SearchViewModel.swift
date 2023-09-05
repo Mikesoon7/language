@@ -38,6 +38,7 @@ class SearchViewModel {
         model.dictionaryDidChange
             .sink { changeType in
                 self.fetchWords()
+                
                 self.output.send(.shouldReloadView)
             }
             .store(in: &cancellable)
@@ -96,6 +97,7 @@ class SearchViewModel {
                 data.append(contentsOf: words)
                 self.filteredWords = data
                 self.allWords = data
+                print("Fetched words for search")
             })
         } catch {
             output.send(.error(error))

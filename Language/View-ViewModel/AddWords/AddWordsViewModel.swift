@@ -19,18 +19,24 @@ class AddWordsViewModel {
         case shouldUpdatePlaceholder
     }
     
-    private let model: Dictionary_WordsManager
+    private let dataModel: Dictionary_WordsManager
+    private let settingModel: UserSettingsStorageProtocol
+    
     private let dictionary: DictionariesEntity
     private var userDefault = UserSettings.shared
     private var newArray: [WordsEntity] = []
     var output = PassthroughSubject<Output, Never>()
     
-    init(model: Dictionary_WordsManager = CoreDataHelper.shared, dictionary: DictionariesEntity){
+    init(dataModel: Dictionary_WordsManager, settingsModel: UserSettingsStorageProtocol, dictionary: DictionariesEntity){
         self.dictionary = dictionary
-        self.model = model
+        self.dataModel = dataModel
+        self.settingModel = settingsModel
         
         NotificationCenter.default.addObserver(self, selector: #selector(appLanguageDidChange(sender: )), name: .appLanguageDidChange, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(appSeparatorDidChange(sender: )), name: .appSeparatorDidChange, object: nil)
+    }
+    deinit{
+        NotificationCenter.default.removeObserver(self)
     }
     
     func configureTextPlaceholder() -> String{
@@ -39,7 +45,7 @@ class AddWordsViewModel {
     
     private func extendDictionary(_ dictionary: DictionariesEntity, with words: [WordsEntity]){
         do {
-            try model.addWordsTo(dictionary: dictionary, words: words)
+            try dataModel.addWordsTo(dictionary: dictionary, words: words)
             output.send(.shouldPop)
         } catch {
             output.send(.shouldPresentEerror(error))
@@ -51,8 +57,13 @@ class AddWordsViewModel {
         let lines = text.split(separator: "\n", omittingEmptySubsequences: true).map { String($0) }
         for (index, line) in lines.enumerated(){
             let correctIndex = numberOfWords + index
-            newArray.append(model.createWordFromLine(
-                for: dictionary, text: line, index: correctIndex, id: UUID()))
+            
+            newArray.append(dataModel.createWordFromLine(
+                for: dictionary,
+                text: line,
+                index: correctIndex,
+                id: UUID())
+            )
         }
         extendDictionary(dictionary, with: newArray)
     }

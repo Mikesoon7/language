@@ -29,7 +29,7 @@ extension CoreDataHelper: DictionaryManaging{
             throw DictionaryErrorType.creationFailed
         }
         
-        let newLog = try createNewLog(for: dictionary, at: Date(), shouldSave: false)
+//        let newLog = try createNewLog(for: dictionary, at: Date(), shouldSave: false)
                 
         let words = createWordsFromText(for: dictionary, text: text)
         dictionary.words = NSSet(array: words)
@@ -86,12 +86,12 @@ extension CoreDataHelper: DictionaryManaging{
     //Add array to existing array of entities
     func addWordsTo(dictionary: DictionariesEntity, words: [WordsEntity]) throws {
         dictionary.addToWords(NSSet(array: words))
-        dictionary.numberOfCards = Int64(dictionary.words!.count)
+        dictionary.numberOfCards = Int64(dictionary.words?.count ?? 000)
         
         do {
-            try context.save()
-            dictionaryDidChange.send(.wasUpdated(Int(dictionary.order)))
+            try saveContext()
             print("Debug purpose: AddWordsTo(dictionary) method worked with dictionary name: \(dictionary.language)")
+            dictionaryDidChange.send(.wasUpdated(Int(dictionary.order)))
         } catch {
             throw DictionaryErrorType.additionFailed
         }

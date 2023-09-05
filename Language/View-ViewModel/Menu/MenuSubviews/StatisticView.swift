@@ -5,14 +5,13 @@
 //  Created by Star Lord on 12/07/2023.
 //
 
-//import UIKit
 import SwiftUI
 import Charts
 
-struct BarChart: View {
+struct MenuStatisticView: View {
+    
     private var viewWidth: CGFloat
     private var viewHeight: CGFloat
-    
     
     private var data: [WeekLog]
     @State private var selectedWeek: WeekLog
@@ -82,19 +81,19 @@ struct BarChart: View {
 }
 
  
-class FakeLogs {
-    static let formatter: DateFormatter = {
-        let df = DateFormatter()
-        df.dateFormat = "dd/MM/yy"
-        return df
-    }()
-
-    var date: Date
-    var accessCount: Int
-    
-    init(date: String, accessCount: Int){
-        self.date = Self.formatter.date(from: date) ?? Date()
-        self.accessCount = accessCount
-    }
-    
-}
+//class FakeLogs {
+//    static let formatter: DateFormatter = {
+//        let df = DateFormatter()
+//        df.dateFormat = "dd/MM/yy"
+//        return df
+//    }()
+//
+//    var date: Date
+//    var accessCount: Int
+//
+//    init(date: String, accessCount: Int){
+//        self.date = Self.formatter.date(from: date) ?? Date()
+//        self.accessCount = accessCount
+//    }
+//
+//}

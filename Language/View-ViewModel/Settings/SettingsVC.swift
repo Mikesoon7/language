@@ -10,7 +10,8 @@ import Combine
 
 class SettingsVC: UIViewController {
     
-    private var viewModel = SettingsViewModel()
+    private let viewModelFactory: ViewModelFactory
+    private let viewModel:  SettingsViewModel
     private var cancellable = Set<AnyCancellable>()
     
     //MARK: Views.
@@ -34,13 +35,21 @@ class SettingsVC: UIViewController {
     var topStroke = CAShapeLayer()
     var bottomStroke = CAShapeLayer()
     
+    required init(factory: ViewModelFactory){
+        self.viewModelFactory = factory
+        self.viewModel = factory.configureSettingsViewModel()
+        super.init(nibName: nil, bundle: nil)
+    }
+    required init?(coder: NSCoder) {
+        fatalError("init?(coder: NSCoder) wasn't imported")
+    }
     //MARK: Inherited methods and initializers.
     override func viewDidLoad() {
         super.viewDidLoad()
+        bind()
         configureViewController()
         configureNavBar()
         configureTableView()
-        bind()
     }
     
     override func viewDidLayoutSubviews() {

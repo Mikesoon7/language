@@ -6,7 +6,7 @@ import Combine
 
 class NotificationView: UIViewController {
 
-    private let viewModel = NotificationViewModel()
+    private let viewModel = NotificationViewModel(settingsModel: UserSettings.shared)
     private var cancellable = Set<AnyCancellable>()
     
     //MARK: - Views
@@ -434,8 +434,5 @@ extension NotificationView: UIPickerViewDelegate, UIPickerViewDataSource {
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         viewModel.updateFrequency(row: row)
     }
-//    func pickerView(_ pickerView: UIPickerView, widthForComponent component: Int) -> CGFloat {
-//        view.bounds.width * 0.91
-//    }
 }
 

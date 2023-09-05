@@ -10,18 +10,15 @@ import UIKit
 class MenuAddDictionaryCell: UITableViewCell {
     
     static let identifier = "addCell"
-
-    var delegate: CustomCellDataDelegate!
     
-    var importLabel: UILabel = {
+    //MARK: Views
+    private let importLabel: UILabel = {
         var label = UILabel()
-        label.attributedText = NSAttributedString().fontWithString(
-            string: LanguageChangeManager.shared.localizedString(forKey: "tableCellImport"),
-            bold: true,
-            size: 20)
+        label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
-    var addButton : UIButton = {
+    //Instead of ImageView i've used UIButton in case Apple will anounce API to work with Built in Notes.
+    private let addButton : UIButton = {
         var button = UIButton()
         button.backgroundColor = .systemGray5
         button.setImage(UIImage(systemName: "square.and.arrow.up", withConfiguration: UIImage.SymbolConfiguration(weight: .medium)), for: .normal)
@@ -30,19 +27,28 @@ class MenuAddDictionaryCell: UITableViewCell {
         
         button.layer.cornerRadius = 9
         button.clipsToBounds = true
+        
+        button.isUserInteractionEnabled = false
+        button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
     
+    //MARK: Inherited and initializers.
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-                
+        configureCellView()
         configureSubviews()
+        configureLabels()
     }
     required init?(coder: NSCoder) {
         fatalError("coder wasn't imported")
     }
-    func configureCellWith(delegate: CustomCellDataDelegate){
-        self.delegate = delegate
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
+    //MARK: Configuring views properties.
+    func configureCellView(){
         self.backgroundColor = .systemGray6
         self.layer.cornerRadius = 9
         self.clipsToBounds = true
@@ -50,6 +56,8 @@ class MenuAddDictionaryCell: UITableViewCell {
         
         NotificationCenter.default.addObserver(self, selector: #selector(languageChanged(sender:)), name: .appLanguageDidChange, object: nil)
     }
+    
+    //MARK: Configuring and laying out subviews.
     func configureSubviews(){
         self.addSubviews(importLabel, addButton)
         importLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -66,11 +74,16 @@ class MenuAddDictionaryCell: UITableViewCell {
             addButton.heightAnchor.constraint(equalToConstant: 50)
         ])
     }
-    //Waiting for an API to import notes from built in Notes App
-    @objc func addButtonDidTap(sende: Any){
-        delegate.importButtonDidTap()
+    //MARK: Configuring views labels.
+    func configureLabels(){
+        importLabel.attributedText =
+            .attributedString(
+                string: "tableCellImport".localized,
+                with: .georgianBoldItalic,
+                ofSize: 20)
     }
+    
     @objc func languageChanged(sender: Any){
-        importLabel.text = LanguageChangeManager.shared.localizedString(forKey: "tableCellImport")
+        configureLabels()
     }
 }

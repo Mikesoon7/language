@@ -12,7 +12,8 @@ import Combine
 class AddWordsView: UIViewController {
 
     //MARK: - ViewModel related
-    private var viewModel: AddWordsViewModel!
+    private var viewModel: AddWordsViewModel
+    private var viewModelFactory: ViewModelFactory
     private var cancellable = Set<AnyCancellable>()
     
     //MARK: - Views
@@ -23,8 +24,10 @@ class AddWordsView: UIViewController {
         button.setUpCustomButton()
         return button
     }()
-    var topStroke = CAShapeLayer()
-    var bottomStroke = CAShapeLayer()
+    
+    //MARK: CALAyer Strokes
+    private var topStroke = CAShapeLayer()
+    private var bottomStroke = CAShapeLayer()
     
     //MARK: Constraints related
     private var textInputViewHeightAnchor: NSLayoutConstraint!
@@ -34,12 +37,12 @@ class AddWordsView: UIViewController {
     private var buttonHeight: CGFloat = 60
 
     //MARK: Inherited
-    required init(dictionary: DictionariesEntity){
-        viewModel = AddWordsViewModel(dictionary: dictionary)
+    required init(factory: ViewModelFactory, dictionary: DictionariesEntity){
+        self.viewModelFactory = factory
+        self.viewModel = factory.configureAddWordsViewModel(dictionary: dictionary)
         super.init(nibName:  nil, bundle: nil)
     }
     required init?(coder: NSCoder) {
-        super.init(coder: coder)
         fatalError("Coder wasn't imported")
     }
     override func viewDidLoad() {

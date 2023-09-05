@@ -40,6 +40,7 @@ extension CoreDataHelper: WordsManaging{
         print("Debug purpose: TextInitialDivider method worked with number of returned words: \(results.count)")
         return results
     }
+    
     func createWordFromLine(for dictionary: DictionariesEntity, text: String, index: Int, id: UUID = UUID()) -> WordsEntity {
         let newWord = WordsEntity(context: context)
         newWord.order = Int64(index)
@@ -49,7 +50,7 @@ extension CoreDataHelper: WordsManaging{
         return newWord
     }
     //Method to end initializing or update existing entity
-    func assignWordsProperties(for newWord: WordsEntity, from text: String){
+    internal func assignWordsProperties(for newWord: WordsEntity, from text: String){
         let parts = text.split(separator: " \(UserSettings.shared.appSeparators.value) ")
         if parts.count == 2{
             let word = String(parts[0]).trimmingCharacters(in: CharacterSet(charactersIn: "[ ] ◦ - "))
@@ -92,7 +93,8 @@ extension CoreDataHelper: WordsManaging{
             word.order = Int64(index)
         }
         
-        try update(dictionary: dictionary, words: words)
+        try context.save()
+//        try update(dictionary: dictionary, words: words)
         print("Debug purpose: UpdateWordsOrder method worked for dictionary: \(dictionary.language) with number of words: \(words.count)")
     }
     
@@ -104,7 +106,10 @@ extension CoreDataHelper: WordsManaging{
         if associatedDictionary.words?.count == 1 {
             try delete(dictionary: associatedDictionary)
         } else {
-            context.delete(word)
+            associatedDictionary.removeFromWords(word)
+            associatedDictionary.numberOfCards = Int64(associatedDictionary.words?.count ?? 000)
+//            context.delete(word)
+            self.dictionaryDidChange.send(.wasUpdated(Int(associatedDictionary.order)))
             try saveContext()
         }
     }

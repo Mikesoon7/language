@@ -35,10 +35,7 @@ final class TextInputView: UIView {
         textView.backgroundColor = .clear
         
         textView.layer.masksToBounds = true
-        
-        textView.layer.borderWidth = 0.5
-        textView.layer.borderColor = UIColor.black.cgColor
-        
+                
         textView.textContainerInset = .init(top: 5, left: 5, bottom: 5, right: 5)
         textView.allowsEditingTextAttributes = true
         

@@ -12,7 +12,8 @@ import Combine
 
 class AddDictionaryVC: UIViewController {
     
-    private var viewModel = AddDictionaryViewModel()
+    private var viewModel: AddDictionaryViewModel
+    private var viewModelFactory: ViewModelFactory
     private var cancellabel = Set<AnyCancellable>()
         
     private lazy var textInputView: TextInputView = TextInputView(delegate: self )
@@ -51,6 +52,15 @@ class AddDictionaryVC: UIViewController {
     private var subviewsVerticalInset: CGFloat = 13
     private var buttonHeight: CGFloat = 60
     
+    required init(factory: ViewModelFactory){
+        self.viewModelFactory = factory
+        self.viewModel = factory.configureAddDictionaryModel()
+        super.init(nibName: nil, bundle: nil)
+    }
+    required init?(coder: NSCoder) {
+        fatalError("init?(coder: NSCoder) wasn't imported")
+    }
+
     //MARK: - Inherited
     override func viewDidLoad() {
         super.viewDidLoad()

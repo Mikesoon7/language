@@ -4,11 +4,21 @@
 "tabBarSettings" = "Settings";
 //MARK: - MainVC
 "menuVCTitle" = "Dictionaries";
+"menu.deleteDictionary" = "Delete dictionary?";
 "tableCellName" = "Name";
 "tableCellNumberOfCards" = "Total cards";
 "tableCellImport" = "Import new dictionary";
 "statisticCellNumberOfUse" = "Accessed";
 "statisticCellCreationDate" = "Since";
+//MARK: - StatisticView
+"statistic.title" = "Dictionaries statistic";
+"statistic.beginDate" = "Begin date:";
+"statistic.endDate" = "End date:";
+//Custom options
+"statistic.currentWeek" = "Current week";
+"statistic.currentMonth" = "Current month";
+"statistic.previousMonth" = "Previous month";
+"statistic.custom" = "Custom";
 //MARK: - SettingsVC
 "settingsVCTitle" = "Settings";
 //Sections
@@ -56,7 +66,7 @@
 "system.delete" = "Delete";
 "system.done" = "Done";
 "system.yes" = "Yes";
-"systme.no" = "No";
+"system.no" = "No";
 "system.settings" = "Settings";
 
 //MARK: - AlertText

@@ -21,6 +21,8 @@ public let shadowColorForLightIdiom = UIColor.systemGray2.cgColor
 //        self.translatesAutoresizingMaskIntoConstraints = false
 //    }
 //}
+
+
 extension UIButton {
     func setUpCustomButton(){
         self.layer.cornerRadius = 9
@@ -239,9 +241,28 @@ extension NSAttributedString{
                                                          NSAttributedString.Key.foregroundColor:
                                                             foregroundColour,
                                                          NSAttributedString.Key.backgroundColor:
-                                                            backgroundColour])
+                                                            backgroundColour
+                                                        ])
         return attributes
     }
+    
+}
+extension NSMutableAttributedString{
+    static func attributedMutableString(string: String, with font: UIFont, ofSize: CGFloat, foregroundColour: UIColor = .label, backgroundColour: UIColor = .clear, alignment: NSTextAlignment = .center) -> NSMutableAttributedString{
+        let attributes = NSMutableAttributedString(string: string,
+                                            attributes: [NSMutableAttributedString.Key.font :
+                                                            font.withSize(ofSize),
+                                                         NSMutableAttributedString.Key.foregroundColor:
+                                                            foregroundColour,
+                                                         NSMutableAttributedString.Key.backgroundColor:
+                                                            backgroundColour,
+                                                        ])
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.alignment = alignment
+        attributes.addAttribute(.paragraphStyle, value: paragraphStyle , range: NSRange(location: 0, length: attributes.length))
+        return attributes
+    }
+
 }
 //MARK: -AddSubviews method.
 extension UIView{
@@ -267,6 +288,27 @@ extension UIView{
 //                                  : shadowColorForLightIdiom)
 //        self.layer.shadowOpacity = over ? 0.4 : 0.8
 //    }
+}
+extension UIColor{
+    static func getColoursArray(_ count: Int) -> [UIColor]{
+        var base: [UIColor] = [.systemRed, .systemBlue, .systemPink, .systemCyan, .systemGray,  .systemMint, .systemBrown, .systemGreen, .systemIndigo, .systemOrange, .systemPurple, .systemYellow]
+        var appendedColors = [UIColor]()
+        
+        let exceedCount = count - base.count
+        if exceedCount > 0 {
+            for i in 0..<count {
+                let baseColor = base[i % base.count]
+                let alpha = CGFloat(1 - 0.1 * Double(i / base.count))
+                let appendedColor = baseColor.withAlphaComponent(alpha)
+                appendedColors.append(appendedColor)
+            }
+        } else {
+            appendedColors = Array(base.prefix(count))
+        }
+        
+        return appendedColors
+    }
+    
 }
 extension String{
     enum SelectedFonts: String{

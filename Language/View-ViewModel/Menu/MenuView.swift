@@ -20,25 +20,23 @@ protocol CustomCellDataDelegate: AnyObject{
     func editButtonDidTap(for cell: UITableViewCell)
     
     func statisticButtonDidTap(for cell: UITableViewCell)
-    
-    func importButtonDidTap()
 }
 
 class MenuView: UIViewController {
     
 
-    private lazy var viewModel: MenuViewModel = {
-        return MenuViewModel()
-    }()
+    private var viewModelFactory: ViewModelFactory
+    private var viewModel: MenuViewModel
+    
     private var cancellables = Set<AnyCancellable>()
     
-    
     private var menuAccessedForCell: IndexPath?
-        
+    private var isUpdateNeeded: Bool = false
+    
+    //MARK: Views
     var tableView: UITableView = {
-        var tableView = UITableView(frame: CGRect(x: 0, y: 0, width: 0, height: 0), style: .insetGrouped)
+        var tableView = UITableView(frame: .zero, style: .insetGrouped)
         tableView.register(MenuDictionaryCell.self, forCellReuseIdentifier: MenuDictionaryCell.identifier)
-//        tableView.register(MenuStatisticCell.self, forCellReuseIdentifier: MenuStatisticCell.identifier)
         tableView.register(MenuAddDictionaryCell.self, forCellReuseIdentifier: MenuAddDictionaryCell.identifier)
         tableView.rowHeight = 104
         tableView.backgroundColor = .clear
@@ -54,6 +52,17 @@ class MenuView: UIViewController {
     var topStroke = CAShapeLayer()
     var bottomStroke = CAShapeLayer()
     
+    //MARK: Inherited
+    required init(factory: ViewModelFactory){
+        self.viewModelFactory = factory
+        self.viewModel = factory.configureMenuViewModel()
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init?(coder: NSCoder) wasn'r imported")
+    }
+    
     //MARK: - Inherited Methods
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -62,11 +71,17 @@ class MenuView: UIViewController {
         configureNavBar()
         configureTableView()
         configureTabBar()
-        }
+        configureLabels()
+    }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         configureStrokes()
+    }
+    override func viewWillAppear(_ animated: Bool) {
+        if isUpdateNeeded {
+            self.tableView.reloadData()
+        }
     }
     //MARK: - StyleChange Responding
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -89,17 +104,26 @@ class MenuView: UIViewController {
     
     //MARK: - Binding View and ViewModel
     func bind(){
-        viewModel.objectDidChange
+        viewModel.output
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] changeType in
-                switch changeType{
+            .sink { [weak self] output in
+                switch output{
                 case .needReload:
                     self?.tableView.reloadData()
                 case .needDelete(let section):
                     self?.tableView.deleteSections([section], with: .left)
-                case .needUpdate(let section):
-                    print("Reloading \(section)")
-                    self?.tableView.reloadSections([section], with: .automatic)
+                case .needUpdate(_):
+                    self?.isUpdateNeeded = true
+                case .shouldPresentAddView:
+                    self?.pushAddDictionaryVC()
+                case .shouldPresentDetailsView(let dict):
+                    self?.pushDetailsVCFor(dict)
+                case .shouldPresentEditView(let dict):
+                    self?.pushEditVCFor(dict)
+                case .shouldUpdateLabels:
+                    self?.configureLabels()
+                case .error(let error):
+                    self?.presentError(error)
                 }
             }
             .store(in: &cancellables)
@@ -133,7 +157,6 @@ class MenuView: UIViewController {
     
     //MARK: - NavigationBar SetUp
     func configureNavBar(){
-        navigationItem.title = "menuVCTitle".localized
         navigationController?.navigationBar.titleTextAttributes = NSAttributedString().fontWithoutString(bold: true, size: 23)
         //Statisctic BarButton
         let rightButton = UIBarButtonItem(
@@ -148,15 +171,39 @@ class MenuView: UIViewController {
         self.navigationController?.navigationBar.tintColor = .label
         self.navigationController?.navigationBar.isTranslucent = true
     }
-    //MARK: - TabBar SetUp
+    //MARK: TabBar SetUp
     func configureTabBar(){
         tabBarController?.tabBar.backgroundColor = .systemBackground
         tabBarController?.tabBar.isTranslucent = false
         tabBarController?.tabBar.shadowImage = UIImage()
         tabBarController?.tabBar.backgroundImage = UIImage()
     }
+    
+    private func configureLabels(){
+        navigationItem.title = "menuVCTitle".localized
+    }
+    
+    //MARK: Configuring and presenting VC's
+    func pushAddDictionaryVC(){
+        let vc = AddDictionaryVC(factory: self.viewModelFactory)
+        self.navigationController?.pushViewController(vc, animated: true)
+    }
+    func pushDetailsVCFor(_ dictionary: DictionariesEntity){
+        let vc = DetailsView(factory: self.viewModelFactory,
+                             dictionary: dictionary)
+        self.navigationController?.pushViewController(vc, animated: true)
+    }
+    func pushEditVCFor(_ dictionary: DictionariesEntity){
+        let vc = EditView(dictionary: dictionary,
+                          factory: self.viewModelFactory)
+        self.navigationController?.pushViewController(vc, animated: true)
+    }
+    
     //MARK: - Actions
     @objc func statButtonDidTap(sender: Any){
+        let vm = viewModelFactory.configureStatisticViewModel()
+        let vc = StatisticVC(viewModel: vm)
+        self.present(vc, animated: true)
         //TODO: Call new vc with the model.
     }
 }
@@ -167,41 +214,29 @@ extension MenuView: UITableViewDelegate, UITableViewDataSource{
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return viewModel.numberOfCells()
+        return viewModel.numberOfSectionsInTableView()
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let section = indexPath.section
-        if section == numberOfSections(in: tableView) - 1 {
+        guard let data = viewModel.dataForTableCellAt(section: indexPath.section) else {
             let cell = tableView.dequeueReusableCell(
-                withIdentifier: MenuAddDictionaryCell.identifier, for: indexPath) as! MenuAddDictionaryCell
-            cell.configureCellWith(delegate: self)
-            return cell
+                withIdentifier: MenuAddDictionaryCell.identifier,
+                for: indexPath) as? MenuAddDictionaryCell
+            return cell ?? UITableViewCell()
         }
-        let data = viewModel.dataForCell(at: indexPath)
-        let cell = tableView.dequeueReusableCell(
-            withIdentifier: MenuDictionaryCell.identifier, for: indexPath) as! MenuDictionaryCell
-        cell.configureCellWith(viewModel: data, delegate: self)
+        
+        guard let cell = tableView.dequeueReusableCell(
+            withIdentifier: MenuDictionaryCell.identifier,
+            for: indexPath) as? MenuDictionaryCell else {
+            return UITableViewCell()
+        }
+        let viewModel = viewModelFactory.configureStatisticModel(dictionary: data)
+        cell.configureCellWith(viewModel: viewModel, delegate: self)
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let section = indexPath.section
-        if section == tableView.numberOfSections - 1{
-            self.navigationController?.pushViewController(AddDictionaryVC(), animated: true)
-        } else {
-            let vc = DetailsView(dictionary: viewModel.dictionaries[section])
-            self.navigationController?.pushViewController(vc, animated: true)
-        }
-    }
-
-
-    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 0
-    }
-    
-    func tableView(_ tableView: UITableView, selectionFollowsFocusForRowAt indexPath: IndexPath) -> Bool {
-        false
+        viewModel.didSelectTableRowAt(section: indexPath.section)
     }
 }
 
@@ -228,22 +263,30 @@ extension MenuView: CustomCellDataDelegate{
     }
     
     func deleteButtonDidTap(for cell: UITableViewCell) {
-        menuAccessedForCell = nil
-        guard let index = tableView.indexPath(for: cell) else { return }
-        viewModel.deleteDictionary(at: index)
+        var completion = { [weak self] cell in
+            self?.menuAccessedForCell = nil
+            guard let index = self?.tableView.indexPath(for: cell) else { return }
+            self?.viewModel.deleteDictionary(at: index)
+        }
+    
+        let alertController = UIAlertController(title: "menu.deleteDictionary".localized, message: nil, preferredStyle: .actionSheet)
+        let deny = UIAlertAction(title: "system.cancel".localized, style: .cancel)
+        let confirm = UIAlertAction(title: "system.delete".localized, style: .destructive) { _ in
+            completion(cell)
+        }
+        alertController.addAction(deny)
+        alertController.addAction(confirm)
+        
+        self.present(alertController, animated: true)
     }
     
     func editButtonDidTap(for cell: UITableViewCell){
         menuAccessedForCell = nil
         guard let index = tableView.indexPath(for: cell) else { return }
-        let vc = viewModel.editDictionary(at: index)
-        self.navigationController?.pushViewController(vc, animated: true)
+        viewModel.editDictionary(at: index)
     }
     func statisticButtonDidTap(for cell: UITableViewCell){
         
     }
-    func importButtonDidTap() {
-        viewModel.importButtonWasTapped()
-    }
-
+    
 }

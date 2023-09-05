@@ -43,6 +43,7 @@ class NotificationViewModel{
     }
       
     //MARK: - Properties
+    private var settingsModel: UserSettingsStorageProtocol
     private var notification = UserSettings.shared.appNotifications
     private var notificationHelper: NotificationHelper = NotificationHelper()
     
@@ -67,8 +68,8 @@ class NotificationViewModel{
         }
     }()
     
-    init(){
-                     
+    init(settingsModel: UserSettingsStorageProtocol){
+        self.settingsModel = settingsModel
     }
     //MARK: - Methods
     //If notification are off, view wont show all section, but the first with state switch

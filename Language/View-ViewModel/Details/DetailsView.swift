@@ -10,76 +10,79 @@ import UIKit
 import Combine
 
 class DetailsView: UIViewController {
-
-    //MARK: - ViewModel related
-    private var viewModel: DetailsViewModel!
-    private var cancellable = Set<AnyCancellable>()
     
+    //MARK: - ViewModel related
+    private var viewModel: DetailsViewModel
+    private var viewModelFactory: ViewModelFactory
+    private var cancellable = Set<AnyCancellable>()
+        
     //MARK: - Views
     //View fot changing cards order
-    let randomizeCardsView : UIView = {
+    private let randomizeCardsView : UIView = {
         var view = UIView()
         view.setUpCustomView()
         return view
     }()
-    
-    let randomizeLabel: UILabel = {
+
+    private let randomizeLabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
-    let randmizeSwitch : UISwitch = {
+    private let randmizeSwitch : UISwitch = {
         let switcher = UISwitch()
         switcher.setUpCustomSwitch(isOn: false)
         return switcher
     }()
     
     //View to define number of cards
-    let goalView : UIView = {
+    private let goalView : UIView = {
         var view = UIView()
         view.setUpCustomView()
         view.layer.masksToBounds = true
         return view
     }()
     
-    let goalLabel : UILabel = {
+    private let goalLabel : UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
-
-    let addWordsBut : UIButton = {
+    
+    private let addWordsBut : UIButton = {
         var button = UIButton()
         button.setUpCustomButton()
         return button
     }()
     
-    let beginBut : UIButton = {
+    private let beginBut : UIButton = {
         var button = UIButton()
         button.setUpCustomButton()
         return button
     }()
     
-    let picker = UIPickerView()
-
-    var topStroke = CAShapeLayer()
-    var bottomStroke = CAShapeLayer()
+    private let picker = UIPickerView()
     
-    //MARK: - Local variables.
+    //MARK: Layer strokes
+    private var topStroke = CAShapeLayer()
+    private var bottomStroke = CAShapeLayer()
+    
+    //MARK: Local variables.
     private var randomIsOn: Bool = false
     
-    private var numberOfCards: Int!
-    private var selectedNumberOfCards : Int!
     
-    //MARK: - Inherited methods
-    required init(dictionary: DictionariesEntity){
-        viewModel = DetailsViewModel(dictionary: dictionary)
+    //MARK: Inherited and initialization.
+    required init(factory: ViewModelFactory, dictionary: DictionariesEntity){
+        self.viewModelFactory = factory
+        self.viewModel = factory.configureDetailsViewModel(dictionary: dictionary)
         super.init(nibName: nil, bundle: nil)
     }
+    
     required init?(coder: NSCoder) {
-        super.init(coder: coder)
+        fatalError("init?(coder: NSCoder) wasn't imported")
     }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         bind()
@@ -113,22 +116,24 @@ class DetailsView: UIViewController {
             }
         }
     }
+    
     //MARK: - ViewModel bind
     func bind(){
         viewModel.output
+            .receive(on: DispatchQueue.main)
             .sink { output in
                 switch output{
                 case .shouldUpdateText:
                     self.configureText()
                 case .error(let error):
                     self.presentError(error)
+                case .shouldUpdatePicker:
+                    self.picker.reloadAllComponents()
+                case .shouldPresentAddWordsView(let dict):
+                    self.presentAddWordsViewWith(dictionary: dict)
+                case .shouldPresentGameView(let dict, let number):
+                    self.presentMainGameViewWith(dictionary: dict, selectedNumber: number)
                 }
-            }
-            .store(in: &cancellable)
-        viewModel.$dataForView
-            .sink { [weak self] data in
-                self?.numberOfCards = data?.pickerNumber
-                self?.picker.reloadAllComponents()
             }
             .store(in: &cancellable)
     }
@@ -173,15 +178,15 @@ class DetailsView: UIViewController {
         randmizeSwitch.addTarget(self, action: #selector(randomSwitchToggle(sender:)), for: .valueChanged)
     }
     
-//MARK: - SetTheGoal SetUp
+    //MARK: - SetTheGoal SetUp
     func configureGoalView(){
         //Cause of picker to archive desirable appearence, we need to set bounds masking, blocking shadow view. So we need to add custom one.
         let shadowView = UIView()
         shadowView.setUpCustomView()
-
+        
         view.addSubviews(shadowView, goalView)
         view.addSubviews( goalView)
-
+        
         picker.dataSource = self
         picker.delegate = self
         
@@ -208,16 +213,9 @@ class DetailsView: UIViewController {
             picker.centerYAnchor.constraint(equalTo: goalView.centerYAnchor),
             picker.widthAnchor.constraint(equalTo: goalView.widthAnchor, multiplier: 0.3)
         ])
-        selectedNumberOfCards = {
-            if numberOfCards <= 49{
-                return numberOfCards
-            } else {
-                return 50
-            }
-        }()
     }
-
-//MARK: - AddNewWord SetUp
+    
+    //MARK: - AddNewWord SetUp
     func configureAddWordsButton(){
         view.addSubview(addWordsBut)
         addWordsBut.translatesAutoresizingMaskIntoConstraints = false
@@ -233,17 +231,17 @@ class DetailsView: UIViewController {
         addWordsBut.addTargetInsideTouchStop()
         addWordsBut.addTarget(self, action: #selector(addWordsButtonTap(sender:)), for: .touchUpInside)
     }
-//MARK: - StartBut SetUp
+    //MARK: - StartBut SetUp
     func configureStartButton(){
         view.addSubview(beginBut)
         beginBut.translatesAutoresizingMaskIntoConstraints = false
-    
+        
         NSLayoutConstraint.activate([
             beginBut.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -11),
             beginBut.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             beginBut.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.91),
             beginBut.heightAnchor.constraint(equalToConstant: 55)
-            ])
+        ])
         beginBut.addTarget(self, action: #selector(startButtonTap(sender: )), for: .touchUpInside)
         beginBut.addTargetTouchBegin()
         beginBut.addTargetOutsideTouchStop()
@@ -256,7 +254,7 @@ class DetailsView: UIViewController {
         randomizeLabel.attributedText = NSAttributedString().fontWithString(
             string: "randomize".localized,
             bold: true, size: 18)
-
+        
         goalLabel.attributedText = NSAttributedString().fontWithString(
             string: "goal".localized,
             bold: true, size: 18)
@@ -265,57 +263,62 @@ class DetailsView: UIViewController {
             string: "addWords".localized,
             bold: true,
             size: 20), for: .normal)
-
+        
         beginBut.setAttributedTitle(NSAttributedString().fontWithString(
             string: "start".localized,
             bold: true,
             size: 18), for: .normal)
     }
     
+    //MARK: Configure and present child ViewControllers
+    //Called after recieving the event with passed dictionary
+    func presentAddWordsViewWith(dictionary: DictionariesEntity){
+        let vc = AddWordsView(factory: viewModelFactory, dictionary: dictionary)
+        self.navigationController?.pushViewController(vc, animated: true)
+    }
+    //Since Game controller is the last on, we passing already initialized viewModel instead of ViewModelFactory.
+    func presentMainGameViewWith(dictionary: DictionariesEntity, selectedNumber: Int){
+        let viewModel = viewModelFactory.configureGameViewmModel(
+            dictionary: dictionary,
+            isRandom: randomIsOn,
+            selectedNumber: selectedNumber)
+        
+        let vc = MainGameVC(viewModel: viewModel)
+        self.navigationController?.pushViewController(vc, animated: true)
+    }
+    
+}
 //MARK: - Actions
+extension DetailsView{
+    
     @objc func randomSwitchToggle(sender: UISwitch){
         randomIsOn = sender.isOn
     }
     
     @objc func startButtonTap(sender: UIButton){
-        let vc = viewModel.provideGameView(with: randomIsOn, numberOfCards: selectedNumberOfCards)
-        self.navigationController?.pushViewController(vc, animated: true)
+        viewModel.startButtonTapped()
     }
 
     @objc func addWordsButtonTap(sender: UIButton){
-        let vc = viewModel.provideAddWordsView()
-        navigationController?.pushViewController(vc, animated: true)
-    }
-}
-extension DetailsView: UIPickerViewDelegate{
-    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        if numberOfCards <= 50 || row == pickerView.numberOfRows(inComponent: component) - 1 {
-            selectedNumberOfCards = numberOfCards
-        } else {
-            selectedNumberOfCards = (row + 1) * 50
-        }
+        viewModel.addWordsButtonTapped()
     }
 }
 
-extension DetailsView: UIPickerViewDataSource{
+//MARK: - UPPicker delegate & dataSource
+extension DetailsView: UIPickerViewDelegate, UIPickerViewDataSource{
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
     }
-    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        guard let number = numberOfCards else { return 0}
-        switch number % 50{
-        case 0: return number / 50
-        default: return (number / 50) + 1
-        }
+    
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        viewModel.didSelectPickerRow(row: row)
     }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        viewModel.numberOfRowsInComponent()
+    }
+    
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        guard let number = numberOfCards else { return " " }
-        let overal = pickerView.numberOfRows(inComponent: 0)
-        if row != overal - 1{
-            return String((row + 1) * 50)
-        } else {
-            return String(number)
-
-        }
+        viewModel.titleForPickerAt(row: row)
      }
 }

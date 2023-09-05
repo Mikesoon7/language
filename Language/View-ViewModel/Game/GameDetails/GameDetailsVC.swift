@@ -11,12 +11,14 @@ class GameDetailsVC: UIViewController {
     
     //MARK: - Parent related properties.
     weak var delegate: MainGameVCDelegate?
-    var dictionary: DictionariesEntity!
-    var words: [WordsEntity]!
+//    var dictionary: DictionariesEntity!
+//    var words: [WordsEntity]!
     var word: WordsEntity!
-    var pairIndex: Int!
+    
+//    var pairIndex: Int!
     var navBarTopInset: CGFloat!
     
+    private weak var viewModel: GameViewModel?
     
     private var selectedText = String()
     private let animationView = LoadingAnimation()
@@ -84,12 +86,19 @@ class GameDetailsVC: UIViewController {
     private var currentAnchorConstant:  CGFloat!
     
     //Constraits
-    private var doneButtonTrailingAnchor: NSLayoutConstraint!
-    private var contentViewBottomAnchor: NSLayoutConstraint!
-    private var textViewBottomToContainer: NSLayoutConstraint!
-    private var deleteBottomToContainer: NSLayoutConstraint!
-    private var editBottomToContainer: NSLayoutConstraint!
+    private var doneButtonTrailingAnchor:   NSLayoutConstraint!
+    private var contentViewBottomAnchor:    NSLayoutConstraint!
+    private var textViewBottomToContainer:  NSLayoutConstraint!
+    private var deleteBottomToContainer:    NSLayoutConstraint!
+    private var editBottomToContainer:      NSLayoutConstraint!
     
+    required init(viewModel: GameViewModel){
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    required init?(coder: NSCoder) {
+        fatalError("init?(coder: NSCoder) wasn't imported")
+    }
     //MARK: - Inherited methods
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -115,7 +124,6 @@ class GameDetailsVC: UIViewController {
     }
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-//        delegate?.restoreCardCell(with: word)
     }
     //MARK: - Controller SetUp
     func controllerCustomization(){
@@ -165,7 +173,7 @@ class GameDetailsVC: UIViewController {
         ])
     }
     func configureTextFor(editing: Bool) -> String{
-        let text = "\(word.word) \(editing ? UserSettings.shared.appSeparators.value : "\n\n") \(word.meaning)"
+        let text = "\(word.word) \(editing ? viewModel?.currentSeparator() ?? "" : "\n\n") \(word.meaning)"
         return text
     }
     
@@ -359,7 +367,9 @@ extension GameDetailsVC {
             }  else if ( newConstant > secondAnchorConstant + 50 ||
                          (newConstant > thirdAnchorConstant + 50 && currentAnchorConstant == thirdAnchorConstant ))
                         && translation > 0  {
+                
                 animateViewDismiss(with: needUpdate ? delegate?.updateCardCell : delegate?.restoreCardCell)
+                
             } else if (newConstant < secondAnchorConstant && newConstant > thirdAnchorConstant)
                         || newConstant < thirdAnchorConstant {
                 animateTransition(newValue: thirdAnchorConstant)
@@ -383,17 +393,18 @@ extension GameDetailsVC {
             message: "gameDetails.deleteAlert.message".localized,
             preferredStyle: .actionSheet)
     
-        if words.count == 1 {
+        if viewModel?.currentNumberOfWords() == 1 {
             alert.message?.append("gameDetails.deleteAlert.message.warning".localized)
         }
         let confirm = UIAlertAction(title: "system.delete".localized, style: .destructive) { [weak self] _ in
             guard let self = self else { return }
-            do {
-                try CoreDataHelper.shared.deleteWord(word: self.word)
-            } catch {
-                self.presentError(error)
-                return
-            }
+            self.viewModel?.deleteWord(word: word)
+//            do {
+//                try CoreDataHelper.shared.deleteWord(word: self.word)
+//            } catch {
+//                self.presentError(error)
+//                return
+//            }
             self.animateViewDismiss(with: self.delegate?.deleteCardCell)
         }
         let deny = UIAlertAction(title: "system.cancel".localized, style: .cancel)
@@ -404,18 +415,19 @@ extension GameDetailsVC {
     }
     
     @objc func doneButtonDidTap(sender: UIButton){
-        do {
-            try CoreDataHelper.shared.reassignWordsProperties(for: word, from: textView.text)
-        } catch {
-            self.presentError(error)
-        }
+//        do {
+//            try CoreDataHelper.shared.reassignWordsProperties(for: word, from: textView.text)
+//        } catch {
+//            self.presentError(error)
+//        }
+        viewModel?.editWord(word: word, with: textView.text)
         textView.text = configureTextFor(editing: false)
         transitionToEditing(activate: false)
         needUpdate = true
     }
     
     @objc func informationButtonDidTap(sender: UIButton){
-        let vc = InformationSheetController()
+        let vc = InformationView()
         present(vc, animated: true)
     }
     
@@ -437,47 +449,3 @@ extension GameDetailsVC: UITextViewDelegate{
 }
 
 //MARK: - Custom sheet controller for information presentaition.
-class InformationSheetController: UIViewController{
-    
-    let informationLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .label
-        label.attributedText = NSAttributedString(
-            string: "gameDetails.information".localized,
-            attributes: [NSAttributedString.Key.font : UIFont(name: .SelectedFonts.georigaItalic.rawValue, size: 18)!])
-        label.numberOfLines = 0
-        label.textAlignment = .center
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        configureController()
-        configureInformationLabel()
-    }
-    override func viewDidLayoutSubviews() {
-        sheetPresentationController?.detents = [.custom(resolver: { context in
-            return self.informationLabel.bounds.height * 1.5
-        })]
-
-    }
-    func configureController(){
-        view.backgroundColor = ((traitCollection.userInterfaceStyle == .dark)
-                                ? .secondarySystemBackground
-                                : .systemBackground)
-        self.modalPresentationStyle = .pageSheet
-    }
-    func configureInformationLabel(){
-        view.addSubview(informationLabel)
-        
-        NSLayoutConstraint.activate([
-            informationLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: view.bounds.height * 0.05),
-            informationLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            informationLabel.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.91)
-        
-        ])
-    }
-    
-}
-
-

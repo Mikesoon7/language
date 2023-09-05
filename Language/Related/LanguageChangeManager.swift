@@ -26,11 +26,9 @@ class LanguageChangeManager {
         } else {
             print("No another language")
         }
-        
         NotificationCenter.default.post(name: .appLanguageDidChange, object: nil)
     }
     func localizedString(forKey: String) -> String{
         return bundle.localizedString(forKey: forKey, value: nil, table: nil)
     }
-    
 }

@@ -83,6 +83,6 @@ class EndVc: UIViewController {
         self.navigationController?.popToRootViewController(animated: true)
     }
     @objc func restart(sender: Any){
-        navigationController?.popToViewController(MainGameVC(), animated: true)
+//        navigationController?.popToViewController(MainGameVC, animated: true)
     }
 }

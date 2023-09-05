@@ -21,7 +21,7 @@ class EditViewModel {
     }
 
     //MARK: - Properties
-    private let model: CoreDataHelper
+    private let model: Dictionary_WordsManager 
     private let dictionary: DictionariesEntity
     private var dictionaryName: String?
     private var words: [WordsEntity]!
@@ -31,7 +31,7 @@ class EditViewModel {
     var output = PassthroughSubject<Output, Never>()
     
 
-    init(dictionary: DictionariesEntity, model: CoreDataHelper = CoreDataHelper.shared){
+    init(dictionary: DictionariesEntity, model: Dictionary_WordsManager = CoreDataHelper.shared){
         self.model = model
         self.dictionary = dictionary
         
@@ -79,7 +79,7 @@ class EditViewModel {
             case .deletion(index: let index):
                 words.remove(at: index)
             case .insertion(index: let index, element: let text):
-                words.insert(model.createWordFromLine(for: dictionary, text: text, index: index), at: index)
+                words.insert(model.createWordFromLine(for: dictionary, text: text, index: index, id: UUID()), at: index)
             }
         }
         updateDictionary()

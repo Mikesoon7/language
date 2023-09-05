@@ -9,9 +9,9 @@ import Foundation
 import CoreData
 
 protocol LogsManaging{
-    func createNewLog(for dictionary: DictionariesEntity, at date: Date, shouldSave: Bool) throws -> DictionariesAccessLog
+//    func createNewLog(for dictionary: DictionariesEntity, at date: Date, shouldSave: Bool) throws -> DictionariesAccessLog
     func accessLog(for dictionary: DictionariesEntity) throws
-    func fetchAllLogs(for dictionary: DictionariesEntity) throws -> [DictionariesAccessLog]
+    func fetchAllLogs(for dictionary: DictionariesEntity?) throws -> [DictionariesAccessLog]
     func testFetchAllLogsForEveryDictioanry()
     
 }
@@ -36,6 +36,7 @@ extension CoreDataHelper: LogsManaging{
 //    }
     private func fetchLog(for dictionary: DictionariesEntity, at date: Date) -> DictionariesAccessLog? {
         let dateWithoutTime = date.timeStripped
+        print(dateWithoutTime)
         let fetchRequest: NSFetchRequest<DictionariesAccessLog> = DictionariesAccessLog.fetchRequest()
         fetchRequest.predicate = NSPredicate(format: "dictionary == %@ AND accessDate == %@", dictionary, dateWithoutTime as NSDate)
 
@@ -48,7 +49,7 @@ extension CoreDataHelper: LogsManaging{
         }
     }
 
-    func createNewLog(for dictionary: DictionariesEntity, at date: Date, shouldSave: Bool) throws -> DictionariesAccessLog {
+    private func createNewLog(for dictionary: DictionariesEntity, at date: Date) throws -> DictionariesAccessLog {
         let log = DictionariesAccessLog(context: context)
         log.accessDate = date.timeStripped
         log.accessCount = 0
@@ -73,16 +74,16 @@ extension CoreDataHelper: LogsManaging{
         }
     }
     func accessLog(for dictionary: DictionariesEntity) throws {
-        guard let log =  fetchLog(for: dictionary, at: Date()) else {
+        guard let log = fetchLog(for: dictionary, at: Date()) else {
             do {
-                let log = try createNewLog(for: dictionary, at: Date(), shouldSave: true)
+                let log = try createNewLog(for: dictionary, at: Date())
                 log.accessCount += 1
             } catch {
                 throw error
             }
             return
         }
-        
+        print("added 1 to existing accessLog")
         log.accessCount += 1
         
         do {
@@ -92,11 +93,13 @@ extension CoreDataHelper: LogsManaging{
         }
     }
     
-    func fetchAllLogs(for dictionary: DictionariesEntity) throws -> [DictionariesAccessLog] {
+    func fetchAllLogs(for dictionary: DictionariesEntity?) throws -> [DictionariesAccessLog] {
         let fetchRequest = NSFetchRequest<DictionariesAccessLog>(entityName: "DictionariesAccessLog")
-        let predicate = NSPredicate(format: "dictionary == %@", dictionary)
+        if let dictionary = dictionary {
+            let predicate = NSPredicate(format: "dictionary == %@", dictionary)
+            fetchRequest.predicate = predicate
+        }
         let sortDescriptor = NSSortDescriptor(key: "accessDate", ascending: true)
-        fetchRequest.predicate = predicate
         fetchRequest.sortDescriptors = [sortDescriptor]
         
         do{

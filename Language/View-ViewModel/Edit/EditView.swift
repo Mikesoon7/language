@@ -14,8 +14,10 @@ import Combine
 
 class EditView: UIViewController {
     
-    private var cancellables = Set<AnyCancellable>()
+    
     private var viewModel: EditViewModel!
+    private var viewModelFactory: ViewModelFactory
+    private var cancellables = Set<AnyCancellable>()
     
     //Text representaition of existing words for comparison
     var oldText: [String]!
@@ -50,12 +52,14 @@ class EditView: UIViewController {
     
     
     //MARK: - Inherited methods
-    required init(dictionary: DictionariesEntity){
-        viewModel = EditViewModel(dictionary: dictionary)
+    required init(dictionary: DictionariesEntity, factory: ViewModelFactory){
+        self.viewModelFactory = factory
+        viewModel = factory.configureEditViewModel(dictionary: dictionary)
         super.init(nibName: nil, bundle: nil)
     }
+    
     required init?(coder: NSCoder) {
-        super.init(coder: coder)
+        fatalError("init?(coder: NSCoder) wasn't imported")
     }
     override func viewDidLoad() {
         super.viewDidLoad()

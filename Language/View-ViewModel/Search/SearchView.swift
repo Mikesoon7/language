@@ -16,7 +16,8 @@ class SearchView: UIViewController {
     }
     private var searchBarDidChanged = false
     
-    private let viewModel = SearchViewModel()
+    private let viewModelFactory: ViewModelFactory
+    private let viewModel: SearchViewModel
     private var cancellable = Set<AnyCancellable>()
     private let input =  PassthroughSubject<SearchViewModel.Input, Never>()
     
@@ -62,6 +63,14 @@ class SearchView: UIViewController {
     private let searchControllerHeight: CGFloat = 50
     
     
+    required init(factory: ViewModelFactory){
+        self.viewModelFactory = factory
+        self.viewModel = factory.configureSearchViewModel()
+        super.init(nibName: nil, bundle: nil)
+    }
+    required init?(coder: NSCoder) {
+        fatalError("init?(coder: NSCoder) wasn't imported")
+    }
     //MARK: - Inherited
     override func viewDidLoad() {
         super.viewDidLoad()

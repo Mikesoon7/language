@@ -4,11 +4,21 @@
 "tabBarSettings" = "Настройки";
 //MARK: - MainVC
 "menuVCTitle" = "Словари";
+"menu.deleteDictionary" = "Удалить словарь?";
 "tableCellName" = "Название";
 "tableCellNumberOfCards" = "Всего карточек";
 "tableCellImport" = "Добавить словарь";
 "statisticCellNumberOfUse" = "Всего использован";
 "statisticCellCreationDate" = "Был создан";
+//MARK: - StatisticView
+"statistic.title" = "Статистика просмотра";
+"statistic.beginDate" = "Начало:";
+"statistic.endDate" = "Конец:";
+//Custom options
+"statistic.currentWeek" = "Текущая неделя";
+"statistic.currentMonth" = "Текущий месяц";
+"statistic.previousMonth" = "Предидущий месяц";
+"statistic.custom" = "Свой вариант";
 //MARK: - SettingsVC
 "settingsVCTitle" = "Настройки";
 //Sections
@@ -56,7 +66,7 @@
 "system.delete" = "Удалить";
 "system.done" = "Готово";
 "system.yes" = "Да";
-"systme.no" = "Нет";
+"system.no" = "Нет";
 "system.settings" = "Настройки";
 
 //MARK: - AlertText

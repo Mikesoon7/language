@@ -5,97 +5,108 @@
 //  Created by Star Lord on 07/07/2023.
 //
 
-import Foundation
+import UIKit
 import CoreData
 import Combine
 
+
 final class MenuViewModel{
-    enum Output {
-        case error(Error)
-        case configureStat([DictionariesAccessLog])
-    }
-    enum ChangeType{
+//    enum Output {
+//        case error(Error)
+//        case configureStat([DictionariesAccessLog])
+//        case shouldPresentVC(UIViewController)
+//    }
+    enum Output{
         case needReload
         case needDelete(Int)
         case needUpdate(Int)
+        case shouldPresentAddView
+        case shouldPresentDetailsView(DictionariesEntity)
+        case shouldPresentEditView(DictionariesEntity)
+        case shouldUpdateLabels
+        case error(Error)
     }
 
-    private let model: CoreDataHelper
+    private let model: Dictionary_Words_LogsManager
     private var cancellables = Set<AnyCancellable>()
     var dictionaries: [DictionariesEntity] = []
+        
+    @Published var output = PassthroughSubject<Output, Never>()
     
-    private var displayStatistic = false
-    
-    @Published var objectDidChange = PassthroughSubject<ChangeType, Never>()
-    var output = PassthroughSubject<Output, Never>()
-//    @Published var error: CoreDataHelper.CoreDataError?
-    
-    init(model: CoreDataHelper = CoreDataHelper.shared) {
+    init(model: Dictionary_Words_LogsManager) {
         self.model = model
         model.dictionaryDidChange
             .sink { [weak self] type in
                 switch type {
                 case .wasDeleted(let section):
                     self?.fetch()
-                    print("deleted \(section)")
-                    self?.objectDidChange.send(.needDelete(section))
+                    self?.output.send(.needDelete(section))
                 case .wasAdded:
                     self?.fetch()
-                    self?.objectDidChange.send(.needReload)
+                    self?.output.send(.needReload)
                 case .wasUpdated(let section):
                     self?.fetch()
-                    print("updated \(section)")
-                    self?.objectDidChange.send(.needUpdate(section))
+                    self?.output.send(.needUpdate(section))
                 }
             }
             .store(in: &cancellables)
         fetch()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(languageDidChange(sender:)), name: .appLanguageDidChange, object: nil)
     }
-    func fetchStatiscticDataFor(cellIndex: IndexPath) throws {
-        let dictionary = dictionaries[cellIndex.section]
-        do {
-            let logs = try model.fetchAllLogs(for: dictionary)
-            output.send(.configureStat(logs))
-//            return DataConverter(logs: logs).getDataDividedByWeeks()
-        } catch {
-            output.send(.error(error))
-        }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
+    
+    //MARK: Fetch and update local dictionary variable.
     func fetch(){
         do {
             dictionaries = try model.fetchDictionaries()
         } catch {
             output.send(.error(error))
-            
         }
     }
-    func importButtonWasTapped(){
-        
-    }
-
+    
+    //MARK: Cell swipe actions related.
+    //Delete dictioanary action was tapped.
     func deleteDictionary(at index: IndexPath) {
         let dictionary = dictionaries[index.section]
         do {
             try model.delete(dictionary: dictionary)
         } catch {
-            print("dictionary not found")
+            output.send(.error(error))
         }
     }
-    
-    func editDictionary(at index: IndexPath) -> EditView{
+    //Edit dictionary action was tapped.
+    func editDictionary(at index: IndexPath) {
         let dictionary = dictionaries[index.section]
-        let vc = EditView(dictionary: dictionary)
-        return vc
+        output.send(.shouldPresentEditView(dictionary))
     }
     
-    //MARK: - Methods for tableView
-    func dataForCell(at index: IndexPath) -> MenuCellViewModel{
-        let viewModel = MenuCellViewModel(dictionary: dictionaries[index.section])
-        return viewModel
+    //MARK: TableView Related
+    func dataForTableCellAt(section: Int) -> DictionariesEntity? {
+        guard section != dictionaries.count else {
+            return nil
+        }
+        return dictionaries[section]
     }
     
-    func numberOfCells() -> Int{
+    func numberOfSectionsInTableView() -> Int{
         return dictionaries.count + 1
+    }
+    
+    func didSelectTableRowAt(section: Int){
+        guard section != dictionaries.count else {
+            output.send(.shouldPresentAddView)
+            return
+        }
+        let dictionary = dictionaries[section]
+        output.send(.shouldPresentDetailsView(dictionary))
+    }
+    
+    @objc func languageDidChange(sender: Any){
+        output.send(.shouldUpdateLabels)
     }
 }
 

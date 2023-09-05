@@ -13,14 +13,21 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
 
+        //Creating observer for changing tabBar string values
+        self.observeLanguageChange()
+        //Creating data model, which will be stored in viewModel factory class.
+        let dataModel: Dictionary_Words_LogsManager = CoreDataHelper.shared
+        let settingsModel: UserSettings = UserSettings.shared
+        
+        
         //Initializing TabBarController
         guard let window = (scene as? UIWindowScene) else { return }
         self.window = UIWindow(frame: window.coordinateSpace.bounds)
         self.window?.windowScene = window
+        self.window?.rootViewController = setUpTabBarController(viewModelFactory: configureViewModelFactoryWith(dataModel, settingsModel: settingsModel))
+        //Method called at this point to apply changes to the existing UIScene
         
-        setUpEnvironment()
-
-        self.window?.rootViewController = setUpTabBarController()
+        self.use(theme: settingsModel.appTheme, language: settingsModel.appLanguage)
         self.window?.makeKeyAndVisible()
         
         var animationView: LaunchAnimation? = LaunchAnimation(bounds: UIWindow().bounds, interfaceStyle: UserSettings.shared.appTheme.userInterfaceStyle)
@@ -30,29 +37,28 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             animationView?.animationView.removeFromSuperview()
             animationView = nil
         }
-        self.observeLanguageChange()
+        
         self.window?.makeKeyAndVisible()
     }
     //MARK: - TabBar SetUp
-    func setUpTabBarController() -> UITabBarController{
+    func setUpTabBarController(viewModelFactory: ViewModelFactory ) -> UITabBarController{
         let tabBArController = UITabBarController()
         tabBArController.tabBar.backgroundColor = .systemBackground
         
-        let firstVC = MenuView()
-//        let firstVC = UIBezierPathTestController()
+        let firstVC = MenuView(factory: viewModelFactory)
         let firstNC = UINavigationController(rootViewController: firstVC)
         firstNC.tabBarItem = UITabBarItem(
             title: LanguageChangeManager.shared.localizedString(forKey: "tabBarDictionaries"),
             image: UIImage(systemName: "books.vertical"),
             selectedImage: UIImage(systemName: "books.vertical.fill")?.withTintColor(.black))
-        let secondVC = SearchView()
+        let secondVC = SearchView(factory: viewModelFactory)
         let secondNC = UINavigationController(rootViewController: secondVC)
         secondNC.tabBarItem = UITabBarItem(
             title: LanguageChangeManager.shared.localizedString(forKey: "tabBarSearch"),
             image: UIImage(systemName: "magnifyingglass"),
             selectedImage:
                 UIImage(systemName: "magnifyingglass")?.withTintColor(.black))
-        let thirdVC = SettingsVC()
+        let thirdVC = SettingsVC(factory: viewModelFactory)
         let thirdNC = UINavigationController(rootViewController: thirdVC)
         thirdVC.tabBarItem = UITabBarItem(
             title: LanguageChangeManager.shared.localizedString(forKey: "tabBarSettings"),
@@ -66,18 +72,24 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         return tabBArController
     }
+    func configureViewModelFactoryWith(_ dataModel: Dictionary_Words_LogsManager, settingsModel: UserSettingsStorageProtocol) -> ViewModelFactory {
+        return ViewModelFactory(dataModel: dataModel, settingsModel: settingsModel)
+    }
     func configureUserStorage(with storage: UserSettings? = nil){
         if let settings = storage {
             UserSettings.shared = settings
         }
     }
+    func use(theme: AppTheme, language: AppLanguage){
+        LanguageChangeManager.shared.changeLanguage(to: language.languageCode)
+        self.window?.overrideUserInterfaceStyle = theme.userInterfaceStyle
+    }
+    
+
 //    func configureStorage(with storage: UserSettingsStorageProtocol = UserSettings1(manager: UserSettingsManager())) -> UserSettingsStorageProtocol{
 //        return storage
 //    }
-    func setUpEnvironment(){
-        let currentSettings = UserSettings.shared
-        UserSettings.shared.manager.use(theme: currentSettings.appTheme, language: currentSettings.appLanguage)
-    }
+    
     func observeLanguageChange(){
         NotificationCenter.default.addObserver(self, selector: #selector(languageDidChange(sender:)), name: .appLanguageDidChange, object: nil)
     }
@@ -110,19 +122,24 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     @objc func languageDidChange(sender: Any){
-        if let barItems = self.window?.rootViewController?.tabBarController?.tabBar.items{
-            for index in 0..<(barItems.count){
-                barItems[index].title = {
-                    switch index{
-                    case 0: return  "tabBarDictionaries".localized
-                    case 1: return  "tabBarSearch".localized
-                    case 2: return  "tabBarSettings".localized
-                    default: return " "
-                    }
-                }()
+        print("recieved language notification in AppScene")
+        if let tabBarController = self.window?.rootViewController as? UITabBarController {
+            print("successfully extracted tabBarController")
+            if let tabBarItems = tabBarController.tabBar.items {
+                
+                print("successfully extract barItems")
+                for (index, item) in tabBarItems.enumerated(){
+                    item.title = {
+                        switch index {
+                        case 0: return "tabBarDictionaries".localized
+                        case 1: return "tabBarSearch".localized
+                        case 2: return "tabBarSettings".localized
+                        default: return ""
+                        }
+                    }()
+                }
             }
         }
     }
-
 }
 

@@ -16,6 +16,16 @@ extension UIView {
         }
     }
 
+    func maskedViewContaintPoint(_ point: CGPoint) -> Bool {
+        guard let maskLayer = self.layer.mask as? CAShapeLayer else {
+            
+            return self.bounds.contains(point)
+        }
+        
+        let pointInMaskedLayer = self.layer.convert(point, to: maskLayer)
+        return maskLayer.path?.contains(pointInMaskedLayer) ?? false
+    }
+
     //MARK: - Creating mask with concave side on left and cambered on right side.
     //For custom actions embeded in MainView cell
     func configureActionMaskWith(size: CGSize, cornerRadius: CGFloat) -> CAShapeLayer{

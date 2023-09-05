@@ -13,8 +13,15 @@ protocol MainGameVCDelegate: AnyObject{
     func updateCardCell()
 }
 
+struct DataForGameView{
+    var initialNumber: Int
+    var selectedNumber: Int
+    var words: [WordsEntity]
+}
+
 class MainGameVC: UIViewController{
     
+    var viewModel: GameViewModel!
     var dictionary: DictionariesEntity!
     var words: [WordsEntity]!
     
@@ -40,10 +47,20 @@ class MainGameVC: UIViewController{
     typealias DataSource = UICollectionViewDiffableDataSource<Section, AnyHashable>
     typealias Snapshot = NSDiffableDataSourceSnapshot<Section, AnyHashable>
     
-    var longPressGesture: UILongPressGestureRecognizer!
     
+    private var longPressGesture: UILongPressGestureRecognizer!
+    
+    //MARK: Inherited and required
+    required init(viewModel: GameViewModel){
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    required init?(coder: NSCoder) {
+        fatalError("init?(coder: NSCoder) wasn't imported")
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
+        configureData()
         configureController()
         prepareCells()
         configureCollectionView()
@@ -58,6 +75,12 @@ class MainGameVC: UIViewController{
         super.viewWillDisappear(animated)
         tabBarController?.tabBar.isHidden = false
         self.navigationController?.interactivePopGestureRecognizer?.delegate = nil
+    }
+    private func configureData(){
+        let data = viewModel.configureData()
+        self.initialNumber = data.initialNumber
+        self.passedNumber = data.selectedNumber
+        self.words = data.words
     }
     //MARK: - Controller SetUp
     func configureController(){
@@ -187,10 +210,10 @@ extension MainGameVC {
                 rotationAnimation.fillMode = .forwards
                 
                 let controllerToPresent: UIViewController = {
-                    let vc = GameDetailsVC()
-                    vc.dictionary = dictionary
-                    vc.words = words
-                    vc.pairIndex = selectedCell.row
+                    let vc = GameDetailsVC(viewModel: viewModel)
+//                    vc.dictionary = dictionary
+//                    vc.words = words
+//                    vc.pairIndex = selectedCell.row
                     vc.word = words[self.selectedCell.row]
                     vc.delegate = self
                     vc.navBarTopInset = self.view.safeAreaInsets.top

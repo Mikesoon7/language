@@ -17,6 +17,15 @@ enum DictionaryErrorType: Error {
     case deleteFailed
 }
 
+enum WordsErrorType: Error {
+    case creationFailed
+    case fetchFailed
+    case updateFailed
+    case updateOrderFailed
+    case deleteFailed
+    case failedToDefineDictionary
+}
+
 enum LogsErrorType: Error {
     case fetchFailed
     case accessFailed
