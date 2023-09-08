@@ -18,6 +18,7 @@
 "statistic.currentWeek" = "Текущая неделя";
 "statistic.currentMonth" = "Текущий месяц";
 "statistic.previousMonth" = "Предидущий месяц";
+"statistic.allTime" = "За все время";
 "statistic.custom" = "Свой вариант";
 //MARK: - SettingsVC
 "settingsVCTitle" = "Настройки";

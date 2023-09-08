@@ -18,6 +18,7 @@
 "statistic.currentWeek" = "Current week";
 "statistic.currentMonth" = "Current month";
 "statistic.previousMonth" = "Previous month";
+"statistic.allTime" = "All time";
 "statistic.custom" = "Custom";
 //MARK: - SettingsVC
 "settingsVCTitle" = "Settings";

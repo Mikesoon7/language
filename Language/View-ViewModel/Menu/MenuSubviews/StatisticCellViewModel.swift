@@ -10,25 +10,14 @@ import Combine
 import UIKit
 import DGCharts
 
-//struct LogsForDictionary{
-//    var dictionary: DictionariesEntity
-//    var affiliatedLogs: [DictionariesAccessLog]
-//}
 
-//DateLogExtractor
 class StatisticCellViewModel {
     
     enum StatisticCellOutput{
         case data([WeekLog])
         case error(Error)
     }
-    enum StatisticViewOutput{
-        case data([DictionaryLogData])
-        case pieData(PieChartDataTotal)
-        case selectedRangeWasUpdated(SelectedRange)
-        case error(Error)
-    }
-
+    
     var dictionary: DictionariesEntity
     private var dataModel: Dictionary_Words_LogsManager
     

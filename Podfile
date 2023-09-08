@@ -8,8 +8,6 @@ target 'Language' do
 
   # Pods for Language
 
-pod 'DGCharts'
-
 pod 'CLTypingLabel'
 
   target 'LanguageTests' do

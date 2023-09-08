@@ -1,22 +1,16 @@
 PODS:
   - CLTypingLabel (0.4.0)
-  - DGCharts (5.0.0):
-    - DGCharts/Core (= 5.0.0)
-  - DGCharts/Core (5.0.0)
 
 DEPENDENCIES:
   - CLTypingLabel
-  - DGCharts
 
 SPEC REPOS:
   trunk:
     - CLTypingLabel
-    - DGCharts
 
 SPEC CHECKSUMS:
   CLTypingLabel: 95a7d1faf7e3d1d952cd11cb0491d17d80c50934
-  DGCharts: 6e0cf2644e8f81ad13f04caa8bc18502870a1c54
 
-PODFILE CHECKSUM: faf8576334f2dcc3b3d47e18c659273da0fa5cd5
+PODFILE CHECKSUM: e62af9b41ee69caf86a9faf824550fd01fa63b4d
 
 COCOAPODS: 1.12.0

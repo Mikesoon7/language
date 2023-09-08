@@ -7,7 +7,7 @@
 
 import UIKit
 
-class PickerCallButtonView: UIView {
+class PickerCallView: UIView {
     
     //MARK: Views
     private let titleLabel: UILabel = {

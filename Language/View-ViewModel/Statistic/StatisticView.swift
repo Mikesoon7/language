@@ -11,33 +11,25 @@ import SwiftUI
 import DGCharts
 
 
-
-//"statistic.beginDate" = "Початок:";
-//"statistic.endDate" = "Кінець:";
-//Custom options
-//"statistic.currentWeek" = "Поточний тиждень";
-//"statistic.currentMonth" = "Поточний місяць";
-//"statistic.previousMonth" = "Попередній місяць";
-//"statistic.custom" = "Обрати свій";
-
-enum ActivePicker{
+private enum ActivePicker{
     case left
     case right
     case custom
 }
-class StatisticVC: UIViewController {
+class StatisticView: UIViewController {
+    //MARK: Properties
+    private var viewModel: StatisticViewModel?
+    private var cancellable = Set<AnyCancellable>()
     
-    private var viewModel: StatisticViewModel
+    var input: PassthroughSubject<StatisticViewModel.Input, Never>? = .init()
     
-    private var data = [DictionaryLogData]()
-    private var pieData: PieChartDataTotal!
-    
-    private lazy var hostingController = UIHostingController(rootView: StatisticPieView(data: data))
-    private lazy var pieChartView = PieStatisticView(delegate: self)
-    private var cancellables = Set<AnyCancellable>()
-    
-    
-    private var activePicker: ActivePicker? = nil
+    private lazy var pieChartView: PieStatisticView? = PieStatisticView()
+    ///Keep information about selected and visible picker.
+    private var activePicker: ActivePicker? = nil {
+        didSet {
+            dismissPanGesture.isEnabled = activePicker == nil ? false : true
+        }
+    }
     
     //MARK: Views
     private let titleLabel: UILabel = {
@@ -54,34 +46,22 @@ class StatisticVC: UIViewController {
     private let legendTableView: UITableView = {
         let view = UITableView(frame: .zero, style: .plain)
         view.register(StatisticViewCell.self, forCellReuseIdentifier: StatisticViewCell.id)
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.separatorStyle = .none
         
+        view.separatorStyle = .none
         view.backgroundColor = .clear
+        
+        view.allowsSelection = false
+        view.translatesAutoresizingMaskIntoConstraints = false
+        
         return view
     }()
     
-    
-    //MARK: Pickers and pickers call view
-    private lazy var leftPickerView: PickerCallButtonView = {
-        let view = PickerCallButtonView(
+    //MARK: Pickers call views and buttons
+    private lazy var leftPickerView: PickerCallView = {
+        let view = PickerCallView(
             title: "statistic.beginDate".localized,
             subtitle: convertDateToString(
-                viewModel.initialStatisticDate()))
-
-        view.backgroundColor = .systemBackground
-        view.layer.borderColor = UIColor.label.cgColor
-        view.layer.borderWidth = 0.5
-        view.clipsToBounds = true
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
-    
-    private lazy var rightPickerView: PickerCallButtonView = {
-        let view = PickerCallButtonView(
-            title: "statistic.endDate".localized,
-            subtitle: convertDateToString(
-                viewModel.endStatisticDate()))
+                Date()))
         
         view.backgroundColor = .systemBackground
         view.layer.borderColor = UIColor.label.cgColor
@@ -91,33 +71,35 @@ class StatisticVC: UIViewController {
         return view
     }()
     
-    private let customizeButton: UIButton = {
+    private lazy var rightPickerView: PickerCallView = {
+        let view = PickerCallView(
+            title: "statistic.endDate".localized,
+            subtitle: convertDateToString(
+                Date()))
+        
+        view.backgroundColor = .systemBackground
+        view.layer.borderColor = UIColor.label.cgColor
+        view.layer.borderWidth = 0.5
+        view.clipsToBounds = true
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
+    private let customPickerCallButton: UIButton = {
         let button = UIButton()
         button.setImage(
             UIImage(
                 systemName: "slider.vertical.3",
                 withConfiguration: UIImage.SymbolConfiguration(pointSize: 20, weight: .semibold, scale: .medium)) ,
-                        for: .normal)
+            for: .normal)
         
         button.tintColor = .label
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
     
-//    private let rightPickerButton: UIButton = {
-//        let button = UIButton()
-//        button.setTitle("End:", for: .normal)
-//        button.titleLabel?.textAlignment = .left
-//        button.subtitleLabel?.textAlignment = .left
-//
-//        button.backgroundColor = .systemGray6
-//        button.tintColor = .label
-//        button.clipsToBounds = true
-//        button.translatesAutoresizingMaskIntoConstraints = false
-//        return button
-//    }()
-
-    private let leftPicker: UIDatePicker = {
+    //MARK: Pickers
+    private let leftDatePicker: UIDatePicker = {
         let picker = UIDatePicker()
         picker.preferredDatePickerStyle = .wheels
         picker.datePickerMode = .date
@@ -126,23 +108,25 @@ class StatisticVC: UIViewController {
         picker.translatesAutoresizingMaskIntoConstraints = false
         return picker
     }()
-    private let rightPicker: UIDatePicker = {
+    private let rightDatePicker: UIDatePicker = {
         let picker = UIDatePicker()
         picker.preferredDatePickerStyle = .wheels
         picker.datePickerMode = .date
         picker.alpha = 0
-//        picker.maximumDate = .now
         picker.translatesAutoresizingMaskIntoConstraints = false
         return picker
     }()
     
-    private let customPicker: UIPickerView = {
+    private let customRangePicker: UIPickerView = {
         let picker = UIPickerView()
         picker.alpha = 0
         picker.translatesAutoresizingMaskIntoConstraints = false
         return picker
     }()
-
+    
+    //MARK: Gestures
+    private var dismissPanGesture = UIPanGestureRecognizer()
+    
     //MARK: Dimensions
     private let subviewsInset: CGFloat = 20
     private let customButtonsHeight: CGFloat = 50
@@ -159,55 +143,60 @@ class StatisticVC: UIViewController {
     required init?(coder: NSCoder) {
         fatalError("init(coder: NSCoder) wasn't imported")
     }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
-        print("StatisticVC was initialized")
         bind()
         configureTitleLabel()
         configureCustomButton()
         configurePickersButton()
-        configureCustomPicker()
-        configurePickers()
+        configureCustomRangePicker()
+        configureDatePickers()
         configurePieChartView()
         configureTableView()
-        
-        print("prepare for viewModel fetch initiation")
-        viewModel.fetchDataForStatisticPieView()
+        configurePickerDismissGesture()
         
     }
-
-    //MARK: Binding.
-    func bind(){
-        viewModel.viewOutput
-            .sink { output in
-                switch output{
-                case .data(let data):
-                    self.data = data
-                    self.configureStatView()
-                case .pieData(let data ):
-                    self.pieData = data
-                    self.pieChartView.setUpChartData(chartData: data)
-                    self.legendTableView.reloadData()
-                case .selectedRangeWasUpdated(let range):
-                    self.updateSelectedRange(with: range)
-                case .shouldUpdateCustomInterval:
-                    self.updateCustomPicker()
-                case .shouldDefineAllowedRange(let range):
-                    self.leftPicker.minimumDate = range.start
-                    self.rightPicker.minimumDate = range.start
-                    self.leftPicker.maximumDate = range.end
-                    
-                case .error(let error):
-                    self.presentError(error)
-            
-                }
-            
-            }
-            .store(in: &cancellables)
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        input?.send(.viewWillAppear)
+    }
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection){
+            leftPickerView.layer.borderColor = UIColor.label.cgColor
+            rightPickerView.layer.borderColor = UIColor.label.cgColor
+        }
+    }
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
     }
     
-    func configureTitleLabel(){
+    
+    //MARK: Binding.
+    func bind(){
+        guard let output = viewModel?.transform(input: input?.eraseToAnyPublisher()) else { return }
+        output
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] output in
+                switch output{
+                case .shouldUpdatePieChartWith(let data):
+                    self?.pieChartView?.setUpChartData(data)
+                    self?.legendTableView.reloadData()
+                case .shouldUpdateSelectedInterval(let interval):
+                    self?.updateSelectedInterval(interval)
+                case .shouldUpdateCustomInterval:
+                    self?.updateCustomPicker()
+                case .shouldPresent(let error):
+                    self?.presentError(error)
+                }
+            }
+            .store(in: &cancellable)
+    }
+    
+    //MARK: Subviews configuration
+    ///Laying out title label.
+    private func configureTitleLabel(){
         view.addSubview(titleLabel)
         
         NSLayoutConstraint.activate([
@@ -217,19 +206,22 @@ class StatisticVC: UIViewController {
             titleLabel.heightAnchor.constraint(equalToConstant: 30),
         ])
     }
-    func configureCustomButton(){
-        view.addSubview(customizeButton)
+    ///Laying out and setting up customPickerButton
+    private func configureCustomButton(){
+        view.addSubview(customPickerCallButton)
         
-        customizeButton.addTarget(self, action: #selector(customViewDidTap(sender:)), for: .touchUpInside)
+        customPickerCallButton.addTarget(self, action: #selector(customViewDidTap(sender:)), for: .touchUpInside)
         
         NSLayoutConstraint.activate([
-            customizeButton.centerYAnchor.constraint(equalTo: titleLabel.centerYAnchor),
-            customizeButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -subviewsInset),
-//            customizeButton.heightAnchor.constraint(equalToConstant: customButtonsHeight),
-//            customizeButton.widthAnchor.constraint(equalTo: customizeButton.heightAnchor),
+            
+            customPickerCallButton.centerYAnchor.constraint(equalTo: titleLabel.centerYAnchor),
+            customPickerCallButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -subviewsInset),
+            
         ])
     }
-    func configurePickersButton(){
+    
+    ///Laying out and setting up  right and left picker call buttons
+    private func configurePickersButton(){
         view.addSubviews(leftPickerView, rightPickerView)
         
         let viewWidth: CGFloat = (view.bounds.width - subviewsInset * 2) / 2
@@ -249,50 +241,51 @@ class StatisticVC: UIViewController {
             rightPickerView.widthAnchor.constraint(equalToConstant: viewWidth),
             rightPickerView.heightAnchor.constraint(equalToConstant: customButtonsHeight),
             
-            
-//            customPickerView.topAnchor.constraint(equalTo: titleLable.bottomAnchor, constant: subviewsInset),
-//            customPickerView.leadingAnchor.constraint(equalTo: rightPickerView.trailingAnchor),
-//            customPickerView.widthAnchor.constraint(equalToConstant: customButtonsHeight),
-//            customPickerView.heightAnchor.constraint(equalToConstant: customButtonsHeight),
-            
         ])
     }
-    func configurePickers(){
-        view.addSubviews(leftPicker, rightPicker)
+    private func configureDatePickers(){
+        view.addSubviews(leftDatePicker, rightDatePicker)
         
-        leftPicker.addTarget(self, action: #selector(dataPickerDidSelect(sender: )), for: .valueChanged )
-        rightPicker.addTarget(self, action: #selector(dataPickerDidSelect(sender: )), for: .valueChanged )
+        leftDatePicker.addTarget(self, action: #selector(dataPickerDidSelect(sender: )), for: .valueChanged )
+        rightDatePicker.addTarget(self, action: #selector(dataPickerDidSelect(sender: )), for: .valueChanged )
         
         NSLayoutConstraint.activate([
-            leftPicker.topAnchor.constraint(equalTo: leftPickerView.bottomAnchor, constant: subviewsInset),
-            leftPicker.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            leftDatePicker.topAnchor.constraint(equalTo: leftPickerView.bottomAnchor, constant: subviewsInset),
+            leftDatePicker.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             
-            rightPicker.topAnchor.constraint(equalTo: rightPickerView.bottomAnchor, constant: subviewsInset),
-            rightPicker.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            rightDatePicker.topAnchor.constraint(equalTo: rightPickerView.bottomAnchor, constant: subviewsInset),
+            rightDatePicker.centerXAnchor.constraint(equalTo: view.centerXAnchor),
         ])
     }
-    func configureCustomPicker(){
-        view.addSubview(customPicker)
+    private func configureCustomRangePicker(){
+        view.addSubview(customRangePicker)
+        
+        customRangePicker.delegate = self
+        customRangePicker.dataSource = self
+
+        NSLayoutConstraint.activate([
+            customRangePicker.topAnchor.constraint(equalTo: leftPickerView.bottomAnchor, constant: subviewsInset),
+            customRangePicker.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+        ])
+    }
     
-        customPicker.delegate = self
-        customPicker.dataSource = self
-        
-        let preselectedRow = viewModel.selectedRowForPicker()
-        customPicker.selectRow(preselectedRow, inComponent: 0, animated: false)
-        
-        NSLayoutConstraint.activate([
-            customPicker.topAnchor.constraint(equalTo: leftPickerView.bottomAnchor, constant: subviewsInset),
-            customPicker.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-        ])
+    private func configurePickerDismissGesture(){
+        dismissPanGesture = UIPanGestureRecognizer(target: self, action: #selector(viewDidPan(sender:)))
+        dismissPanGesture.isEnabled = false
+        self.view.addGestureRecognizer(dismissPanGesture)
     }
-    func configurePieChartView(){
+    
+    private func configurePieChartView(){
+        guard let pieChartView = pieChartView else { return }
+        
         pieChartView.translatesAutoresizingMaskIntoConstraints = false
+        pieChartView.delegate = self
         
         pieViewTopAnchorToButton = pieChartView.topAnchor.constraint(equalTo: leftPickerView.bottomAnchor, constant: subviewsInset)
-        pieViewTopAnchorToPicker = pieChartView.topAnchor.constraint(equalTo: leftPicker.bottomAnchor, constant: subviewsInset)
-
+        pieViewTopAnchorToPicker = pieChartView.topAnchor.constraint(equalTo: leftDatePicker.bottomAnchor, constant: subviewsInset)
+        
         view.addSubview(pieChartView)
-
+        
         NSLayoutConstraint.activate([
             pieViewTopAnchorToButton,
             pieChartView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
@@ -300,168 +293,150 @@ class StatisticVC: UIViewController {
             pieChartView.heightAnchor.constraint(equalTo: pieChartView.widthAnchor, multiplier: 1),
         ])
     }
-    func configureTableView(){
-        legendTableView.delegate = self
-        legendTableView.dataSource = self
+    private func configureTableView(){
         view.addSubview(legendTableView)
         
+        legendTableView.delegate = self
+        legendTableView.dataSource = self
+        
         NSLayoutConstraint.activate([
-            legendTableView.topAnchor.constraint(equalTo: pieChartView.bottomAnchor, constant: 20),
+            legendTableView.topAnchor.constraint(equalTo: pieChartView?.bottomAnchor ?? leftPickerView.bottomAnchor, constant: 20),
             legendTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             legendTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             legendTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
     }
     
-    func configureStatView(){
-        guard let charts = hostingController.view else { return }
-        charts.backgroundColor = .clear
-        charts.translatesAutoresizingMaskIntoConstraints = false
-        
-        view.addSubviews(charts)
-        
-        NSLayoutConstraint.activate([
-            
-            charts.topAnchor.constraint(equalTo: pieChartView.bottomAnchor, constant: 20),
-            charts.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),
-            charts.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 10),
-            charts.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10),
-        ])
+    //MARK: System
+    private func updateSelectedInterval(_ interval: DateInterval){
+        self.leftPickerView.updateSubtitleLabel(with: convertDateToString(interval.start))
+        leftDatePicker.setDate(interval.start, animated: false)
+        self.rightPickerView.updateSubtitleLabel(with: convertDateToString(interval.end))
+        rightDatePicker.setDate(interval.end, animated: false)
     }
-    private func updateSelectedRange(with range: SelectedRange){
-        self.leftPickerView.updateSubtitleLabel(with: convertDateToString(range.beginDate))
-        leftPicker.setDate(range.beginDate, animated: false)
-        self.rightPickerView.updateSubtitleLabel(with: convertDateToString(range.endDate))
-        rightPicker.setDate(range.endDate, animated: false)
-
-
-    }
+    
+    
     private func convertDateToString(_ date: Date) -> String{
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
         formatter.timeStyle = .none
-
+        
         return formatter.string(from: date)
-//        date.formatted(date: .abbreviated, time: .omitted)
     }
     
+    ///Update custom picker selected value.
     private func updateCustomPicker(){
-        let row = viewModel.selectedRowForPicker()
-        self.customPicker.selectRow(row, inComponent: 0, animated: false)
+        let row = viewModel?.selectedRowForPicker() ?? 0
+        self.customRangePicker.selectRow(row, inComponent: 0, animated: false)
     }
     
-    //MARK: Animation methods
-
+    //MARK: Animations
+    ///Checks if passed picker is active. If so, deactivate it. If not - changing chart  layout and reval picker.
     private func updateDisplayedPicker(for picker: ActivePicker){
         var selectedDatePicker: UIDatePicker = .init()
-        var selectedDatePickerView: PickerCallButtonView?
-
+        var selectedDatePickerView: PickerCallView?
+        
         switch picker{
         case .custom:
-            updateDisplayedCustomPicker(for: customPicker)
+            updateDisplayedCustomPicker(for: customRangePicker)
             return
         case .left:
-            selectedDatePicker = leftPicker
+            selectedDatePicker = leftDatePicker
             selectedDatePickerView = leftPickerView
         case .right:
-            selectedDatePicker = rightPicker
+            selectedDatePicker = rightDatePicker
             selectedDatePickerView = rightPickerView
         }
         
         if activePicker == picker{
             self.updatePieChartLayout(toInitial: true)
-            
-            selectedDatePickerView?.backgroundColor = .systemBackground
-            selectedDatePicker.alpha = 0
+            UIView.animate(withDuration: 0.6) {
+                selectedDatePickerView?.backgroundColor = .systemBackground
+                selectedDatePicker.alpha = 0
+            }
             activePicker = nil
         } else {
             UIView.animate(withDuration: 0.6) { [weak self] in
                 switch self?.activePicker {
                 case .custom:
-                    self?.customPicker.alpha = 0
+                    self?.customRangePicker.alpha = 0
                 case .left:
-                    self?.leftPicker.alpha = 0
+                    self?.leftDatePicker.alpha = 0
                     self?.leftPickerView.backgroundColor = .systemBackground
                 case .right:
-                    self?.rightPicker.alpha = 0
+                    self?.rightDatePicker.alpha = 0
                     self?.rightPickerView.backgroundColor = .systemBackground
                 case .none:
                     self?.updatePieChartLayout(toInitial: false)
                 }
-                selectedDatePickerView?.backgroundColor = .systemGray6
+                selectedDatePickerView?.backgroundColor =
+                    .tertiarySystemGroupedBackground
                 selectedDatePicker.alpha = 1
             }
             self.activePicker = picker
         }
-        
     }
+    ///Checks if custom picker active and deactivating it if so. Activating with animation, if not.
     private func updateDisplayedCustomPicker(for picker: UIPickerView){
         UIView.animate(withDuration: 0.6) { [weak self] in
             switch self?.activePicker {
             case .custom:
-                self?.customPicker.alpha = 0
+                self?.customRangePicker.alpha = 0
                 self?.updatePieChartLayout(toInitial: true)
                 self?.activePicker = nil
                 return
             case .right:
-                self?.rightPicker.alpha = 0
+                self?.rightDatePicker.alpha = 0
                 self?.rightPickerView.backgroundColor = .systemBackground
             case .left:
-                self?.leftPicker.alpha = 0
+                self?.leftDatePicker.alpha = 0
                 self?.leftPickerView.backgroundColor = .systemBackground
             case .none:
                 self?.updatePieChartLayout(toInitial: false)
             }
-            self?.customPicker.alpha = 1
+            self?.customRangePicker.alpha = 1
             self?.activePicker = .custom
             
         }
     }
-//    private func animateCustomPicker(activate: Bool){
-//        UIView.animate(withDuration: 0.6) { [weak self] in
-//            switch self?.activePicker{
-//            case .custom:
-//                self?.customPicker.alpha = 0
-//                self?.updatePieChartLayout(toInitial: true)
-//                self?.activePicker = nil
-//                return
-//            case .left:
-//                return
-//            default: return
-//            }
-//        }
-//    }
     
+    //Since there shouldn't be two constraints with the same anchor active together, we need to change order.
+    ///Changing the constraints for PieView.
     private func updatePieChartLayout(toInitial: Bool){
         UIView.animate(withDuration: 0.6) { [weak self] in
-            self?.pieViewTopAnchorToButton.isActive = toInitial
-            self?.pieViewTopAnchorToPicker.isActive = !toInitial
+            if toInitial {
+                self?.pieViewTopAnchorToPicker.isActive = !toInitial
+                self?.pieViewTopAnchorToButton.isActive = toInitial
+            } else {
+                self?.pieViewTopAnchorToButton.isActive = toInitial
+                self?.pieViewTopAnchorToPicker.isActive = !toInitial
+            }
             self?.view.layoutIfNeeded()
         }
     }
-//    private func animateLeftPicker(activate: Bool){
-//        guard rightPicker.alpha != 1 else {
-//            switchPickers()
-//            return
-//        }
-//        let isActivated = leftPicker.alpha == 1
-//
-//        UIView.animate(withDuration: 0.6) {
-//            self.pieViewTopAnchorToButton.isActive = isActivated
-//            self.pieViewTopAnchorToPicker.isActive = !isActivated
-//            self.leftPicker.alpha = isActivated ? 0 : 1
-//            self.view.layoutIfNeeded()
-//        }
-//    }
-//    private func switchPickers(){
-//        let rightPickerActive = rightPicker.alpha == 1
-//        UIView.animate(withDuration: 0.5) { [weak self] in
-//            self?.rightPicker.alpha = rightPickerActive ? 0 : 1
-//            self?.leftPicker.alpha = rightPickerActive ? 1 : 0
-//        }
-//    }
     
-    //MARK: Actions
+    //MARK: System
+    ///Checks if end date greater than begin date. If not, update values with active picker as primary.
+    func validateDatePickerInput(sender: UIDatePicker){
+        print("validate")
+        if leftDatePicker.date > rightDatePicker.date {
+            print("needed")
+            if sender === rightDatePicker {
+                print("completed")
+                leftDatePicker.date = sender.date
+                leftPickerView.updateSubtitleLabel(with: convertDateToString(sender.date))
+            } else {
+                print("completed")
+                rightDatePicker.date = sender.date
+                rightPickerView.updateSubtitleLabel(with: convertDateToString(sender.date))
+            }
+        }
+    }
+    
+}
+//MARK: - Actions
+extension StatisticView {
+    //Ralated to picekes,
     @objc func leftPickerViewDidTap(sender: UIView){
         updateDisplayedPicker(for: .left)
     }
@@ -474,27 +449,35 @@ class StatisticVC: UIViewController {
     
     ///Called in responce on attached dataPicker value change.
     @objc func dataPickerDidSelect(sender: UIDatePicker){
-        if sender == leftPicker {
-            viewModel.beginDateDidChangeOn(sender.date)
-        } else {
-            viewModel.endDateDidChangedOn(sender.date)
+        validateDatePickerInput(sender: sender)
+        let interval = DateInterval(start: leftDatePicker.date, end: rightDatePicker.date)
+        input?.send(.selectedIntervalUpdated(interval))
+    }
+
+    ///Related to panGesture, which becoming accessable with picker..
+    @objc func viewDidPan(sender: UIPanGestureRecognizer){
+        guard let picker = activePicker else { return }
+
+        let translation = sender.translation(in: view).y
+        
+        if translation < -10 {
+            updateDisplayedPicker(for: picker)
         }
     }
 }
 //MARK: - Extend for TableView delegate and DataSource
-extension StatisticVC: UITableViewDelegate, UITableViewDataSource{
+extension StatisticView: UITableViewDelegate, UITableViewDataSource{
     func numberOfSections(in tableView: UITableView) -> Int {
         1
     }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        viewModel.numberOfRowsInTableView()
+        viewModel?.numberOfRowsInTableView() ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: StatisticViewCell.id, for: indexPath) as? StatisticViewCell else{
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: StatisticViewCell.id, for: indexPath) as? StatisticViewCell, let data = viewModel?.dataForTableViewCell(at: indexPath) else {
             return UITableViewCell()
         }
-        let data = viewModel.dataForTableViewCell(at: indexPath)
         cell.configureCellWith(data)
         return cell
     }
@@ -503,27 +486,29 @@ extension StatisticVC: UITableViewDelegate, UITableViewDataSource{
     }
 }
 //MARK: - Extend for PickerView Delegate and DataSource
-extension StatisticVC: UIPickerViewDelegate, UIPickerViewDataSource {
+extension StatisticView: UIPickerViewDelegate, UIPickerViewDataSource {
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
         1
     }
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        viewModel.numberOfRowsInPicker()
+        viewModel?.numberOfRowsInPicker() ?? 0
         
     }
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        viewModel.didSelectPickerRowAt(row)
+        viewModel?.didSelectPickerRowAt(row)
     }
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        viewModel.titleForPickerRowAt(row).localized
+        viewModel?.titleForPickerRowAt(row).localized
     }
 }
 
-extension StatisticVC: ChartViewDelegate{
+extension StatisticView: ChartViewDelegate{
     func chartValueSelected(_ chartView: ChartViewBase, entry: ChartDataEntry, highlight: Highlight) {
-        viewModel.didSelectEntry(entry as! PieChartDataEntry)
+        chartView.highlightValue(nil)
+        guard let pieEntry = entry as? PieChartDataEntry else { return }
+        input?.send(.selectedChartEntryUpdated(pieEntry))
     }
     func chartValueNothingSelected(_ chartView: ChartViewBase) {
-        viewModel.didSelectEntry(nil)
+        input?.send(.selectedChartEntryUpdated(nil))
     }
 }

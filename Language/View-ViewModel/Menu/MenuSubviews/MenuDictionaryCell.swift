@@ -30,7 +30,7 @@ class MenuDictionaryCell: UITableViewCell{
     private var isActionLooped: Bool = false
     private var isStatActive: Bool = false
 
-    private weak var statisticHostingController: UIHostingController<MenuStatisticView>?
+    private var statisticHostingController: UIHostingController<MenuStatisticView>!
     private weak var delegate: CustomCellDataDelegate?
     
     //MARK: - Views

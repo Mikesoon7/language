@@ -202,7 +202,7 @@ class MenuView: UIViewController {
     //MARK: - Actions
     @objc func statButtonDidTap(sender: Any){
         let vm = viewModelFactory.configureStatisticViewModel()
-        let vc = StatisticVC(viewModel: vm)
+        let vc = StatisticView(viewModel: vm)
         self.present(vc, animated: true)
         //TODO: Call new vc with the model.
     }

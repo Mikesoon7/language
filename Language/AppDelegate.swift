@@ -71,11 +71,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     @objc func coreDataObjectsDidChange(notification: Notification) {
         guard let userInfo = notification.userInfo else { return }
-        
+
         if let insert = userInfo[NSInsertedObjectsKey] as? Set<NSManagedObject>, !insert.isEmpty {
             NotificationCenter.default.post(name: .appDataDidChange, object: nil, userInfo: ["changeType": NSManagedObject.ChangeType.insert])
         }
-        
+
         if let updates = userInfo[NSUpdatedObjectsKey] as? Set<NSManagedObject>, !updates.isEmpty {
             NotificationCenter.default.post(name: .appDataDidChange, object: nil, userInfo: ["changeType": NSManagedObject.ChangeType.update])
         }

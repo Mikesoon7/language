@@ -18,6 +18,7 @@
 "statistic.currentWeek" = "Поточний тиждень";
 "statistic.currentMonth" = "Поточний місяць";
 "statistic.previousMonth" = "Попередній місяць";
+"statistic.allTime" = "За весь час";
 "statistic.custom" = "Обрати свій";
 //MARK: - SettingsVC
 "settingsVCTitle" = "Налаштування";
