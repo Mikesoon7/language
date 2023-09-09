@@ -15,7 +15,7 @@ import Combine
 class EditView: UIViewController {
     
     
-    private var viewModel: EditViewModel!
+    private var viewModel: EditViewModel?
     private var viewModelFactory: ViewModelFactory
     private var cancellables = Set<AnyCancellable>()
     
@@ -29,8 +29,7 @@ class EditView: UIViewController {
         view.allowsEditingTextAttributes = true
         view.textColor = .label
         view.backgroundColor = .systemBackground
-        view.font = UIFont(name: "Times New Roman", size: 17) ?? UIFont()
-        view.text = "some very important text"
+        view.font = .timesNewRoman.withSize(17)
         
         view.alwaysBounceVertical = true
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -42,7 +41,8 @@ class EditView: UIViewController {
         field.backgroundColor = .clear
         field.textColor = .label
         
-        field.defaultTextAttributes = NSAttributedString().fontWithoutString(bold: true, size: 23)
+        field.font = .georgianBoldItalic.withSize(23)
+        field.adjustsFontSizeToFitWidth = true
         field.textAlignment = .center
         return field
     }()
@@ -68,6 +68,8 @@ class EditView: UIViewController {
         configureTextField()
         configureTextView()
         configureNavBar()
+        
+        
     }
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
@@ -80,25 +82,28 @@ class EditView: UIViewController {
             self.topStroke.strokeColor = UIColor.label.cgColor
         }
     }
+    deinit {
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
+    }
     private func bind(){
-        viewModel.$data
+        viewModel?.$data
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] data in
                 self?.configure(with: data.unsafelyUnwrapped)
             })
             .store(in: &cancellables)
         
-        viewModel.output
+        viewModel?.output
             .sink { [weak self] output in
                 switch output {
-                case .data(let parsedDictionary):
+                case .shouldPresentData(let parsedDictionary):
                     self?.configure(with: parsedDictionary)
-                case .dictionaryError(let error):
+                case .shouldPresentError(let error):
                     self?.presentError(error)
-                case .wordsError(let error):
-                    self?.presentError(error)
-                case .emtyText:
-                    self?.configureAlertMessage()
+                case .shouldPresentAlert(let alertType):
+                    self?.configureAlertFor(alertType)
+                case .shouldUpdateLabels:
+                    self?.configureLabels()
                 case .editSucceed:
                     self?.navigationController?.popViewController(animated: true)
                 }
@@ -117,7 +122,15 @@ class EditView: UIViewController {
     //MARK: - Initial controller SetUp
     func configureController(){
         view.backgroundColor = .systemBackground
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillChangeFrame(_:)),
+            name: UIResponder.keyboardWillChangeFrameNotification,
+            object: nil
+        )
     }
+    
     //CustomStruct
     func configure(with data: ParsedDictionary){
         self.oldText = data.separatedText
@@ -149,28 +162,34 @@ class EditView: UIViewController {
         self.navigationItem.titleView = textField
         
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "system.save".localized, style: .done, target: self, action: #selector(saveButTap(sender:)))
-//        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .save,
-//                                                                 target: self,
-//                                                                 action: #selector(saveButTap(sender:)))
+
         navigationItem.backButtonDisplayMode = .minimal
         self.navigationController?.navigationBar.tintColor = .label
         self.navigationController?.navigationBar.isTranslucent = true
     }
     
-    func configureText(){
-        
-    }
-    func configureAlertMessage(){
-        let alert = UIAlertController().alertWithAction(
-            alertTitle: "edit.emptyField.title".localized,
-            alertMessage: "edit.emptyField.message".localized,
-            alertStyle: .actionSheet,
-            action2Title: "system.cancel".localized, action2Style: .cancel)
-        let deleteAction = UIAlertAction(title: "system.delete".localized, style: .destructive){ [weak self] _ in
-            self?.viewModel?.deleteDictionary()
+    func configureAlertFor(_ errorType: EditViewModel.InvalidText){
+        let isForEmtyText = errorType == .invalidText ? true : false
+        let alert = UIAlertController()
+            .alertWithAction(
+                alertTitle: (isForEmtyText ? "edit.emptyText.title" : "edit.emptyField.title").localized,
+                alertMessage: (isForEmtyText ? "edit.emptyText.message" : "edit.emptyField.message").localized,
+                alertStyle: .actionSheet,
+                action1Title: "system.cancel".localized,
+                action1Style: .cancel
+            )
+        if isForEmtyText {
+            let deleteAction = UIAlertAction(title: "system.delete".localized, style: .destructive){ [weak self] _ in
+                self?.viewModel?.deleteDictionary()
+            }
+            alert.addAction(deleteAction)
         }
-        alert.addAction(deleteAction)
-        self.present(self, animated: true)
+        self.present(alert, animated: true)
+    }
+    func configureLabels(){
+        if let saveButton =  navigationItem.rightBarButtonItem {
+            saveButton.title = "system.save".localized
+        }
     }
 }
 
@@ -178,15 +197,12 @@ class EditView: UIViewController {
 extension EditView {
     @objc func saveButTap(sender: Any){
         let text = textView.text
-        viewModel.parseTextToArray(name: textField.text, newText: text ?? "", oldCollection: oldText)
+        viewModel?.parseTextToArray(name: textField.text ?? "", newText: text ?? "", oldCollection: oldText)
     }
     
     //Done button
     @objc func rightBarButDidTap(sender: Any){
-//        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .save,
-//                                                            target: self,
-//                                                            action: #selector(saveButTap(sender:)))
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "system.save".localized, style: .plain, target: self, action: #selector(saveButTap(sender:)))
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "system.save".localized, style: .done, target: self, action: #selector(saveButTap(sender:)))
 
         if textView.isFirstResponder{
             textView.resignFirstResponder()
@@ -194,17 +210,37 @@ extension EditView {
             textField.resignFirstResponder()
         }
     }
+    @objc func keyboardWillChangeFrame(_ notification: Notification) {
+        if let userInfo = notification.userInfo,
+           let keyboardEndFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
+            
+            let convertedEndFrame = view.convert(keyboardEndFrame, from: view.window)
+            
+            // Calculate the overlap between the keyboard and the text view
+            let overlap = textView.frame.maxY - convertedEndFrame.minY
+            
+            // Adjust the content inset to keep the text visible
+            if overlap > 0 {
+                textView.contentInset.bottom = overlap
+            } else {
+                textView.contentInset.bottom = 0
+            }
+            
+            textView.scrollIndicatorInsets = textView.contentInset
+        }
+    }
+
 }
 
 //MARK: - TextViewDelegate
 extension EditView: UITextViewDelegate{
     func textViewDidBeginEditing(_ textView: UITextView) {
-        if textView.textColor == .lightGray {
-            textView.text = nil
-            textView.textColor = nil
-            textView.font = nil
-            textView.typingAttributes = [NSAttributedString.Key.font : UIFont(name: "Times New Roman", size: 17) ?? UIFont(), NSAttributedString.Key.backgroundColor : UIColor.clear, NSAttributedString.Key.foregroundColor : UIColor.label]
-        }
+//        if textView.textColor == .lightGray {
+//            textView.text = nil
+//            textView.textColor = nil
+//            textView.font = nil
+//            textView.typingAttributes = [NSAttributedString.Key.font : UIFont(name: "Times New Roman", size: 17) ?? UIFont(), NSAttributedString.Key.backgroundColor : UIColor.clear, NSAttributedString.Key.foregroundColor : UIColor.label]
+//        }
         if self.navigationController?.navigationItem.rightBarButtonItem == nil{
             navigationItem.rightBarButtonItem = UIBarButtonItem(title: "system.done".localized, style: .done, target: self, action: #selector(rightBarButDidTap(sender:)))
         }
@@ -218,4 +254,12 @@ extension EditView: UITextFieldDelegate{
             self.navigationItem.setRightBarButton(UIBarButtonItem(title: "system.done".localized, style: .done, target: self, action: #selector(rightBarButDidTap(sender:))), animated: true)
         }
     }
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        let maxLength = 15
+        let currentString = (textField.text ?? "") as NSString
+        let newString = currentString.replacingCharacters(in: range, with: string)
+        
+        return newString.count <= maxLength
+    }
+
 }

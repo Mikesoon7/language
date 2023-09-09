@@ -144,8 +144,8 @@
 "unknownError.title" = "An unknown error occured.";
 "unknownError.message" = "Please try again or contact the support team if the issue persists";
 //MARK: - EditVC
-"edit.emptyField.title" = "The edit field is empty";
-"edit.emptyField.message" = "Saving dictionary in this state will cause it's deletion. \nAre you sure?";
-
-
+"edit.emptyField.title" = "The name is empty";
+"edit.emptyField.message" = "Please, provide at least one charachter for a dictionary name";
+"edit.emptyText.title" = "The edit text is empty";
+"edit.emptyText.message" = "Saving dictionary in this state will cause it's deletion. \nAre you sure?";
 

@@ -78,10 +78,10 @@ class MenuDictionaryCell: UITableViewCell{
     
     var cardsLabel : UILabel = {
         var label = UILabel()
-        label.attributedText = NSAttributedString().fontWithString(
-            string: LanguageChangeManager.shared.localizedString(forKey: "tableCellNumberOfCards"),
-            bold: true,
-            size: 20)
+        label.attributedText = .attributedString(
+            string: "tableCellNumberOfCards".localized,
+            with: .georgianBoldItalic,
+            ofSize: 20)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()

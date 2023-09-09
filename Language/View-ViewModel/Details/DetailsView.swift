@@ -27,6 +27,7 @@ class DetailsView: UIViewController {
     private let randomizeLabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = .georgianBoldItalic.withSize(18)
         return label
     }()
     
@@ -46,6 +47,7 @@ class DetailsView: UIViewController {
     
     private let goalLabel : UILabel = {
         let label = UILabel()
+        label.font = .georgianBoldItalic.withSize(18)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -152,7 +154,7 @@ class DetailsView: UIViewController {
     }
     //MARK: - NavigationBar SetUp
     func configureNavBar(){
-        navigationController?.navigationBar.titleTextAttributes = NSAttributedString().fontWithoutString(bold: true, size: 23)
+        navigationController?.navigationBar.titleTextAttributes = NSAttributedString.textAttributesForNavTitle()
         navigationItem.backButtonDisplayMode = .minimal
     }
     
@@ -251,23 +253,22 @@ class DetailsView: UIViewController {
     func configureText(){
         self.navigationItem.title = "detailsTitle".localized
         
-        randomizeLabel.attributedText = NSAttributedString().fontWithString(
-            string: "randomize".localized,
-            bold: true, size: 18)
+        randomizeLabel.text = "randomize".localized
+        goalLabel.text = "goal".localized
         
-        goalLabel.attributedText = NSAttributedString().fontWithString(
-            string: "goal".localized,
-            bold: true, size: 18)
-        
-        addWordsBut.setAttributedTitle(NSAttributedString().fontWithString(
-            string: "addWords".localized,
-            bold: true,
-            size: 20), for: .normal)
-        
-        beginBut.setAttributedTitle(NSAttributedString().fontWithString(
-            string: "start".localized,
-            bold: true,
-            size: 18), for: .normal)
+        addWordsBut.setAttributedTitle(
+            .attributedString(
+                string: "addWords".localized,
+                with: .georgianBoldItalic,
+                ofSize: 20), for: .normal
+        )
+                    
+        beginBut.setAttributedTitle(
+            .attributedString(
+                string: "start".localized,
+                with: .georgianBoldItalic,
+                ofSize: 20), for: .normal
+        )
     }
     
     //MARK: Configure and present child ViewControllers

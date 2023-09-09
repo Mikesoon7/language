@@ -11,11 +11,6 @@ import Combine
 
 
 final class MenuViewModel{
-//    enum Output {
-//        case error(Error)
-//        case configureStat([DictionariesAccessLog])
-//        case shouldPresentVC(UIViewController)
-//    }
     enum Output{
         case needReload
         case needDelete(Int)

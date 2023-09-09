@@ -46,14 +46,14 @@ class LaunchAnimation{
         label1 = {
             let label = UILabel()
             label.translatesAutoresizingMaskIntoConstraints = false
-            label.attributedText = NSAttributedString().fontWithString(string: "Learny", bold: true, size: 20)
+            label.attributedText = .attributedString(string: "Learny", with: .georgianBoldItalic, ofSize: 20)
             return label
         }()
         
         label2 = {
             let label = UILabel()
             label.translatesAutoresizingMaskIntoConstraints = false
-            label.attributedText = NSAttributedString().fontWithString(string: "To brew something new", bold: true, size: 16)
+            label.attributedText = .attributedString(string: "To brew something new", with: .georgianBoldItalic, ofSize: 16)
             return label
         }()
         

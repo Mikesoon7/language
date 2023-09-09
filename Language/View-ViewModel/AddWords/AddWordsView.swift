@@ -11,12 +11,13 @@ import Combine
 
 class AddWordsView: UIViewController {
 
-    //MARK: - ViewModel related
-    private var viewModel: AddWordsViewModel
+    //MARK: ViewModel related
+    private var viewModel: AddWordsViewModel?
     private var viewModelFactory: ViewModelFactory
+    
     private var cancellable = Set<AnyCancellable>()
     
-    //MARK: - Views
+    //MARK: Views
     private lazy var textInputView: TextInputView = TextInputView(delegate: self)
 
     private let saveButton : UIButton = {
@@ -48,7 +49,7 @@ class AddWordsView: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         bind()
-        configureController()
+        configureView()
         configureNavBar()
         configureTextInputView()
         configureText()
@@ -67,34 +68,31 @@ class AddWordsView: UIViewController {
             self.topStroke.strokeColor = UIColor.label.cgColor
             if traitCollection.userInterfaceStyle == .dark {
                 saveButton.layer.shadowColor = shadowColorForDarkIdiom
-                textInputView.layer.shadowColor = shadowColorForDarkIdiom
             } else {
                 saveButton.layer.shadowColor = shadowColorForLightIdiom
-                textInputView.layer.shadowColor = shadowColorForLightIdiom
-
             }
         }
     }
     //MARK: Binding
     private func bind(){
-        viewModel.output
-            .sink { output in
+        viewModel?.output
+            .sink { [weak self] output in
                 switch output {
                 case .shouldPresentEerror(let error):
-                    self.presentError(error)
+                    self?.presentError(error)
                 case .shouldPop:
-                    self.navigationController?.popViewController(animated: true)
+                    self?.navigationController?.popViewController(animated: true)
                 case .shouldUpdatePlaceholder:
-                    self.textInputView.updatePlaceholder()
+                    self?.textInputView.updatePlaceholder()
                 case .shouldUpdateText:
-                    self.textInputView.updatePlaceholder()
-                    self.configureText()
+                    self?.textInputView.updatePlaceholder()
+                    self?.configureText()
                 }
             }
             .store(in: &cancellable)
     }
-    //MARK: - Controller SetUp
-    func configureController(){
+    //MARK: View Setup
+    private func configureView(){
         view.backgroundColor = .systemBackground
         
         //Observer on keyboard.
@@ -102,22 +100,22 @@ class AddWordsView: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(sender:)), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
 
-    //MARK: - Stroke SetUp
-    func configureStrokes(){
+    //MARK: Subviews SetUp
+    private func configureStrokes(){
         topStroke = UIView().addTopStroke(vc: self)
         bottomStroke = UIView().addBottomStroke(vc: self)
         
         view.layer.addSublayer(topStroke)
         view.layer.addSublayer(bottomStroke)
     }
-    //MARK: - NavBar SetUp
-    func configureNavBar(){
-        self.navigationController?.navigationBar.titleTextAttributes = NSAttributedString().fontWithoutString(bold: true, size: 23)
+    
+    private func configureNavBar(){
+        self.navigationController?.navigationBar.titleTextAttributes = NSAttributedString.textAttributesForNavTitle()
         self.navigationController?.navigationBar.tintColor = .label
         self.navigationController?.navigationBar.isTranslucent = true
     }
-    //MARK: - TextInputView SetUp
-    func configureTextInputView(){
+
+    private func configureTextInputView(){
         view.addSubview(textInputView)
         
         textInputViewHeightAnchor = textInputView.heightAnchor.constraint(equalTo: textInputView.widthAnchor, multiplier: 0.66)
@@ -129,8 +127,7 @@ class AddWordsView: UIViewController {
             textInputViewHeightAnchor
         ])
     }
-    //MARK: - Save Button SetUp
-    func configureSaveButton(){
+    private func configureSaveButton(){
         view.addSubview(saveButton)
         saveButton.translatesAutoresizingMaskIntoConstraints = false
         
@@ -146,27 +143,26 @@ class AddWordsView: UIViewController {
         saveButton.addTarget(self, action: #selector(saveButtonDidTap(sender: )), for: .touchUpInside)
     }
     
-    //MARK: - Other
-    //When user trying to save information, checks is it empty and return String if not.
-    func validateText() -> String?{
-        let insertTextAllert = UIAlertController(
-            title: "textAlert".localized,
-            message: "textInfo".localized ,
-            preferredStyle: .alert)
-        let action = UIAlertAction(
-            title: "system.agreeInformal".localized,
-            style: .cancel)
-        insertTextAllert.addAction(action)
-        action.setValue(UIColor.label, forKey: "titleTextColor")
-
-        guard let text = textInputView.textView.text, text != "" else {
+    //MARK: System
+    ///Returns textView value. If value equals nil, return nil and present an error.
+    private func validateText() -> String?{
+        guard let text = textInputView.textView.text, !text.isEmpty else {
+            let insertTextAllert = UIAlertController(
+                title: "textAlert".localized,
+                message: "textInfo".localized ,
+                preferredStyle: .actionSheet)
+            let action = UIAlertAction(
+                title: "system.agreeInformal".localized,
+                style: .cancel)
+            insertTextAllert.addAction(action)
+            action.setValue(UIColor.label, forKey: "titleTextColor")
             self.present(insertTextAllert, animated: true)
             return nil
         }
         return text
     }
-    //Uses as initial configurator for text values and in order to update them.
-    func configureText(){
+    /// Congifure all text properties of the view.
+    private func configureText(){
         navigationItem.title = "addWordTitle".localized
         saveButton.setAttributedTitle(
             .attributedString(string: "system.save".localized, with: .georgianBoldItalic, ofSize: 18), for: .normal)
@@ -175,8 +171,9 @@ class AddWordsView: UIViewController {
             doneButton.title = "system.done".localized
         }
     }
-    //Switch between standalone contrait and attached to saveButton
-    func updateTextViewConstraits(keyboardIsvisable: Bool){
+    
+    ///Switch between standalone contrait and attached to saveButton
+    private func updateTextViewConstraits(keyboardIsvisable: Bool){
         textInputViewHeightAnchor.isActive = !keyboardIsvisable
         textInputViewBottomAnchor.isActive = keyboardIsvisable
         view.layoutIfNeeded()
@@ -192,7 +189,7 @@ class AddWordsView: UIViewController {
     @objc func saveButtonDidTap(sender: UIButton){
         guard let text = validateText() else { return }
         
-        viewModel.getNewWordsFrom(text)
+        viewModel?.getNewWordsFrom(text)
     }
     //Small animation of bottom stroke dissapearence
     @objc func keyboardWillShow(sender: Notification){
@@ -227,8 +224,8 @@ extension AddWordsView: PlaceholderTextViewDelegate{
         }
     }
     
-    func configurePlaceholderText() -> String {
-        self.viewModel.configureTextPlaceholder()
+    func configurePlaceholderText() -> String? {
+        viewModel?.configureTextPlaceholder()
     }
     
 }

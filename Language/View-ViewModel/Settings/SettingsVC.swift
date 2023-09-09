@@ -109,9 +109,8 @@ class SettingsVC: UIViewController {
     //MARK: - NavigationBar SetUp
     func configureNavBar(){
         self.navigationItem.title = "settingsVCTitle".localized
-        self.navigationController?.navigationBar.titleTextAttributes = NSAttributedString().fontWithoutString( bold: true, size: 23)
-        
-        self.navigationController?.navigationBar.tintColor = .label
+        self.navigationController?.navigationBar.titleTextAttributes = NSAttributedString.textAttributesForNavTitle()
+//        self.navigationController?.navigationBar.tintColor = .label
         self.navigationController?.navigationBar.isTranslucent = true
     }
     //MARK: - TableView SetUp

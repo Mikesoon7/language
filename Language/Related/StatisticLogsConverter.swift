@@ -36,10 +36,7 @@ class StatisticLogConverter {
         var upperBound = Date()
         let lowerBound = Date()
         for dictionary in initialLogsData{
-            guard let firstDay = dictionary.affiliatedLogs.first?.accessDate else{
-                print("failed to get first day")
-                return
-            }
+            let firstDay = dictionary.affiliatedLogs.first?.accessDate ?? Date()
             if upperBound > firstDay {
                 upperBound = firstDay
             }

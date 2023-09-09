@@ -114,108 +114,7 @@ extension UITableViewCell{
         })
     }
 }
-extension UIView{
-//    func addTopStroke(vc: UIViewController) -> CAShapeLayer{
-//        let topStroke = CAShapeLayer()
-//        let path = UIBezierPath()
-//        let y = {
-//            if vc.navigationController != nil {
-//                return vc.view.safeAreaInsets.top
-//            } else {
-//                return 0
-//            }
-//        }()
-//        path.move(to: CGPoint(x: 0, y: y ))
-//        path.addLine(to: CGPoint(x: vc.view.bounds.maxX, y: y))
-//        topStroke.path = path.cgPath
-//        topStroke.lineWidth = 0.8
-//        topStroke.strokeColor = UIColor.label.cgColor
-//        topStroke.fillColor = UIColor.clear.cgColor
-//        topStroke.opacity = 0.8
-//
-//        return topStroke
-//    }
-//    func addBottomStroke(vc: UIViewController) -> CAShapeLayer{
-//        let path = UIBezierPath()
-//        let y = {
-//            if vc.tabBarController?.tabBar != nil{
-//                return vc.tabBarController!.tabBar.frame.minY
-//            } else {
-//                return 0
-//            }
-//        }()
-//        path.move(to: CGPoint(x: 0, y: y))
-//        path.addLine(to: CGPoint(x: vc.view.bounds.maxX, y: y))
-//        let stroke = CAShapeLayer()
-//        stroke.path = path.cgPath
-//        stroke.lineWidth = 0.8
-//        stroke.strokeColor = UIColor.label.cgColor
-//        stroke.fillColor = UIColor.clear.cgColor
-//        stroke.opacity = 0.8
-//        
-//        return stroke
-//    }
-}
-extension NSAttributedString{
-    func fontWithString(string: String, bold: Bool, size: CGFloat) -> NSAttributedString{
-        let font : String!
-        if bold {
-            font = "Georgia-BoldItalic"
-        } else {
-            font = "Georgia-Italic"
-        }
-        let attributes = NSAttributedString(string: string,
-                                            attributes: [NSAttributedString.Key.font :
-                                                            UIFont(name: font ,
-                                                                   size: size)!,
-                                                         NSAttributedString.Key.foregroundColor:
-                                                            UIColor.label])
-        return attributes
-    }
-    func fontWithoutString(bold: Bool, size: CGFloat) -> [NSAttributedString.Key : Any]{
-        let font : String!
-        if bold {
-            font = "Georgia-BoldItalic"
-        } else {
-            font = "Georgia-Italic"
-        }
-        let attributes = [NSAttributedString.Key.font:
-                            UIFont(name: font,
-                                   size: size)!,
-                          NSAttributedString.Key.foregroundColor:
-                            UIColor.label]
-        return attributes as [NSAttributedString.Key : Any]
-    }
-    static func fontWithString(string: String, bold: Bool, size: CGFloat) -> NSAttributedString{
-        let font : String!
-        if bold {
-            font = "Georgia-BoldItalic"
-        } else {
-            font = "Georgia-Italic"
-        }
-        let attributes = NSAttributedString(string: string,
-                                            attributes: [NSAttributedString.Key.font :
-                                                            UIFont(name: font ,
-                                                                   size: size)!,
-                                                         NSAttributedString.Key.foregroundColor:
-                                                            UIColor.label])
-        return attributes
-    }
-    static func fontWithoutString(bold: Bool, size: CGFloat) -> [NSAttributedString.Key : Any]{
-        let font : String!
-        if bold {
-            font = "Georgia-BoldItalic"
-        } else {
-            font = "Georgia-Italic"
-        }
-        let attributes = [NSAttributedString.Key.font:
-                            UIFont(name: font,
-                                   size: size)!,
-                          NSAttributedString.Key.foregroundColor:
-                            UIColor.label]
-        return attributes as [NSAttributedString.Key : Any]
-    }
-    
+extension NSAttributedString{    
     static func textAttributes(with font: UIFont, ofSize: CGFloat, foregroundColour: UIColor = .label, backgroundColour: UIColor = .clear) -> [NSAttributedString.Key : Any]{
         let attributes = [NSAttributedString.Key.font:
                             font.withSize(ofSize),
@@ -225,15 +124,6 @@ extension NSAttributedString{
                              backgroundColour]
         return attributes as [NSAttributedString.Key : Any]
     }
-//    static func attributedStringWithoutText(with font: UIFont, ofSize: CGFloat, colour: UIColor = .label) -> NSAttributedString{
-//        let attributes = NSAttributedString(string: "",
-//                                            attributes: [NSAttributedString.Key.font :
-//                                                            font.withSize(ofSize),
-//                                                         NSAttributedString.Key.foregroundColor:
-//                                                            UIColor.label])
-//        return attributes
-//    }
-//
     static func attributedString(string: String, with font: UIFont, ofSize: CGFloat, foregroundColour: UIColor = .label, backgroundColour: UIColor = .clear) -> NSAttributedString{
         let attributes = NSAttributedString(string: string,
                                             attributes: [NSAttributedString.Key.font :
@@ -244,6 +134,12 @@ extension NSAttributedString{
                                                             backgroundColour
                                                         ])
         return attributes
+    }
+    
+    static func textAttributesForNavTitle() -> [NSAttributedString.Key : Any] {
+        [NSAttributedString.Key.font:            UIFont.georgianBoldItalic.withSize(23),
+         NSAttributedString.Key.foregroundColor: UIColor.label,
+         NSAttributedString.Key.backgroundColor: UIColor.clear]
     }
     
 }

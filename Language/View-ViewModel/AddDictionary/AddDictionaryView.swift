@@ -10,14 +10,15 @@ import UIKit
 import CoreData
 import Combine
 
-class AddDictionaryVC: UIViewController {
-    
-    private var viewModel: AddDictionaryViewModel
+class AddDictionaryView: UIViewController {
+    //MARK: Properties
+    private var viewModel: AddDictionaryViewModel?
     private var viewModelFactory: ViewModelFactory
     private var cancellabel = Set<AnyCancellable>()
-        
-    private lazy var textInputView: TextInputView = TextInputView(delegate: self )
-
+    
+    //MARK: Views
+    private lazy var textInputView: TextInputView = TextInputView(delegate: self)
+    
     private let nameView : UIView = {
         var view = UIView()
         view.setUpCustomView()
@@ -25,6 +26,7 @@ class AddDictionaryVC: UIViewController {
     }()
     private let nameLabel: UILabel = {
         let label = UILabel()
+        label.font = .georgianBoldItalic.withSize(18)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -44,7 +46,7 @@ class AddDictionaryVC: UIViewController {
     
     private var topStroke = CAShapeLayer()
     private var bottomStroke = CAShapeLayer()
-
+    
     //MARK: - Constraints and related.
     private var textInputViewHeightAnchor: NSLayoutConstraint!
     private var textInputViewBottomAnchor: NSLayoutConstraint!
@@ -54,13 +56,13 @@ class AddDictionaryVC: UIViewController {
     
     required init(factory: ViewModelFactory){
         self.viewModelFactory = factory
-        self.viewModel = factory.configureAddDictionaryModel()
+        self.viewModel = viewModelFactory.configureAddDictionaryModel()
         super.init(nibName: nil, bundle: nil)
     }
     required init?(coder: NSCoder) {
         fatalError("init?(coder: NSCoder) wasn't imported")
     }
-
+    
     //MARK: - Inherited
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -87,34 +89,32 @@ class AddDictionaryVC: UIViewController {
             if traitCollection.userInterfaceStyle == .dark{
                 nameView.layer.shadowColor = shadowColorForDarkIdiom
                 saveButton.layer.shadowColor = shadowColorForDarkIdiom
-                textInputView.layer.shadowColor = shadowColorForDarkIdiom
             } else {
                 nameView.layer.shadowColor = shadowColorForLightIdiom
                 saveButton.layer.shadowColor = shadowColorForLightIdiom
-                textInputView.layer.shadowColor = shadowColorForLightIdiom
-
             }
         }
     }
-    //MARK: - Bind
+    //MARK: Bind
     private func bind(){
-        viewModel.output
-            .sink { output in
+        viewModel?.output
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] output in
                 switch output {
                 case .shouldPop:
-                    self.navigationController?.popViewController(animated: true)
+                    self?.navigationController?.popViewController(animated: true)
                 case .shouldPresentError(let error):
-                    self.presentError(error)
+                    self?.presentError(error)
                 case .shouldUpdatePlaceholder:
-                    self.textInputView.updatePlaceholder()
+                    self?.textInputView.updatePlaceholder()
                 case .shouldUpdateText:
-                    self.textInputView.updatePlaceholder()
-                    self.configureText()
+                    self?.textInputView.updatePlaceholder()
+                    self?.configureText()
                 }
             }
             .store(in: &cancellabel)
     }
-    //MARK: - Controleler SetUp
+    //MARK: Controller SetUp
     private func configureController(){
         view.backgroundColor = .systemBackground
         
@@ -131,15 +131,14 @@ class AddDictionaryVC: UIViewController {
         view.layer.addSublayer(bottomStroke)
     }
     
-    //MARK: - NavBar SetUp
+    //MARK: Subviews configuration.
     private func configureNavBar(){
-        navigationController?.navigationBar.titleTextAttributes = NSAttributedString().fontWithoutString(bold: true, size: 23)
+        navigationController?.navigationBar.titleTextAttributes = NSAttributedString.textAttributesForNavTitle()
     }
-
-    //MARK: - TextInputView SetUp
+    
     private func configureTextInputView(){
         view.addSubview(textInputView)
-
+            
         textInputViewHeightAnchor = textInputView.heightAnchor.constraint(equalTo: textInputView.widthAnchor, multiplier: 0.66)
         textInputViewBottomAnchor = textInputView.bottomAnchor.constraint(equalTo: saveButton.topAnchor, constant: -(subviewsVerticalInset * 2 + buttonHeight))
         NSLayoutConstraint.activate([
@@ -149,7 +148,6 @@ class AddDictionaryVC: UIViewController {
             textInputViewHeightAnchor
         ])
     }
-    //MARK: - NameInputView SetUp
     private func configureNameInputView(){
         view.addSubview(nameView)
         nameView.addSubviews(nameLabel, nameInputField)
@@ -159,7 +157,7 @@ class AddDictionaryVC: UIViewController {
             nameView.topAnchor.constraint(equalTo: self.textInputView.bottomAnchor, constant: subviewsVerticalInset),
             nameView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             nameView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: .widthMultiplerFor(type: .forViews)),
-            nameView.heightAnchor.constraint(equalToConstant: 60),
+            nameView.heightAnchor.constraint(equalToConstant: buttonHeight),
             
             nameLabel.leadingAnchor.constraint(equalTo: nameView.leadingAnchor, constant: 15),
             nameLabel.centerYAnchor.constraint(equalTo: nameView.centerYAnchor),
@@ -169,15 +167,13 @@ class AddDictionaryVC: UIViewController {
         ])
         //Action
         nameView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(nonAccurateNameFieldTap(sender:))))
-        
-
     }
-    //MARK: - SaveButton SetUp
+
     private func configureSaveButton(){
         view.addSubview(saveButton)
         
         saveButton.translatesAutoresizingMaskIntoConstraints = false
-
+        
         NSLayoutConstraint.activate([
             saveButton.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor, constant: -subviewsVerticalInset),
             saveButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
@@ -191,71 +187,69 @@ class AddDictionaryVC: UIViewController {
         saveButton.addTargetInsideTouchStop()
     }
     
-    //MARK: - Other
-    //Uses as initial configurator for text values and in order to update them.
+    //MARK: System
+    /// Congifure all text properties of the view.
     private func configureText(){
-        nameLabel.attributedText =
-            .attributedString(string: "dictionaryName".localized,
-                              with: .georgianBoldItalic, ofSize: 18)
+        nameLabel.text =  "dictionaryName".localized
+
         saveButton.setAttributedTitle(
             .attributedString(string: "system.save".localized,
                               with: .georgianBoldItalic, ofSize: 18), for: .normal)
-
+        
         self.navigationItem.title = "addDictTitle".localized
         nameInputField.placeholder = "fieldPlaceholder".localized
         if let doneButton = navigationItem.rightBarButtonItem {
             doneButton.title = "system.done".localized
         }
     }
-    //When user trying to save information, checks if is the name empty and return String if is not.
+    ///Returns textFiled value. If value equals nil, return nil and present an error.
     private func validateName() -> String? {
-        let insertNameAllert = UIAlertController(
-            title: "nameAlert".localized,
-            message: "nameInfo".localized,
-            preferredStyle: .alert)
-        let action = UIAlertAction(
-            title: "agreeInformal".localized,
-            style: .cancel)
-        insertNameAllert.addAction(action)
-        action.setValue(UIColor.label, forKey: "titleTextColor")
-        
-        guard nameInputField.hasText else {
+        guard let text = nameInputField.text, !text.isEmpty else {
+            let insertNameAllert = UIAlertController(
+                title: "nameAlert".localized,
+                message: "nameInfo".localized,
+                preferredStyle: .actionSheet)
+            let action = UIAlertAction(
+                title: "system.agreeInformal".localized,
+                style: .cancel)
+            insertNameAllert.addAction(action)
+            action.setValue(UIColor.label, forKey: "titleTextColor")
             self.present(insertNameAllert, animated: true)
-            return nil
-        }
-        return nameInputField.text
-    }
-    //When user trying to save information, checks if is the text empty and return String if is not.
-    private func validateText() -> String?{
-        let insertTextAllert = UIAlertController(
-            title: "textAlert".localized,
-            message: "textInfo".localized ,
-            preferredStyle: .alert)
-        let action = UIAlertAction(
-            title: "system.agreeInformal".localized,
-            style: .cancel)
-        insertTextAllert.addAction(action)
-        action.setValue(UIColor.label, forKey: "titleTextColor")
-
-        guard let text = textInputView.textView.text, text != "" && textInputView.textView.textColor != .lightGray else {
-            self.present(insertTextAllert, animated: true)
             return nil
         }
         return text
     }
-    //Switch between standalone contrait and attached to saveButton
-    private func updateTextViewConstraits(keyboardIsvisable: Bool){
-        textInputViewHeightAnchor.isActive = !keyboardIsvisable
-        textInputViewBottomAnchor.isActive = keyboardIsvisable
+    ///Returns textView value. If value equals nil, return nil and present an error.
+    private func validateText() -> String?{
+        guard let text = textInputView.textView.text, !text.isEmpty else {
+            let insertTextAllert = UIAlertController(
+                title: "textAlert".localized,
+                message: "textInfo".localized ,
+                preferredStyle: .actionSheet)
+            let action = UIAlertAction(
+                title: "system.agreeInformal".localized,
+                style: .cancel)
+            insertTextAllert.addAction(action)
+            action.setValue(UIColor.label, forKey: "titleTextColor")
+            self.present(insertTextAllert, animated: true)
+            return nil
+        }
+                
+        return text
+    }
+    ///Update textView layout.
+    private func updateTextViewConstraits(keyboardIsVisable: Bool){
+        textInputViewHeightAnchor.isActive = !keyboardIsVisable
+        textInputViewBottomAnchor.isActive = keyboardIsVisable
         view.layoutIfNeeded()
     }
-    
+}
 //MARK: - Actions
+extension AddDictionaryView {
     @objc func saveButtonDidTap(sender: Any){
-        guard let name = validateName() else { return }
-        guard let text = validateText() else { return }
+        guard let name = validateName(), let text = validateText() else { return }
         
-        viewModel.createDictionary(name: name, text: text)
+        viewModel?.createDictionary(name: name, text: text)
                         
         navigationItem.rightBarButtonItem = nil
         view.becomeFirstResponder()
@@ -283,7 +277,7 @@ class AddDictionaryVC: UIViewController {
 
         bottomStroke.add(animation, forKey: "strokeOpacity")
         
-        updateTextViewConstraits(keyboardIsvisable: true)
+        updateTextViewConstraits(keyboardIsVisable: true)
     }
     @objc func keyboardWillHide(sender: Notification){
         let animation = CABasicAnimation(keyPath: "opacity")
@@ -294,24 +288,26 @@ class AddDictionaryVC: UIViewController {
         
         bottomStroke.add(animation, forKey: "strokeOpacity")
         
-        updateTextViewConstraits(keyboardIsvisable: false)
+        updateTextViewConstraits(keyboardIsVisable: false)
     }
 }
 
 //MARK: - Extending for PlaceholderTextView
-extension AddDictionaryVC: PlaceholderTextViewDelegate{
+extension AddDictionaryView: PlaceholderTextViewDelegate{
+    ///Delegate method. Activating navigation bar bautton item.
     func textViewWillAppear() {
         if self.navigationController?.navigationItem.rightBarButtonItem == nil{
             navigationItem.rightBarButtonItem = UIBarButtonItem(title: "system.done".localized, style: .plain, target: self, action: #selector(rightBarButDidTap(sender:)))
         }
     }
-    func configurePlaceholderText() -> String {
-        viewModel.configureTextPlaceholder()
+    ///Delegate method. Retrieving and returns placeholder text
+    func configurePlaceholderText() -> String? {
+        viewModel?.configureTextPlaceholder()
     }
 }
 
 //MARK: - TextField delegate
-extension AddDictionaryVC: UITextFieldDelegate{
+extension AddDictionaryView: UITextFieldDelegate{
     func textFieldDidBeginEditing(_ textField: UITextField) {
         //Showing button for keyboard dismissing
         if self.navigationController?.navigationItem.rightBarButtonItem == nil{
@@ -319,7 +315,6 @@ extension AddDictionaryVC: UITextFieldDelegate{
         }
     }
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-
         let maxLength = 15
         let currentString = (textField.text ?? "") as NSString
         let newString = currentString.replacingCharacters(in: range, with: string)

@@ -157,7 +157,7 @@ class MenuView: UIViewController {
     
     //MARK: - NavigationBar SetUp
     func configureNavBar(){
-        navigationController?.navigationBar.titleTextAttributes = NSAttributedString().fontWithoutString(bold: true, size: 23)
+        navigationController?.navigationBar.titleTextAttributes = NSAttributedString.textAttributesForNavTitle()
         //Statisctic BarButton
         let rightButton = UIBarButtonItem(
             image: UIImage(systemName: "chart.bar"),
@@ -185,7 +185,7 @@ class MenuView: UIViewController {
     
     //MARK: Configuring and presenting VC's
     func pushAddDictionaryVC(){
-        let vc = AddDictionaryVC(factory: self.viewModelFactory)
+        let vc = AddDictionaryView(factory: self.viewModelFactory)
         self.navigationController?.pushViewController(vc, animated: true)
     }
     func pushDetailsVCFor(_ dictionary: DictionariesEntity){

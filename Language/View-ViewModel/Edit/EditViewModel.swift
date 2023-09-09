@@ -11,12 +11,15 @@ import Differ
 import UIKit
 
 class EditViewModel {
-    
+    enum InvalidText{
+        case invalidName
+        case invalidText
+    }
     enum Output{
-        case data(ParsedDictionary)
-        case emtyText
-        case dictionaryError(DictionaryErrorType)
-        case wordsError(CoreDataHelper.WordsErrorType)
+        case shouldPresentData(ParsedDictionary)
+        case shouldPresentAlert(InvalidText)
+        case shouldUpdateLabels
+        case shouldPresentError(Error)
         case editSucceed
     }
 
@@ -39,15 +42,19 @@ class EditViewModel {
             words = try model.fetchWords(for: dictionary)
             let parsedDictionary = parseArrayToText(with: words, name: dictionary.language)
             self.data = parsedDictionary
-        } catch let error as CoreDataHelper.WordsErrorType{
-            words = []
-            output.send(.wordsError(error))
         } catch {
-            
+            words = []
+            output.send(.shouldPresentError(error))
         }
         
         NotificationCenter.default.addObserver(
             self, selector: #selector(separatorDidChange(sender: )), name: .appSeparatorDidChange, object: nil)
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(languageDidChange(sender: )), name: .appLanguageDidChange, object: nil)
+    }
+    deinit {
+        NotificationCenter.default.removeObserver(self, name: .appSeparatorDidChange, object: nil)
+        NotificationCenter.default.removeObserver(self, name: .appLanguageDidChange, object: nil)
     }
     //MARK: - Methods
     //Prepairing text for edit mode.
@@ -63,10 +70,13 @@ class EditViewModel {
     }
     
     //Converting text to WordsEntity
-    func parseTextToArray(name: String?, newText: String, oldCollection: [String]){
-        print(newText)
+    func parseTextToArray(name: String, newText: String, oldCollection: [String]){
+        guard !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            output.send(.shouldPresentAlert(.invalidName))
+            return
+        }
         guard !newText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-            output.send(.emtyText)
+            output.send(.shouldPresentAlert(.invalidText))
             return 
         }
         self.dictionaryName = name
@@ -92,7 +102,7 @@ class EditViewModel {
             output.send(.editSucceed)
         } catch {
             let error = error as! DictionaryErrorType
-            output.send(.dictionaryError(error))
+            output.send(.shouldPresentError(error))
         }
     }
     
@@ -103,14 +113,17 @@ class EditViewModel {
             output.send(.editSucceed)
         } catch {
             let error = error as! DictionaryErrorType
-            output.send(.dictionaryError(error))
+            output.send(.shouldPresentError(error))
         }
     }
     
-    
+    //MARK: Actions
+    @objc func languageDidChange(sender: Notification){
+        output.send(.shouldUpdateLabels)
+    }
     @objc func separatorDidChange(sender: Notification){
         let parsedDictionary = parseArrayToText(with: words, name: dictionary.language)
-        output.send(.data(parsedDictionary))
+        output.send(.shouldPresentData(parsedDictionary))
     }
 }
 

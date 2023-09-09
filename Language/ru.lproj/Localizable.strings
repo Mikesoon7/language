@@ -144,9 +144,10 @@
 "unknownError.title" = "An unknown error occured.";
 "unknownError.message" = "Please try again or contact the support team if the issue persists";
 //MARK: - EditVC
-"edit.emptyField.title" = "The edit field is empty";
-"edit.emptyField.message" = "Saving dictionary in this state will cause it's deletion. \nAre you sure?";
-
+"edit.emptyField.title" = "Отсутствует имя";
+"edit.emptyField.message" = "Пожалуйста, введите от 1 до 15 символов в качестве названия для словаря";
+"edit.emptyText.title" = "Отредактированный текст не содержит символов";
+"edit.emptyText.message" = "Сохранение словаря в таком состоянии приведет к его удалению";
 
 
 

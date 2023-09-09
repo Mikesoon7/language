@@ -91,8 +91,8 @@ class MainGameVC: UIViewController{
     //MARK: - NavBar SetUp
     func configureNavBar(){
         navigationItem.title = "gameTitle".localized
-        navigationController?.navigationBar.titleTextAttributes = NSAttributedString().fontWithoutString(bold: true, size: 23)
-        self.navigationController?.navigationBar.tintColor = .label
+        navigationController?.navigationBar.titleTextAttributes = NSAttributedString.textAttributesForNavTitle()
+
         self.navigationController?.navigationBar.isTranslucent = true
         self.navigationController?.interactivePopGestureRecognizer?.delegate = self
     }

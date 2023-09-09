@@ -9,32 +9,32 @@ import UIKit
 
 protocol PlaceholderTextViewDelegate: AnyObject{
     func textViewWillAppear()
-    func configurePlaceholderText() -> String
+    func configurePlaceholderText() -> String?
 }
 
 final class TextInputView: UIView {
     
     weak var delegate: PlaceholderTextViewDelegate?
     
+    //MARK: Views
     private let placeholderLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = .timesNewRoman.withSize(17)
+        label.textColor = .lightGray
         label.numberOfLines = 0
         return label
     }()
-    private let textViewBackgroundView: UIView = {
-        let view = UIView()
-        view.setUpCustomView()
-        view.layer.masksToBounds = true
-        return view
-    }()
-    var textView: CustomTextView = {
+    
+     var textView: CustomTextView = {
         var textView = CustomTextView()
         textView.translatesAutoresizingMaskIntoConstraints = false
         textView.layer.cornerRadius = 9
         textView.backgroundColor = .clear
         
         textView.layer.masksToBounds = true
+        textView.layer.borderColor = UIColor.black.cgColor
+        textView.layer.borderWidth = 0.5
                 
         textView.textContainerInset = .init(top: 5, left: 5, bottom: 5, right: 5)
         textView.allowsEditingTextAttributes = true
@@ -56,25 +56,33 @@ final class TextInputView: UIView {
         return button
     }()
     
+    //MARK: Inherited
     convenience init(delegate: PlaceholderTextViewDelegate){
         self.init(frame: .zero, delegate: delegate)
     }
     
     init(frame: CGRect, delegate: PlaceholderTextViewDelegate) {
-        super.init(frame: frame)
         self.delegate = delegate
+        super.init(frame: frame)
         configureView()
+        configureTableView()
         updatePlaceholder()
-        
     }
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         fatalError("Coder wasn's imported")
     }
-    //MARK: - View SetUp
-    func configureView() {
-        self.setUpCustomView()
+    
+    //MARK: View SetUp
+    private func configureView(){
+        self.layer.cornerRadius = 9
+
+        self.backgroundColor = .secondarySystemBackground
+        self.translatesAutoresizingMaskIntoConstraints = false
+    }
+    //MARK: Subviews SetUp
+    private func configureTableView() {
         self.addSubviews(placeholderLabel, textView, pasteButton)
         
         textView.delegate = self
@@ -94,6 +102,7 @@ final class TextInputView: UIView {
         pasteButton.addTarget(self, action: #selector(pasteButtonDidTap(sender:)), for: .touchUpInside)
     }
     
+    //MARK: System
     private func pasteTextToTextView(){
         guard let text = UIPasteboard.general.string, text != "" else {
             return
@@ -102,22 +111,24 @@ final class TextInputView: UIView {
         updatePasteButtonVisability()
         updatePlaceholderVisability()
     }
+    ///Change alpha of paste button, reflected the textView text value.
     private func updatePasteButtonVisability(){
         UIView.animate(withDuration: 0.2) { [weak self] in
             guard let self = self else { return }
             self.pasteButton.alpha = self.textView.text.isEmpty ? 1 : 0
         }
     }
+    ///Change placeholder visibility, reflected by textView text value
     private func updatePlaceholderVisability(){
         placeholderLabel.isHidden = !textView.text.isEmpty
     }
     
+    ///Changes placeholder text with provided by the delegate.
     func updatePlaceholder(){
-        placeholderLabel.attributedText =
-            .attributedString(string: delegate?.configurePlaceholderText() ?? "gfgkyg", with: .timesNewRoman, ofSize: 17, foregroundColour: .lightGray)
+        placeholderLabel.text = delegate?.configurePlaceholderText() ?? ""
         placeholderLabel.sizeToFit()
     }
-    
+    //MARK: Action
     @objc func pasteButtonDidTap(sender: Any){
         pasteTextToTextView()
     }
