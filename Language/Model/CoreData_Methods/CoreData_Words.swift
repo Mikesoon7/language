@@ -7,6 +7,7 @@
 
 import Foundation
 import CoreData
+import Combine
 
 
 //MARK: - Working with words.
@@ -21,6 +22,7 @@ protocol WordsManaging{
 }
 
 extension CoreDataHelper: WordsManaging{
+    
     enum WordsErrorType: Error {
         case creationFailed(String)
         case fetchFailed(String)
@@ -29,6 +31,8 @@ extension CoreDataHelper: WordsManaging{
         case deleteFailed(String)
         case failedToDefineDictionary(String)
     }
+    
+    /// Iterate over passed text, divided by lines. Returns array of Words Entities
     func createWordsFromText(for dictionary : DictionariesEntity, text: String) -> [WordsEntity] {
         var results = [WordsEntity]()
         let lines = text.split(separator: "\n", omittingEmptySubsequences: true)
@@ -40,7 +44,7 @@ extension CoreDataHelper: WordsManaging{
         print("Debug purpose: TextInitialDivider method worked with number of returned words: \(results.count)")
         return results
     }
-    
+    ///Assigning requiered properties for Words Entity. Passes word entity and text to complete creation.
     func createWordFromLine(for dictionary: DictionariesEntity, text: String, index: Int, id: UUID = UUID()) -> WordsEntity {
         let newWord = WordsEntity(context: context)
         newWord.order = Int64(index)
@@ -49,21 +53,34 @@ extension CoreDataHelper: WordsManaging{
         assignWordsProperties(for: newWord, from: text)
         return newWord
     }
-    //Method to end initializing or update existing entity
-    internal func assignWordsProperties(for newWord: WordsEntity, from text: String){
+    ///Assigning text and description values to passed word with  devided passed text.
+    internal func assignWordsProperties(for wordEntity: WordsEntity, from text: String){
         let parts = text.split(separator: " \(UserSettings.shared.appSeparators.value) ")
+        
+        var newWord = String()
+        var newDescription = String()
+        
+        newWord = String(parts[0]).trimmingCharacters(in: CharacterSet(charactersIn: "[ ] ◦ - "))
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+
         if parts.count == 2{
-            let word = String(parts[0]).trimmingCharacters(in: CharacterSet(charactersIn: "[ ] ◦ - "))
-            newWord.word = word.trimmingCharacters(in: .whitespacesAndNewlines).capitalized
-            newWord.meaning = String(parts[1])
+            newDescription = String(parts[1]).trimmingCharacters(in: .whitespacesAndNewlines)
         } else if parts.count > 2{
-            newWord.word = String(parts[0]).trimmingCharacters(in: CharacterSet(charactersIn: " ")).capitalized
-            newWord.meaning = parts[1...].joined(separator: " ").trimmingCharacters(in: CharacterSet(charactersIn: " "))
-        } else {
-            newWord.word = String(parts[0]).trimmingCharacters(in: CharacterSet(charactersIn: " ")).capitalized
-            newWord.meaning = ""
+            newDescription = parts[1...].joined(separator: " ").trimmingCharacters(in: .whitespacesAndNewlines)
         }
-        print("Debug purpose: AsignProperties method worked with wordsEntity name: \(newWord.word)")
+        
+        wordEntity.word = {
+            if let firstCharachter = newWord.first{
+                let restOfTheString = newWord.dropFirst()
+                return String(firstCharachter).capitalized + restOfTheString
+            } else {
+                return newWord
+            }
+        }()
+        wordEntity.meaning = newDescription
+        
+        
+        print("Debug purpose: AsignProperties method worked with wordsEntity name: \(wordEntity.word)")
     }
     
     func reassignWordsProperties(for newWord: WordsEntity, from text: String) throws {
@@ -94,7 +111,6 @@ extension CoreDataHelper: WordsManaging{
         }
         
         try context.save()
-//        try update(dictionary: dictionary, words: words)
         print("Debug purpose: UpdateWordsOrder method worked for dictionary: \(dictionary.language) with number of words: \(words.count)")
     }
     
@@ -108,7 +124,7 @@ extension CoreDataHelper: WordsManaging{
         } else {
             associatedDictionary.removeFromWords(word)
             associatedDictionary.numberOfCards = Int64(associatedDictionary.words?.count ?? 000)
-//            context.delete(word)
+
             self.dictionaryDidChange.send(.wasUpdated(Int(associatedDictionary.order)))
             try saveContext()
         }

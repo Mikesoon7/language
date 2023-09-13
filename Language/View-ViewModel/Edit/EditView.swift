@@ -47,9 +47,6 @@ class EditView: UIViewController {
         return field
     }()
     
-    private var topStroke = CAShapeLayer()
-    private var bottomStroke = CAShapeLayer()
-    
     
     //MARK: - Inherited methods
     required init(dictionary: DictionariesEntity, factory: ViewModelFactory){
@@ -70,17 +67,6 @@ class EditView: UIViewController {
         configureNavBar()
         
         
-    }
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        configureStrokes()
-    }
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-        if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
-            self.bottomStroke.strokeColor = UIColor.label.cgColor
-            self.topStroke.strokeColor = UIColor.label.cgColor
-        }
     }
     deinit {
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
@@ -111,18 +97,8 @@ class EditView: UIViewController {
             .store(in: &cancellables)
         
     }
-    //MARK: - Stroke SetUp
-    func configureStrokes(){
-        topStroke = UIView().addTopStroke(vc: self)
-        bottomStroke = UIView().addBottomStroke(vc: self)
-        
-        view.layer.addSublayer(topStroke)
-        view.layer.addSublayer(bottomStroke)
-    }
     //MARK: - Initial controller SetUp
     func configureController(){
-        view.backgroundColor = .systemBackground
-        
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(keyboardWillChangeFrame(_:)),
@@ -162,15 +138,11 @@ class EditView: UIViewController {
         self.navigationItem.titleView = textField
         
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "system.save".localized, style: .done, target: self, action: #selector(saveButTap(sender:)))
-
-        navigationItem.backButtonDisplayMode = .minimal
-        self.navigationController?.navigationBar.tintColor = .label
-        self.navigationController?.navigationBar.isTranslucent = true
     }
     
     func configureAlertFor(_ errorType: EditViewModel.InvalidText){
         let isForEmtyText = errorType == .invalidText ? true : false
-        let alert = UIAlertController()
+        let alert = UIAlertController
             .alertWithAction(
                 alertTitle: (isForEmtyText ? "edit.emptyText.title" : "edit.emptyField.title").localized,
                 alertMessage: (isForEmtyText ? "edit.emptyText.message" : "edit.emptyField.message").localized,
@@ -210,8 +182,8 @@ extension EditView {
             textField.resignFirstResponder()
         }
     }
-    @objc func keyboardWillChangeFrame(_ notification: Notification) {
-        if let userInfo = notification.userInfo,
+    @objc func keyboardWillChangeFrame(_ sender: Notification) {
+        if let userInfo = sender.userInfo,
            let keyboardEndFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
             
             let convertedEndFrame = view.convert(keyboardEndFrame, from: view.window)

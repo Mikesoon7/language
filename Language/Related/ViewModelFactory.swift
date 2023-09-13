@@ -21,7 +21,7 @@ final class ViewModelFactory{
         return MenuViewModel(model: dataModel)
     }
     func configureAddDictionaryModel() -> AddDictionaryViewModel{
-        AddDictionaryViewModel(model: dataModel)
+        AddDictionaryViewModel(model: dataModel, settingsModel: settingsModel)
     }
     func configureEditViewModel(dictionary: DictionariesEntity) -> EditViewModel{
         EditViewModel(dictionary: dictionary, model: dataModel)
@@ -55,6 +55,16 @@ final class ViewModelFactory{
                       settingsModel: settingsModel,
                       dictionary: dictionary,
                       isRandom: isRandom,
-                      selectedNumber: selectedNumber)
+                      selectedNumber: selectedNumber
+        )
+    }
+    func configureGameDetailsViewModel(dictionary: DictionariesEntity, word: WordsEntity, delegate: MainGameVCDelegate) -> GameDetailsViewModel{
+        GameDetailsViewModel(
+            dataModel: dataModel,
+            settingsModel: settingsModel,
+            dictionary: dictionary,
+            word: word,
+            delegate: delegate
+        )
     }
 }

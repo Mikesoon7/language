@@ -34,8 +34,8 @@ class EditViewModel {
     var output = PassthroughSubject<Output, Never>()
     
 
-    init(dictionary: DictionariesEntity, model: Dictionary_WordsManager = CoreDataHelper.shared){
-        self.model = model
+    init(dataModel: Dictionary_WordsManager, settingsModel: UserSettingsStorageProtocol, dictionary: DictionariesEntity){
+        self.model = dataModel
         self.dictionary = dictionary
         
         do {

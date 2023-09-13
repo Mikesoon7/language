@@ -12,6 +12,7 @@ class DataForLastCell: Hashable{
     var identifier = UUID()
     var score : Float
     var delegate : CustomCellDelegate?
+    
     init(score: Float, delegate: CustomCellDelegate) {
         self.score = score
         self.delegate = delegate
@@ -35,7 +36,7 @@ class CollectionViewLastCell: UICollectionViewCell {
     
     let cardView : UIView = {
         let view = UIView()
-        view.backgroundColor = .white
+        view.backgroundColor = .systemBackground_Secondary
         view.layer.cornerRadius = 9
         view.layer.borderColor = UIColor.black.cgColor
         view.layer.borderWidth = 1
@@ -58,8 +59,8 @@ class CollectionViewLastCell: UICollectionViewCell {
     let scoreLabel : UILabel = {
         let label = UILabel()
         label.textAlignment = .center
-        label.font = UIFont(name: "Georgia-BoldItalic", size: 40)
-        label.textColor = .black
+        label.font = .georgianBoldItalic.withSize(40)
+        label.textColor = .label
         label.text = "???"
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -69,16 +70,19 @@ class CollectionViewLastCell: UICollectionViewCell {
         let button = UIButton()
         button.setUpCustomView()
         button.layer.borderWidth = 0
-        button.setTitle(
-            "great".localized,
-            for: .normal)
-        button.setTitleColor(.label, for: .normal) 
-        button.translatesAutoresizingMaskIntoConstraints = false
+        button.backgroundColor = .init(dynamicProvider: { traitCollection in
+            if traitCollection.userInterfaceStyle == .dark {
+                return .gray
+            } else {
+                return .secondarySystemBackground
+            }
+        })
         return button
     }()
     override init(frame: CGRect) {
         super.init(frame: frame)
         cardViewCustomiation()
+        configureLabels()
         staticCardSize = CGSize(width: UIWindow().bounds.width * 0.64, height: UIWindow().bounds.height * 0.48)
     }
     required init?(coder: NSCoder) {
@@ -88,7 +92,6 @@ class CollectionViewLastCell: UICollectionViewCell {
         self.contentView.addSubview(cardShadowView)
         cardShadowView.addSubview(cardView)
         cardView.addSubviews(scoreLabel, finishButton)
-//        cardShadowView.isUserInteractionEnabled = false
         
         NSLayoutConstraint.activate([
             cardShadowView.centerXAnchor.constraint(equalTo: self.contentView.centerXAnchor),
@@ -104,8 +107,6 @@ class CollectionViewLastCell: UICollectionViewCell {
 
             scoreLabel.centerXAnchor.constraint(equalTo: cardView.centerXAnchor),
             scoreLabel.centerYAnchor.constraint(equalTo: cardView.centerYAnchor),
-//            scoreLabel.topAnchor.constraint(equalTo: cardView.topAnchor, constant: 30),
-//            scoreLabel.bottomAnchor.constraint(equalTo: cardView.topAnchor, constant: 80),
         
             finishButton.bottomAnchor.constraint(equalTo: cardView.bottomAnchor, constant: -30 ),
             finishButton.centerXAnchor.constraint(equalTo: cardView.centerXAnchor),
@@ -117,6 +118,7 @@ class CollectionViewLastCell: UICollectionViewCell {
         finishButton.addTargetInsideTouchStop()
         finishButton.addTargetOutsideTouchStop()
     }
+    
     override func apply(_ layoutAttributes: UICollectionViewLayoutAttributes) {
         super.apply(layoutAttributes)
         cardShadowView.layer.shadowOffset = CGSize(
@@ -127,6 +129,17 @@ class CollectionViewLastCell: UICollectionViewCell {
     func configure(with data: DataForLastCell){
         scoreLabel.text = "\((data.score).rounded())%"
         delegate = data.delegate
+    }
+    
+    func configureLabels(){
+        self.finishButton.setAttributedTitle(
+            .attributedString(
+                string: "system.great".localized,
+                with: .georgianBoldItalic,
+                ofSize: 20
+            ),
+            for: .normal
+        )
     }
 
     @objc func buttonTap(sender: Any){

@@ -31,10 +31,7 @@ class SettingsVC: UIViewController {
         return view
     }()
     
-    
-    var topStroke = CAShapeLayer()
-    var bottomStroke = CAShapeLayer()
-    
+    //MARK: Inherited
     required init(factory: ViewModelFactory){
         self.viewModelFactory = factory
         self.viewModel = factory.configureSettingsViewModel()
@@ -43,27 +40,19 @@ class SettingsVC: UIViewController {
     required init?(coder: NSCoder) {
         fatalError("init?(coder: NSCoder) wasn't imported")
     }
-    //MARK: Inherited methods and initializers.
     override func viewDidLoad() {
         super.viewDidLoad()
         bind()
-        configureViewController()
-        configureNavBar()
         configureTableView()
+        configureLabels()
     }
     
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        configureStrokes()
-    }
         
     //MARK: - StyleChange Responding
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
         
         if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
-            bottomStroke.strokeColor = UIColor.label.cgColor
-            topStroke.strokeColor = UIColor.label.cgColor
             tableView.subviews.forEach { view in
                 view.layer.shadowColor = (traitCollection.userInterfaceStyle == .dark
                                           ? shadowColorForDarkIdiom
@@ -72,7 +61,7 @@ class SettingsVC: UIViewController {
         }
     }
     //MARK: Binding View and ViewModel
-    func bind(){
+    private func bind(){
         viewModel.output
             .receive(on: DispatchQueue.main)
             .sink { [weak self] output in
@@ -82,7 +71,8 @@ class SettingsVC: UIViewController {
                 case .needUpdateRowAt(let index):
                     self?.tableView.reloadRows(at: [index], with: .fade)
                 case .needUpdateLanguage:
-                    self?.updateLanguage()
+                    self?.configureLabels()
+                    self?.tableView.reloadData()
                 case .needPresentNotificationView:
                     self?.presentNotificationVC()
                 case .needPresentSeparatorsView:
@@ -91,30 +81,8 @@ class SettingsVC: UIViewController {
             }
             .store(in: &cancellable)
     }
-    //MARK: Configuring view
-    func configureViewController(){
-        view.backgroundColor = .systemBackground
-        
-    }
-
-    //MARK: - Stroke SetUp
-    func configureStrokes(){
-        topStroke = UIView().addTopStroke(vc: self)
-        bottomStroke = UIView().addBottomStroke(vc: self)
-        
-        view.layer.addSublayer(topStroke)
-        view.layer.addSublayer(bottomStroke)
-    }
-    
-    //MARK: - NavigationBar SetUp
-    func configureNavBar(){
-        self.navigationItem.title = "settingsVCTitle".localized
-        self.navigationController?.navigationBar.titleTextAttributes = NSAttributedString.textAttributesForNavTitle()
-//        self.navigationController?.navigationBar.tintColor = .label
-        self.navigationController?.navigationBar.isTranslucent = true
-    }
-    //MARK: - TableView SetUp
-    func configureTableView(){
+    //MARK: Subviews SetUp
+    private func configureTableView(){
         view.addSubview(tableView)
         
         tableView.delegate = self
@@ -127,27 +95,27 @@ class SettingsVC: UIViewController {
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
     }
-    //MARK: - ViewModelResponse
-    func presentNotificationVC(){
+
+    //MARK: System
+    private func presentNotificationVC(){
         let vc = NotificationView()
         vc.modalPresentationStyle = .overFullScreen
         self.present(vc, animated: false)
     }
-    func presentSeparatorVC(){
+    private func presentSeparatorVC(){
         let vc = SeparatorsView()
         self.present(vc, animated: true)
     }
     //Attaching cancel action to passed action.
-    func presentAlertWith(action: [UIAlertAction]){
+    private func presentAlertWith(action: [UIAlertAction]){
         let alertMessage = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         let cancelAction = UIAlertAction(title: "system.cancel".localized, style: .cancel)
         action.forEach({alertMessage.addAction($0)})
         alertMessage.addAction(cancelAction)
         self.present(alertMessage, animated: true)
     }
-    //Reloading table to update localized text values.
-    func updateLanguage(){
-        tableView.reloadData()
+    
+    private func configureLabels(){
         navigationItem.title = "settingsVCTitle".localized
         
     }

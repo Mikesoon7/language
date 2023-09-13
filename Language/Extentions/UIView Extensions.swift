@@ -96,6 +96,21 @@ extension UIView {
         
         return topStroke
     }
+    func addStroke(x: CGFloat, y: CGFloat) -> CAShapeLayer {
+        let path = UIBezierPath()
+        path.move(to: CGPoint(x: 0, y: y))
+        path.addLine(to: CGPoint(x: x, y: y))
+        
+        let stroke = CAShapeLayer()
+        stroke.path = path.cgPath
+        stroke.lineWidth = 1
+        stroke.strokeColor = UIColor.label.cgColor
+        stroke.fillColor = UIColor.clear.cgColor
+        stroke.opacity = 0.8
+        
+        return stroke
+
+    }
     
     //MARK: Create bottom stroke offset by tabBar controller.
     func addBottomStroke(vc: UIViewController) -> CAShapeLayer{
@@ -111,7 +126,7 @@ extension UIView {
         path.addLine(to: CGPoint(x: vc.view.bounds.maxX, y: y))
         let stroke = CAShapeLayer()
         stroke.path = path.cgPath
-        stroke.lineWidth = 0.8
+        stroke.lineWidth = 1
         stroke.strokeColor = UIColor.label.cgColor
         stroke.fillColor = UIColor.clear.cgColor
         stroke.opacity = 0.8

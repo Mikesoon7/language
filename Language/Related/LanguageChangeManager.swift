@@ -17,9 +17,9 @@ class LanguageChangeManager {
         let path = Bundle.main.path(forResource: language, ofType: "lproj")!
         bundle = Bundle(path: path)!
     }
-    func changeLanguage(to language: String){
-        let path = Bundle.main.path(forResource: language, ofType: "lproj")
-        UserDefaults.standard.set([language], forKey: "AppleLanguages")
+    func changeLanguage(to languageKey: String){
+        let path = Bundle.main.path(forResource: languageKey, ofType: "lproj")
+        UserDefaults.standard.set([languageKey], forKey: "AppleLanguages")
 
         if let newPath = path, let newBundle = Bundle(path: newPath) {
             bundle = newBundle

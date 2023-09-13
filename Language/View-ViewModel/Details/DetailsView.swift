@@ -65,12 +65,7 @@ class DetailsView: UIViewController {
     }()
     
     private let picker = UIPickerView()
-    
-    //MARK: Layer strokes
-    private var topStroke = CAShapeLayer()
-    private var bottomStroke = CAShapeLayer()
-    
-    //MARK: Local variables.
+//    //MARK: Local variables.
     private var randomIsOn: Bool = false
     
     
@@ -88,25 +83,17 @@ class DetailsView: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         bind()
-        configureController()
-        configureNavBar()
         configureRandomizeView()
         configureGoalView()
         configureStartButton()
         configureAddWordsButton()
         configureText()
     }
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        configureStrokes()
-    }
     
     //MARK: - StyleChange Responding
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
         if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
-            self.bottomStroke.strokeColor = UIColor.label.cgColor
-            self.topStroke.strokeColor = UIColor.label.cgColor
             if traitCollection.userInterfaceStyle == .dark {
                 view.subviews.forEach { view in
                     view.layer.shadowColor = shadowColorForDarkIdiom
@@ -139,25 +126,6 @@ class DetailsView: UIViewController {
             }
             .store(in: &cancellable)
     }
-    //MARK: - Stroke SetUp
-    func configureStrokes(){
-        topStroke = UIView().addTopStroke(vc: self)
-        bottomStroke = UIView().addBottomStroke(vc: self)
-        
-        view.layer.addSublayer(topStroke)
-        view.layer.addSublayer(bottomStroke)
-    }
-    //MARK: - Controller SetUp
-    func configureController(){
-        view.backgroundColor = .systemBackground
-        
-    }
-    //MARK: - NavigationBar SetUp
-    func configureNavBar(){
-        navigationController?.navigationBar.titleTextAttributes = NSAttributedString.textAttributesForNavTitle()
-        navigationItem.backButtonDisplayMode = .minimal
-    }
-    
     //MARK: - RandomCardView SetUp
     func configureRandomizeView(){
         view.addSubview(randomizeCardsView)
@@ -277,14 +245,9 @@ class DetailsView: UIViewController {
         let vc = AddWordsView(factory: viewModelFactory, dictionary: dictionary)
         self.navigationController?.pushViewController(vc, animated: true)
     }
-    //Since Game controller is the last on, we passing already initialized viewModel instead of ViewModelFactory.
+    //Initializing
     func presentMainGameViewWith(dictionary: DictionariesEntity, selectedNumber: Int){
-        let viewModel = viewModelFactory.configureGameViewmModel(
-            dictionary: dictionary,
-            isRandom: randomIsOn,
-            selectedNumber: selectedNumber)
-        
-        let vc = MainGameVC(viewModel: viewModel)
+        let vc = MainGameVC(viewModelFactory: viewModelFactory, dictionary: dictionary, isRandom: randomIsOn, selectedNumber: selectedNumber)
         self.navigationController?.pushViewController(vc, animated: true)
     }
     

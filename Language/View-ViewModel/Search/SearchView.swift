@@ -84,6 +84,7 @@ class SearchView: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
         input.send(.viewWillAppear)
         if searchBarDidChanged{
             configureSearchBar()
@@ -100,6 +101,8 @@ class SearchView: UIViewController {
         if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection){
             bottomStroke.strokeColor = UIColor.label.cgColor
             topStroke.strokeColor = UIColor.label.cgColor
+            bottomSearchView.topStroke.strokeColor = UIColor.label.cgColor
+            
             if traitCollection.userInterfaceStyle == .dark {
                 tableView.subviews.forEach { section in
                     section.layer.shadowColor = shadowColorForDarkIdiom
@@ -127,7 +130,6 @@ class SearchView: UIViewController {
                     self.presentError(error)
                 case .shouldReloadView:
                     self.refreshSearchBars()
-//                    self.tableView.reloadData()
                 case .shouldUpdateLabels:
                     self.configureLabels()
                 case .shouldReplaceSearchBarOnTop(_):
@@ -139,14 +141,13 @@ class SearchView: UIViewController {
     //MARK: - Controller SetUp
     func configureController(){
         view.backgroundColor = .systemBackground
-                
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
 
     }
     //MARK:  NavBar SetUp
     func configureNavBar(){
-        navigationController?.navigationBar.titleTextAttributes = NSAttributedString.textAttributes(with: .georgianBoldItalic, ofSize: 23, foregroundColour: .label)
+        navigationController?.navigationBar.titleTextAttributes = NSAttributedString.textAttributesForNavTitle()
         
         self.navigationController?.navigationBar.tintColor = .label
         self.navigationController?.navigationBar.isTranslucent = true

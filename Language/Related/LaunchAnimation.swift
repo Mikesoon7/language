@@ -192,13 +192,9 @@ class LaunchAnimation{
         }
         //Scale and rotate + fading animation view
         func scaleAndRotate(){
-            let rotationAnimation = CABasicAnimation(keyPath: "transform.rotation.y")
-            rotationAnimation.fromValue = 0
+            let rotationAnimation = CABasicAnimation.rotationAnimation()
             rotationAnimation.toValue = Double.pi * 1
             rotationAnimation.duration = 1
-            rotationAnimation.isRemovedOnCompletion = false
-            rotationAnimation.fillMode = .forwards
-            
             
             let scaleAnimation = CABasicAnimation(keyPath: "transform.scale")
             scaleAnimation.fromValue = 0.8

@@ -26,10 +26,6 @@ class AddWordsView: UIViewController {
         return button
     }()
     
-    //MARK: CALAyer Strokes
-    private var topStroke = CAShapeLayer()
-    private var bottomStroke = CAShapeLayer()
-    
     //MARK: Constraints related
     private var textInputViewHeightAnchor: NSLayoutConstraint!
     private var textInputViewBottomAnchor: NSLayoutConstraint!
@@ -50,22 +46,15 @@ class AddWordsView: UIViewController {
         super.viewDidLoad()
         bind()
         configureView()
-        configureNavBar()
         configureTextInputView()
         configureText()
         configureSaveButton()
     }
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        configureStrokes()
-    }
-
+    
     //MARK: - StyleChange Responding
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
         if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
-            self.bottomStroke.strokeColor = UIColor.label.cgColor
-            self.topStroke.strokeColor = UIColor.label.cgColor
             if traitCollection.userInterfaceStyle == .dark {
                 saveButton.layer.shadowColor = shadowColorForDarkIdiom
             } else {
@@ -93,7 +82,6 @@ class AddWordsView: UIViewController {
     }
     //MARK: View Setup
     private func configureView(){
-        view.backgroundColor = .systemBackground
         
         //Observer on keyboard.
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(sender:)), name: UIResponder.keyboardWillShowNotification, object: nil)
@@ -101,20 +89,6 @@ class AddWordsView: UIViewController {
     }
 
     //MARK: Subviews SetUp
-    private func configureStrokes(){
-        topStroke = UIView().addTopStroke(vc: self)
-        bottomStroke = UIView().addBottomStroke(vc: self)
-        
-        view.layer.addSublayer(topStroke)
-        view.layer.addSublayer(bottomStroke)
-    }
-    
-    private func configureNavBar(){
-        self.navigationController?.navigationBar.titleTextAttributes = NSAttributedString.textAttributesForNavTitle()
-        self.navigationController?.navigationBar.tintColor = .label
-        self.navigationController?.navigationBar.isTranslucent = true
-    }
-
     private func configureTextInputView(){
         view.addSubview(textInputView)
         
@@ -193,26 +167,10 @@ class AddWordsView: UIViewController {
     }
     //Small animation of bottom stroke dissapearence
     @objc func keyboardWillShow(sender: Notification){
-        let animation = CABasicAnimation(keyPath: "opacity")
-        animation.fromValue = 1.0
-        animation.toValue = 0.0
-        animation.duration = 0.5
-        animation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
-
-        bottomStroke.add(animation, forKey: "strokeOpacity")
-        
         updateTextViewConstraits(keyboardIsvisable: true)
     }
     //Animate bottom stroke back to 1 alpha.
     @objc func keyboardWillHide(sender: Notification){
-        let animation = CABasicAnimation(keyPath: "opacity")
-        animation.fromValue = 0.0
-        animation.toValue = 1.0
-        animation.duration = 1.0
-        animation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
-
-        bottomStroke.add(animation, forKey: "strokeOpacity")
-        
         updateTextViewConstraits(keyboardIsvisable: false)
     }
 }

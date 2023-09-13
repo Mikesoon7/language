@@ -30,5 +30,7 @@ extension UIFont{
     static var helveticaNeueMedium: UIFont {
         UIFont(name: "Helvetica Neue Medium", size: 1) ?? UIFont()
     }
-
+    static var systemBold: UIFont {
+        UIFont.systemFont(ofSize: 1, weight: .bold)
+    }
 }

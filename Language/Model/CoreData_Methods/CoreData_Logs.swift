@@ -9,7 +9,6 @@ import Foundation
 import CoreData
 
 protocol LogsManaging{
-//    func createNewLog(for dictionary: DictionariesEntity, at date: Date, shouldSave: Bool) throws -> DictionariesAccessLog
     func accessLog(for dictionary: DictionariesEntity) throws
     func fetchAllLogs(for dictionary: DictionariesEntity?) throws -> [DictionariesAccessLog]
     func testFetchAllLogsForEveryDictioanry()
@@ -18,22 +17,6 @@ protocol LogsManaging{
 
 extension CoreDataHelper: LogsManaging{
     //MARK: - Working with logs
-//    private func fetchLog(for dictionary: DictionariesEntity, at date: Date) -> DictionariesAccessLog? {
-//        let calendar = Calendar.current
-//        let startDate = calendar.startOfDay(for: date)
-//        guard let endDate = calendar.date(byAdding: .day, value: 1, to: startDate) else { return nil }
-//
-//        let fetchRequest: NSFetchRequest<DictionariesAccessLog> = DictionariesAccessLog.fetchRequest()
-//        fetchRequest.predicate = NSPredicate(format: "dictionary == %@ AND (accessDate >= %@) AND (accessDate < %@)", argumentArray: [dictionary, startDate as NSDate, endDate as NSDate])
-//
-//        do {
-//            let logs = try context.fetch(fetchRequest)
-//            return logs.first
-//        } catch {
-//            print("Failed to fetch log: \(error)")
-//            return nil
-//        }
-//    }
     private func fetchLog(for dictionary: DictionariesEntity, at date: Date) -> DictionariesAccessLog? {
         let dateWithoutTime = date.timeStripped
         print(dateWithoutTime)

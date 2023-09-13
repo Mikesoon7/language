@@ -12,10 +12,10 @@ import CoreData
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        setupCoreDataObserver()
-        DispatchQueue.main.async {
-            let _ = UIReferenceLibraryViewController(term: "preloading")
-        }
+//        setupCoreDataObserver()
+//        DispatchQueue.main.async {
+//            let _ = UIReferenceLibraryViewController(term: "preloading")
+//        }
         return true
     }
 
@@ -50,9 +50,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return container
     }()
 
-    func setupCoreDataObserver() {
-        NotificationCenter.default.addObserver(self, selector: #selector(coreDataObjectsDidChange(notification:)), name: .NSManagedObjectContextObjectsDidChange, object: persistentContainer.viewContext)
-    }
+//    func setupCoreDataObserver() {
+//        NotificationCenter.default.addObserver(self, selector: #selector(coreDataObjectsDidChange(notification:)), name: .NSManagedObjectContextObjectsDidChange, object: persistentContainer.viewContext)
+//    }
 
     // MARK: - Core Data Saving support
     func saveContext () {
@@ -69,21 +69,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillTerminate(_ application: UIApplication) {
         saveContext()
     }
-    @objc func coreDataObjectsDidChange(notification: Notification) {
-        guard let userInfo = notification.userInfo else { return }
-
-        if let insert = userInfo[NSInsertedObjectsKey] as? Set<NSManagedObject>, !insert.isEmpty {
-            NotificationCenter.default.post(name: .appDataDidChange, object: nil, userInfo: ["changeType": NSManagedObject.ChangeType.insert])
-        }
-
-        if let updates = userInfo[NSUpdatedObjectsKey] as? Set<NSManagedObject>, !updates.isEmpty {
-            NotificationCenter.default.post(name: .appDataDidChange, object: nil, userInfo: ["changeType": NSManagedObject.ChangeType.update])
-        }
-
-
-        if let deletes = userInfo[NSDeletedObjectsKey] as? Set<NSManagedObject>, !deletes.isEmpty {
-            NotificationCenter.default.post(name: .appDataDidChange, object: nil, userInfo: ["changeType": NSManagedObject.ChangeType.delete])
-        }
-    }
+//    @objc func coreDataObjectsDidChange(notification: Notification) {
+//        guard let userInfo = notification.userInfo else { return }
+//
+//        if let insert = userInfo[NSInsertedObjectsKey] as? Set<NSManagedObject>, !insert.isEmpty {
+//            NotificationCenter.default.post(name: .appDataDidChange, object: nil, userInfo: ["changeType": NSManagedObject.ChangeType.insert])
+//        }
+//
+//        if let updates = userInfo[NSUpdatedObjectsKey] as? Set<NSManagedObject>, !updates.isEmpty {
+//            NotificationCenter.default.post(name: .appDataDidChange, object: nil, userInfo: ["changeType": NSManagedObject.ChangeType.update])
+//        }
+//
+//
+//        if let deletes = userInfo[NSDeletedObjectsKey] as? Set<NSManagedObject>, !deletes.isEmpty {
+//            NotificationCenter.default.post(name: .appDataDidChange, object: nil, userInfo: ["changeType": NSManagedObject.ChangeType.delete])
+//        }
+//    }
 }
 

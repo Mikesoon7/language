@@ -31,7 +31,7 @@ class CustomSearchBar: UIView {
         return button
     }()
     
-    private var topStroke = CAShapeLayer()
+    var topStroke = CAShapeLayer()
     
     //MARK: Constraints and releated
     private var cancelButtonLeadingAnchor: NSLayoutConstraint!
@@ -80,7 +80,6 @@ class CustomSearchBar: UIView {
         NSLayoutConstraint.activate([
             cancelButton.topAnchor.constraint(equalTo: topAnchor),
             cancelButton.bottomAnchor.constraint(equalTo: bottomAnchor),
-//            cancelButton.widthAnchor.constraint(equalToConstant: )),
             cancelButtonLeadingAnchor,
         
             searchBar.topAnchor.constraint(equalTo: topAnchor),

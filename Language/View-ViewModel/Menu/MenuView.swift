@@ -48,10 +48,7 @@ class MenuView: UIViewController {
         }
         return tableView
     }()
-    
-    var topStroke = CAShapeLayer()
-    var bottomStroke = CAShapeLayer()
-    
+        
     //MARK: Inherited
     required init(factory: ViewModelFactory){
         self.viewModelFactory = factory
@@ -67,17 +64,11 @@ class MenuView: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         bind()
-        configureController()
         configureNavBar()
         configureTableView()
-        configureTabBar()
         configureLabels()
     }
     
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        configureStrokes()
-    }
     override func viewWillAppear(_ animated: Bool) {
         if isUpdateNeeded {
             self.tableView.reloadData()
@@ -86,24 +77,17 @@ class MenuView: UIViewController {
     //MARK: - StyleChange Responding
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
-        
         if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
-            self.bottomStroke.strokeColor = UIColor.label.cgColor
-            self.topStroke.strokeColor = UIColor.label.cgColor
-            if traitCollection.userInterfaceStyle == .dark {
-                tableView.subviews.forEach { section in
-                    section.layer.shadowColor = shadowColorForDarkIdiom
-                }
-            } else {
-                tableView.subviews.forEach { section in
-                    section.layer.shadowColor = shadowColorForLightIdiom
-                }
+            tableView.subviews.forEach { section in
+                section.layer.shadowColor = (traitCollection.userInterfaceStyle == .dark
+                                             ? shadowColorForDarkIdiom
+                                             : shadowColorForLightIdiom)
             }
         }
     }
     
     //MARK: - Binding View and ViewModel
-    func bind(){
+    private func bind(){
         viewModel.output
             .receive(on: DispatchQueue.main)
             .sink { [weak self] output in
@@ -128,21 +112,9 @@ class MenuView: UIViewController {
             }
             .store(in: &cancellables)
     }
-    //MARK: - Controleler SetUp
-    func configureController(){
-        view.backgroundColor = .systemBackground
-    }
-    //MARK: - Stroke SetUp
-    func configureStrokes(){
-        topStroke = UIView().addTopStroke(vc: self)
-        bottomStroke = UIView().addBottomStroke(vc: self)
-        
-        view.layer.addSublayer(topStroke)
-        view.layer.addSublayer(bottomStroke)
-    }
-
+    
     //MARK: - TableView SetUP
-    func configureTableView(){
+    private func configureTableView(){
         tableView.delegate = self
         tableView.dataSource = self
         view.addSubview(tableView)
@@ -156,8 +128,7 @@ class MenuView: UIViewController {
     }
     
     //MARK: - NavigationBar SetUp
-    func configureNavBar(){
-        navigationController?.navigationBar.titleTextAttributes = NSAttributedString.textAttributesForNavTitle()
+    private func configureNavBar(){
         //Statisctic BarButton
         let rightButton = UIBarButtonItem(
             image: UIImage(systemName: "chart.bar"),
@@ -165,18 +136,6 @@ class MenuView: UIViewController {
             target: self,
             action: #selector(statButtonDidTap(sender:)))
         self.navigationItem.setRightBarButton(rightButton, animated: true)
-        
-        navigationItem.backButtonDisplayMode = .minimal
-        
-        self.navigationController?.navigationBar.tintColor = .label
-        self.navigationController?.navigationBar.isTranslucent = true
-    }
-    //MARK: TabBar SetUp
-    func configureTabBar(){
-        tabBarController?.tabBar.backgroundColor = .systemBackground
-        tabBarController?.tabBar.isTranslucent = false
-        tabBarController?.tabBar.shadowImage = UIImage()
-        tabBarController?.tabBar.backgroundImage = UIImage()
     }
     
     private func configureLabels(){

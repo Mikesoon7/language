@@ -141,8 +141,10 @@
 "coreData.logAccess" = "Failed to update access information for the dictionary";
 "coreData.logFetch" = "Failed to load statisctic data for the dictionary";
 //Unknown
-"unknownError.title" = "An unknown error occured.";
-"unknownError.message" = "Please try again or contact the support team if the issue persists.";
+"unknownError.title" = "An unknown error occured";
+"unknownError.message" = "Please try again or contact the support team if the issue persists";
+"unknownGameError.title" = "Something unexpected happend";
+"unknownGameError.message" = "We have saved your changes, but they will display only in new game session";
 //MARK: - EditVC
 "edit.emptyField.title" = "The name is empty";
 "edit.emptyField.message" = "Please, provide at least one charachter for a dictionary name";

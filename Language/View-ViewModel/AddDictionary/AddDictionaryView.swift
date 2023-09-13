@@ -43,10 +43,7 @@ class AddDictionaryView: UIViewController {
         button.setUpCustomButton()
         return button
     }()
-    
-    private var topStroke = CAShapeLayer()
-    private var bottomStroke = CAShapeLayer()
-    
+        
     //MARK: - Constraints and related.
     private var textInputViewHeightAnchor: NSLayoutConstraint!
     private var textInputViewBottomAnchor: NSLayoutConstraint!
@@ -68,24 +65,16 @@ class AddDictionaryView: UIViewController {
         super.viewDidLoad()
         bind()
         configureController()
-        configureNavBar()
         configureTextInputView()
         configureNameInputView()
         configureSaveButton()
         configureText()
     }
-    
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        configureStrokes()
-    }
-    
+        
     //MARK: - StyleChange Responding
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
         if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection){
-            self.bottomStroke.strokeColor = UIColor.label.cgColor
-            self.topStroke.strokeColor = UIColor.label.cgColor
             if traitCollection.userInterfaceStyle == .dark{
                 nameView.layer.shadowColor = shadowColorForDarkIdiom
                 saveButton.layer.shadowColor = shadowColorForDarkIdiom
@@ -115,25 +104,10 @@ class AddDictionaryView: UIViewController {
             .store(in: &cancellabel)
     }
     //MARK: Controller SetUp
-    private func configureController(){
-        view.backgroundColor = .systemBackground
-        
+    private func configureController(){        
         //Keyboard appearence
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(sender:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(sender:)), name: UIResponder.keyboardWillHideNotification, object: nil)
-    }
-    //MARK: - Stroke SetUp
-    private func configureStrokes(){
-        topStroke = UIView().addTopStroke(vc: self)
-        bottomStroke = UIView().addBottomStroke(vc: self)
-        
-        view.layer.addSublayer(topStroke)
-        view.layer.addSublayer(bottomStroke)
-    }
-    
-    //MARK: Subviews configuration.
-    private func configureNavBar(){
-        navigationController?.navigationBar.titleTextAttributes = NSAttributedString.textAttributesForNavTitle()
     }
     
     private func configureTextInputView(){
@@ -269,25 +243,9 @@ extension AddDictionaryView {
     }
     
     @objc func keyboardWillShow(sender: Notification){
-        let animation = CABasicAnimation(keyPath: "opacity")
-        animation.fromValue = 1.0
-        animation.toValue = 0.0
-        animation.duration = 0.5
-        animation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
-
-        bottomStroke.add(animation, forKey: "strokeOpacity")
-        
         updateTextViewConstraits(keyboardIsVisable: true)
     }
     @objc func keyboardWillHide(sender: Notification){
-        let animation = CABasicAnimation(keyPath: "opacity")
-        animation.fromValue = 0.0
-        animation.toValue = 1.0
-        animation.duration = 1.0
-        animation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
-        
-        bottomStroke.add(animation, forKey: "strokeOpacity")
-        
         updateTextViewConstraits(keyboardIsVisable: false)
     }
 }
@@ -323,200 +281,3 @@ extension AddDictionaryView: UITextFieldDelegate{
     }
 
 }
-////MARK: - UITextInputTraits
-//extension AddDictionaryVC: UITextInputTraits{
-//
-//}
-////MARK: - UITextInputDelegate
-//extension AddDictionaryVC: UITextInputDelegate{
-//    func selectionWillChange(_ textInput: UITextInput?) {
-//        return
-//    }
-//
-//    func selectionDidChange(_ textInput: UITextInput?) {
-//        return
-//    }
-//
-//    func textWillChange(_ textInput: UITextInput?) {
-//        return
-//    }
-//
-//    func textDidChange(_ textInput: UITextInput?) {
-//        return
-//    }
-//
-//
-//}
-//
-
-
-//OLD
-
-//func switchPasteButtonTo(visible: Bool){
-//    UIView.animate(withDuration: 0.2) {
-//        self.pasteButton.alpha = visible ? 1 : 0
-//    }
-//}
-
-//    private func setupPlaceholderLabel() {
-//        placeholderLabel.attributedText =
-//            placeholderLabel.numberOfLines = 0
-//            addSubview(placeholderLabel)
-//            // Add constraints or frame setting to position the label
-//            updatePlaceholderVisibility()
-//        }
-
-//    func textViewHasPlaceholder() -> Bool {
-//        if textView.textColor == .lightGray {
-//            return true
-//        } else {
-//            return false
-//        }
-//    }
-    
-//    func configureTapGesture(){
-//        let tapGesture = UITapGestureRecognizer()
-//        tapGesture.addTarget(self, action: #selector(textViewDidTap(sender:)))
-//
-//        view.addGestureRecognizer(tapGesture)
-//    }
-//    func switchTextViewTextStyle(forPlaceholder: Bool){
-//        if forPlaceholder {
-//            configureTextViewPlaceholder()
-//        } else {
-//            textView.text = nil
-//            textView.textColor = nil
-//            textView.font = nil
-//            textView.typingAttributes = NSAttributedString.textAttributes(with: .timesNewRoman, ofSize: 17, foregroundColour: .label)
-//            isTextViewShowingPlaceholder = false
-//        }
-//    }
-    
-//    func configureTextViewPlaceholder(){
-//        let text = viewModel.configureTextPlaceholder()
-//        textView.attributedText = .attributedString(string: text, with: .timesNewRomanPSMT, ofSize: 15, foregroundColour: .lightGray)
-//        isTextViewShowingPlaceholder = true
-//    }
-//var placeholderAttributes: [NSAttributedString.Key : Any]!{
-//        didSet{
-//            self.typingAttributes = placeholderAttributes
-//        }
-//    }
-//    var textAttributes: [NSAttributedString.Key : Any]!
-//    convenience init(){
-//        let placeholderAttributes = [NSAttributedString.Key.foregroundColor: UIColor.lightGray]
-//        let textAttributes = [NSAttributedString.Key.foregroundColor: UIColor.label]
-//        self.init(frame: .zero,
-//                  textContainer: nil,
-//                  placeholderAttributes: placeholderAttributes,
-//                  textAttributes: textAttributes)
-////        self.typingAttributes = self.placeholderAttributes
-//    }
-//    convenience init(placeholderAttributes: [NSAttributedString.Key : Any] , textAttributes: [NSAttributedString.Key : Any]){
-//        self.init(frame: .zero,
-//                  textContainer: nil,
-//                  placeholderAttributes: placeholderAttributes,
-//                  textAttributes: textAttributes)
-////        self.typingAttributes = self.placeholderAttributes
-//    }
-//    init(frame: CGRect, textContainer: NSTextContainer?, placeholderAttributes: [NSAttributedString.Key : Any], textAttributes: [NSAttributedString.Key : Any]) {
-//        super.init(frame: frame,
-//                   textContainer: textContainer)
-////        self.placeholderAttributes = placeholderAttributes
-////        self.textAttributes = textAttributes
-////        self.typingAttributes = self.placeholderAttributes
-//    }
-//    required init?(coder: NSCoder) {
-//        super.init(coder: coder)
-//        fatalError("Coder wasn't imported")
-//    }
-//    override func paste(_ sender: Any?) {
-//        if let pasteboardString = UIPasteboard.general.string {
-//
-//            guard !typingAttributes.contains(where: { (key, value) in
-//                let placeholderForegroundColour: UIColor = {
-//                   let textColour = placeholderAttributes.first { (key, value) in
-//                        key == NSAttributedString.Key.foregroundColor
-//                    }
-//                    return textColour?.value as? UIColor ?? UIColor()
-//                }()
-//               return (key == NSAttributedString.Key.foregroundColor && value as? UIColor == placeholderForegroundColour)
-//            }) else {
-//                self.attributedText = NSAttributedString(string: pasteboardString, attributes: textAttributes)
-//                return
-//            }
-//
-//            let attributedString = NSAttributedString(string: pasteboardString, attributes: textAttributes)
-//
-//            textStorage.insert(attributedString, at: selectedRange.location)
-//
-//            selectedRange = NSRange(location: selectedRange.location + pasteboardString.count, length: 0)
-//        }
-//    }
-    
-
-//    func textViewDidEndEditing(_ textView: UITextView) {
-//        if isTextViewShowingPlaceholder {
-//            textView.isUserInteractionEnabled = false
-//        }
-//           }
-//    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-//        updatePlaceholderVisability()
-//        updatePasteButtonVisability()
-//        print("shouldChangeTextIn")
-//        if textView.text.count > 0 {
-////            if isTextViewShowingPlaceholder {
-////                switchTextViewTextStyle(forPlaceholder: false )
-//                switchPasteButtonTo(visible: false)
-//                print ("text was pasted or inputed")
-////            }
-//
-//        }
-//        if textView.text.count <= 1 && text.isEmpty || range.length >= textView.text.count && text.isEmpty{
-////            if !isTextViewShowingPlaceholder {
-////                switchTextViewTextStyle(forPlaceholder: true)
-//                switchPasteButtonTo(visible: true)
-////                print("replacementObject(for: )")
-////                textView.selectedRange = NSRange(location: 0, length: 0)
-////            }
-//        }
-//
-//        return true
-//    }
-//    func textViewDidChangeSelection(_ textView: UITextView) {
-//        if isTextViewShowingPlaceholder {
-//            textView.selectedRange = NSRange(location: 0, length: 0)
-//        }
-//    }
-
-//        if let clipboardText = UIPasteboard.general.string, textView.text.contains(clipboardText) {
-//            self.isTextViewShowingPlaceholder = false
-//            self.switchPasteButtonTo(visible: false)
-//
-//        }
-//            if isTextViewShowingPlaceholder {
-//                switchTextViewTextStyle(forPlaceholder: false)
-//                switchPasteButtonTo(visible: false)
-//            }
-    
-//        }
-
-//    func textViewDidChange(_ textView: UITextView) {
-//        let textViewHaveText = textView.text.count > 0
-//        let textViewHavePasteButton = textView.subviews.contains(where: { button in
-//            button == saveButton
-//        })
-//        if textViewHaveText {
-//            if textViewHavePasteButton{
-//                UIView.animate(withDuration: 0.2) {
-//                    self.saveButton.alpha = 0
-//                }
-//            }
-//        } else {
-//            if !textViewHavePasteButton{
-//                UIView.animate(withDuration: 0.2) {
-//                    self.saveButton.alpha = 1
-//                }
-//            }
-//        }
-//    }

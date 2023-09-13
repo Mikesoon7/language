@@ -22,9 +22,9 @@ class CollectionViewCell: UICollectionViewCell {
     
     var word: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: "Georgia-BoldItalic", size: 20)
+        label.font = .georgianBoldItalic.withSize(20)
         label.numberOfLines = 0
-        label.textColor = .black
+        label.textColor = .label
         label.text = "???"
         label.textAlignment = .center
 
@@ -36,9 +36,9 @@ class CollectionViewCell: UICollectionViewCell {
     }()
     var translation: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: "Georgia-Italic", size: 17)
+        label.font = .georgianItalic.withSize(17)
         label.numberOfLines = 0
-        label.textColor = .black
+        label.textColor = .label
         label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
         label.minimumScaleFactor = 0.9
@@ -49,11 +49,11 @@ class CollectionViewCell: UICollectionViewCell {
     
     let cardView : UIView = {
         let view = UIView()
-        view.backgroundColor = .white
+        view.backgroundColor = .systemBackground_Secondary
         view.layer.cornerRadius = 13
         view.layer.borderColor = UIColor.black.cgColor
         view.layer.borderWidth = 1
-//        view.clipsToBounds = true
+        view.clipsToBounds = true
         
         view.translatesAutoresizingMaskIntoConstraints = false
         return view

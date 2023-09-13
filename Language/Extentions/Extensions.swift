@@ -13,15 +13,18 @@ public let shadowColorForDarkIdiom = UIColor.clear.cgColor
 public let shadowColorForLightIdiom = UIColor.systemGray2.cgColor
 
 
-//extension UIView {
-//    func setUpCustomView(){
-//        self.layer.cornerRadius = 9
-//        self.addShadowWhichOverlays(false)
-//        self.backgroundColor = .secondarySystemBackground
-//        self.translatesAutoresizingMaskIntoConstraints = false
-//    }
-//}
 
+extension UIColor {
+    static var systemBackground_Secondary: UIColor {
+        UIColor { traitCollection in
+            if traitCollection.userInterfaceStyle == .dark {
+                return .secondarySystemBackground
+            } else {
+                return .systemBackground
+            }
+        }
+    }
+}
 
 extension UIButton {
     func setUpCustomButton(){
@@ -161,29 +164,27 @@ extension NSMutableAttributedString{
 
 }
 //MARK: -AddSubviews method.
-extension UIView{
-//    func addSubviews(_ views: UIView...){
-//        for i in views{
-//            self.addSubview(i)
-//        }
-//    }
-//    func addCenterSideShadows(_ over: Bool){
-//        self.layer.masksToBounds = false
-//        self.layer.shadowOffset = over ? CGSize(width: 0, height: 10) : CGSize(width: 0, height: 5)
-//        self.layer.shadowColor = ((traitCollection.userInterfaceStyle == .dark)
-//                                  ? shadowColorForDarkIdiom
-//                                  : shadowColorForLightIdiom)
-//        self.layer.shadowOpacity = over ? 0.4 : 0.8
-//    }
-//
-//    func addShadowWhichOverlays( _ over: Bool){
-//        self.layer.masksToBounds = false
-//        self.layer.shadowOffset = over ? CGSize(width: 9, height: 10) : CGSize(width: 4, height: 5)
-//        self.layer.shadowColor = ((traitCollection.userInterfaceStyle == .dark)
-//                                  ? shadowColorForDarkIdiom
-//                                  : shadowColorForLightIdiom)
-//        self.layer.shadowOpacity = over ? 0.4 : 0.8
-//    }
+extension CABasicAnimation{
+    static func rotationAnimation() -> CABasicAnimation {
+        let rotationAnimation = CABasicAnimation(keyPath: "transform.rotation.y")
+        rotationAnimation.fromValue = 0
+        rotationAnimation.toValue = -Double.pi
+        rotationAnimation.duration = 0.5 //0.6
+        rotationAnimation.isRemovedOnCompletion = false
+        rotationAnimation.fillMode = .forwards
+        return rotationAnimation
+    }
+}
+extension CAKeyframeAnimation {
+    static func shakingAnimation() -> CAKeyframeAnimation {
+        let animation = CAKeyframeAnimation()
+        animation.keyPath = "position.x"
+        animation.values = [5, 0, -5, 0, 5, 0]
+        animation.duration = 0.5
+        animation.keyTimes = [0, 0.1, 0.2, 0.3, 0.4, 0.5]
+        animation.isAdditive = true
+        return animation
+    }
 }
 extension UIColor{
     static func getColoursArray(_ count: Int) -> [UIColor]{
@@ -249,7 +250,7 @@ extension String{
     }
 }
 extension UIAlertController {
-    func alertWithAction(alertTitle: String, alertMessage: String, alertStyle: UIAlertController.Style = .actionSheet,
+    static func alertWithAction(alertTitle: String, alertMessage: String, alertStyle: UIAlertController.Style = .actionSheet,
                          action1Title: String = "", action1Style: UIAlertAction.Style = .default,
                          action2Title: String = "", action2Style: UIAlertAction.Style = .default) -> UIAlertController{
         let alert = UIAlertController(title: alertTitle, message: alertMessage, preferredStyle: alertStyle)
@@ -307,13 +308,14 @@ extension UIViewController{
         default:
             description = "unknownError.title".localized
         }
-        let alertController = UIAlertController(
-            title: description,
-            message: "unknownError.message".localized,
-            preferredStyle: .alert)
-        
-        alertController.addAction(UIAlertAction(title: "system.agreeFormal".localized, style: .default))
-        self.present(alertController, animated: true, completion: nil)
+        let alert = UIAlertController
+            .alertWithAction(
+                alertTitle: description,
+                alertMessage: "unknownError.message".localized,
+                alertStyle: .alert,
+                action1Title: "system.agreeFormal".localized,
+                action1Style: .default)
+        self.present(alert, animated: true, completion: nil)
     }
 }
 extension Date {
@@ -327,9 +329,9 @@ extension UITextView {
         if let pasteboardText = UIPasteboard.general.string {
             let attributes = self.typingAttributes
             let attributedString = NSAttributedString(string: pasteboardText, attributes: attributes)
-            
+
             textStorage.insert(attributedString, at: selectedRange.location)
-            
+
             selectedRange = NSRange(location: selectedRange.location + pasteboardText.count, length: 0)
             if delegate != nil {
                 delegate?.textViewDidChange?(self)
