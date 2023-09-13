@@ -93,16 +93,18 @@ class CollectionViewCell: UICollectionViewCell {
             cardView.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor),
             cardView.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor),
             cardView.trailingAnchor.constraint(equalTo: self.contentView.trailingAnchor),
-            ])
+        ])
         
-        if translation.text != nil {
+        if translation.text != "" {
+            print("word only")
             NSLayoutConstraint.activate([
                 word.topAnchor.constraint(equalTo: cardView.topAnchor, constant: 20),
                 word.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: 5),
-                word.bottomAnchor.constraint(equalTo: cardView.bottomAnchor, constant: -5),
-                word.trailingAnchor.constraint(lessThanOrEqualTo: cardView.trailingAnchor, constant: -5),
+                word.bottomAnchor.constraint(lessThanOrEqualTo: cardView.bottomAnchor, constant: -5),
+                word.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -5),
             ])
         } else {
+            print("word and text")
             NSLayoutConstraint.activate([
                 word.topAnchor.constraint(equalTo: cardView.topAnchor, constant: 20),
                 word.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: 5),

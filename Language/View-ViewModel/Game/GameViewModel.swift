@@ -110,7 +110,7 @@ class GameViewModel{
         try dataModel.fetchWords(for: dictionary)
     }
     
-    @objc func languageDidUpdate(sender: Notification){
+    @objc func languageDidUpdate(sender: Any){
         self.output.send(.updateLables)
     }
 

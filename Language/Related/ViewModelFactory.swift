@@ -24,7 +24,7 @@ final class ViewModelFactory{
         AddDictionaryViewModel(model: dataModel, settingsModel: settingsModel)
     }
     func configureEditViewModel(dictionary: DictionariesEntity) -> EditViewModel{
-        EditViewModel(dictionary: dictionary, model: dataModel)
+        EditViewModel(dataModel: dataModel, settingsModel: settingsModel, dictionary: dictionary)
     }
     func configureAddWordsViewModel(dictionary: DictionariesEntity) -> AddWordsViewModel{
         AddWordsViewModel(dataModel: dataModel, settingsModel: settingsModel, dictionary: dictionary)
