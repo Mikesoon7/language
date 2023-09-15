@@ -10,23 +10,17 @@ import Combine
 import UIKit
 
 class GameViewModel{
+    
     enum Output{
-//        case restoreCellWithUpdate(WordsEntity)
-//        case restoreCellWithDeletion(WordsEntity)
-//        case restoreCell
         case updateLables
         case error(Error)
     }
-    enum Input{
-        case wordsPairWasUpdated
-        case wordsPairWasDeleted
-    }
     
+    //MARK: Properties
     private var dataModel: Dictionary_WordsManager
-    private var settingsModel: UserSettingsStorageProtocol
     
-    var dictionary: DictionariesEntity
-    var words: [WordsEntity] = []
+    private var dictionary: DictionariesEntity
+    private var words: [WordsEntity] = []
     
     private var isRandom: Bool
     private var selectedNumberOfWords: Int
@@ -34,9 +28,9 @@ class GameViewModel{
     var output = PassthroughSubject<Output, Never>()
     private var cancellable = Set<AnyCancellable>()
     
+    //MARK: Inherited
     init(dataModel: Dictionary_WordsManager, settingsModel: UserSettingsStorageProtocol, dictionary: DictionariesEntity, isRandom: Bool, selectedNumber: Int){
         self.dataModel = dataModel
-        self.settingsModel = settingsModel
         self.dictionary = dictionary
         self.isRandom = isRandom
         self.selectedNumberOfWords = selectedNumber
@@ -53,32 +47,15 @@ class GameViewModel{
         NotificationCenter.default.removeObserver(self, name: .appLanguageDidChange, object: nil)
     }
     
+    //MARK: Methods
     func configureCompletionPercent() -> Float{
         Float(selectedNumberOfWords) / Float(words.count) * 100.0
     }
     
-    func didSelectCellAt(indexPath: IndexPath) -> DataForDetailsView {
-        
-        return DataForDetailsView(dictionary: dictionary, word: words[indexPath.row])
-        
-    }
-
-    func configureData(){
-        do {
-            self.words = try retrieveWordsForm(dictionary)
-        } catch {
-            self.output.send(.error(error))
-        }
-        print(words.count)
-        self.words = prepareWords(words: words, isRandom: isRandom, restrictBy: selectedNumberOfWords)
+    func dataForDiffableDataSource() -> [WordsEntity]{
+        words
     }
     
-    func currentNumberOfWords() -> Int{
-        return words.count
-    }
-    func currentSeparator() -> String{
-        return settingsModel.appSeparators.value
-    }
     func deleteWord(word: WordsEntity){
         do {
             try dataModel.deleteWord(word: word)
@@ -87,27 +64,31 @@ class GameViewModel{
         } catch {
             output.send(.error(error))
         }
-        
     }
     
-    func editWord(word: WordsEntity, with text: String){
-        do {
-            try dataModel.reassignWordsProperties(for: word, from: text)
-        } catch {
-            output.send(.error(error))
-        }
+    ///Returning dictionary and word object, conforming passed index.
+    func didSelectCellAt(indexPath: IndexPath) -> DataForDetailsView {
+        return DataForDetailsView(dictionary: dictionary, word: words[indexPath.row])
     }
 
+    ///Retrieving words from dataModel and assining results of prepare method to local property
+    private func configureData(){
+        do {
+            self.words = try dataModel.fetchWords(for: dictionary)
+        } catch {
+            self.output.send(.error(error))
+        }
+
+        self.words = prepareWords(words: words, isRandom: isRandom, restrictBy: selectedNumberOfWords)
+    }
+
+    ///Creating and return  new array after applying passed random value and restriction by passed number
     private func prepareWords(words: [WordsEntity], isRandom: Bool, restrictBy number: Int) -> [WordsEntity]{
         var wordsArray = words
         if isRandom {
             wordsArray = wordsArray.shuffled()
         }
         return Array(wordsArray.prefix(upTo: number))
-    }
-    
-    private func retrieveWordsForm( _ dictionary: DictionariesEntity) throws -> [WordsEntity]{
-        try dataModel.fetchWords(for: dictionary)
     }
     
     @objc func languageDidUpdate(sender: Any){

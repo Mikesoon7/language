@@ -87,9 +87,14 @@
 "gameTitle" = "Картки";
 //MARK: - GameDetailsVc
 "gameDetails.information" = "Торкніться будь-якого слова, щоб дізнатися його значення з вбудованого словника iOS. За потреби, ви можете відредагувати або видалити свою картку прямо тут. Це ваш особистий простір для навчання - використовуйте його можливості для кращого засвоєння інформації.";
+"gameDetails.suggestion1Part" = "Якщо у вас виникнуть проблеми з доступом до словників, можливо, вам потрібно їх завантажити або оновити. Для цього перейдіть в";
+"gameDetails.suggestion2Part" = "на вашому пристрої та переконайтеся, що потрібні словники встановлені.";
+"gameDetails.settingsPath" = " Налаштування -> Основні -> Словники ";
 "gameDetails.deleteAlert.title" = "Видалити поточну пару";
 "gameDetails.deleteAlert.message" = "Ви впевнені, що хочете видалити цю пару?";
-"gameDetails.deleteAlert.message.warning" = "\n nЦе остання картка, тому ваш словник також буде видалено.";
+"gameDetails.deleteAlert.message.warning" = "\n Це остання картка, тому ваш словник також буде видалено.";
+"gameDetails.emptyTextAlert.title" = "Текст не может быть пустым.";
+"gameDetails.emptyTextAlert.message" = "Сохранение пустого значения приведет к удалению карточки.";
 
 //MARK: - Notification
 "notification.allowNotification" = "Дозволити повідомлення";

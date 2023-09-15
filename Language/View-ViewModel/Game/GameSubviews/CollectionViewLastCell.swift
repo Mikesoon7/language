@@ -29,11 +29,13 @@ class DataForLastCell: Hashable{
 protocol CustomCellDelegate: AnyObject{
     func finishButtonTap()
 }
+//MARK: - CollectionViewCell
 class CollectionViewLastCell: UICollectionViewCell {
     
-    var staticCardSize : CGSize!
+    private var staticCardSize : CGSize = .init()
     weak var delegate: CustomCellDelegate?
     
+    //MARK: Views
     let cardView : UIView = {
         let view = UIView()
         view.backgroundColor = .systemBackground_Secondary
@@ -44,7 +46,7 @@ class CollectionViewLastCell: UICollectionViewCell {
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
-    var cardShadowView : UIView = {
+    let cardShadowView : UIView = {
         let view = UIView()
         view.backgroundColor = .clear
         
@@ -56,7 +58,7 @@ class CollectionViewLastCell: UICollectionViewCell {
         return view
     }()
     
-    let scoreLabel : UILabel = {
+    private let scoreLabel : UILabel = {
         let label = UILabel()
         label.textAlignment = .center
         label.font = .georgianBoldItalic.withSize(40)
@@ -66,7 +68,7 @@ class CollectionViewLastCell: UICollectionViewCell {
         return label
     }()
     
-    let finishButton : UIButton = {
+    private let finishButton : UIButton = {
         let button = UIButton()
         button.setUpCustomView()
         button.layer.borderWidth = 0
@@ -79,16 +81,25 @@ class CollectionViewLastCell: UICollectionViewCell {
         })
         return button
     }()
+    
+    //MARK: Inhereted
     override init(frame: CGRect) {
         super.init(frame: frame)
-        cardViewCustomiation()
+        configureCardView()
         configureLabels()
         staticCardSize = CGSize(width: UIWindow().bounds.width * 0.64, height: UIWindow().bounds.height * 0.48)
     }
     required init?(coder: NSCoder) {
         fatalError("Faild to present cells")
     }
-    func cardViewCustomiation(){
+    
+    func configure(with data: DataForLastCell){
+        scoreLabel.text = "\((data.score).rounded())%"
+        delegate = data.delegate
+    }
+
+    //MARK: Subviews Configuration
+    func configureCardView(){
         self.contentView.addSubview(cardShadowView)
         cardShadowView.addSubview(cardView)
         cardView.addSubviews(scoreLabel, finishButton)
@@ -104,7 +115,6 @@ class CollectionViewLastCell: UICollectionViewCell {
             cardView.widthAnchor.constraint(equalTo: self.contentView.widthAnchor),
             cardView.heightAnchor.constraint(equalTo: self.contentView.heightAnchor ),
 
-
             scoreLabel.centerXAnchor.constraint(equalTo: cardView.centerXAnchor),
             scoreLabel.centerYAnchor.constraint(equalTo: cardView.centerYAnchor),
         
@@ -119,16 +129,13 @@ class CollectionViewLastCell: UICollectionViewCell {
         finishButton.addTargetOutsideTouchStop()
     }
     
+    //MARK: Other
+    ///Changing shadows appearence to reflect change in size and position of the cell. Dynamic Shadows.
     override func apply(_ layoutAttributes: UICollectionViewLayoutAttributes) {
         super.apply(layoutAttributes)
         cardShadowView.layer.shadowOffset = CGSize(
             width: (layoutAttributes.frame.width - staticCardSize.width) / 4 ,
             height: ( layoutAttributes.frame.height - staticCardSize.height) / 3)
-    }
-
-    func configure(with data: DataForLastCell){
-        scoreLabel.text = "\((data.score).rounded())%"
-        delegate = data.delegate
     }
     
     func configureLabels(){
@@ -142,6 +149,7 @@ class CollectionViewLastCell: UICollectionViewCell {
         )
     }
 
+    //MARK: Actions
     @objc func buttonTap(sender: Any){
         delegate?.finishButtonTap()
     }

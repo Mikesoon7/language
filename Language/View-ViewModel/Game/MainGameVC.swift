@@ -46,10 +46,9 @@ class MainGameVC: UIViewController{
     //MARK: Views
     private var collectionView: UICollectionView!
     
-    private var longPressGesture = UILongPressGestureRecognizer()
     
     //MARK: Inherited and required
-    required init(viewModelFactory: ViewModelFactory, dictionary: DictionariesEntity, isRandom: Bool, selectedNumber: Int){
+    required init(viewModelFactory: ViewModelFactory, dictionary: DictionariesEntity, isRandom: Bool, selectedNumber: Int) {
         self.viewModelFactory = viewModelFactory
         self.viewModel = viewModelFactory.configureGameViewmModel(
             dictionary: dictionary,
@@ -60,9 +59,10 @@ class MainGameVC: UIViewController{
     required init?(coder: NSCoder) {
         fatalError("init?(coder: NSCoder) wasn't imported")
     }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        configureController()
+        bind()
         prepareCells()
         configureLabels()
         configureCollectionView()
@@ -73,7 +73,7 @@ class MainGameVC: UIViewController{
         collectionView.collectionViewLayout = CustomFlowLayout()
     }
     
-
+    //MARK: - Controller SetUp
     func bind(){
         viewModel?.output
             .sink(receiveValue: { [weak self] output in
@@ -85,10 +85,6 @@ class MainGameVC: UIViewController{
                 }
             })
             .store(in: &cancellable)
-    }
-    //MARK: - Controller SetUp
-    func configureController(){
-        longPressGesture = longGestureCustomization()
     }
     
     //MARK: Subviews SetUp
@@ -109,17 +105,6 @@ class MainGameVC: UIViewController{
         collectionView.dataSource = dataSourceCustomization()
     }
     
-    private func configureLabels(){
-        navigationItem.title = "gameTitle".localized
-    }
-
-    private func longGestureCustomization() -> UILongPressGestureRecognizer {
-        let gesture = UILongPressGestureRecognizer(target: self, action: #selector(viewDidPress(sender: )))
-        gesture.minimumPressDuration = 0.01
-        gesture.cancelsTouchesInView = true
-        gesture.delegate = self
-        return gesture
-    }
     
     //MARK: - Cell SetUp
     private func prepareCells(){
@@ -155,7 +140,7 @@ class MainGameVC: UIViewController{
         
         var snapshot = Snapshot()
         snapshot.appendSections([.cards])
-        snapshot.appendItems(viewModel.words, toSection: .cards)
+        snapshot.appendItems(viewModel.dataForDiffableDataSource(), toSection: .cards)
         snapshot.appendItems([
             DataForLastCell(score: viewModel.configureCompletionPercent(), delegate: self)
         ], toSection: .cards)
@@ -222,6 +207,19 @@ class MainGameVC: UIViewController{
         vc.navBarTopInset = view.safeAreaInsets.top
         return vc
     }
+    
+    private func longGestureCustomization() -> UILongPressGestureRecognizer {
+        let gesture = UILongPressGestureRecognizer(target: self, action: #selector(viewDidPress(sender: )))
+        gesture.minimumPressDuration = 0.01
+        gesture.cancelsTouchesInView = true
+        gesture.delegate = self
+        return gesture
+    }
+    
+    private func configureLabels(){
+        navigationItem.title = "gameTitle".localized
+    }
+
 }
 
 

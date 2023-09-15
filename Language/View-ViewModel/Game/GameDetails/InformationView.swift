@@ -12,13 +12,9 @@ class InformationView: UIViewController {
     
     let informationLabel: UILabel = {
         let label = UILabel()
-        label.attributedText = .attributedString(
-            string: "gameDetails.information".localized,
-            with: .georgianItalic,
-            ofSize: 18,
-            foregroundColour: .label)
         label.numberOfLines = 0
         label.textAlignment = .center
+        label.lineBreakMode = .byWordWrapping
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -28,10 +24,11 @@ class InformationView: UIViewController {
         super.viewDidLoad()
         configureView()
         configureInformationLabel()
+        configureAttributedText()
     }
     override func viewDidLayoutSubviews() {
         sheetPresentationController?.detents = [.custom(resolver: { context in
-            return self.informationLabel.bounds.height * 1.5
+            return self.informationLabel.bounds.height * 1.2
         })]
 
     }
@@ -42,6 +39,38 @@ class InformationView: UIViewController {
                                 : .systemBackground)
         self.modalPresentationStyle = .pageSheet
     }
+    
+    func configureAttributedText(){
+        let mutableText: NSMutableAttributedString =
+            .attributedMutableString(
+                string: "gameDetails.information".localized,
+                with: .helveticaNeueMedium,
+                ofSize: 18,
+                foregroundColour: .label
+            )
+        mutableText.append(
+            .attributedString(
+                string: "\n \n \n" + "gameDetails.suggestion1Part".localized,
+                with: .helveticaNeueMedium,
+                ofSize: 16,
+                foregroundColour: .systemGray
+            )
+        )
+        mutableText.append(
+            .attributedString(
+                string: "\n \n " + "gameDetails.settingsPath".localized,
+                with: .helveticaNeueBold, ofSize: 18)
+        )
+        mutableText.append(
+            .attributedString(
+                string: "\n \n" + "gameDetails.suggestion2Part".localized,
+                with: .helveticaNeueMedium, ofSize: 16,
+                foregroundColour: .systemGray
+            )
+        )
+        informationLabel.attributedText = mutableText
+    }
+    
     //MARK: Layout view subviews.
     func configureInformationLabel(){
         view.addSubview(informationLabel)
@@ -49,7 +78,7 @@ class InformationView: UIViewController {
         NSLayoutConstraint.activate([
             informationLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: view.bounds.height * 0.05),
             informationLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            informationLabel.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.91)
+            informationLabel.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: .widthMultiplerFor(type: .forViews))
         
         ])
     }

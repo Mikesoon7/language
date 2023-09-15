@@ -224,6 +224,7 @@ class LaunchAnimation{
 class LoadingAnimation: UIView {
     
     private var dots: [UIView] = []
+    private var dotAnimation: CABasicAnimation = .init()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -253,20 +254,27 @@ class LoadingAnimation: UIView {
         }
 
         frame = CGRect(x: frame.origin.x, y: frame.origin.y, width: totalWidth, height: dotDiameter)
+        prepareAniamation()
+    }
+    func prepareAniamation(){
+        let animation = CABasicAnimation(keyPath: "opacity")
+        animation.duration = 0.5
+        animation.fromValue = 1
+        animation.toValue = 0.1
+        animation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+        animation.repeatCount = .infinity
+        animation.autoreverses = true
+        
+        dotAnimation = animation
+//        animation.beginTime = CACurrentMediaTime() + (0.2 * Double(i))
     }
     
     func startAnimating(){
         for i in 0..<dots.count {
             let dot = dots[i]
             
-            let animation = CABasicAnimation(keyPath: "opacity")
-            animation.duration = 0.5
-            animation.fromValue = 1
-            animation.toValue = 0.1
-            animation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
-            animation.repeatCount = .infinity
-            animation.autoreverses = true
-            animation.beginTime = CACurrentMediaTime() + (0.2 * Double(i))
+            let animation = dotAnimation
+            animation.beginTime = CACurrentMediaTime() + (0.1 * Double(i))
 
             dot.layer.add(animation, forKey: "loadingAnimation")
         }

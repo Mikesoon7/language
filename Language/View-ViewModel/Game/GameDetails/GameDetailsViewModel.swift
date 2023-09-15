@@ -9,11 +9,14 @@ import Foundation
 import Combine
 import UIKit
 
-class GameDetailsViewModel{
 
+class GameDetailsViewModel{
+    //MARK: Enums
     enum Output {
         case shouldPresentAlert(UIAlertController)
         case shouldDismissView
+        case shouldProcceedEditing
+        case shouldEndEditing
         case error(Error)
     }
     enum CardState{
@@ -22,6 +25,7 @@ class GameDetailsViewModel{
         case wasChecked
     }
     
+    //MARK: Properties
     private let dataModel: Dictionary_WordsManager
     private let settingsModel: UserSettingsStorageProtocol
     
@@ -47,6 +51,8 @@ class GameDetailsViewModel{
         self.currentText = configureTexForTextView(isEditing: true)
     }
     
+    //MARK: Functional methods.
+    ///Calls on VC deinition. Calling delegate method in responce on changes.
     func viewWillDissapear(){
         switch cardState {
         case .wasChecked: delegate?.restoreCardCell()
@@ -54,17 +60,41 @@ class GameDetailsViewModel{
         case .wasDeleted: delegate?.deleteCardCell()
         }
     }
-    
-    func getCurrentSeparator() -> String{
-        return settingsModel.appSeparators.value
-    }
-    
+    ///Configure and returning text for textView.
     func configureTexForTextView(isEditing: Bool) -> String{
-        let separationFormatter = isEditing ? (" " + getCurrentSeparator() + " ") : "\n\n"
+        let separationFormatter = isEditing ? (" " + settingsModel.appSeparators.value + " ") : "\n\n"
         let text = selectedWord.word + separationFormatter + selectedWord.meaning
         return text
     }
     
+    ///Presenting alert to submit deletion.
+    func deleteWord(){
+        configureAlert(forDeletion: true)
+    }
+    
+    ///Validate text and saving it dataModel.
+    func editWord(with text: String){
+        guard text != currentText else {
+            output.send(.shouldEndEditing)
+            return
+        }
+        guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            configureAlert(forDeletion: false )
+            return
+        }
+        
+        do {
+            try dataModel.reassignWordsProperties(for: selectedWord, from: text)
+            self.currentText = text
+            self.cardState = .wasUpdated
+            output.send(.shouldEndEditing)
+        } catch {
+            output.send(.error(error))
+        }
+    }
+    
+    //MARK: System methods
+    ///Returns number of words or nil.
     private func getCurrentNumberOfWords() -> Int?{
         do {
             let words = try dataModel.fetchWords(for: selectedDictionary)
@@ -73,43 +103,36 @@ class GameDetailsViewModel{
             return nil
         }
     }
-
-    func deleteWord(){
-        let delete = { [weak self] in
-            self?.output.send(.shouldDismissView)
-            self?.cardState = .wasDeleted
-        }
-        
-        createAlertController {
-            delete()
-        }
-    }
-
-    func editWord(with text: String){
-        guard text != currentText else { return }
-        do {
-            try dataModel.reassignWordsProperties(for: selectedWord, from: text)
-            self.currentText = configureTexForTextView(isEditing: true)
-            self.cardState = .wasUpdated
-        } catch {
-            output.send(.error(error))
-        }
+    ///Important. Since deletion triggers on behalf of MainGameViewModel, this method changing card state and triggering view dismiss.
+    private func delete(){
+        cardState = .wasDeleted
+        output.send(.shouldDismissView)
     }
     
-    private func createAlertController(completion: @escaping () -> () ) {
+    ///Configures and send alert. Creates alert for edit, if delete = false.
+    private func configureAlert(forDeletion: Bool){
         let alert = UIAlertController
             .alertWithAction(
-                alertTitle: "gameDetails.deleteAlert.title".localized,
-                alertMessage: "gameDetails.deleteAlert.message".localized,
-                alertStyle: .actionSheet,
-                action1Title: "system.cancel".localized,
-                action1Style: .cancel
+                alertTitle: forDeletion
+                ? "gameDetails.deleteAlert.title".localized
+                : "gameDetails.emptyTextAlert.title".localized,
+                alertMessage: forDeletion
+                ? "gameDetails.emptyTextAlert.message".localized
+                : "gameDetails.deleteAlert.message".localized
             )
         
-        let confirm = UIAlertAction(title: "system.delete".localized, style: .destructive) {_ in
-                completion()
+        let confirm = UIAlertAction(title: "system.delete".localized, style: .destructive) { [weak self] _ in
+            self?.delete()
+        }
+        
+        let cancel = UIAlertAction(title: "system.cancel".localized, style: .cancel, handler: { [weak self] _ in
+            if !forDeletion{
+                self?.output.send(.shouldProcceedEditing)
             }
-
+        })
+        
+        cancel.setValue(UIColor.label, forKey: "titleTextColor")
+        
         guard let numberOfWords = getCurrentNumberOfWords() else {
             output.send(.error(DictionaryErrorType.deleteFailed))
             return
@@ -119,6 +142,7 @@ class GameDetailsViewModel{
             alert.message?.append("gameDetails.deleteAlert.message.warning".localized)
         }
         
+        alert.addAction(cancel)
         alert.addAction(confirm)
         output.send(.shouldPresentAlert(alert))
     }

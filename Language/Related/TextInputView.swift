@@ -26,7 +26,7 @@ final class TextInputView: UIView {
         return label
     }()
     
-     var textView: CustomTextView = {
+    var textView: CustomTextView = {
         var textView = CustomTextView()
         textView.translatesAutoresizingMaskIntoConstraints = false
         textView.layer.cornerRadius = 9
@@ -35,11 +35,11 @@ final class TextInputView: UIView {
         textView.layer.masksToBounds = true
         textView.layer.borderColor = UIColor.black.cgColor
         textView.layer.borderWidth = 0.5
-                
-        textView.textContainerInset = .init(top: 5, left: 5, bottom: 5, right: 5)
-        textView.allowsEditingTextAttributes = true
         
-        textView.typingAttributes = NSAttributedString.textAttributes(with: .timesNewRoman, ofSize: 17)
+        textView.textContainerInset = .init(top: 5, left: 5, bottom: 5, right: 5)
+        textView.allowsEditingTextAttributes = false
+        textView.tintColor = .label
+        textView.font = .timesNewRoman.withSize(17)
         return textView
     }()
     
@@ -81,6 +81,7 @@ final class TextInputView: UIView {
         self.backgroundColor = .secondarySystemBackground
         self.translatesAutoresizingMaskIntoConstraints = false
     }
+    
     //MARK: Subviews SetUp
     private func configureTableView() {
         self.addSubviews(placeholderLabel, textView, pasteButton)
@@ -141,13 +142,26 @@ extension TextInputView: UITextViewDelegate{
     }
     
     func textViewDidChange(_ textView: UITextView) {
+        
         updatePlaceholderVisability()
         updatePasteButtonVisability()
     }
 }
+
 class CustomTextView: UITextView{
+    
+    required init(){
+        super.init(frame: .zero, textContainer: nil)
+        addKeyboardToolbar()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override open func paste(_ sender: Any?) {
         if let pasteboardText = UIPasteboard.general.string {
+            print(pasteboardText)
             let attributes = self.typingAttributes
             let attributedString = NSAttributedString(string: pasteboardText, attributes: attributes)
             
@@ -157,7 +171,22 @@ class CustomTextView: UITextView{
             delegate?.textViewDidChange?(self)
         }
     }
+    func addKeyboardToolbar() {
+        let toolbar = UIToolbar()
+        toolbar.sizeToFit()
+        
+        let softReturnButton = UIBarButtonItem(title: "Soft Return", style: .done, target: self, action: #selector(softReturnPressed))
+        softReturnButton.tintColor = .label
+        
+        
+        toolbar.items = [UIBarButtonItem(systemItem: .flexibleSpace, menu: nil), softReturnButton]
+        
+        self.inputAccessoryView = toolbar
+    }
+    
+    @objc func softReturnPressed() {
+        if let selectedRange = self.selectedTextRange {
+            self.replace(selectedRange, withText: "\r") // Insert soft return
+        }
+    }
 }
-
-
-

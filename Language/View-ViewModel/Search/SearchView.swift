@@ -258,6 +258,7 @@ class SearchView: UIViewController {
     private func configureLabels(){
         title = "searchVCTitle".localized
         topSearchController.searchBar.placeholder = "yourWord".localized
+        bottomSearchView.searchBar.placeholder = "yourWord".localized
     }
 
     

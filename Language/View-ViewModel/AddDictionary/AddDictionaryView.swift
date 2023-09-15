@@ -248,6 +248,7 @@ extension AddDictionaryView {
     @objc func keyboardWillHide(sender: Notification){
         updateTextViewConstraits(keyboardIsVisable: false)
     }
+    
 }
 
 //MARK: - Extending for PlaceholderTextView
@@ -279,5 +280,4 @@ extension AddDictionaryView: UITextFieldDelegate{
         
         return newString.count <= maxLength
     }
-
 }

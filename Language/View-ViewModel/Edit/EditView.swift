@@ -23,8 +23,8 @@ class EditView: UIViewController {
     var oldText: [String]!
     
     //MARK: - Views
-    let textView: UITextView = {
-        let view = UITextView()
+    let textView: CustomTextView = {
+        let view = CustomTextView()
         view.textContainerInset = UIEdgeInsets(top: 20, left: 20, bottom: 10, right: 20)
         view.allowsEditingTextAttributes = true
         view.textColor = .label
@@ -32,6 +32,7 @@ class EditView: UIViewController {
         view.font = .timesNewRoman.withSize(17)
         
         view.alwaysBounceVertical = true
+        view.textContainer.lineBreakMode = .byWordWrapping
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()

@@ -87,9 +87,15 @@
 "gameTitle" = "Cards";
 //MARK: - GameDetailsVc
 "gameDetails.information" = "Tap on any word to uncover its meaning using the built-in iOS dictionary. You can also edit or delete your card if necessary. This is your personalized learning space - make the most out of it.";
-"gameDetails.deleteAlert.title" = "Delete current pair";
+"gameDetails.suggestion1Part" = "If you encounter any issues with accessing dictionaries, you may need to download or update them. To do so, navigate to";
+"gameDetails.suggestion2Part" = "on your device and ensure the required dictionaries are installed.";
+"gameDetails.settingsPath" = " Settings -> General -> Dictionaries ";
+"gameDetails.deleteAlert.title" = "Delete current card";
 "gameDetails.deleteAlert.message" = "Are you sure you want to delete this pair?";
 "gameDetails.deleteAlert.message.warning" = "\n This is the last card, so your dictionary will also be deleted.";
+"gameDetails.emptyTextAlert.title" = "Text can not me empty.";
+"gameDetails.emptyTextAlert.message" = "Saveing empty values will cause deleting current card?";
+
 
 //MARK: - Notification
 "notification.allowNotification" = "Allow notification";

@@ -105,14 +105,13 @@ class GameDetailsVC: UIViewController {
         super.viewDidLoad()
         bind()
         controllerCustomization()
-        containerViewCustomization()
+        configureContainerView()
         configureActionButtons()
-        textViewCustomization()
+        configureTextView()
         configureGestures()
     }
     override func viewDidAppear(_ animated: Bool) {
         presentViewController()
-        animateDimmedView()
     }
 
     private func bind() {
@@ -124,8 +123,14 @@ class GameDetailsVC: UIViewController {
                     self?.presentError(error)
                 case .shouldPresentAlert(let alert):
                     self?.present(alert, animated: true)
+                case .shouldProcceedEditing:
+                    self?.textView.text = self?.configureTextFor(editing: true)
+                case .shouldEndEditing:
+                    self?.textView.text = self?.configureTextFor(editing: false)
+                    self?.transitionToEditing(activate: false)
                 case .shouldDismissView:
                     self?.animateViewDismiss()
+
                 }
             })
             .store(in: &cancellable)
@@ -139,8 +144,9 @@ class GameDetailsVC: UIViewController {
         thirdAnchorConstant = initialAnchorConstant * 0.4
         finalAnchorConstant = navBarTopInset + 5
     }
+    
     //MARK: Subviews SetUp
-    private func containerViewCustomization(){
+    private func configureContainerView(){
         view.addSubviews(dimView, containerView)
         containerView.addSubview(animationView)
         
@@ -164,7 +170,7 @@ class GameDetailsVC: UIViewController {
         ])
     }
 
-    private func textViewCustomization(){
+    private func configureTextView(){
         containerView.addSubviews(textView)
         textView.delegate = self
         textView.text = configureTextFor(editing: false)
@@ -234,16 +240,21 @@ class GameDetailsVC: UIViewController {
         }
     }
 
-    //MARK: - Appearence Animation
-    func presentViewController(){
+    //MARK: Appearence Animation
+    ///Animating container appearence and dimming the background.
+    private func presentViewController(){
         animateTransition(newValue: secondAnchorConstant)
+        animateDimmedView()
     }
-    func animateDimmedView(){
+    
+    private func animateDimmedView(){
         UIView.animate(withDuration: 0.4) {
             self.dimView.alpha = 0.4
         }
     }
-    func transitionToEditing(activate: Bool){
+    
+    ///Shortcut for switching between Editing and Exploration modes.
+    private func transitionToEditing(activate: Bool){
         UIView.animate(withDuration: 0.5) { [weak self] in
             self?.textViewBottomToKeyboardConstraint.isActive = activate
             self?.textViewBottomToContainer.isActive = !activate
@@ -261,8 +272,8 @@ class GameDetailsVC: UIViewController {
             textView.resignFirstResponder()
         }
     }
-
-    func animateTransition(newValue: CGFloat){
+    ///Changes bottom anchor of container, updaing layout of subviews if required
+    private func animateTransition(newValue: CGFloat){
         UIView.animate(withDuration: 0.5, delay: 0){
             self.contentViewBottomAnchor.constant = newValue
             self.currentAnchorConstant = newValue
@@ -276,8 +287,9 @@ class GameDetailsVC: UIViewController {
             self.view.layoutIfNeeded()
         }
     }
-    //MARK: - Dissapearence Animation
-    func animateViewDismiss(){
+    
+    //MARK: Dissapearence Animation
+    private func animateViewDismiss(){
         let viewDismiss = UIViewPropertyAnimator(duration: 0.3, curve: .easeInOut){
             self.dimView.alpha = 0
             self.contentViewBottomAnchor.constant = self.initialAnchorConstant
@@ -291,7 +303,8 @@ class GameDetailsVC: UIViewController {
     }
     
     //MARK: Gestures
-    func configureGestures(){
+    ///Settings up and assigning methods to their views.
+    private func configureGestures(){
         wordTapGesture = UITapGestureRecognizer(target: self, action: #selector(textViewDidTap(sender:)))
         textView.addGestureRecognizer(wordTapGesture)
         
@@ -305,9 +318,12 @@ class GameDetailsVC: UIViewController {
 
 //MARK: - Actions
 extension GameDetailsVC {
+    //MARK: Touch events.
     //Recognises the word user tapped
     @objc func textViewDidTap(sender: UITapGestureRecognizer){
-        self.animationView.startAnimating()
+        DispatchQueue.main.async(execute: {
+            self.animationView.startAnimating()
+        })
 
         let point = sender.location(in: textView)
         var wordRange: UITextRange?
@@ -338,7 +354,7 @@ extension GameDetailsVC {
             self?.animationView.stopAnimating()
         })
     }
-    //Container view was panned
+    ///Responsible for handling all panning and animations in response.
     @objc func viewDidPan(sender: UIPanGestureRecognizer){
         let translation = sender.translation(in: view).y
         let velocity = sender.velocity(in: view).y
@@ -371,8 +387,15 @@ extension GameDetailsVC {
             break
         }
     }
-    
-    //Buttons methods.
+    ///Checks location ot touch. If its outside of container, dismisses the view.
+    @objc func handleTapGesture(sender: UITapGestureRecognizer){
+        let location = sender.location(in: view)
+        if !containerView.frame.contains(location){
+            animateViewDismiss()
+        }
+    }
+
+    //MARK: Buttons actions
     @objc func editButtonDidTap(sender: UIButton){
         textView.text = configureTextFor(editing: true)
         transitionToEditing(activate: true)
@@ -384,25 +407,16 @@ extension GameDetailsVC {
     
     @objc func doneButtonDidTap(sender: UIButton){
         viewModel?.editWord(with: textView.text)
-        textView.text = configureTextFor(editing: false)
-        transitionToEditing(activate: false)
     }
     
     @objc func informationButtonDidTap(sender: UIButton){
         let vc = InformationView()
         present(vc, animated: true)
     }
-    
-    ///Checks location ot touch. If its outside of container, dismisses the view.
-    @objc func handleTapGesture(sender: UITapGestureRecognizer){
-        let location = sender.location(in: view)
-        if !containerView.frame.contains(location){
-            animateViewDismiss()
-        }
-    }
 }
 //MARK: - Delegates
 extension GameDetailsVC: UITextViewDelegate{
+    ///If user scroll TextView, trigger animation, which will expand view to revieal more content.
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if currentAnchorConstant == secondAnchorConstant {
             animateTransition(newValue: thirdAnchorConstant)

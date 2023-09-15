@@ -250,7 +250,7 @@ extension String{
     }
 }
 extension UIAlertController {
-    static func alertWithAction(alertTitle: String, alertMessage: String, alertStyle: UIAlertController.Style = .actionSheet,
+    static func alertWithAction(alertTitle: String, alertMessage: String? = nil, alertStyle: UIAlertController.Style = .actionSheet,
                          action1Title: String = "", action1Style: UIAlertAction.Style = .default,
                          action2Title: String = "", action2Style: UIAlertAction.Style = .default) -> UIAlertController{
         let alert = UIAlertController(title: alertTitle, message: alertMessage, preferredStyle: alertStyle)

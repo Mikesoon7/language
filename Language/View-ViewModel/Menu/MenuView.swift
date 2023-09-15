@@ -228,14 +228,16 @@ extension MenuView: CustomCellDataDelegate{
             self?.viewModel.deleteDictionary(at: index)
         }
     
-        let alertController = UIAlertController(title: "menu.deleteDictionary".localized, message: nil, preferredStyle: .actionSheet)
-        let deny = UIAlertAction(title: "system.cancel".localized, style: .cancel)
-        let confirm = UIAlertAction(title: "system.delete".localized, style: .destructive) { _ in
+        let alertController = UIAlertController
+            .alertWithAction(
+                alertTitle: "menu.deleteDictionary".localized,
+                action1Title: "system.cancel".localized,
+                action1Style: .cancel
+            )
+        let delete = UIAlertAction(title: "system.delete".localized, style: .destructive) { _ in
             completion(cell)
         }
-        alertController.addAction(deny)
-        alertController.addAction(confirm)
-        
+        alertController.addAction(delete)
         self.present(alertController, animated: true)
     }
     
