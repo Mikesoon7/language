@@ -151,6 +151,7 @@
 "unknownGameError.title" = "Something unexpected happend";
 "unknownGameError.message" = "We have saved your changes, but they will display only in new game session";
 //MARK: - EditVC
+"edit.searchPlaceholder" = "Ваш текст...";
 "edit.emptyField.title" = "Отсутствует имя";
 "edit.emptyField.message" = "Пожалуйста, введите от 1 до 15 символов в качестве названия для словаря";
 "edit.emptyText.title" = "Отредактированный текст не содержит символов";

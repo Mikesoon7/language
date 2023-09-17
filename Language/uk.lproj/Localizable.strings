@@ -151,6 +151,7 @@
 "unknownGameError.title" = "Something unexpected happend";
 "unknownGameError.message" = "We have saved your changes, but they will display only in new game session";
 //MARK: - EditVC
+"edit.searchPlaceholder" = "Ваш текст...";
 "edit.emptyField.title" = "The name is empty";
 "edit.emptyField.message" = "Please, provide at least one charachter for a dictionary name";
 "edit.emptyText.title" = "The edit text is empty";

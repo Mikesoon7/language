@@ -157,10 +157,10 @@ class StatisticView: UIViewController {
         configureTableView()
         configurePickerDismissGesture()
         
+        input?.send(.viewDidLoad)
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        input?.send(.viewWillAppear)
     }
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection){
@@ -168,11 +168,7 @@ class StatisticView: UIViewController {
             rightPickerView.layer.borderColor = UIColor.label.cgColor
         }
     }
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-    }
-    
-    
+        
     //MARK: Binding.
     func bind(){
         guard let output = viewModel?.transform(input: input?.eraseToAnyPublisher()) else { return }
@@ -508,7 +504,7 @@ extension StatisticView: ChartViewDelegate{
         guard let pieEntry = entry as? PieChartDataEntry else { return }
         input?.send(.selectedChartEntryUpdated(pieEntry))
     }
-    func chartValueNothingSelected(_ chartView: ChartViewBase) {
-        input?.send(.selectedChartEntryUpdated(nil))
-    }
+//    func chartValueNothingSelected(_ chartView: ChartViewBase) {
+//        input?.send(.selectedChartEntryUpdated(nil))
+//    }
 }

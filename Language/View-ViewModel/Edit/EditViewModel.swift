@@ -17,23 +17,25 @@ class EditViewModel {
     }
     enum Output{
         case shouldPresentData(ParsedDictionary)
-        case shouldPresentAlert(InvalidText)
-        case shouldUpdateLabels
+        case shouldPresentAlert(UIAlertController)
         case shouldPresentError(Error)
+        case shouldUpdateLabels
         case editSucceed
     }
 
     //MARK: - Properties
     private let model: Dictionary_WordsManager 
     private let dictionary: DictionariesEntity
-    private var dictionaryName: String?
-    private var words: [WordsEntity]!
+    
+    private var dictionaryName: String = .init()
+    private var words: [WordsEntity] = []
+    private var oldTextByLines : [String] = []
     private var cancellables = Set<AnyCancellable>()
 
-    @Published var data: ParsedDictionary!
+    @Published var data: ParsedDictionary?
     var output = PassthroughSubject<Output, Never>()
-    
 
+    //MARK: Inhereted and initialization
     init(dataModel: Dictionary_WordsManager, settingsModel: UserSettingsStorageProtocol, dictionary: DictionariesEntity){
         self.model = dataModel
         self.dictionary = dictionary
@@ -56,31 +58,37 @@ class EditViewModel {
         NotificationCenter.default.removeObserver(self, name: .appSeparatorDidChange, object: nil)
         NotificationCenter.default.removeObserver(self, name: .appLanguageDidChange, object: nil)
     }
-    //MARK: - Methods
-    //Prepairing text for edit mode.
-    func parseArrayToText(with words: [WordsEntity], name: String) -> ParsedDictionary{
+    
+    //MARK: Open methods
+    func updateDictionaryWith(name: String?, text: String?){
+        parseTextToArray(name: name, newText: text, oldCollection: oldTextByLines)
+    }
+
+    
+    //MARK: Private Methods
+    ///Converting passed Words objects  into string.
+    private func parseArrayToText(with words: [WordsEntity], name: String) -> ParsedDictionary{
         var textToEdit = ""
-        var textByLines = [String]()
         for pair in words {
             let line = "\(pair.word) \(UserSettings.shared.appSeparators.value) \(pair.meaning)"
-            textByLines.append(line)
+            oldTextByLines.append(line)
             textToEdit += line + "\n\n"
         }
-        return ParsedDictionary(name: name, text: textToEdit, separatedText: textByLines)
+        return ParsedDictionary(name: name, text: textToEdit)
     }
     
-    //Converting text to WordsEntity
-    func parseTextToArray(name: String, newText: String, oldCollection: [String]){
-        guard !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-            output.send(.shouldPresentAlert(.invalidName))
+    ///Validating passed values. Parsing passed text into compatible format. Initiating update if succeed.
+    private func parseTextToArray(name: String?, newText: String?, oldCollection: [String]){
+        guard let name = name, !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            configureAlertFor(.invalidName)
             return
         }
-        guard !newText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-            output.send(.shouldPresentAlert(.invalidText))
+        guard let text = newText, !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            configureAlertFor(.invalidText)
             return 
         }
         self.dictionaryName = name
-        let lines = newText.split(separator: "\n", omittingEmptySubsequences: true)
+        let lines = text.split(separator: "\n", omittingEmptySubsequences: true)
         let newCollection = lines.map({ String($0) })
         let patch = patch(from: oldCollection, to: newCollection)
         
@@ -95,19 +103,37 @@ class EditViewModel {
         updateDictionary()
     }
     
-    //Calls if submitted text is empty
-    func deleteDictionary(){
+    private func configureAlertFor(_ errorType: InvalidText){
+        let isForEmtyText = errorType == .invalidText ? true : false
+        let alert = UIAlertController
+            .alertWithAction(
+                alertTitle: (isForEmtyText ? "edit.emptyText.title" : "edit.emptyField.title").localized,
+                alertMessage: (isForEmtyText ? "edit.emptyText.message" : "edit.emptyField.message").localized,
+                alertStyle: .actionSheet,
+                action1Title: "system.cancel".localized,
+                action1Style: .cancel
+            )
+        if isForEmtyText {
+            let deleteAction = UIAlertAction(title: "system.delete".localized, style: .destructive){ [weak self] _ in
+                self?.deleteDictionary()
+            }
+            alert.addAction(deleteAction)
+        }
+        output.send(.shouldPresentAlert(alert))
+    }
+
+    
+    ///Delete current dictionary.
+    private func deleteDictionary(){
         do {
             try model.delete(dictionary: dictionary)
             output.send(.editSucceed)
         } catch {
-            let error = error as! DictionaryErrorType
             output.send(.shouldPresentError(error))
         }
     }
-    
-    //Calls if everithing fine
-    func updateDictionary(){
+    ///Update current dictionary with existing local properties.
+    private func updateDictionary(){
         do {
             try model.update(dictionary: dictionary, words: words, name: dictionaryName ?? nil)
             output.send(.editSucceed)
@@ -118,10 +144,10 @@ class EditViewModel {
     }
     
     //MARK: Actions
-    @objc func languageDidChange(sender: Notification){
+    @objc private func languageDidChange(sender: Notification){
         output.send(.shouldUpdateLabels)
     }
-    @objc func separatorDidChange(sender: Notification){
+    @objc private func separatorDidChange(sender: Notification){
         let parsedDictionary = parseArrayToText(with: words, name: dictionary.language)
         output.send(.shouldPresentData(parsedDictionary))
     }
@@ -131,11 +157,9 @@ class EditViewModel {
 struct ParsedDictionary{
     let name: String
     let text: String
-    let separatedText: [String]
     
-    init(name: String, text: String, separatedText: [String]){
+    init(name: String, text: String){
         self.name = name
         self.text = text
-        self.separatedText = separatedText
     }
 }

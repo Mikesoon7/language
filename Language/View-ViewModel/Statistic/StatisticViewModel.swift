@@ -35,7 +35,7 @@ class StatisticViewModel{
     }
     
     enum Input{
-        case viewWillAppear
+        case viewDidLoad
         case selectedIntervalUpdated(DateInterval)
         case selectedChartEntryUpdated(PieChartDataEntry?)
     }
@@ -68,7 +68,7 @@ class StatisticViewModel{
             .receive(on: DispatchQueue.main)
             .sink { [weak self] type in
                 switch type{
-                case .viewWillAppear:
+                case .viewDidLoad:
                     self?.configureDataFor(range: .allTime)
                     self?.output.send(.shouldUpdateCustomInterval)
                 case .selectedIntervalUpdated(let interval):
@@ -164,7 +164,7 @@ class StatisticViewModel{
             return partialResult + dictionary.accessCount
         }
         
-        for (index, dict) in dictionariesByAccessCount.enumerated() {
+        for (index, dict) in dictionariesByAccessCount.sorted(by: {$0.accessCount > $1.accessCount}).enumerated() {
             
             let percents = String(format: "%.1f", Double(dict.accessCount) / Double(totalAccessCount) * 100.0) + "%"
             

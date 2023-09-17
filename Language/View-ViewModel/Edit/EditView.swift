@@ -5,38 +5,44 @@
 //  Created by Star Lord on 13/06/2023.
 //
 
-//TODO: Add convertion for inserted in textView or textField text
-//TODO: Add limit for name.
-//TODO: Add input pointer tracking
-
 import UIKit
 import Combine
 
 class EditView: UIViewController {
-    
-    
-    private var viewModel: EditViewModel?
+
+    //MARK: Properties.
+    private var viewModel: EditViewModel
     private var viewModelFactory: ViewModelFactory
     private var cancellables = Set<AnyCancellable>()
-    
-    //Text representaition of existing words for comparison
-    var oldText: [String]!
-    
+        
+    private lazy var layoutManager = HighlightLayoutManager(textInsets: textInsets)
+    private let textContainer = NSTextContainer()
+    private let textStorage = NSTextStorage()
+
+    private var isSearching = false
+
     //MARK: - Views
-    let textView: CustomTextView = {
-        let view = CustomTextView()
+    private lazy var customSearchToolBar: CustomSearchToolBar = {
+        let view = CustomSearchToolBar(textView: textView, layoutManager: layoutManager)
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.alpha = 0
+        return view
+    }()
+
+    lazy var textView: CustomTextView = {
+        let view = CustomTextView(frame: .zero, textContainer: textContainer)
         view.textContainerInset = UIEdgeInsets(top: 20, left: 20, bottom: 10, right: 20)
         view.allowsEditingTextAttributes = true
         view.textColor = .label
         view.backgroundColor = .systemBackground
-        view.font = .timesNewRoman.withSize(17)
-        
+        view.font = .timesNewRoman.withSize(20)
         view.alwaysBounceVertical = true
         view.textContainer.lineBreakMode = .byWordWrapping
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
-    let textField: UITextField = {
+
+    private let textField: UITextField = {
         let field = UITextField()
         field.borderStyle = .none
         field.backgroundColor = .clear
@@ -44,10 +50,18 @@ class EditView: UIViewController {
         
         field.font = .georgianBoldItalic.withSize(23)
         field.adjustsFontSizeToFitWidth = true
+        
         field.textAlignment = .center
         return field
     }()
     
+    //Buttons
+    private var saveButton   = UIBarButtonItem()
+    private var doneButton   = UIBarButtonItem()
+    private var searchButton = UIBarButtonItem()
+    
+    //Dimensions
+    private let textInsets = UIEdgeInsets(top: 20, left: 20, bottom: 10, right: 20)
     
     //MARK: - Inherited methods
     required init(dictionary: DictionariesEntity, factory: ViewModelFactory){
@@ -65,30 +79,31 @@ class EditView: UIViewController {
         configureController()
         configureTextField()
         configureTextView()
+        configureSearchView()
         configureNavBar()
-        
-        
     }
     deinit {
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
     }
+    //MARK: Binding View and ViewModel
     private func bind(){
-        viewModel?.$data
+        viewModel.$data
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] data in
                 self?.configure(with: data.unsafelyUnwrapped)
             })
             .store(in: &cancellables)
         
-        viewModel?.output
+        viewModel.output
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] output in
                 switch output {
                 case .shouldPresentData(let parsedDictionary):
                     self?.configure(with: parsedDictionary)
                 case .shouldPresentError(let error):
                     self?.presentError(error)
-                case .shouldPresentAlert(let alertType):
-                    self?.configureAlertFor(alertType)
+                case .shouldPresentAlert(let alert):
+                    self?.present(alert, animated: true)
                 case .shouldUpdateLabels:
                     self?.configureLabels()
                 case .editSucceed:
@@ -99,7 +114,7 @@ class EditView: UIViewController {
         
     }
     //MARK: - Initial controller SetUp
-    func configureController(){
+    private func configureController(){
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(keyboardWillChangeFrame(_:)),
@@ -107,17 +122,19 @@ class EditView: UIViewController {
             object: nil
         )
     }
-    
-    //CustomStruct
-    func configure(with data: ParsedDictionary){
-        self.oldText = data.separatedText
+    ///Assigning recieved data to text view and field.
+    private func configure(with data: ParsedDictionary){
         self.textField.text = data.name
         self.textView.text = data.text
     }
     
-    //MARK: - TextView SetUp
-    func configureTextView(){
+    //MARK: Subviews SetUp
+    private func configureTextView(){
+        layoutManager.addTextContainer(textContainer)
+        textStorage.addLayoutManager(layoutManager)
+
         textView.delegate = self
+                
         view.addSubview(textView)
         
         NSLayoutConstraint.activate([
@@ -127,72 +144,94 @@ class EditView: UIViewController {
             textView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
         ])
     }
-    
-    //MARK: - TextField SetUp
-    func configureTextField(){
-        textField.delegate = self
-        textField.frame = CGRect(x: 0, y: 0, width: view.bounds.width * 0.4,
-                                 height: navigationController?.navigationBar.bounds.height ?? 30)
+    func configureSearchView(){
+        view.addSubview(customSearchToolBar)
+        
+        NSLayoutConstraint.activate([
+            customSearchToolBar.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor),
+            customSearchToolBar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            customSearchToolBar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            customSearchToolBar.heightAnchor.constraint(equalToConstant: 44)
+        ])
     }
-    //MARK: - NavBar SetUp
-    func configureNavBar(){
+    
+    private func configureTextField(){
+        textField.delegate = self
+        
+        NSLayoutConstraint.activate([
+            textField.widthAnchor.constraint(equalToConstant: view.bounds.width * 0.35),
+            textField.heightAnchor.constraint(equalToConstant: navigationController?.navigationBar.bounds.height ?? 30)
+        ])
+        
+    }
+    private func configureNavBar(){
         self.navigationItem.titleView = textField
         
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "system.save".localized, style: .done, target: self, action: #selector(saveButTap(sender:)))
+        self.saveButton = UIBarButtonItem(title: "system.save".localized, style: .done, target: self, action: #selector(saveButTap(sender:)))
+        self.doneButton = UIBarButtonItem(title: "system.done".localized, style: .done, target: self, action: #selector(doneButTap(sender:)))
+        self.searchButton = UIBarButtonItem(barButtonSystemItem: .search, target: self, action: #selector(searchButDidTap(sender: )))
+
+        self.navigationItem.rightBarButtonItems = [saveButton]
     }
     
-    func configureAlertFor(_ errorType: EditViewModel.InvalidText){
-        let isForEmtyText = errorType == .invalidText ? true : false
-        let alert = UIAlertController
-            .alertWithAction(
-                alertTitle: (isForEmtyText ? "edit.emptyText.title" : "edit.emptyField.title").localized,
-                alertMessage: (isForEmtyText ? "edit.emptyText.message" : "edit.emptyField.message").localized,
-                alertStyle: .actionSheet,
-                action1Title: "system.cancel".localized,
-                action1Style: .cancel
-            )
-        if isForEmtyText {
-            let deleteAction = UIAlertAction(title: "system.delete".localized, style: .destructive){ [weak self] _ in
-                self?.viewModel?.deleteDictionary()
-            }
-            alert.addAction(deleteAction)
-        }
-        self.present(alert, animated: true)
-    }
-    func configureLabels(){
+    ///Assigning string values to labels.
+    private func configureLabels(){
         if let saveButton =  navigationItem.rightBarButtonItem {
             saveButton.title = "system.save".localized
         }
+        customSearchToolBar.configureLabels()
+    }
+    /// Changing searchView appearence.
+    private func changeSearchSessionState(activate: Bool){
+        textView.inputAccessoryView = activate ? nil : textView.customToolBar
+        textView.reloadInputViews()
+        
+        UIView.animate(withDuration: 0.5) { [weak self] in
+            self?.customSearchToolBar.alpha = activate ? 1 : 0
+        }
+        
+        if activate {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1, qos: .background, execute: {
+                self.customSearchToolBar.beginSearchSession()
+            })
+        } else {
+            customSearchToolBar.endSearchSession()
+            textView.backgroundColor = .systemBackground
+        }
+        isSearching = activate
     }
 }
 
 //MARK: - Actions
 extension EditView {
-    @objc func saveButTap(sender: Any){
+    ///Calling update methods and passing current text values.
+    @objc private func saveButTap(sender: Any){
+        let name = textField.text
         let text = textView.text
-        viewModel?.parseTextToArray(name: textField.text ?? "", newText: text ?? "", oldCollection: oldText)
+        viewModel.updateDictionaryWith(name: name, text: text)
     }
     
-    //Done button
-    @objc func rightBarButDidTap(sender: Any){
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "system.save".localized, style: .done, target: self, action: #selector(saveButTap(sender:)))
-
+    ///Finishes current first responder session.
+    @objc private func doneButTap(sender: Any){
+        guard !isSearching else {
+            textView.becomeFirstResponder()
+            return
+        }
+        
+        self.navigationItem.rightBarButtonItems = [saveButton]
         if textView.isFirstResponder{
             textView.resignFirstResponder()
         } else if textField.isFirstResponder{
             textField.resignFirstResponder()
         }
     }
-    @objc func keyboardWillChangeFrame(_ sender: Notification) {
+    ///Adjusting textView content offset to avoid overlaing by keyboard.
+    @objc private func keyboardWillChangeFrame(_ sender: Notification) {
         if let userInfo = sender.userInfo,
            let keyboardEndFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
-            
             let convertedEndFrame = view.convert(keyboardEndFrame, from: view.window)
-            
-            // Calculate the overlap between the keyboard and the text view
             let overlap = textView.frame.maxY - convertedEndFrame.minY
             
-            // Adjust the content inset to keep the text visible
             if overlap > 0 {
                 textView.contentInset.bottom = overlap
             } else {
@@ -202,31 +241,39 @@ extension EditView {
             textView.scrollIndicatorInsets = textView.contentInset
         }
     }
-
+    ///Creating custom toolBar woth SearchBar. Attaching as textViews inputAccessory, and making searchBar first respodnder
+    @objc private func searchButDidTap(sender: UIBarButtonItem){
+        guard !isSearching else { return }
+        changeSearchSessionState(activate: true)
+    }
+    
 }
 
 //MARK: - TextViewDelegate
 extension EditView: UITextViewDelegate{
+    ///Forcing layout manager to update existing glyphs.
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        textView.setNeedsDisplay()
+    }
+    ///Reloading input accessory view, finishing search session.
     func textViewDidBeginEditing(_ textView: UITextView) {
-//        if textView.textColor == .lightGray {
-//            textView.text = nil
-//            textView.textColor = nil
-//            textView.font = nil
-//            textView.typingAttributes = [NSAttributedString.Key.font : UIFont(name: "Times New Roman", size: 17) ?? UIFont(), NSAttributedString.Key.backgroundColor : UIColor.clear, NSAttributedString.Key.foregroundColor : UIColor.label]
-//        }
-        if self.navigationController?.navigationItem.rightBarButtonItem == nil{
-            navigationItem.rightBarButtonItem = UIBarButtonItem(title: "system.done".localized, style: .done, target: self, action: #selector(rightBarButDidTap(sender:)))
+        if isSearching {
+            changeSearchSessionState(activate: false)
         }
+        self.navigationItem.rightBarButtonItems = [doneButton, searchButton]
+        
     }
 }
 
 //MARK: - TextFieldDelegate
 extension EditView: UITextFieldDelegate{
     func textFieldDidBeginEditing(_ textField: UITextField) {
-        if self.navigationController?.navigationItem.rightBarButtonItem == nil{
-            self.navigationItem.setRightBarButton(UIBarButtonItem(title: "system.done".localized, style: .done, target: self, action: #selector(rightBarButDidTap(sender:))), animated: true)
+        if isSearching {
+            changeSearchSessionState(activate: false)
         }
+        navigationItem.rightBarButtonItems = [doneButton]
     }
+    
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         let maxLength = 15
         let currentString = (textField.text ?? "") as NSString

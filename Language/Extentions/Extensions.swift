@@ -24,6 +24,24 @@ extension UIColor {
             }
         }
     }
+    static var searchModeBackground:  UIColor {
+        UIColor { traitCollection in
+            if traitCollection.userInterfaceStyle == .dark {
+                return .clear
+            } else {
+                return .systemGray2
+            }
+        }
+    }
+    static var searchModeSelection: UIColor {
+        UIColor { traitCollection in
+            if traitCollection.userInterfaceStyle == .dark {
+                return .systemGray2
+            } else {
+                return .white
+            }
+        }
+    }
 }
 
 extension UIButton {
