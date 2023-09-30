@@ -176,9 +176,10 @@ class EditView: UIViewController {
     
     ///Assigning string values to labels.
     private func configureLabels(){
-        if let saveButton =  navigationItem.rightBarButtonItem {
-            saveButton.title = "system.save".localized
-        }
+        saveButton.title = "system.save".localized
+        doneButton.title = "system.done".localized
+
+        textView.isTextUpdateRequired = true
         customSearchToolBar.configureLabels()
     }
     /// Changing searchView appearence.
@@ -255,6 +256,7 @@ extension EditView: UITextViewDelegate{
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         textView.setNeedsDisplay()
     }
+    
     ///Reloading input accessory view, finishing search session.
     func textViewDidBeginEditing(_ textView: UITextView) {
         if isSearching {

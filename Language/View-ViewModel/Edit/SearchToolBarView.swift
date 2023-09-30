@@ -10,8 +10,10 @@ import UIKit
 
 class CustomSearchToolBar: UIToolbar {
     //MARK: Properties
-    var searchResultsByRange = [NSRange]()
-    var searchResultPointerIndex = Int()
+    private var searchResultsByRange = [NSRange]()
+    private var searchResultPointerIndex = Int()
+    
+    private var currentRange: NSRange = .init()
 
     var textView: UITextView?
     var layoutManager: HighlightLayoutManager?
@@ -146,7 +148,9 @@ class CustomSearchToolBar: UIToolbar {
     ///Sending selected range to LayoutManager and scrolling to it.
     private func updateSelectedRange(_ range: NSRange){
         scrollRangeToVisibleCenter(range: range)
-        layoutManager?.updateSelectedRange(range)
+        layoutManager?.currentRange = range
+        textView?.setNeedsDisplay()
+//        layoutManager?.updateSelectedRange(range)
     }
 }
 //MARK: SearchBar delegate.
@@ -158,8 +162,11 @@ extension CustomSearchToolBar: UISearchBarDelegate {
 
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         findSearchResults(for: searchText)
+        print("searchBar textFifChange")
         layoutManager?.highlightRanges = searchResultsByRange
 
+        
+        
         if searchResultsByRange.count != 0 {
             if searchResultPointerIndex + 1 > searchResultsByRange.count {
                 searchResultPointerIndex = searchResultsByRange.count - 1
@@ -167,6 +174,7 @@ extension CustomSearchToolBar: UISearchBarDelegate {
             textView?.backgroundColor = .searchModeBackground
             updateSelectedRange(searchResultsByRange[searchResultPointerIndex])
         } else {
+            searchResultPointerIndex = 0 
             textView?.backgroundColor = .systemBackground
             textView?.setNeedsDisplay()
         }

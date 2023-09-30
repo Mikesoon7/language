@@ -59,8 +59,7 @@ class GameViewModel{
     func deleteWord(word: WordsEntity){
         do {
             try dataModel.deleteWord(word: word)
-            self.selectedNumberOfWords -= 1
-            self.configureData()
+            self.words.removeAll(where: {$0 == word})
         } catch {
             output.send(.error(error))
         }

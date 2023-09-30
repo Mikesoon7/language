@@ -69,6 +69,10 @@
 "system.yes" = "Так";
 "system.no" = "Ні";
 "system.settings" = "Налаштування";
+"system.newLine" = "З нового радка";
+"system.next" = "Далі";
+"system.letsGo" = "Поіхали";
+"system.skip" = "Пропустити";
 
 //MARK: - AlertText
 "textAlert" = "Вкажіть текст";
@@ -156,4 +160,45 @@
 "edit.emptyField.message" = "Please, provide at least one charachter for a dictionary name";
 "edit.emptyText.title" = "The edit text is empty";
 "edit.emptyText.message" = "Saving dictionary in this state will cause it's deletion. \nAre you sure?";
+//MARK: - Tutorial
+//FirstView
+//"tutorial.firstViewLabel.title" = "Hello! We're thrilled to have you onboard with Learny";
+//"tutorial.firstViewLabel" = "Learny simplifies your study by organizing information into repeatable chunks. The app uses a few rules to split your text and create cards for each block. \n \n Just a quick recap and you are ready to go!";
+////SecondView
+//"tutorial.secondViewLabel" = "On your main screen, you can access your existing dictionaries, check statistics, edit, or delete them.";
+////ThirdView
+//"tutorial.thirdViewLabel" = "Of course, you can also add a new one by typing its content and name. \n \n Excited yet? Let's create your first dictionary!";
+////FourthView
+//"tutorial.fourthViewLabel" = "We're almost done! \n Just a few words about text division: New lines serve as breaking points for text chunks. If you don't want to break a sequence, use the \"New line\" button at the top of the keyboard.";
+////FifthView
+//"tutorial.fifthViewLabel" = "For specific pairings, like a word and its definition, use the separator symbol. It can be set in settings. Current separator will always display as a hint before editing.";
+////SixthView
+//"tutorial.sixthViewLabel" = "That's it! We're grateful for the chance to assist you in achieving your goals. \n \n Wish you entertaining learning prossess. Good luck!";
+//
+//FirstView
+"tutorial.firstViewLabel.title" = "Вітаємо у Learny!";
+"tutorial.firstViewLabel" = "Learny допоможе вам організувати інформацію у зручні блоки для легшого повторення. За допомогою кількох правил, додаток розділяє ваш текст і створює картку для кожного блоку. \n \n Давайте розглянемо можливості цього додатка!";
+//SecondView
+"tutorial.secondViewLabel" = "На головному екрані ви можете переглядати ваши словники, а також перевіряти статистику, редагувати або видаляти їх за допомогою свайпа.";
+//ThirdView
+"tutorial.thirdViewLabel" = "Додавання нового словника просте: введіть його зміст та назву. \n \n Цікаво? Давайте створимо перший словник!";
+//FourthView
+"tutorial.fourthViewLabel" = "Майже готово! Трохи про розділення тексту: кожен новий рядок розділяє блоки тексту. Якщо не хочете розділяти блок, використовуйте кнопку \"З нового рядка\" вгорі клавіатури.";
+//FifthView
+"tutorial.fifthViewLabel" = "Для специфічного розділення, як наприклад слово та його визначення, користуйтеся розділювачем. Його можна змінити в налаштуваннях. Поточний розділювач завжди відображається у підказці перед редагуванням.";
+//SixthView
+"tutorial.sixthViewLabel" = "От і все! Ми вдячні за можливість допомогти вам досягти ваших мет. \n \n Бажаємо успіху та приємного використання!";
 
+
+"tutorial.firstViewLabel.title" = "Вітаємо у Learny!";
+"tutorial.firstViewLabel" = "Learny — це простий додаток, який допоможе вам організувати інформацію та полегшити її повторення. Ви легко можете передати свої текстові нотатки до додатку, і вони будуть розділені на пари. Спочатку Learny був створений для вивчення мов, але ви можете використовувати його як вам зручно. \n \n Давайте коротко розглянемо можливості цього додатка!";
+//SecondView
+"tutorial.secondViewLabel" = "На вашому головному екрані ви можете переглядати ваши існуючі словники, а також перевіряти статистику, редагувати чи видаляти їх.";
+//ThirdView
+"tutorial.thirdViewLabel" = "І, звісно, ви можете додати новий, вказавши зміст словника та його назву. \n \n Давайте створимо його!";
+//FourthView
+"tutorial.fourthViewLabel" = "Однією з ключових особливостей, яка робить цей додаток унікальним, є можливість розбиття тексту на легко доступні пари. Для цього вам потрібно надати спеціальний символ, який ви можете встановити в налаштуваннях. \n Ви завжди побачите підказку із поточним розділювачем. \n \n Ми не хочемо вас затримувати, тому давайте перейдемо до другої та останньої частини.";
+//FifthView
+"tutorial.fifthViewLabel" = "Щоб розділити пари в тексті, ви можете використовувати абзаци. \n Простий перехід на новий рядок повідомить системі почати нову пару. Якщо ви хочете продовжити друкування з нового рядка, але без розриву поточної пари, ви можете використовувати кнопку «З нового радка» зверху клавіатури.";
+//SixthView
+"tutorial.sixthViewLabel" = "І ось і все. Ми хочемо подякувати вам за те, що дали нам шанс допомогти вам у досягненні ваших цілей.\n \n Не забудьте перевірити налаштування, щоб дізнатися більше та налаштувати додаток. Бажаємо успіхів!";

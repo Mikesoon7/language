@@ -69,10 +69,10 @@ class CollectionViewLastCell: UICollectionViewCell {
     }()
     
     private let finishButton : UIButton = {
-        let button = UIButton()
+        let button = UIButton(configuration: .gray())
         button.setUpCustomView()
         button.layer.borderWidth = 0
-        button.backgroundColor = .init(dynamicProvider: { traitCollection in
+        button.configuration?.baseBackgroundColor = .init(dynamicProvider: { traitCollection in
             if traitCollection.userInterfaceStyle == .dark {
                 return .gray
             } else {
@@ -121,7 +121,6 @@ class CollectionViewLastCell: UICollectionViewCell {
             finishButton.bottomAnchor.constraint(equalTo: cardView.bottomAnchor, constant: -30 ),
             finishButton.centerXAnchor.constraint(equalTo: cardView.centerXAnchor),
             finishButton.heightAnchor.constraint(equalTo: cardView.widthAnchor, multiplier: 0.2),
-            finishButton.widthAnchor.constraint(equalTo: cardView.heightAnchor, multiplier: 0.2)
         ])
         finishButton.addTarget(self, action: #selector(buttonTap(sender:)), for: .touchUpInside)
         finishButton.addTargetTouchBegin()

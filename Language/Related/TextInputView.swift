@@ -151,7 +151,9 @@ extension TextInputView: UITextViewDelegate{
 class CustomTextView: UITextView{
     
     var customToolBar: UIToolbar = .init()
-//    var jd = UIToolbarAppearance()
+    var isTextUpdateRequired: Bool = false
+    
+    private var softReturnButton = UIBarButtonItem()
     
     convenience init(){
         self.init(frame: .zero, textContainer: nil)
@@ -177,8 +179,25 @@ class CustomTextView: UITextView{
             delegate?.textViewDidChange?(self)
         }
     }
-    func addKeyboardToolbar() {
-        let softReturnButton = UIBarButtonItem(title: "Soft Return", style: .done, target: self, action: #selector(softReturnPressed))
+    override func becomeFirstResponder() -> Bool {
+        super.becomeFirstResponder()
+        if isTextUpdateRequired {
+            softReturnButton.title = "system.newLine".localized
+            isTextUpdateRequired = false
+        }
+        return true
+    }
+    
+//    func updateText(){
+//
+//    }
+    private func addKeyboardToolbar() {
+        softReturnButton = UIBarButtonItem(
+            title: "system.newLine".localized,
+            style: .done,
+            target: self,
+            action: #selector(softReturnPressed)
+        )
         softReturnButton.tintColor = .label
 
         let toolbar = UIToolbar()
@@ -189,7 +208,7 @@ class CustomTextView: UITextView{
         self.inputAccessoryView = customToolBar
     }
     
-    @objc func softReturnPressed() {
+    @objc private func softReturnPressed() {
         if let selectedRange = self.selectedTextRange {
             self.replace(selectedRange, withText: "\r") // Insert soft return
         }

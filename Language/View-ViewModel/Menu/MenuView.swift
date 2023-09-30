@@ -23,8 +23,6 @@ protocol CustomCellDataDelegate: AnyObject{
 }
 
 class MenuView: UIViewController {
-    
-
     private var viewModelFactory: ViewModelFactory
     private var viewModel: MenuViewModel
     
@@ -33,6 +31,7 @@ class MenuView: UIViewController {
     private var menuAccessedForCell: IndexPath?
     private var isUpdateNeeded: Bool = false
     
+    var firstLaunch = true
     //MARK: Views
     var tableView: UITableView = {
         var tableView = UITableView(frame: .zero, style: .insetGrouped)
@@ -70,8 +69,18 @@ class MenuView: UIViewController {
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         if isUpdateNeeded {
             self.tableView.reloadData()
+        }
+    }
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        //TODO: Dont forget to change on release method.
+//        viewModel.validateLaunchStatus()
+        if firstLaunch {
+            pushTutorialVC()
+            firstLaunch = false
         }
     }
     //MARK: - StyleChange Responding
@@ -104,6 +113,8 @@ class MenuView: UIViewController {
                     self?.pushDetailsVCFor(dict)
                 case .shouldPresentEditView(let dict):
                     self?.pushEditVCFor(dict)
+                case .shouldPresentTutorialView:
+                    self?.pushTutorialVC()
                 case .shouldUpdateLabels:
                     self?.configureLabels()
                 case .error(let error):
@@ -157,6 +168,11 @@ class MenuView: UIViewController {
                           factory: self.viewModelFactory)
         self.navigationController?.pushViewController(vc, animated: true)
     }
+    func pushTutorialVC(){
+        var vc = TutorialVC(delegate: self, topInset: view.safeAreaInsets.top, bottomInset: navigationController?.tabBarController?.tabBar.bounds.height ?? 0)
+        vc.modalPresentationStyle = .overFullScreen
+        self.present(vc, animated: false)
+    }
     
     //MARK: - Actions
     @objc func statButtonDidTap(sender: Any){
@@ -198,7 +214,32 @@ extension MenuView: UITableViewDelegate, UITableViewDataSource{
         viewModel.didSelectTableRowAt(section: indexPath.section)
     }
 }
-
+//MARK: - Delegate for tutorial.
+extension MenuView: TutorialCellHintProtocol{
+    func stopShowingHint() {
+        if let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? MenuDictionaryCell{
+            print("activated")
+            cell.activate(false)
+        } else {
+            print("failed")
+        }
+    }
+    
+    func needToShowHint() {
+        if let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? MenuDictionaryCell{
+            UIView.animate(withDuration: 0.1, delay: 0.8) {
+                cell.activate(true)
+            }
+        }
+    }
+    func openAddDictionary() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3, execute: {
+            let vc = AddDictionaryView(factory: self.viewModelFactory)
+            vc.isFirstLaunch = true
+            self.navigationController?.pushViewController(vc, animated: true)
+        })
+    }
+}
 //MARK: - Delegate for cells action.
 extension MenuView: CustomCellDataDelegate{
     func panningBegan(for cell: UITableViewCell){

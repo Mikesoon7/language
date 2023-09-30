@@ -18,7 +18,7 @@ final class ViewModelFactory{
     }
     
     func configureMenuViewModel() -> MenuViewModel{
-        return MenuViewModel(model: dataModel)
+        return MenuViewModel(model: dataModel, settingsModel: settingsModel)
     }
     func configureAddDictionaryModel() -> AddDictionaryViewModel{
         AddDictionaryViewModel(model: dataModel, settingsModel: settingsModel)

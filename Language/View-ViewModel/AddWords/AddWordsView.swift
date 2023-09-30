@@ -19,12 +19,24 @@ class AddWordsView: UIViewController {
     
     //MARK: Views
     private lazy var textInputView: TextInputView = TextInputView(delegate: self)
-
+    
+    //Navigation bar button to dismiss keyboard.
+    private lazy var doneButton: UIBarButtonItem = {
+        let button = UIBarButtonItem(
+            title: "system.done".localized,
+            style: .plain,
+            target: self,
+            action: #selector(rightBarButDidTap(sender:))
+        )
+        return button
+    }()
+    
     private let saveButton : UIButton = {
         let button = UIButton()
         button.setUpCustomButton()
         return button
     }()
+
     
     //MARK: Constraints related
     private var textInputViewHeightAnchor: NSLayoutConstraint!
@@ -140,10 +152,8 @@ class AddWordsView: UIViewController {
         navigationItem.title = "addWordTitle".localized
         saveButton.setAttributedTitle(
             .attributedString(string: "system.save".localized, with: .georgianBoldItalic, ofSize: 18), for: .normal)
-
-        if let doneButton = navigationItem.rightBarButtonItem {
-            doneButton.title = "system.done".localized
-        }
+        doneButton.title = "system.done".localized
+        textInputView.textView.isTextUpdateRequired = true
     }
     
     ///Switch between standalone contrait and attached to saveButton
@@ -177,8 +187,9 @@ class AddWordsView: UIViewController {
 
 extension AddWordsView: PlaceholderTextViewDelegate{
     func textViewWillAppear() {
-        if self.navigationController?.navigationItem.rightBarButtonItem == nil{
-            self.navigationItem.setRightBarButton(UIBarButtonItem(title: "system.done".localized, style: .plain, target: self, action: #selector(rightBarButDidTap(sender:))), animated: true)
+        guard navigationItem.rightBarButtonItem == doneButton else {
+            navigationItem.setRightBarButton(doneButton, animated: true)
+            return
         }
     }
     

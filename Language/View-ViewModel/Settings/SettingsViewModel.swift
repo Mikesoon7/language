@@ -110,6 +110,8 @@ class SettingsViewModel{
             return DataForSettingsTextCell(title: separators.title, value: nil)
         case .duplicates(let duplicates):
             return DataForSettingsTextCell(title: duplicates.title, value: duplicates.value)
+        case .lauchStatus(_):
+            return DataForSettingsTextCell(title: "", value: "")
         }
     }
     func didSelectRowAt(indexPath: IndexPath){

@@ -16,6 +16,9 @@ class AddDictionaryView: UIViewController {
     private var viewModelFactory: ViewModelFactory
     private var cancellabel = Set<AnyCancellable>()
     
+    var isFirstLaunch = false
+    
+    private var tutorialVC: TutorialSecondPart!
     //MARK: Views
     private lazy var textInputView: TextInputView = TextInputView(delegate: self)
     
@@ -38,12 +41,24 @@ class AddDictionaryView: UIViewController {
         field.translatesAutoresizingMaskIntoConstraints = false
         return field
     }()
+    
     private var saveButton : UIButton = {
         var button = UIButton()
         button.setUpCustomButton()
         return button
     }()
-        
+    
+    private lazy var doneButton: UIBarButtonItem = {
+        let button = UIBarButtonItem(
+            title: "system.done".localized,
+            style: .plain,
+            target: self,
+            action: #selector(rightBarButDidTap(sender:))
+        )
+        return button
+    }()
+    
+    
     //MARK: - Constraints and related.
     private var textInputViewHeightAnchor: NSLayoutConstraint!
     private var textInputViewBottomAnchor: NSLayoutConstraint!
@@ -59,6 +74,7 @@ class AddDictionaryView: UIViewController {
     required init?(coder: NSCoder) {
         fatalError("init?(coder: NSCoder) wasn't imported")
     }
+
     
     //MARK: - Inherited
     override func viewDidLoad() {
@@ -69,6 +85,11 @@ class AddDictionaryView: UIViewController {
         configureNameInputView()
         configureSaveButton()
         configureText()
+    }
+    override func viewDidAppear(_ animated: Bool) {
+        if isFirstLaunch {
+            animateTutorialView()
+        }
     }
         
     //MARK: - StyleChange Responding
@@ -160,7 +181,12 @@ class AddDictionaryView: UIViewController {
         saveButton.addTargetOutsideTouchStop()
         saveButton.addTargetInsideTouchStop()
     }
-    
+    func animateTutorialView(){
+        self.tutorialVC = TutorialSecondPart(delegate: self, textViewBottom: self.nameView.frame.maxY)
+        self.tutorialVC.modalPresentationStyle = .overFullScreen
+        self.present(self.tutorialVC, animated: false)
+
+    }
     //MARK: System
     /// Congifure all text properties of the view.
     private func configureText(){
@@ -172,9 +198,8 @@ class AddDictionaryView: UIViewController {
         
         self.navigationItem.title = "addDictTitle".localized
         nameInputField.placeholder = "fieldPlaceholder".localized
-        if let doneButton = navigationItem.rightBarButtonItem {
-            doneButton.title = "system.done".localized
-        }
+        doneButton.title = "system.done".localized
+        textInputView.textView.isTextUpdateRequired = true
     }
     ///Returns textFiled value. If value equals nil, return nil and present an error.
     private func validateName() -> String? {
@@ -219,6 +244,19 @@ class AddDictionaryView: UIViewController {
     }
 }
 //MARK: - Actions
+
+extension AddDictionaryView: TutorialSecondPartDelegate{
+    func activateKeyboard() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.7, execute: {
+            self.textInputView.textView.becomeFirstResponder()
+            
+        })
+//        self.tutorialVC.becomeFirstResponder()
+        
+//        (UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate)?.window?.
+        
+    }
+}
 extension AddDictionaryView {
     @objc func saveButtonDidTap(sender: Any){
         guard let name = validateName(), let text = validateText() else { return }
@@ -255,8 +293,9 @@ extension AddDictionaryView {
 extension AddDictionaryView: PlaceholderTextViewDelegate{
     ///Delegate method. Activating navigation bar bautton item.
     func textViewWillAppear() {
-        if self.navigationController?.navigationItem.rightBarButtonItem == nil{
-            navigationItem.rightBarButtonItem = UIBarButtonItem(title: "system.done".localized, style: .plain, target: self, action: #selector(rightBarButDidTap(sender:)))
+        guard navigationItem.rightBarButtonItem == doneButton else {
+            navigationItem.setRightBarButton(doneButton, animated: true)
+            return
         }
     }
     ///Delegate method. Retrieving and returns placeholder text
@@ -269,8 +308,9 @@ extension AddDictionaryView: PlaceholderTextViewDelegate{
 extension AddDictionaryView: UITextFieldDelegate{
     func textFieldDidBeginEditing(_ textField: UITextField) {
         //Showing button for keyboard dismissing
-        if self.navigationController?.navigationItem.rightBarButtonItem == nil{
-            self.navigationItem.setRightBarButton(UIBarButtonItem(title: "system.done".localized, style: .plain, target: self, action: #selector(rightBarButDidTap(sender:))), animated: true)
+        guard navigationItem.rightBarButtonItem == doneButton else {
+            navigationItem.setRightBarButton(doneButton, animated: true)
+            return
         }
     }
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {

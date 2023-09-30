@@ -8,9 +8,6 @@
 import Foundation
 import UIKit
 
-//class UserSettings{
-//    static var shared: UserSettingsStorageProtocol!
-//}
 //MARK: - Protocols
 protocol UserSettingsManagerProtocol{
     func update <T: Codable>(_ value: T, forKey key: String)
@@ -37,6 +34,7 @@ extension UserSettingsManagerProtocol{
 protocol UserSettingsStorageProtocol{
     var manager: UserSettingsManagerProtocol        { get }
     var helper: UserSettingsUpdateHelper            { get }
+    var appLaunchStatus: AppLaunchStatus            { get set }
     var appTheme: AppTheme                          { get set }
     var appLanguage : AppLanguage                   { get set }
     var appNotifications: AppPushNotifications      { get set }
@@ -62,6 +60,15 @@ class UserSettings: UserSettingsStorageProtocol{
     
     var manager: UserSettingsManagerProtocol
     var helper: UserSettingsUpdateHelper
+    
+    var appLaunchStatus: AppLaunchStatus{
+        get {
+            manager.load(AppLaunchStatus.self, forKey: AppLaunchStatus.key) ?? .isFirst
+        }
+        set {
+            manager.update(newValue, forKey: AppLaunchStatus.key)
+        }
+    }
     var appTheme: AppTheme{
         get{
             manager.load(AppTheme.self, forKey: AppTheme.key) ?? .system
@@ -129,7 +136,6 @@ class UserSettings: UserSettingsStorageProtocol{
     }
     
     func reload(newValue: SettingsOptions) {
-        
         switch newValue{
         case .language(let language):
             self.appLanguage = language
@@ -143,6 +149,8 @@ class UserSettings: UserSettingsStorageProtocol{
             self.appSeparators = separator
         case .duplicates(let duplicate):
             self.appDuplicates = duplicate
+        case .lauchStatus(let status):
+            self.appLaunchStatus = status
         case .sectionHeader(_):
             break
         }
@@ -170,7 +178,7 @@ class SettingsUpdateHelper: UserSettingsUpdateHelper{
             NotificationCenter.default.post(name: .appSeparatorDidChange, object: nil)
         case .duplicates(_):
             print("Duplicates functionality wasn't imported")
-        case .sectionHeader(_):
+        case .sectionHeader(_), .lauchStatus(_):
             break
         }
     }
@@ -213,6 +221,7 @@ class NotificationUpdateHelper{
 //MARK: - UserSettings CustomObjects.
 enum SettingsOptions: Codable{
     case sectionHeader(String)
+    case lauchStatus(AppLaunchStatus)
     case theme(AppTheme)
     case language(AppLanguage)
     case notifications(AppPushNotifications)
@@ -220,6 +229,18 @@ enum SettingsOptions: Codable{
     case separators(AppPairSeparators)
     case duplicates(AppDuplicates)
     
+}
+
+enum AppLaunchStatus: Codable{
+    static let key = "isFirstLaunch"
+    case isFirst, isNotFirst
+    
+    var isFirstLaunch: Bool {
+        switch self{
+        case .isFirst: return true
+        case .isNotFirst: return false
+        }
+    }
 }
 
 enum AppTheme: String, Codable, CaseIterable {
@@ -279,7 +300,7 @@ struct AppPairSeparators: Codable{
         return "separatorItem".localized
     }
     var value: String
-    var maxCapacity: Int = 8
+    var maxCapacity: Int = 5
 }
 
 enum AppSearchBarPosition: String, Codable{

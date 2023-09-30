@@ -19,6 +19,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let dataModel: Dictionary_Words_LogsManager = CoreDataHelper.shared
         let settingsModel: UserSettings = UserSettings.shared
         
+        validateFirstLaunch(settings: settingsModel, dataModel: dataModel)
         
         //Initializing TabBarController
         guard let window = (scene as? UIWindowScene) else { return }
@@ -29,6 +30,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         self.use(theme: settingsModel.appTheme, language: settingsModel.appLanguage)
         self.window?.makeKeyAndVisible()
+        
         
         var animationView: LaunchAnimation? = LaunchAnimation(bounds: UIWindow().bounds, interfaceStyle: UserSettings.shared.appTheme.userInterfaceStyle)
         animationView?.animate()
@@ -82,6 +84,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func configureUserStorage(with storage: UserSettings? = nil){
         if let settings = storage {
             UserSettings.shared = settings
+        }
+    }
+    func validateFirstLaunch(settings: UserSettingsStorageProtocol, dataModel: DictionaryManaging){
+        if settings.appLaunchStatus.isFirstLaunch {
+            do {
+               try dataModel.createDictionary(language: "Welcome", text: "-")
+            } catch {
+                print("Error")
+            }
         }
     }
     func use(theme: AppTheme, language: AppLanguage){

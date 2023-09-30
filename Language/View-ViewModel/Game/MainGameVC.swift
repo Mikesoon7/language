@@ -389,8 +389,12 @@ class CustomFlowLayout: UICollectionViewFlowLayout {
 
         guard let collectionView = collectionView else { return }
 
-        let itemWidth = collectionView.bounds.width * 0.8
+        let height = collectionView.bounds.height * 0.75
+        let width = height * 0.7
+//        let itemWidth = collectionView.bounds.width * 0.8
+//        let itemHeight = collectionView.bounds.width * 1.2
         let itemHeight = collectionView.bounds.height * 0.7
+        let itemWidth = itemHeight * 0.7
         itemSize = CGSize(width: itemWidth, height: itemHeight)
     
         scrollDirection = .horizontal

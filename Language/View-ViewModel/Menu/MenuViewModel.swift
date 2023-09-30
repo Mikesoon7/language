@@ -18,18 +18,21 @@ final class MenuViewModel{
         case shouldPresentAddView
         case shouldPresentDetailsView(DictionariesEntity)
         case shouldPresentEditView(DictionariesEntity)
+        case shouldPresentTutorialView
         case shouldUpdateLabels
         case error(Error)
     }
 
     private let model: Dictionary_Words_LogsManager
+    private let settingsModel: UserSettingsStorageProtocol
     private var cancellables = Set<AnyCancellable>()
     var dictionaries: [DictionariesEntity] = []
         
     @Published var output = PassthroughSubject<Output, Never>()
     
-    init(model: Dictionary_Words_LogsManager) {
+    init(model: Dictionary_Words_LogsManager, settingsModel: UserSettingsStorageProtocol) {
         self.model = model
+        self.settingsModel = settingsModel
         model.dictionaryDidChange
             .sink { [weak self] type in
                 switch type {
@@ -46,7 +49,6 @@ final class MenuViewModel{
             }
             .store(in: &cancellables)
         fetch()
-        
         NotificationCenter.default.addObserver(self, selector: #selector(languageDidChange(sender:)), name: .appLanguageDidChange, object: nil)
     }
     
@@ -60,6 +62,15 @@ final class MenuViewModel{
             dictionaries = try model.fetchDictionaries()
         } catch {
             output.send(.error(error))
+        }
+    }
+    func validateLaunchStatus(){
+        let isFirst = settingsModel.appLaunchStatus.isFirstLaunch
+        print("validating, status equals \(isFirst)")
+        if isFirst {
+            print("isFirst")
+            settingsModel.reload(newValue: .lauchStatus(.isNotFirst))
+            output.send(.shouldPresentTutorialView)
         }
     }
     

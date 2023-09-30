@@ -35,7 +35,7 @@ class SeparatorsView: UIViewController{
     
     private let headerInfoLabel: UILabel = {
         let label = UILabel()
-        label.font = .helveticaNeueMedium.withSize(30)
+        label.font = .helveticaNeueMedium.withSize(25)
         label.text = "separators.title".localized
         label.numberOfLines = 0
         label.textAlignment = .left
@@ -48,7 +48,7 @@ class SeparatorsView: UIViewController{
         let label = UILabel()
         label.numberOfLines = 0
         label.tintColor = .label
-        label.font = .helveticaNeue.withSize(18)
+        label.font = .helveticaNeue.withSize(16)
         label.text = "separators.infoFirstPart".localized
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -58,7 +58,7 @@ class SeparatorsView: UIViewController{
         let label = UILabel()
         label.numberOfLines = 0
         label.tintColor = .label
-        label.font = .helveticaNeue.withSize(18)
+        label.font = .helveticaNeue.withSize(16)
         label.text = "separators.infoSecondPart".localized
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -68,7 +68,7 @@ class SeparatorsView: UIViewController{
         let label = UILabel()
         label.numberOfLines = 0
         label.tintColor = .label
-        label.font = .helveticaNeue.withSize(18)
+        label.font = .helveticaNeue.withSize(16)
         label.text = "separators.infoFinalPart".localized
         label.translatesAutoresizingMaskIntoConstraints = false
         return label

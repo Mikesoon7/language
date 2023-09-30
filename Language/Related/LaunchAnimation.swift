@@ -34,9 +34,13 @@ class LaunchAnimation{
 //MARK: - AnimationViews SetUp
     func animationViewsCustomization(){
         cardView = {
+//            let view = UIView(frame: CGRect(x: 0, y: 0,
+//                                            width: animationView.frame.width * 0.7,
+//                                            height: animationView.frame.height * 0.5))
             let view = UIView(frame: CGRect(x: 0, y: 0,
-                                            width: animationView.frame.width * 0.7,
-                                            height: animationView.frame.height * 0.5))
+                                            width: animationView.frame.height * 0.35,
+                                            height: animationView.frame.height * 0.55))
+
             view.center = animationView.center
             view.backgroundColor = .systemBackground
             view.layer.cornerRadius = 24
