@@ -231,7 +231,7 @@ extension EditView {
         if let userInfo = sender.userInfo,
            let keyboardEndFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
             let convertedEndFrame = view.convert(keyboardEndFrame, from: view.window)
-            let overlap = textView.frame.maxY - convertedEndFrame.minY
+            var overlap = textView.frame.maxY - convertedEndFrame.minY
             
             if overlap > 0 {
                 textView.contentInset.bottom = overlap
@@ -254,7 +254,9 @@ extension EditView {
 extension EditView: UITextViewDelegate{
     ///Forcing layout manager to update existing glyphs.
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        textView.setNeedsDisplay()
+        if isSearching {
+            textView.setNeedsDisplay()
+        }
     }
     
     ///Reloading input accessory view, finishing search session.
@@ -262,6 +264,7 @@ extension EditView: UITextViewDelegate{
         if isSearching {
             changeSearchSessionState(activate: false)
         }
+//        textView.contentInset.bottom -= textView.inputAccessoryView!.bounds.height
         self.navigationItem.rightBarButtonItems = [doneButton, searchButton]
         
     }

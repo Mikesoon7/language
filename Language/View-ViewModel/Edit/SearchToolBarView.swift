@@ -13,7 +13,7 @@ class CustomSearchToolBar: UIToolbar {
     private var searchResultsByRange = [NSRange]()
     private var searchResultPointerIndex = Int()
     
-    private var currentRange: NSRange = .init()
+//    private var currentRange: NSRange = .init()
 
     var textView: UITextView?
     var layoutManager: HighlightLayoutManager?
@@ -51,6 +51,8 @@ class CustomSearchToolBar: UIToolbar {
     func endSearchSession() {
         layoutManager?.highlightRanges = []
         layoutManager?.currentRange = NSRange()
+        searchResultsByRange = []
+        searchResultPointerIndex = 0
         searchBar.text = nil
         textView?.setNeedsDisplay()
     }
@@ -114,44 +116,103 @@ class CustomSearchToolBar: UIToolbar {
             searchStartIndex = range.upperBound
         }
     }
+    
     ///Update textView visible scope to ensure, that selected word in center
     private func scrollRangeToVisibleCenter(range: NSRange) {
         guard let textView = textView else { return }
+        
+        let glyphRect = getGlyphRectangle(for: range, from: textView)
+        
+        let visibleHeight = textView.bounds.height - textView.contentInset.bottom - textView.contentInset.top - (textView.inputAccessoryView?.bounds.height ?? 40)
+        
+        let yOffset = glyphRect.origin.y - min(glyphRect.origin.y, (visibleHeight / 2))
+        let newOffset = CGPoint(x: textView.contentOffset.x, y: yOffset)
+        
+        textView.setContentOffset(newOffset, animated: true)
+        
+        //I think no one will reach to this point, but this is some kind of a tricky and strange bug, which took me 6 hours to solve. TextView will stop scrolling on a halfWay if you won't add this 2 lines beyond.
+        textView.isScrollEnabled = false
+        textView.isScrollEnabled = true
+        
+    }
+    
+    ///Asks layoutManager of textView for rectangle, which matches to the passed range.
+    private func getGlyphRectangle(for range: NSRange, from textView: UITextView) -> CGRect {
         let layoutManager = textView.layoutManager
         let textContainer = textView.textContainer
-
+        
         let glyphRange = layoutManager.glyphRange(forCharacterRange: range, actualCharacterRange: nil)
-        var boundingRect = layoutManager.boundingRect(forGlyphRange: glyphRange, in: textContainer)
+        let glyphRect = layoutManager.boundingRect(forGlyphRange: glyphRange, in: textContainer)
 
-        let offset1 = textView.contentOffset
-        let midPoint = textView.center.y / 2
-
-
-        if boundingRect.origin.y <= offset1.y {
-            let newY = boundingRect.origin.y - midPoint
-            if newY <= 0 {
-                boundingRect.origin.y = 0
-            } else {
-                boundingRect.origin.y -= midPoint
-            }
-        } else {
-            let newY = boundingRect.origin.y - offset1.y
-
-            if textView.center.y / 2 >= newY {
-                boundingRect.origin.y += newY
-            } else{
-                boundingRect.origin.y += midPoint
-            }
-        }
-        textView.scrollRectToVisible(boundingRect, animated: true)
+        return glyphRect
     }
+
     ///Sending selected range to LayoutManager and scrolling to it.
     private func updateSelectedRange(_ range: NSRange){
-        scrollRangeToVisibleCenter(range: range)
-        layoutManager?.currentRange = range
-        textView?.setNeedsDisplay()
-//        layoutManager?.updateSelectedRange(range)
+        self.layoutManager?.currentRange = range
+        self.scrollRangeToVisibleCenter(range: range)
+        self.textView?.setNeedsDisplay()
     }
+
+
+    //MARK: Selected index related.
+    ///Updating selected index in order to match existing one or find closest to visible scope.
+    private func validateSelectedRange(){
+        guard let textView = textView else { return }
+        if searchResultsByRange.indices.contains(searchResultPointerIndex), isRangeInVisibleScope(textView: textView, range: searchResultsByRange[searchResultPointerIndex]) {
+                return
+            
+        } else {
+            searchResultPointerIndex = closestVisibleRangeIndex(from: searchResultsByRange, in: textView)
+        }
+        
+    }
+
+    private func isRangeInVisibleScope(textView: UITextView, range: NSRange) -> Bool{
+        let visibleScope = textViewVisibleScope(textView: textView)
+        let glyphRect = getGlyphRectangle(for: range, from: textView)
+                
+        return visibleScope.contains(glyphRect)
+    }
+    
+    ///Returns textview visible rect.
+    private func textViewVisibleScope(textView: UITextView) -> CGRect {
+        let visibleRect = CGRect(x: textView.contentOffset.x,
+                                 y: textView.contentOffset.y,
+                                 width: textView.bounds.width,
+                                 height: textView.bounds.height - textView.contentInset.bottom - textView.contentInset.top)
+
+        return visibleRect
+    }
+    
+    ///Returns index of the closest to visible scope range.
+    private func closestVisibleRangeIndex(from ranges: [NSRange], in textView: UITextView?) -> Int {
+        guard let textView = textView else { return 0 }
+        let visibleRect = textViewVisibleScope(textView: textView)
+        
+        let visibleMidY = visibleRect.midY
+        
+        var closestRangeIndex = 0
+        var smallestDistance: CGFloat = CGFloat.greatestFiniteMagnitude
+        
+        for (index, range) in ranges.sorted(by: {$0.location < $1.location}).enumerated() {
+            print(range.location)
+            let glyphRect = getGlyphRectangle(for: range, from: textView)
+            
+            let distance = abs(glyphRect.midY - visibleMidY)
+            
+            print("distance = \(distance)")
+            if distance <= smallestDistance {
+                smallestDistance = distance
+                closestRangeIndex = index
+            } else {
+                break
+            }
+        }
+        
+        return closestRangeIndex
+    }
+    
 }
 //MARK: SearchBar delegate.
 extension CustomSearchToolBar: UISearchBarDelegate {
@@ -162,22 +223,18 @@ extension CustomSearchToolBar: UISearchBarDelegate {
 
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         findSearchResults(for: searchText)
-        print("searchBar textFifChange")
         layoutManager?.highlightRanges = searchResultsByRange
 
-        
-        
-        if searchResultsByRange.count != 0 {
-            if searchResultPointerIndex + 1 > searchResultsByRange.count {
-                searchResultPointerIndex = searchResultsByRange.count - 1
-            }
-            textView?.backgroundColor = .searchModeBackground
-            updateSelectedRange(searchResultsByRange[searchResultPointerIndex])
-        } else {
-            searchResultPointerIndex = 0 
+        guard !searchResultsByRange.isEmpty else {
+            searchResultPointerIndex = 0
             textView?.backgroundColor = .systemBackground
             textView?.setNeedsDisplay()
+            return
         }
+        validateSelectedRange()
+
+        textView?.backgroundColor = .searchModeBackground
+        updateSelectedRange(searchResultsByRange[searchResultPointerIndex])
 
     }
 }

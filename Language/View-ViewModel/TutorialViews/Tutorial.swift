@@ -239,7 +239,7 @@ extension TutorialVC: AccessViewDelegate {
         }
         //Changing main view height and revial next text view.
         UIView.animate(withDuration: 0.5, animations: {
-            self.viewTopAnchor.constant += 130
+            self.viewTopAnchor.constant += 135
             self.firstViewLeadingAnchor.constant -= self.mainView.bounds.width
             self.view.layoutIfNeeded()
         })
