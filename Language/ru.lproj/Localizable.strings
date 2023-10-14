@@ -42,6 +42,7 @@
 //Items for Dictionary
 "dictionaries" = "Словари";
 "separatorItem" = "Символы для разделения";
+"exceptionsItem" = "Exception symbols";
 "duplicatesItem" = "Дубликаты";
     //Options
 "keep" = "Оставлять";
@@ -174,3 +175,12 @@
 "tutorial.fifthViewLabel" = "Чтобы разделить текст внутри блока, например, слово и его определение, используйте разделительный символ, отделенный пробелом с обеих сторон. Его можно изменить в настройках. По умолчанию это \"-\", и вы увидите его в подсказке при редактировании.";
 //SixthView
 "tutorial.sixthViewLabel" = "И это всё. Мы хотели бы поблагодарить вас за то, что дали нам шанс помочь вам в достижении ваших целей. \n \n Желаем удачи и приятного использования.";
+//MARK: Exceptions
+"exception.title" = "Exception symbols";
+"exception.firstPart" = "Here you can provide symbols, which will be cut of the begining and the end of every block of text";
+"exception.secondPart" = "Let's say, you are copying text with enumaration and you want ommit the numbers. In this case you can provide exception numbers to avoid extraneous data in you learning process";
+
+"exception.placeholder" = "Text";
+"exception.alertTitle" = "Type any number of symbols.";
+"exception.alertErrorTitle" = "Invalid input";
+"exception.alertSpaceMessage" = "Please, don't use spaces only";

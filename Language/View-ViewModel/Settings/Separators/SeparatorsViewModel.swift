@@ -21,13 +21,13 @@ class SeparatorsViewModel{
     }
     
     
-    private var model: UserSettingsStorageProtocol
+    private var settingsModel: UserSettingsStorageProtocol
     private var cancellable = Set<AnyCancellable>()
     
     var output = PassthroughSubject<Output, Never>()
 
-    init(settings: UserSettingsStorageProtocol = UserSettings.shared){
-        self.model = settings
+    init(settings: UserSettingsStorageProtocol){
+        self.settingsModel = settings
         
     }
     //Called by view in order to bind calls from view and viewModel.
@@ -50,17 +50,17 @@ class SeparatorsViewModel{
     //MARK: Fucntional methods for context.
     // Return selected separator from the model. Using for passing to the example view.
     func selectedSeparator() -> String{
-        model.appSeparators.value
+        settingsModel.appSeparators.value
     }
     
     // Return all separators from the model.Using for avoiding duplicates.
     func availableSeparators() -> [String]{
-        model.appSeparators.availableSeparators
+        settingsModel.appSeparators.availableSeparators
     }
     
     //Return maximum number of separators, saved in model.
     private func maxNumber() -> Int{
-        model.appSeparators.maxCapacity
+        settingsModel.appSeparators.maxCapacity
     }
     //Cheking, is passed index belongs to functional row.
     private func isAddCharacterRow(indexPath: IndexPath) -> Bool{
@@ -81,13 +81,13 @@ class SeparatorsViewModel{
     //MARK: Update available separators.
     //Add separator to the models separatorsArray.
     private func addSeparator(separator: String){
-        model.appSeparators.availableSeparators.append(separator)
+        settingsModel.appSeparators.availableSeparators.append(separator)
         output.send(.shouldUpdateTablesHeight)
     }
     
     //Delete separator from existing separator array.
     private func deleteSeparator(indexPath: IndexPath){
-        model.appSeparators.availableSeparators.remove(at: indexPath.row)
+        settingsModel.appSeparators.availableSeparators.remove(at: indexPath.row)
         output.send(.shouldUpdateTablesHeight)
     }
     
@@ -111,7 +111,7 @@ class SeparatorsViewModel{
             return DataForSeparatorCell(value: "separators.addChar".localized, isSelected: false, isFunctional: true)
         } else {
             let value =  availableSeparators()[indexPath.row]
-            let selectedValue = model.appSeparators.value
+            let selectedValue = settingsModel.appSeparators.value
             let isSelected = value == selectedValue
             return DataForSeparatorCell(
                 value: value, isSelected: isSelected)
@@ -123,8 +123,8 @@ class SeparatorsViewModel{
             output.send(.shouldPresentAlertController)
         } else {
             let selectedValue = availableSeparators()[indexPath.row]
-            guard selectedValue != model.appSeparators.value else { return }
-            model.appSeparators.value = selectedValue
+            guard selectedValue != settingsModel.appSeparators.value else { return }
+            settingsModel.appSeparators.value = selectedValue
             output.send(.shouldUpdateTable)
         }
     }

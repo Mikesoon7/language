@@ -33,7 +33,7 @@ final class ViewModelFactory{
         DetailsViewModel(model: dataModel, dictionary: dictionary)
     }
     func configureSearchViewModel() -> SearchViewModel{
-        SearchViewModel(model: dataModel)
+        SearchViewModel(model: dataModel, settingModel: settingsModel)
     }
     func configureSettingsViewModel() -> SettingsViewModel{
         SettingsViewModel(settingsModel: settingsModel)
@@ -49,6 +49,9 @@ final class ViewModelFactory{
     }
     func configureStatisticViewModel() -> StatisticViewModel{
         StatisticViewModel(dataModel: dataModel)
+    }
+    func configureExceptionViewModel() -> ExceptioonsViewModel{
+        ExceptioonsViewModel(settingsModel: settingsModel)
     }
     func configureGameViewmModel(dictionary: DictionariesEntity, isRandom: Bool, selectedNumber: Int) -> GameViewModel{
         GameViewModel(dataModel: dataModel,

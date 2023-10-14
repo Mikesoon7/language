@@ -92,10 +92,6 @@ class SeparatorsCell: UITableViewCell {
         contentView.addSubviews(cellTitle, addImage, selectedImage)
         
         NSLayoutConstraint.activate([
-                        
-            cellTitle.leadingAnchor.constraint(equalTo: leadingAnchor, constant: subviewsInset),
-            cellTitle.centerYAnchor.constraint(equalTo: centerYAnchor),
-            
             addImage.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -subviewsInset),
             addImage.centerYAnchor.constraint(equalTo: centerYAnchor),
             addImage.heightAnchor.constraint(equalTo: heightAnchor, multiplier: subviewsHeightMultiplier),
@@ -105,6 +101,10 @@ class SeparatorsCell: UITableViewCell {
             selectedImage.centerYAnchor.constraint(equalTo: centerYAnchor),
             selectedImage.heightAnchor.constraint(equalTo: heightAnchor, multiplier: subviewsHeightMultiplier),
             selectedImage.widthAnchor.constraint(equalTo: addImage.heightAnchor),
+            
+            cellTitle.leadingAnchor.constraint(equalTo: leadingAnchor, constant: subviewsInset),
+            cellTitle.centerYAnchor.constraint(equalTo: centerYAnchor),
+            cellTitle.trailingAnchor.constraint(lessThanOrEqualTo: selectedImage.leadingAnchor, constant: -subviewsInset)
         ])
     }
 }

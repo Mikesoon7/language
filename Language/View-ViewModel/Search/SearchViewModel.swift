@@ -24,6 +24,7 @@ class SearchViewModel {
     }
     
     private var model: Dictionary_WordsManager
+    private var settingModel: UserSettingsStorageProtocol
     private var cancellable = Set<AnyCancellable>()
     
     private var allWords: [WordsEntity] = []
@@ -33,8 +34,9 @@ class SearchViewModel {
     
     private var searchPromt = ""
     
-    init(model: Dictionary_WordsManager = CoreDataHelper.shared){
+    init(model: Dictionary_WordsManager, settingModel: UserSettingsStorageProtocol){
         self.model = model
+        self.settingModel = settingModel
         model.dictionaryDidChange
             .sink { changeType in
                 self.fetchWords()
@@ -73,7 +75,7 @@ class SearchViewModel {
     }
     //MARK: Context
     func searchBarPositionIsOnTop() -> Bool {
-        UserSettings.shared.appSearchBarPosition == .onTop ? true : false
+        settingModel.appSearchBarPosition == .onTop ? true : false
     }
 
     //MARK: Results array related.
@@ -146,7 +148,7 @@ class SearchViewModel {
         output.send(.shouldUpdateLabels)
     }
     @objc func searchBarPositionDidChange(sender: Notification){
-        let onTop = (UserSettings.shared.appSearchBarPosition == .onTop) ? true : false
+        let onTop = (settingModel.appSearchBarPosition == .onTop) ? true : false
         output.send(.shouldReplaceSearchBarOnTop(onTop))
     }
 }

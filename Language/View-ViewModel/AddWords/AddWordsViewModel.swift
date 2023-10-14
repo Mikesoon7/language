@@ -23,7 +23,7 @@ class AddWordsViewModel {
     private let settingModel: UserSettingsStorageProtocol
     
     private let dictionary: DictionariesEntity
-    private var userDefault = UserSettings.shared
+//    private var userDefault = UserSettings.shared
     private var newArray: [WordsEntity] = []
     var output = PassthroughSubject<Output, Never>()
     

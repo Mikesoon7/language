@@ -6,7 +6,7 @@ import Combine
 
 class NotificationView: UIViewController {
 
-    private let viewModel = NotificationViewModel(settingsModel: UserSettings.shared)
+    private let viewModel: NotificationViewModel
     private var cancellable = Set<AnyCancellable>()
     
     //MARK: - Views
@@ -83,6 +83,15 @@ class NotificationView: UIViewController {
     }
     private var finalStage: CGFloat {
         return viewModel.customFrequencyIsOn() ? finalStageContainerConstant : thirdStageContainerConstant
+    }
+    
+    required init(factory: ViewModelFactory){
+        self.viewModel = factory.configureNotificationsModel()
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
     //MARK: - Inherited

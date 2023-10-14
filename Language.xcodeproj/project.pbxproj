@@ -31,6 +31,9 @@
 		9A5D51D92A680F4E00F85720 /* CoreDataChangeTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A5D51D82A680F4E00F85720 /* CoreDataChangeTypes.swift */; };
 		9A603FF929AF5B3200A65253 /* OldGameVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A603FF829AF5B3200A65253 /* OldGameVC.swift */; };
 		9A75413D2A70042D0064BE4E /* SearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A75413C2A70042D0064BE4E /* SearchViewModel.swift */; };
+		9A77B0222AD58960006DA151 /* ExceptionsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A77B0212AD58960006DA151 /* ExceptionsVC.swift */; };
+		9A77B0242AD58974006DA151 /* ExceptionsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A77B0232AD58974006DA151 /* ExceptionsViewModel.swift */; };
+		9A77B0262AD6C94A006DA151 /* ExceptionExampleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A77B0252AD6C94A006DA151 /* ExceptionExampleView.swift */; };
 		9A7B91C6298D6D9600E60CDD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A7B91C5298D6D9600E60CDD /* AppDelegate.swift */; };
 		9A7B91C8298D6D9600E60CDD /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A7B91C7298D6D9600E60CDD /* SceneDelegate.swift */; };
 		9A7B91CF298D6D9900E60CDD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9A7B91CE298D6D9900E60CDD /* Assets.xcassets */; };
@@ -158,6 +161,9 @@
 		9A5D51D82A680F4E00F85720 /* CoreDataChangeTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataChangeTypes.swift; sourceTree = "<group>"; };
 		9A603FF829AF5B3200A65253 /* OldGameVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OldGameVC.swift; sourceTree = "<group>"; };
 		9A75413C2A70042D0064BE4E /* SearchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewModel.swift; sourceTree = "<group>"; };
+		9A77B0212AD58960006DA151 /* ExceptionsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExceptionsVC.swift; sourceTree = "<group>"; };
+		9A77B0232AD58974006DA151 /* ExceptionsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExceptionsViewModel.swift; sourceTree = "<group>"; };
+		9A77B0252AD6C94A006DA151 /* ExceptionExampleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExceptionExampleView.swift; sourceTree = "<group>"; };
 		9A7B91C2298D6D9600E60CDD /* Language.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Language.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9A7B91C5298D6D9600E60CDD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		9A7B91C7298D6D9600E60CDD /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -360,6 +366,7 @@
 		9A5641FD2A5D75AD00027BCD /* Settings */ = {
 			isa = PBXGroup;
 			children = (
+				9A77B0202AD588B3006DA151 /* Exceptions */,
 				9AAECFBD29B5052F00439C0B /* SettingsVC.swift */,
 				9AABAEB12A88E5D40032C008 /* SettingsViewModel.swift */,
 				9AB039D22A9154CF003FE10C /* SettingsSubviews */,
@@ -428,6 +435,16 @@
 				9AF756892AAB4E0500CE3B25 /* StatisticSubviews */,
 			);
 			path = Statistic;
+			sourceTree = "<group>";
+		};
+		9A77B0202AD588B3006DA151 /* Exceptions */ = {
+			isa = PBXGroup;
+			children = (
+				9A77B0212AD58960006DA151 /* ExceptionsVC.swift */,
+				9A77B0232AD58974006DA151 /* ExceptionsViewModel.swift */,
+				9A77B0252AD6C94A006DA151 /* ExceptionExampleView.swift */,
+			);
+			path = Exceptions;
 			sourceTree = "<group>";
 		};
 		9A7B91B9298D6D9600E60CDD = {
@@ -929,11 +946,13 @@
 				9AB43A1929F40EA000984350 /* LearnyLocal.xcdatamodeld in Sources */,
 				9ABC83A42A582C3F00E630F5 /* MenuView.swift in Sources */,
 				9AA71C5B29C20894008A193B /* MainGameVC.swift in Sources */,
+				9A77B0242AD58974006DA151 /* ExceptionsViewModel.swift in Sources */,
 				9A02AA5C2AA0B47100644820 /* StatisticViewCell.swift in Sources */,
 				9A912FC62A06BB540004A91A /* NotificationTextCell.swift in Sources */,
 				9A02B2862A38993F00652FC3 /* EditView.swift in Sources */,
 				9AFFCE7B299D073D00C12B94 /* MenuAddDictionaryCell.swift in Sources */,
 				9AE34A782A115DD300F8BB65 /* GameDetailsVC.swift in Sources */,
+				9A77B0222AD58960006DA151 /* ExceptionsVC.swift in Sources */,
 				9AB9A96129FD71F000694FE8 /* SeparatorsView.swift in Sources */,
 				9A9970FE29DB2D86007EE635 /* LaunchAnimation.swift in Sources */,
 				9AB43A3629F4695B00984350 /* CoreDataMethods.swift in Sources */,
@@ -943,6 +962,7 @@
 				9AA71C6829C9CE9B008A193B /* CollectionViewCell.swift in Sources */,
 				9A603FF929AF5B3200A65253 /* OldGameVC.swift in Sources */,
 				9AADA5142A8C48280044708E /* SeparatorsViewModel.swift in Sources */,
+				9A77B0262AD6C94A006DA151 /* ExceptionExampleView.swift in Sources */,
 				9AD4E2432A950862009090EA /* GameViewModel.swift in Sources */,
 				9A5D51D32A67E05300F85720 /* AddWordsViewModel.swift in Sources */,
 				9AE509352997C07700D86DD7 /* AddDictionaryView.swift in Sources */,

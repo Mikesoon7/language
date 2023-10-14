@@ -55,17 +55,29 @@ extension CoreDataHelper: WordsManaging{
     }
     ///Assigning text and description values to passed word with  devided passed text.
     internal func assignWordsProperties(for wordEntity: WordsEntity, from text: String){
-        let parts = text.split(separator: " \(UserSettings.shared.appSeparators.value) ")
-        
+
+        var trimmedText = String()
         var newWord = String()
         var newDescription = String()
         
-        newWord = String(parts[0]).trimmingCharacters(in: CharacterSet(charactersIn: "[ ] ◦ - "))
-            .trimmingCharacters(in: .whitespacesAndNewlines)
+        let exceptions = settingModel.appExceptions.selectedExceptions.map({ $0.content })
+        trimmedText = text.trimmingCharacters(in: CharacterSet(charactersIn: exceptions.joined().joined(separator: " ") ))
+            
+        print(trimmedText)
+        
+        let parts = trimmedText.split(separator: settingModel.appSeparators.value).map { $0.trimmingCharacters(in: .whitespacesAndNewlines)}
+
+        
+        guard parts.indices.contains(0) else { return }
+
+        newWord = parts[0]
 
         if parts.count == 2{
             newDescription = String(parts[1]).trimmingCharacters(in: .whitespacesAndNewlines)
+            print("2 parts")
         } else if parts.count > 2{
+            print("2.......... parts")
+
             newDescription = parts[1...].joined(separator: " ").trimmingCharacters(in: .whitespacesAndNewlines)
         }
         

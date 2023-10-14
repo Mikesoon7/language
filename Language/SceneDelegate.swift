@@ -16,8 +16,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         //Creating observer for changing tabBar string values
         self.observeLanguageChange()
         //Creating data model, which will be stored in viewModel factory class.
-        let dataModel: Dictionary_Words_LogsManager = CoreDataHelper.shared
-        let settingsModel: UserSettings = UserSettings.shared
+        let settingsModel: UserSettingsStorageProtocol = UserSettings()
+        let dataModel: Dictionary_Words_LogsManager = CoreDataHelper(settingsModel: settingsModel)
         
         validateFirstLaunch(settings: settingsModel, dataModel: dataModel)
         
@@ -32,7 +32,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         self.window?.makeKeyAndVisible()
         
         
-        var animationView: LaunchAnimation? = LaunchAnimation(bounds: UIWindow().bounds, interfaceStyle: UserSettings.shared.appTheme.userInterfaceStyle)
+        var animationView: LaunchAnimation? = LaunchAnimation(bounds: UIWindow().bounds, interfaceStyle: settingsModel.appTheme.userInterfaceStyle)
         animationView?.animate()
         animationView?.makeKeyView()
         DispatchQueue.main.asyncAfter(deadline: .now() + 3.5) {
@@ -80,11 +80,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     func configureViewModelFactoryWith(_ dataModel: Dictionary_Words_LogsManager, settingsModel: UserSettingsStorageProtocol) -> ViewModelFactory {
         return ViewModelFactory(dataModel: dataModel, settingsModel: settingsModel)
-    }
-    func configureUserStorage(with storage: UserSettings? = nil){
-        if let settings = storage {
-            UserSettings.shared = settings
-        }
     }
     func validateFirstLaunch(settings: UserSettingsStorageProtocol, dataModel: DictionaryManaging){
         if settings.appLaunchStatus.isFirstLaunch {

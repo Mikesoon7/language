@@ -40,7 +40,8 @@ protocol UserSettingsStorageProtocol{
     var appNotifications: AppPushNotifications      { get set }
     var appSearchBarPosition: AppSearchBarPosition  { get set }
     var appSeparators: AppPairSeparators            { get set }
-    var appDuplicates: AppDuplicates                { get set }
+    var appExceptions: AppExceptions            { get set }
+//    var appDuplicates: AppDuplicates                { get set }
     
     init(manager: UserSettingsManagerProtocol, helper: UserSettingsUpdateHelper)
     
@@ -56,7 +57,7 @@ class UserSettingsManager: UserSettingsManagerProtocol{ }
 
 class UserSettings: UserSettingsStorageProtocol{
     
-    static var shared = UserSettings()
+//    static var shared = UserSettings()
     
     var manager: UserSettingsManagerProtocol
     var helper: UserSettingsUpdateHelper
@@ -118,17 +119,27 @@ class UserSettings: UserSettingsStorageProtocol{
             apply(newValue: .separators(newValue))
         }
     }
-    
-    var appDuplicates: AppDuplicates{
+    var appExceptions: AppExceptions{
         get{
-            manager.load(AppDuplicates.self, forKey: AppDuplicates.key) ?? .keep
-            
+            manager.load(AppExceptions.self, forKey: AppExceptions.key) ?? .init(availableExceptions: [AppExceptions.Selection(content: ["1", "2", "-"], isSelected: true)])
         }
         set{
-            manager.update(newValue, forKey: AppDuplicates.key)
-            apply(newValue: .duplicates(newValue))
+            manager.update(newValue, forKey: AppExceptions.key)
+            apply(newValue: .exceptions(newValue))
         }
     }
+
+    
+//    var appDuplicates: AppDuplicates{
+//        get{
+//            manager.load(AppDuplicates.self, forKey: AppDuplicates.key) ?? .keep
+//
+//        }
+//        set{
+//            manager.update(newValue, forKey: AppDuplicates.key)
+//            apply(newValue: .duplicates(newValue))
+//        }
+//    }
     
     required init(manager: UserSettingsManagerProtocol = UserSettingsManager(), helper: UserSettingsUpdateHelper = SettingsUpdateHelper()){
         self.manager = manager
@@ -147,8 +158,10 @@ class UserSettings: UserSettingsStorageProtocol{
             self.appSearchBarPosition = position
         case .separators(let separator):
             self.appSeparators = separator
-        case .duplicates(let duplicate):
-            self.appDuplicates = duplicate
+        case .exceptions(let exeptions):
+            self.appExceptions = exeptions
+//        case .duplicates(let duplicate):
+//            self.appDuplicates = duplicate
         case .lauchStatus(let status):
             self.appLaunchStatus = status
         case .sectionHeader(_):
@@ -176,9 +189,7 @@ class SettingsUpdateHelper: UserSettingsUpdateHelper{
             NotificationCenter.default.post(name: .appSearchBarPositionDidChange, object: nil)
         case .separators(_):
             NotificationCenter.default.post(name: .appSeparatorDidChange, object: nil)
-        case .duplicates(_):
-            print("Duplicates functionality wasn't imported")
-        case .sectionHeader(_), .lauchStatus(_):
+        case .sectionHeader(_), .lauchStatus(_), .exceptions(_):
             break
         }
     }
@@ -227,7 +238,8 @@ enum SettingsOptions: Codable{
     case notifications(AppPushNotifications)
     case searchBarPosition(AppSearchBarPosition)
     case separators(AppPairSeparators)
-    case duplicates(AppDuplicates)
+    case exceptions(AppExceptions)
+//    case duplicates(AppDuplicates)
     
 }
 
@@ -301,6 +313,38 @@ struct AppPairSeparators: Codable{
     }
     var value: String
     var maxCapacity: Int = 5
+}
+
+//hi, can you share some ideas on the solution. I have an [[String]], which is stored in UserDefaults.
+//struct AppTextExceptions: Codable{
+//    static let key = "AppExeptions"
+//
+//    var availableExceptions: [[String]]
+//
+//    var title: String {
+//        return "exceptionsItem".localized
+//    }
+//}
+//
+//User can add symbols, and select multiple arrays, which can be used in app. How can I track the selection ?
+//
+struct AppExceptions: Codable{
+    static let key = "AppExeptions"
+    
+    struct Selection: Codable {
+        var content: [String]
+        var isSelected: Bool
+    }
+
+    var availableExceptions: [Selection]
+    
+    var title: String {
+        return "exceptionsItem".localized
+    }
+    
+    var selectedExceptions: [Selection] {
+        return availableExceptions.filter { $0.isSelected }
+    }
 }
 
 enum AppSearchBarPosition: String, Codable{

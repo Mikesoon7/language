@@ -94,9 +94,10 @@ class SeparatorsExampleView: UIView {
     //MARK:  View setUp
     private func configureView(){
         self.translatesAutoresizingMaskIntoConstraints = false
-        self.backgroundColor = ((traitCollection.userInterfaceStyle == .dark)
-                                ? UIColor.secondarySystemBackground
-                                : UIColor.clear)
+        self.backgroundColor = UIColor.secondarySystemBackground
+//        ((traitCollection.userInterfaceStyle == .dark)
+//                                ? UIColor.secondarySystemBackground
+//                                : UIColor.clear)
         self.layer.cornerRadius = 9
         self.layer.borderWidth = 0.5
         self.layer.borderColor = UIColor.black.cgColor

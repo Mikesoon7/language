@@ -26,6 +26,7 @@ class EditViewModel {
     //MARK: - Properties
     private let model: Dictionary_WordsManager 
     private let dictionary: DictionariesEntity
+    private let settingModel: UserSettingsStorageProtocol
     
     private var dictionaryName: String = .init()
     private var words: [WordsEntity] = []
@@ -38,6 +39,7 @@ class EditViewModel {
     //MARK: Inhereted and initialization
     init(dataModel: Dictionary_WordsManager, settingsModel: UserSettingsStorageProtocol, dictionary: DictionariesEntity){
         self.model = dataModel
+        self.settingModel = settingsModel
         self.dictionary = dictionary
         
         do {
@@ -70,7 +72,7 @@ class EditViewModel {
     private func parseArrayToText(with words: [WordsEntity], name: String) -> ParsedDictionary{
         var textToEdit = ""
         for pair in words {
-            let line = "\(pair.word) \(UserSettings.shared.appSeparators.value) \(pair.meaning)"
+            let line = "\(pair.word) \(settingModel.appSeparators.value) \(pair.meaning)"
             oldTextByLines.append(line)
             textToEdit += line + "\n\n"
         }

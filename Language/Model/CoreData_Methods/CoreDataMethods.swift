@@ -16,17 +16,19 @@ typealias Dictionary_Words_LogsManager = DictionaryManaging & WordsManaging & Lo
 
 class CoreDataHelper {
     
-    static let shared = CoreDataHelper()
+//    static let shared = CoreDataHelper()
     
     //MARK: - Properties
     internal var numberOfDictionaries: Int64 = 0
+    var settingModel: UserSettingsStorageProtocol
     internal var context: NSManagedObjectContext!
     public var dictionaryDidChange = PassthroughSubject<DictionaryChangeType, Never>()
     
-    private init() {
+    init(settingsModel: UserSettingsStorageProtocol) {
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         self.context = appDelegate.persistentContainer.viewContext
-        
+        self.settingModel = settingsModel
+
         do {
             self.numberOfDictionaries = try fetchNumberOfDictionaries()
         } catch {

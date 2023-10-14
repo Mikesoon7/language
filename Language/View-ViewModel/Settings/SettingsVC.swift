@@ -77,6 +77,8 @@ class SettingsVC: UIViewController {
                     self?.presentNotificationVC()
                 case .needPresentSeparatorsView:
                     self?.presentSeparatorVC()
+                case .needPresentExceptionsView:
+                    self?.presentExceptionVC()
                 }
             }
             .store(in: &cancellable)
@@ -98,12 +100,16 @@ class SettingsVC: UIViewController {
 
     //MARK: System
     private func presentNotificationVC(){
-        let vc = NotificationView()
+        let vc = NotificationView(factory: viewModelFactory)
         vc.modalPresentationStyle = .overFullScreen
         self.present(vc, animated: false)
     }
     private func presentSeparatorVC(){
-        let vc = SeparatorsView()
+        let vc = SeparatorsView(factory: viewModelFactory)
+        self.present(vc, animated: true)
+    }
+    private func presentExceptionVC(){
+        let vc = ExceptionsVC(factory: viewModelFactory)
         self.present(vc, animated: true)
     }
     //Attaching cancel action to passed action.

@@ -15,6 +15,7 @@ class SettingsViewModel{
         case needUpdateLanguage
         case needUpdateRowAt(IndexPath)
         case needPresentNotificationView
+        case needPresentExceptionsView
     }
     
     struct SettingsSection{
@@ -27,7 +28,7 @@ class SettingsViewModel{
         
     var output = PassthroughSubject<Output, Never>()
 
-    init(settingsModel: UserSettingsStorageProtocol = UserSettings.shared){
+    init(settingsModel: UserSettingsStorageProtocol){
         self.settingsModel = settingsModel
         configureSettingsStructure()
 
@@ -56,7 +57,8 @@ class SettingsViewModel{
                             items: [
                                 SettingsOptions.sectionHeader("dictionaries"),
                                 SettingsOptions.separators(settingsModel.appSeparators),
-                                SettingsOptions.duplicates(settingsModel.appDuplicates)
+                                SettingsOptions.exceptions(settingsModel.appExceptions)
+//                                SettingsOptions.duplicates(settingsModel.appDuplicates)
                             ])
         ]
     }
@@ -69,7 +71,8 @@ class SettingsViewModel{
         case .notifications(_): return IndexPath(row: 3 , section: 0)
         case .searchBarPosition(_): return IndexPath(row: 1 , section: 1)
         case .separators(_): return IndexPath(row: 1 , section: 2)
-        case .duplicates(_): return IndexPath(row: 2 , section: 2)
+        case .exceptions(_): return IndexPath(row: 2, section: 2)
+//        case .duplicates(_): return IndexPath(row: 2 , section: 2)
         default: return IndexPath()
         }
     }
@@ -108,8 +111,10 @@ class SettingsViewModel{
                 }
         case .separators(let separators):
             return DataForSettingsTextCell(title: separators.title, value: nil)
-        case .duplicates(let duplicates):
-            return DataForSettingsTextCell(title: duplicates.title, value: duplicates.value)
+        case .exceptions(let exception):
+            return DataForSettingsTextCell(title: exception.title, value: nil)
+//        case .duplicates(let duplicates):
+//            return DataForSettingsTextCell(title: duplicates.title, value: duplicates.value)
         case .lauchStatus(_):
             return DataForSettingsTextCell(title: "", value: "")
         }
@@ -132,13 +137,15 @@ class SettingsViewModel{
                 }))
             }
             output.send(.needPresentAlertWith(alertOptions))
-        case .duplicates(_):
-            for option in AppDuplicates.allCases{
-                alertOptions.append(UIAlertAction(title: option.value, style: .default, handler: { [weak self]_ in
-                    self?.handleValueUpdateFor(newValue: .duplicates(option))
-                }))
-            }
-            output.send(.needPresentAlertWith(alertOptions))
+//        case .duplicates(_):
+//            for option in AppDuplicates.allCases{
+//                alertOptions.append(UIAlertAction(title: option.value, style: .default, handler: { [weak self]_ in
+//                    self?.handleValueUpdateFor(newValue: .duplicates(option))
+//                }))
+//            }
+//            output.send(.needPresentAlertWith(alertOptions))
+        case .exceptions(_):
+            output.send(.needPresentExceptionsView)
         case .notifications(_):
             output.send(.needPresentNotificationView)
         case .separators(_):

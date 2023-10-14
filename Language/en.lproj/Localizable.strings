@@ -42,6 +42,7 @@
 //Items for Dictionary
 "dictionaries" = "Dictionaries";
 "separatorItem" = "Symbols for pairs dividing";
+"exceptionsItem" = "Exception symbols";
 "duplicatesItem" = "Duplicates";
     //Options
 "keep" = "Keep";
@@ -126,10 +127,6 @@
 "separators.alertTitle" = "Type from 1 to 3 characters";
 "separators.alertDuplicateMessage" = "Please, don't use duplicates";
 "separators.alertSpaceMessage" = "Please, don't use spaces only";
-//"separators.title" = "How is it working ?";
-//"separators.infoFirstPart" = "Firstly, inputed text devides into blocks, using a paragraph as a separator.";
-//"separators.infoSecondPart" = "Secondly, blocks are deviding by separator mark into Word and Description pairs.";
-//"separators.infoFinalPart" = "If you have any seggestions or questions - please, constact us.";
 
 "separators.title" = "Text Division and Separators";
 "separators.infoFirstPart" = "First, the provided text is broken into chunks, using a new line to signal the beginning of a new chunk. You can transition to a new line without breaking the current block by using the \"New line\" button at the top of the keyboard.";
@@ -178,3 +175,12 @@
 "tutorial.fifthViewLabel" = "For specific pairings, like a word and its definition, use the separator symbol. It can be set in settings. Current separator will always display as a hint before editing.";
 //SixthView
 "tutorial.sixthViewLabel" = "That's it! We're grateful for the chance to assist you in achieving your goals. \n \n Wish you entertaining learning prossess. Good luck!";
+//MARK: Exceptions
+"exception.title" = "Exception symbols";
+"exception.firstPart" = "Here you can provide symbols, which will be cut of the begining and the end of every block of text";
+"exception.secondPart" = "Let's say, you are copying text with enumaration and you want ommit the numbers. In this case you can provide exception numbers to avoid extraneous data in you learning process";
+"exception.placeholder" = "Text";
+"exception.alertTitle" = "Type any number of symbols.";
+"exception.alertErrorTitle" = "Invalid input";
+"exception.alertSpaceMessage" = "Please, don't use spaces only";
+

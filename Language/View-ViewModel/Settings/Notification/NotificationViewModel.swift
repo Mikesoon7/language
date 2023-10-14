@@ -44,7 +44,7 @@ class NotificationViewModel{
       
     //MARK: - Properties
     private var settingsModel: UserSettingsStorageProtocol
-    private var notification = UserSettings.shared.appNotifications
+    private lazy var notification = settingsModel.appNotifications
     private var notificationHelper: NotificationHelper = NotificationHelper()
     
     public var output = PassthroughSubject<Output, Never>()
@@ -59,8 +59,8 @@ class NotificationViewModel{
          .time]
     ]
     //If the saved frequency was custom, we saving array of days indexes.
-    private var selectedNotificationDays: [Int] = {
-        switch UserSettings.shared.appNotifications.notificationFrequency {
+    private lazy var selectedNotificationDays: [Int] = {
+        switch settingsModel.appNotifications.notificationFrequency {
         case .custom(let array):
             return array
         default:
@@ -176,7 +176,7 @@ class NotificationViewModel{
     //If any changed were made, we clear existing and creating new notifications.
     func save(){
         if needUpdate {
-            UserSettings.shared.reload(newValue: .notifications(notification))
+            settingsModel.reload(newValue: .notifications(notification))
         }
     }
 }
