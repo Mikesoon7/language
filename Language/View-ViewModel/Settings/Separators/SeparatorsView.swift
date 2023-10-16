@@ -8,6 +8,7 @@
 import UIKit
 import Combine
 import Foundation
+
 class SeparatorsView: UIViewController{
     
     private enum InputError{
@@ -15,14 +16,30 @@ class SeparatorsView: UIViewController{
         case containsSpaceOnly
     }
 
-    private let viewModel: SeparatorsViewModel
-    private var cancellabel = Set<AnyCancellable>()
+    private var viewModel: SeparatorsViewModel?
+    private var cancellable = Set<AnyCancellable>()
     
-    private var input = PassthroughSubject<SeparatorsViewModel.Input, Never>()
+    private var input : PassthroughSubject<SeparatorsViewModel.Input, Never>? = .init()
     
-    private var selectedSeparator: String { viewModel.selectedSeparator() }
-    private var availableSeparators: [String] { viewModel.availableSeparators() }
+    private var selectedSeparator: String { viewModel?.selectedSeparator() ?? "" }
+    private var availableSeparators: [String] { viewModel?.availableSeparators() ?? [""] }
     
+    private let scrollView: UIScrollView = {
+        let view = UIScrollView()
+        view.backgroundColor = .clear
+        view.isUserInteractionEnabled = true
+        view.alwaysBounceVertical = false
+        view.isScrollEnabled = true
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    private let contentView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .clear
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+
     private let tableView: UITableView = {
         let view = UITableView(frame: .zero, style: .insetGrouped)
         view.register(SeparatorsCell.self, forCellReuseIdentifier: SeparatorsCell.identifier)
@@ -97,28 +114,29 @@ class SeparatorsView: UIViewController{
         super.viewDidLoad()
         bind()
         configureViewController()
+        configureContentView()
         configureSubviews()
     }
 
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-        if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection){
-            if traitCollection.userInterfaceStyle == .dark{
-                exampleView.backgroundColor = .secondarySystemBackground
-            } else {
-                exampleView.backgroundColor = .clear
-            }
-        }
-    }
+//    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+//        super.traitCollectionDidChange(previousTraitCollection)
+//        if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection){
+//            if traitCollection.userInterfaceStyle == .dark{
+//                exampleView.backgroundColor = .secondarySystemBackground
+//            } else {
+//                exampleView.backgroundColor = .clear
+//            }
+//        }
+//    }
     
     //MARK: - Binding with viewModel
     func bind(){
-        let output = viewModel.transform(input: self.input.eraseToAnyPublisher())
+        guard let output = viewModel?.transform(input: input?.eraseToAnyPublisher()) else { return }
         output
             .receive(on: DispatchQueue.main)
-            .sink { [weak self ]output in
+            .sink { [weak self] type in
                 guard let self = self else { return }
-                switch output {
+                switch type {
                 case .shouldPresentAlertController:
                     self.addAlertMessage()
                 case .shouldUpdateTable:
@@ -129,15 +147,32 @@ class SeparatorsView: UIViewController{
                 }
                 
             }
-            .store(in: &cancellabel)
+            .store(in: &cancellable)
     }
     
-    func configureViewController(){
+    private func configureViewController(){
         view.backgroundColor = .systemBackground
     }
+    private func configureContentView(){
+        view.addSubviews(scrollView)
+        scrollView.addSubview(contentView)
+
+        NSLayoutConstraint.activate([
+            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            
+            contentView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
+            contentView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
+            contentView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
+            contentView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
+            contentView.widthAnchor.constraint(equalTo: view.widthAnchor),
+        ])
+    }
     //MARK: Setting up every subviews layout
-    func configureSubviews(){
-        view.addSubviews(headerInfoLabel, firstInfoLabel, exampleView, secondInfoLabel, tableView, lastInfoLabel)
+    private func configureSubviews(){
+        contentView.addSubviews(headerInfoLabel, firstInfoLabel, exampleView, secondInfoLabel, tableView, lastInfoLabel)
 
         tableView.delegate = self
         tableView.dataSource = self
@@ -148,36 +183,37 @@ class SeparatorsView: UIViewController{
             equalTo: tableView.topAnchor, constant: (tableViewHeightAnchor?.constant ?? 0) + insetForSubviews )
 
         NSLayoutConstraint.activate([
-            headerInfoLabel.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.9),
-            headerInfoLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: insetForSubviews),
-            headerInfoLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            headerInfoLabel.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.9),
+            headerInfoLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: insetForSubviews),
+            headerInfoLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             
             firstInfoLabel.topAnchor.constraint(equalTo: headerInfoLabel.bottomAnchor, constant: insetForSubviews),
-            firstInfoLabel.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: .widthMultiplerFor(type: .forViews)),
-            firstInfoLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            firstInfoLabel.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: .widthMultiplerFor(type: .forViews)),
+            firstInfoLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             
             exampleView.topAnchor.constraint(equalTo: firstInfoLabel.bottomAnchor, constant: insetForSubviews),
-            exampleView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            exampleView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: .widthMultiplerFor(type: .forViews)),
+            exampleView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            exampleView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: .widthMultiplerFor(type: .forViews)),
             exampleView.heightAnchor.constraint(equalToConstant: heightForExampleViews),
             
             secondInfoLabel.topAnchor.constraint(equalTo: exampleView.bottomAnchor, constant: insetForSubviews),
-            secondInfoLabel.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: .widthMultiplerFor(type: .forViews)),
-            secondInfoLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            secondInfoLabel.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: .widthMultiplerFor(type: .forViews)),
+            secondInfoLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             
-            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            tableView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             tableView.topAnchor.constraint(equalTo: secondInfoLabel.bottomAnchor),
             tableViewHeightAnchor,
                         
-            lastInfoLabel.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: .widthMultiplerFor(type: .forViews)),
-            lastInfoLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            lastInfoLabelTopAnchor
+            lastInfoLabel.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: .widthMultiplerFor(type: .forViews)),
+            lastInfoLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            lastInfoLabelTopAnchor,
+            lastInfoLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -insetForSubviews)
         ])
     }
     //MARK: Updating subviewsConstraints.
     //Called in response to changing number of rows in tableView.
-    func updateTableConstrait(){
+    private func updateTableConstrait(){
         tableView.reloadData()
         tableViewHeightAnchor?.constant = CGFloat(tableView.numberOfRows(inSection: 0) * 35 + 50)
         lastInfoLabelTopAnchor?.constant = (tableViewHeightAnchor?.constant ?? 0 ) + insetForSubviews
@@ -185,7 +221,7 @@ class SeparatorsView: UIViewController{
     }
     
     //MARK: Text input alerts.
-    func addAlertMessage(){
+    private func addAlertMessage(){
         let textInputAlert = UIAlertController(
             title: "separators.alertTitle".localized,
             message: nil, preferredStyle: .alert)
@@ -210,7 +246,7 @@ class SeparatorsView: UIViewController{
                     self.presentErrorAlertWith(.containsDuplicates)
                     return
                 }
-                self.input.send(.addSeparator(text))
+                self.input?.send(.addSeparator(text))
             }
         }
         confirmAction.setValue(UIColor.label, forKey: "titleTextColor")
@@ -253,27 +289,27 @@ class SeparatorsView: UIViewController{
 extension SeparatorsView: UITableViewDelegate, UITableViewDataSource{
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        viewModel.numberOfRowsInTable()
+        viewModel?.numberOfRowsInTable() ?? 0
     }
     func numberOfSections(in tableView: UITableView) -> Int {
         1
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cellData = viewModel.dataForCellAt(indexPath: indexPath)
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: SeparatorsCell.identifier, for: indexPath) as? SeparatorsCell else { return UITableViewCell() }
-        cell.configureCellWithData(cellData)
+        let cellData = viewModel?.dataForCellAt(indexPath: indexPath)
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: SeparatorsCell.identifier, for: indexPath) as? SeparatorsCell, let data = cellData else { return UITableViewCell() }
+        cell.configureCellWithData(data)
         return cell
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        viewModel.didSelectCellAt(indexPath: indexPath)
+        viewModel?.didSelectCellAt(indexPath: indexPath)
         tableView.deselectRow(at: indexPath, animated: false)
     }
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        viewModel.canEditRowAt(indexPath: indexPath)
+        viewModel?.canEditRowAt(indexPath: indexPath) ?? false
     }
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         return UISwipeActionsConfiguration(actions: [UIContextualAction(style: .destructive, title: "system.delete".localized, handler: { action, view, completion in
-            self.input.send(.deleteSeparator(indexPath))
+            self.input?.send(.deleteSeparator(indexPath))
         })])
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {

@@ -31,15 +31,15 @@ class SeparatorsViewModel{
         
     }
     //Called by view in order to bind calls from view and viewModel.
-    func transform(input: AnyPublisher<Input, Never>) -> AnyPublisher<Output, Never> {
-        input
+    func transform(input: AnyPublisher<Input, Never>?) -> AnyPublisher<Output, Never> {
+        input?
             .receive(on: DispatchQueue.main)
-            .sink { type in
+            .sink { [weak self] type in
                 switch type{
                 case .addSeparator(let separator):
-                    self.addSeparator(separator: separator)
+                    self?.addSeparator(separator: separator)
                 case .deleteSeparator(let indexPath):
-                    self.deleteSeparator(indexPath: indexPath)
+                    self?.deleteSeparator(indexPath: indexPath)
                 }
             }
             .store(in: &cancellable)

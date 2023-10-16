@@ -179,8 +179,10 @@
 "exception.title" = "Exception symbols";
 "exception.firstPart" = "Here you can provide symbols, which will be cut of the begining and the end of every block of text";
 "exception.secondPart" = "Let's say, you are copying text with enumaration and you want ommit the numbers. In this case you can provide exception numbers to avoid extraneous data in you learning process";
+"exception.infoPart" = "Note: Exception symbols won't affect your text, unless you will use letters as symbols. Symbols, which are exception, but surrounded by another symbols, won't be affected as well.";
 "exception.placeholder" = "Text";
 "exception.alertTitle" = "Type any number of symbols.";
 "exception.alertErrorTitle" = "Invalid input";
 "exception.alertSpaceMessage" = "Please, don't use spaces only";
+
 

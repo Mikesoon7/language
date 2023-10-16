@@ -11,11 +11,17 @@ import Combine
 class ExceptionsVC: UIViewController {
     
     //MARK: Properties
-    private let viewModel: ExceptioonsViewModel
+    private var viewModel: ExceptioonsViewModel?
     private var cancellable = Set<AnyCancellable>()
     
-    private var input = PassthroughSubject<ExceptioonsViewModel.Input, Never>()
+    private var input: PassthroughSubject<ExceptioonsViewModel.Input, Never>? = .init()
     
+    private var selectedException: String {
+        return viewModel?.selectedExceptions() ?? " "
+    }
+    private var selectedSeparator: String {
+        return viewModel?.selectedSeparator() ?? " "
+    }
     
     //MARK: Views
     private let tableView: UITableView = {
@@ -58,7 +64,6 @@ class ExceptionsVC: UIViewController {
     private let firstInfoLabel: UILabel = {
         let label = UILabel()
         label.numberOfLines = 0
-        label.tintColor = .label
         label.font = .helveticaNeue.withSize(16)
         label.text = "exception.firstPart".localized
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -68,7 +73,6 @@ class ExceptionsVC: UIViewController {
     private let secondInfoLabel: UILabel = {
         let label = UILabel()
         label.numberOfLines = 0
-        label.tintColor = .label
         label.font = .helveticaNeue.withSize(16)
         label.text = "exception.secondPart".localized
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -78,15 +82,17 @@ class ExceptionsVC: UIViewController {
     private let lastInfoLabel: UILabel = {
         let label = UILabel()
         label.numberOfLines = 0
-        label.tintColor = .lightText
         label.font = .helveticaNeue.withSize(14)
-        label.text = "Note: Excception symbols won't affect your text."
+        label.text = "exception.infoPart".localized
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
     //Custom subview with separator passing as variable value.
-    private lazy var exampleView: ExceptionExampleView = ExceptionExampleView(exception: viewModel.selectedExceptions(), separator: viewModel.selectedSeparator())
+    private lazy var exampleView: ExceptionExampleView = ExceptionExampleView(
+        exception: selectedException,
+        separator: selectedSeparator
+    )
     
     //MARK: Constraints and related
     private let heightForExampleViews: CGFloat = 130
@@ -115,22 +121,23 @@ class ExceptionsVC: UIViewController {
         
     //MARK: Binding with viewModel
     private func bind(){
-        let output = viewModel.transform(input: self.input.eraseToAnyPublisher())
+        guard let output = viewModel?.transform(input: self.input?.eraseToAnyPublisher()) else { return }
         output
             .receive(on: DispatchQueue.main)
-            .sink { [weak self ]output in
+            .sink { [weak self] output in
                 guard let self = self else { return }
                 switch output {
                 case .shouldPresentAlertController:
+                    self.presentEmptyTextAlert()
+                case .shouldPresentTextField:
                     self.addAlertMessage()
                 case .shouldUpdateTable:
                     self.tableView.reloadData()
-                    self.exampleView.updateSeparatorWith(viewModel.selectedExceptions())
+                    self.exampleView.updateSeparatorWith(selectedException)
                 case .shouldUpdateTablesHeight:
                     self.updateTableConstrait()
-                    self.exampleView.updateSeparatorWith(viewModel.selectedExceptions())
+                    self.exampleView.updateSeparatorWith(selectedSeparator)
                 }
-
             }
             .store(in: &cancellable)
     }
@@ -164,7 +171,6 @@ class ExceptionsVC: UIViewController {
         tableView.delegate = self
         tableView.dataSource = self
 
-        
         tableViewHeightAnchor = tableView.heightAnchor.constraint(
             equalToConstant: CGFloat(tableView.numberOfRows(inSection: 0) * 35 + tableView.numberOfRows(inSection: 1) * 35) + 100.0)
 
@@ -223,7 +229,7 @@ class ExceptionsVC: UIViewController {
                 }
                 text = text.trimmingCharacters(in: CharacterSet(charactersIn: " "))
 
-                self.input.send(.addException(text))
+                self.input?.send(.addException(text))
             }
         }
         confirmAction.setValue(UIColor.label, forKey: "titleTextColor")
@@ -258,32 +264,32 @@ class ExceptionsVC: UIViewController {
 extension ExceptionsVC: UITableViewDelegate, UITableViewDataSource{
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        viewModel.numberOfRowsInSection(section: section)
+        viewModel?.numberOfRowsInSection(section: section) ?? 1
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        viewModel.numberOfSections()
+        viewModel?.numberOfSections() ?? 1
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cellData = viewModel.dataForCellAt(indexPath: indexPath)
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: SeparatorsCell.identifier, for: indexPath) as? SeparatorsCell else { return UITableViewCell() }
-        cell.configureCellWithData(cellData)
+        let cellData = viewModel?.dataForCellAt(indexPath: indexPath)
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: SeparatorsCell.identifier, for: indexPath) as? SeparatorsCell, let data = cellData else { return UITableViewCell() }
+        cell.configureCellWithData(data)
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        viewModel.didSelectCellAt(indexPath: indexPath)
+        viewModel?.didSelectCellAt(indexPath: indexPath)
         tableView.deselectRow(at: indexPath, animated: false)
     }
     
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        viewModel.canEditRowAt(indexPath: indexPath)
+        viewModel?.canEditRowAt(indexPath: indexPath) ?? false
     }
     
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         return UISwipeActionsConfiguration(actions: [UIContextualAction(style: .destructive, title: "system.delete".localized, handler: { action, view, completion in
-            self.input.send(.deleteException(indexPath))
+            self.input?.send(.deleteException(indexPath))
         })])
     }
     

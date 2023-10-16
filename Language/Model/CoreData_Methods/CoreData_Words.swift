@@ -60,8 +60,9 @@ extension CoreDataHelper: WordsManaging{
         var newWord = String()
         var newDescription = String()
         
-        let exceptions = settingModel.appExceptions.selectedExceptions.map({ $0.content })
-        trimmedText = text.trimmingCharacters(in: CharacterSet(charactersIn: exceptions.joined().joined(separator: " ") ))
+        let exceptions = settingModel.appExceptions.selectedExceptions.map({ $0.content }).joined().joined(separator: " ")
+        trimmedText = text.trimmingCharacters(in: CharacterSet(charactersIn: exceptions + exceptions.uppercased()))
+
             
         print(trimmedText)
         
@@ -74,9 +75,7 @@ extension CoreDataHelper: WordsManaging{
 
         if parts.count == 2{
             newDescription = String(parts[1]).trimmingCharacters(in: .whitespacesAndNewlines)
-            print("2 parts")
         } else if parts.count > 2{
-            print("2.......... parts")
 
             newDescription = parts[1...].joined(separator: " ").trimmingCharacters(in: .whitespacesAndNewlines)
         }

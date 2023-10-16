@@ -13,6 +13,7 @@ class ExceptioonsViewModel{
     enum Output{
         case shouldUpdateTable
         case shouldPresentAlertController
+        case shouldPresentTextField
         case shouldUpdateTablesHeight
     }
     
@@ -21,26 +22,27 @@ class ExceptioonsViewModel{
         case addException(String)
     }
 
-    //Properties
+    //MARK: Properties
     private var settingsModel: UserSettingsStorageProtocol
     private var cancellable = Set<AnyCancellable>()
     
     var output = PassthroughSubject<Output, Never>()
-
+    
+    //MARK: Inherited & Initializers
     init(settingsModel: UserSettingsStorageProtocol){
         self.settingsModel = settingsModel
     }
     
-
-    func transform(input: AnyPublisher<Input, Never>) -> AnyPublisher<Output, Never> {
-        input
+    //MARK: VC related.
+    func transform(input: AnyPublisher<Input, Never>?) -> AnyPublisher<Output, Never> {
+        input?
             .receive(on: DispatchQueue.main)
-            .sink { type in
+            .sink { [weak self] type in
                 switch type{
                 case .addException(let separator):
-                    self.addException(exception: separator)
+                    self?.addException(exception: separator)
                 case .deleteException(let indexPath):
-                    self.deleteException(indexPath: indexPath)
+                    self?.deleteException(indexPath: indexPath)
                 }
             }
             .store(in: &cancellable)
@@ -78,18 +80,29 @@ class ExceptioonsViewModel{
         return settingsModel.appExceptions.availableExceptions
     }
     
-    
-    //MARK: Update available exceptions.
-    //Add separator to the models separatorsArray.
-    private func addException(exception: String){
-        let symbolsArray = splitSymbols(from: exception)
-        settingsModel.appExceptions.availableExceptions.append(AppExceptions.Selection(content: symbolsArray, isSelected: true))
-        output.send(.shouldUpdateTablesHeight)
+    private func validateException(text: String) -> Bool{
+        if !text.trimmingCharacters(in: CharacterSet(charactersIn: " ")).isEmpty {
+            return true
+        } else {
+            return false
+        }
     }
     
-    //Delete separator from existing separator array.
+    
+    //MARK: Update available exceptions.
+    ///Adding new array of exceptions into data memory.
+    private func addException(exception: String){
+        if validateException(text: exception) {
+            let symbolsArray = splitSymbols(from: exception)
+            settingsModel.appExceptions.availableExceptions.append(AppExceptions.Selection(content: symbolsArray, isSelected: true))
+            output.send(.shouldUpdateTablesHeight)
+        } else {
+            output.send(.shouldPresentAlertController)
+        }
+    }
+    
+    ///Delete exceptions array for passed index
     private func deleteException(indexPath: IndexPath){
-        print(settingsModel.appExceptions.availableExceptions[indexPath.row])
         settingsModel.appExceptions.availableExceptions.remove(at: indexPath.row)
         output.send(.shouldUpdateTablesHeight)
     }
@@ -117,10 +130,10 @@ class ExceptioonsViewModel{
                 value: value.content.joined(separator: " "), isSelected: value.isSelected)
         }
     }
-
+    
     func didSelectCellAt(indexPath: IndexPath){
         if isAddCharacterRow(indexPath: indexPath){
-            output.send(.shouldPresentAlertController)
+            output.send(.shouldPresentTextField)
         } else {
             settingsModel.appExceptions.availableExceptions[indexPath.row].isSelected.toggle()
             output.send(.shouldUpdateTable)
