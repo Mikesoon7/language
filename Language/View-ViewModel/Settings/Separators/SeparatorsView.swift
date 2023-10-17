@@ -118,16 +118,6 @@ class SeparatorsView: UIViewController{
         configureSubviews()
     }
 
-//    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-//        super.traitCollectionDidChange(previousTraitCollection)
-//        if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection){
-//            if traitCollection.userInterfaceStyle == .dark{
-//                exampleView.backgroundColor = .secondarySystemBackground
-//            } else {
-//                exampleView.backgroundColor = .clear
-//            }
-//        }
-//    }
     
     //MARK: - Binding with viewModel
     func bind(){

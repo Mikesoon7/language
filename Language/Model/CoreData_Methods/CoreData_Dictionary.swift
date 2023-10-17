@@ -27,11 +27,18 @@ extension CoreDataHelper: DictionaryManaging{
     func createDictionary(language: String, text: String) throws {
         guard let dictionary = createNewDictionary(language: language) else {
             throw DictionaryErrorType.creationFailed
+
         }
         
-//        let newLog = try createNewLog(for: dictionary, at: Date(), shouldSave: false)
-                
-        let words = createWordsFromText(for: dictionary, text: text)
+        var words: [WordsEntity] = []
+        
+        do {
+            words = try createWordsFromText(for: dictionary, text: text)
+        } catch {
+            context.rollback()
+            throw error
+        }
+        
         dictionary.words = NSSet(array: words)
         dictionary.numberOfCards = Int64(words.count)
         dictionary.order = numberOfDictionaries
@@ -80,34 +87,43 @@ extension CoreDataHelper: DictionaryManaging{
         do {
             try saveContext()
         } catch {
+            context.rollback()
             throw DictionaryErrorType.updateOrderFailed
         }
     }
     //Add array to existing array of entities
     func addWordsTo(dictionary: DictionariesEntity, words: [WordsEntity]) throws {
+        
         dictionary.addToWords(NSSet(array: words))
-        dictionary.numberOfCards = Int64(dictionary.words?.count ?? 000)
+        dictionary.numberOfCards = Int64(dictionary.words?.count ?? 0)
         
         do {
             try saveContext()
             print("Debug purpose: AddWordsTo(dictionary) method worked with dictionary name: \(dictionary.language)")
             dictionaryDidChange.send(.wasUpdated(Int(dictionary.order)))
         } catch {
+            context.rollback()
             throw DictionaryErrorType.additionFailed
         }
     }
-
+    
     //Takes new array of entities
     func update(dictionary: DictionariesEntity, words: [WordsEntity], name: String? = nil) throws {
-        if name != nil {
-            dictionary.language = name!
+        if let name = name {
+            dictionary.language = name
         }
         
+        
+        for (index, word) in words.enumerated() {
+            word.order = Int64(index)
+        }
+
         dictionary.words = Set(words) as? NSSet
         dictionary.numberOfCards = Int64(words.count)
         
         do {
             try saveContext()
+            try updateWordsOrder(for: dictionary)
             dictionaryDidChange.send(.wasUpdated(Int(dictionary.order)))
         } catch {
             context.rollback()

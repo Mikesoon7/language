@@ -19,11 +19,11 @@ enum DictionaryErrorType: Error {
 
 enum WordsErrorType: Error {
     case creationFailed
+    case failedToAssignEmptyString(String)
     case fetchFailed
     case updateFailed
     case updateOrderFailed
     case deleteFailed
-    case failedToDefineDictionary
 }
 
 enum LogsErrorType: Error {

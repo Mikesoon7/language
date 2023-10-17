@@ -94,12 +94,20 @@ class EditViewModel {
         let newCollection = lines.map({ String($0) })
         let patch = patch(from: oldCollection, to: newCollection)
         
+        var indexShift = 0
+        print(patch)
         for i in patch{
             switch i {
             case .deletion(index: let index):
                 words.remove(at: index)
             case .insertion(index: let index, element: let text):
-                words.insert(model.createWordFromLine(for: dictionary, text: text, index: index, id: UUID()), at: index)
+                do {
+                    
+                    words.insert( try model.createWordFromLine(for: dictionary, text: text, index: index, id: UUID()), at: index + indexShift)
+                    print("\(dictionary.language), \(text), \(index)")
+                } catch {
+                    output.send(.shouldPresentError(error))
+                }
             }
         }
         updateDictionary()
@@ -137,10 +145,9 @@ class EditViewModel {
     ///Update current dictionary with existing local properties.
     private func updateDictionary(){
         do {
-            try model.update(dictionary: dictionary, words: words, name: dictionaryName ?? nil)
+            try model.update(dictionary: dictionary, words: words, name: dictionaryName)
             output.send(.editSucceed)
         } catch {
-            let error = error as! DictionaryErrorType
             output.send(.shouldPresentError(error))
         }
     }

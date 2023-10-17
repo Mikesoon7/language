@@ -77,7 +77,7 @@ class ExceptioonsViewModel{
     }
 
     private func availableExceptionSymbols() -> [AppExceptions.Selection]{
-        return settingsModel.appExceptions.availableExceptions
+        return settingsModel.appExceptions.availableExceptionsBySections
     }
     
     private func validateException(text: String) -> Bool{
@@ -94,7 +94,7 @@ class ExceptioonsViewModel{
     private func addException(exception: String){
         if validateException(text: exception) {
             let symbolsArray = splitSymbols(from: exception)
-            settingsModel.appExceptions.availableExceptions.append(AppExceptions.Selection(content: symbolsArray, isSelected: true))
+            settingsModel.appExceptions.availableExceptionsBySections.append(AppExceptions.Selection(content: symbolsArray, isSelected: true))
             output.send(.shouldUpdateTablesHeight)
         } else {
             output.send(.shouldPresentAlertController)
@@ -103,18 +103,18 @@ class ExceptioonsViewModel{
     
     ///Delete exceptions array for passed index
     private func deleteException(indexPath: IndexPath){
-        settingsModel.appExceptions.availableExceptions.remove(at: indexPath.row)
+        settingsModel.appExceptions.availableExceptionsBySections.remove(at: indexPath.row)
         output.send(.shouldUpdateTablesHeight)
     }
     
     //MARK: TableView Related.
     func numberOfSections() -> Int{
-        return settingsModel.appExceptions.availableExceptions.isEmpty ? 1 : 2
+        return settingsModel.appExceptions.availableExceptionsBySections.isEmpty ? 1 : 2
     }
     
     func numberOfRowsInSection(section: Int) -> Int{
         if section == 0, numberOfSections() == 2 {
-            return settingsModel.appExceptions.availableExceptions.count
+            return settingsModel.appExceptions.availableExceptionsBySections.count
         } else {
             return 1
         }
@@ -135,7 +135,7 @@ class ExceptioonsViewModel{
         if isAddCharacterRow(indexPath: indexPath){
             output.send(.shouldPresentTextField)
         } else {
-            settingsModel.appExceptions.availableExceptions[indexPath.row].isSelected.toggle()
+            settingsModel.appExceptions.availableExceptionsBySections[indexPath.row].isSelected.toggle()
             output.send(.shouldUpdateTable)
         }
     }

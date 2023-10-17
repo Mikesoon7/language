@@ -121,7 +121,7 @@ class UserSettings: UserSettingsStorageProtocol{
     }
     var appExceptions: AppExceptions{
         get{
-            manager.load(AppExceptions.self, forKey: AppExceptions.key) ?? .init(availableExceptions: [AppExceptions.Selection(content: ["1", "2", "-"], isSelected: true)])
+            manager.load(AppExceptions.self, forKey: AppExceptions.key) ?? .init(availableExceptionsBySections: [AppExceptions.Selection(content: ["1", "2", "-"], isSelected: true)])
         }
         set{
             manager.update(newValue, forKey: AppExceptions.key)
@@ -336,15 +336,21 @@ struct AppExceptions: Codable{
         var isSelected: Bool
     }
 
-    var availableExceptions: [Selection]
+    var availableExceptionsBySections: [Selection]
     
+        
     var title: String {
         return "exceptionsItem".localized
     }
     
     var selectedExceptions: [Selection] {
-        return availableExceptions.filter { $0.isSelected }
+        return availableExceptionsBySections.filter { $0.isSelected }
     }
+    
+    var availableExceptionsInString: String {
+        return selectedExceptions.map({$0.content}).joined().joined(separator: " ")
+    }
+
 }
 
 enum AppSearchBarPosition: String, Codable{

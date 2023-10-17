@@ -58,13 +58,16 @@ class AddWordsViewModel {
         let lines = text.split(separator: "\n", omittingEmptySubsequences: true).map { String($0) }
         for (index, line) in lines.enumerated(){
             let correctIndex = numberOfWords + index
-            
-            newArray.append(dataModel.createWordFromLine(
-                for: dictionary,
-                text: line,
-                index: correctIndex,
-                id: UUID())
-            )
+            do {
+                newArray.append( try dataModel.createWordFromLine(
+                    for: dictionary,
+                    text: line,
+                    index: correctIndex,
+                    id: UUID())
+                )
+            } catch {
+                output.send(.shouldPresentEerror(error))
+            }
         }
         extendDictionary(dictionary, with: newArray)
     }

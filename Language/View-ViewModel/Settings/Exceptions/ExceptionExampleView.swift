@@ -11,26 +11,27 @@ import CLTypingLabel
 class ExceptionExampleView: UIView {
     
     //MARK: Properties
-    private var exception: String
-    private var separator: String
+    private var exceptionSymbols: String
+    private var separatorSymbol : String
     
-    private lazy var firstLineText = "1 \(separator) First law \(separator) an object will not change \nits motion unless a force acts on it"
-    private lazy var secondLineText = "2 \(separator) Second law \(separator) the force on an object \nis equal to its mass times its acceleration"
+    private var initialAnimationFinished = false
+    
+    private lazy var firstLineText = "1 \(separatorSymbol) First law \(separatorSymbol) an object will not change \nits motion unless a force acts on it"
+    private lazy var secondLineText = "2 \(separatorSymbol) Second law \(separatorSymbol) the force on an object \nis equal to its mass times its acceleration"
     
     //MARK: Views
-    private lazy var firstLineException: CLTypingLabel = configureLabel()
-    private lazy var secondLineException: CLTypingLabel = configureLabel()
+    private lazy var firstLineLabel : CLTypingLabel = configureLabel()
+    private lazy var secondLineLabel: CLTypingLabel = configureLabel()
     
     //MARK: Constaints and related
     private let contentInset: CGFloat = 10
     
     //MARK: - Inherited
     init(exception: String, separator: String){
-        self.exception = exception
-        self.separator = separator
+        self.exceptionSymbols = exception
+        self.separatorSymbol = separator
         super.init(frame: .zero)
         configureView()
-        configureExampleText()
         configureExampleSubviews()
         animateTextTyping(exception: exception)
     }
@@ -50,16 +51,16 @@ class ExceptionExampleView: UIView {
     
     //MARK: Subviews SetUp.
     private func configureExampleSubviews(){
-        self.addSubviews(firstLineException, secondLineException)
+        self.addSubviews(firstLineLabel, secondLineLabel)
     
         NSLayoutConstraint.activate([
-            firstLineException.topAnchor.constraint(equalTo: topAnchor, constant: contentInset),
-            firstLineException.leadingAnchor.constraint(equalTo: leadingAnchor, constant: contentInset),
-            firstLineException.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -contentInset),
+            firstLineLabel.topAnchor.constraint(equalTo: topAnchor, constant: contentInset),
+            firstLineLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: contentInset),
+            firstLineLabel.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -contentInset),
             
-            secondLineException.topAnchor.constraint(equalTo: centerYAnchor, constant: contentInset),
-            secondLineException.leadingAnchor.constraint(equalTo: leadingAnchor, constant: contentInset),
-            secondLineException.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -contentInset),
+            secondLineLabel.topAnchor.constraint(equalTo: centerYAnchor, constant: contentInset),
+            secondLineLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: contentInset),
+            secondLineLabel.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -contentInset),
         ])
     }
     
@@ -69,30 +70,30 @@ class ExceptionExampleView: UIView {
         let firstLine = firstLineText.trimmingCharacters(in: CharacterSet(charactersIn: exception + "\n" + exception.uppercased()))
         let secondLine = secondLineText.trimmingCharacters(in: CharacterSet(charactersIn: exception + "\n" + exception.uppercased()))
         
-        self.firstLineException.text = firstLine
-        self.firstLineException.onTypingAnimationFinished = {
-            self.secondLineException.text = secondLine
-            self.firstLineException.onTypingAnimationFinished = { }
+        self.firstLineLabel.text = firstLine
+        self.firstLineLabel.onTypingAnimationFinished = {
+            self.secondLineLabel.text = secondLine
+            self.initialAnimationFinished = true
+            self.firstLineLabel.onTypingAnimationFinished = { }
         }
+        self.secondLineLabel.onTypingAnimationFinished = { self.initialAnimationFinished = true }
     }
 
-    //MARK: Configuring all textProperties
-    private func configureExampleText(){
-        firstLineText = "1 \(separator) First law \(separator) an object will not change \nits motion unless a force acts on it"
-        secondLineText = "2 \(separator) Second law \(separator) the force on an object \nis equal to its mass times its acceleration"
-    }
-
-//    MARK: Update separator.
+    //MARK: Update separator.
     ///Trims example text with passed exception string. Manualy adding \n symbol and upercased version of a text.
     func updateSeparatorWith(_ exception: String){
-        self.exception = exception
+        self.exceptionSymbols = exception
+        //" " is added to perform typing even with an empty text.
         let firstException = firstLineText
             .trimmingCharacters(in: CharacterSet(charactersIn: exception + "\n" + exception.uppercased())) + " "
         let secondException = secondLineText
             .trimmingCharacters(in: CharacterSet(charactersIn: exception  + "\n" + exception.uppercased())) + " "
         
-        self.firstLineException.text = firstException
-        self.secondLineException.text = secondException
+        if !initialAnimationFinished {
+            firstLineLabel.onTypingAnimationFinished = {}
+        }
+        self.firstLineLabel.text = firstException
+        self.secondLineLabel.text = secondException
     }
 
     

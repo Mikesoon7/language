@@ -133,23 +133,25 @@
 "separators.infoFinalPart" = "Если у вас возникнли вопросы или предложения - пожалуйста, свяжитесь с нами.";
 //MARK: - SystemErrors
 //Dictionary
-"coreData.dictionaryCreation" = "Failed to create dictionary";
-"coreData.dictionaryDeletion" = "Failed to delete dictionary";
-"coreData.dictionaryFetch" = "Failed to load dictionaries";
-"coreData.dictionaryUpdate" = "Failed to update dictionary";
-"coreData.dictionaryAddition" = "Failed to extend the dictioanry";
-"coreData.dictionaryOrderUpdate" = "Failed to update dictionaries order";
-//Words
-"coreData.wordsCreation" = "Failed to create pair";
-"coreData.wordsDeletion" = "Failed to delete pair";
-"coreData.wordsFetch" = "Failed to load dictionaries content";
-"coreData.wordsUpdate" = "Failed to update words";
-"coreData.wordUpdate" = "Failed to update current pair:";
-"coreData.wordsOrderUpdate" = "Failed to update words order";
+"coreDataError.dictionary.creation" = "Failed to create dictionary";
+"coreDataError.dictionary.deletion" = "Failed to delete dictionary";
+"coreDataError.dictionary.fetch" = "Failed to load dictionaries";
+"coreDataError.dictionary.update" = "Failed to update dictionary";
+"coreDataError.dictionary.addition" = "Failed to extend the dictioanry";
+"coreDataError.dictionary.orderUpdate" = "Failed to update dictionaries order";
+//Words.Title
+"coreDataError.words.creation." = "Failed to create pair";
+"coreDataError.words.deletion" = "Failed to delete pair";
+"coreDataError.words.fetch" = "Failed to load dictionaries content";
+"coreDataError.words.update" = "Failed to update words";
+"coreDataError.words.orderUpdate" = "Failed to update words order";
+"coreDataError.words.emptyWord" = "Failed to create/update word";
+//Words.Message
+"coreDataError.words.emptyWord.message" = "It seems, that provided exception symbols cutted of the text";
 //Logs
-"coreData.logCreation" = "Failed to create access inforamtion";
-"coreData.logAccess" = "Failed to update access information for the dictionary";
-"coreData.logFetch" = "Failed to load statisctic data for the dictionary";
+"coreDataError.logs.creation" = "Failed to create access inforamtion";
+"coreDataError.logs.update" = "Failed to update access information for the dictionary";
+"coreDataError.logs.fetch" = "Failed to load statisctic data for the dictionary";
 //Unknown
 "unknownError.title" = "An unknown error occured.";
 "unknownError.message" = "Please try again or contact the support team if the issue persists";

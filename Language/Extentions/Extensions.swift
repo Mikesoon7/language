@@ -296,43 +296,61 @@ extension UIViewController{
         self.present(alertController, animated: true, completion: nil)
     }
     func presentError(_ error: Error) {
-        var description = String()
+        var title = String()
+        var message = "unknownError.message".localized
+        
         switch error{
         case let error as DictionaryErrorType:
             switch error{
             case .creationFailed:
-                description = "coreData.dictionaryCreation".localized
+                title = "coreDataError.dictionary.creation".localized
             case .fetchFailed:
-                description = "coreData.dictionaryFetch".localized
+                title = "coreDataError.dictionary.fetch".localized
             case .updateFailed:
-                description = "coreData.dictionaryUpdate ".localized
+                title = "coreDataError.dictionary.update".localized
             case .additionFailed:
-                description = "coreData.dictionaryAddition".localized
+                title = "coreDataError.dictionary.addition".localized
             case .updateOrderFailed:
-                description = "coreData.dictionaryOrderUpdate".localized
+                title = "coreDataError.dictionary.orderUpdate".localized
             case .deleteFailed:
-                description = "coreData.dictionaryDeletion".localized
+                title = "coreDataError.dictionary.deletion".localized
+            }
+        case let error as WordsErrorType:
+            switch error{
+            case .creationFailed:
+                title = "coreDataError.words.creation".localized
+            case .deleteFailed:
+                title = "coreDataError.words.deletion".localized
+            case .fetchFailed:
+                title = "coreDataError.words.fetch".localized
+            case .updateFailed:
+                title = "coreDataError.words.update".localized
+            case .updateOrderFailed:
+                title = "coreDataError.words.orderUpdate".localized
+            case .failedToAssignEmptyString(let word):
+                title = "coreDataError.words.emptyWord".localized + " \(word)"
+                message = "coreDataError.words.emptyWord.message".localized
             }
         case let error as LogsErrorType:
             switch error {
             case .creationFailed:
-                description = "coreData.logCreation".localized
+                title = "coreDataError.logs.creation".localized
             case .accessFailed:
-                description = "coreData.logAccess".localized
+                title = "coreDataError.logs.update".localized
             case .fetchFailed:
-                description = "coreData.logFetch".localized
+                title = "coreDataError.logs.fetch".localized
             }
             
         default:
-            description = "unknownError.title".localized
+            title = "unknownError.title".localized
         }
         let alert = UIAlertController
             .alertWithAction(
-                alertTitle: description,
-                alertMessage: "unknownError.message".localized,
+                alertTitle: title,
+                alertMessage: message,
                 alertStyle: .alert,
                 action1Title: "system.agreeFormal".localized,
-                action1Style: .default)
+                action1Style: .cancel)
         self.present(alert, animated: true, completion: nil)
     }
 }
