@@ -31,7 +31,7 @@ class EditView: UIViewController {
 
     lazy var textView: CustomTextView = {
         let view = CustomTextView(frame: .zero, textContainer: textContainer)
-        view.textContainerInset = UIEdgeInsets(top: 20, left: 20, bottom: 10, right: 20)
+        view.textContainerInset = textInsets
         view.allowsEditingTextAttributes = true
         view.textColor = .label
         view.backgroundColor = .systemBackground
@@ -79,6 +79,7 @@ class EditView: UIViewController {
         configureController()
         configureTextField()
         configureTextView()
+        print("Search view initialization")
         configureSearchView()
         configureNavBar()
     }
@@ -106,6 +107,7 @@ class EditView: UIViewController {
                     self?.present(alert, animated: true)
                 case .shouldUpdateLabels:
                     self?.configureLabels()
+                    self?.customSearchToolBar.configureLabels()
                 case .editSucceed:
                     self?.navigationController?.popViewController(animated: true)
                 }
@@ -146,13 +148,25 @@ class EditView: UIViewController {
     }
     func configureSearchView(){
         view.addSubview(customSearchToolBar)
-        
-        NSLayoutConstraint.activate([
-            customSearchToolBar.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor),
-            customSearchToolBar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            customSearchToolBar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            customSearchToolBar.heightAnchor.constraint(equalToConstant: 44)
-        ])
+        print("Layout in VC")
+//        NSLayoutConstraint.activate([
+            print("searchview 8")
+
+        customSearchToolBar.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor).isActive = true
+//        customSearchToolBar.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -50).isActive = true
+
+            print("searchview 9")
+
+            customSearchToolBar.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+            print("searchview 10")
+
+            customSearchToolBar.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+            print("searchview 11")
+
+            customSearchToolBar.heightAnchor.constraint(equalToConstant: 44).isActive = true
+//            print("searchview12")
+
+//        ])
     }
     
     private func configureTextField(){

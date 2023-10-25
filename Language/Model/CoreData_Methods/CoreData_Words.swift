@@ -66,17 +66,16 @@ extension CoreDataHelper: WordsManaging{
         var newDescription = String()
         
         let exceptions = settingModel.appExceptions.availableExceptionsInString
+        
         trimmedText = text.trimmingCharacters(in: CharacterSet(charactersIn: exceptions + exceptions.uppercased()))
 
-    
-        guard !trimmedText.isEmpty else {
-            throw WordsErrorType.failedToAssignEmptyString(text.prefix(20) + "...")
-        }
         let parts = trimmedText.split(separator: settingModel.appSeparators.value).map { $0.trimmingCharacters(in: .whitespacesAndNewlines)}
 
+    
+        guard !trimmedText.isEmpty, !parts.isEmpty else {
+            throw WordsErrorType.failedToAssignEmptyString(text.prefix(20) + (text.count > 20 ? "..." : ""))
+        }
         
-//        guard parts.indices.contains(0) else { return }
-
         newWord = parts[0]
 
         if parts.count == 2{

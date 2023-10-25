@@ -8,13 +8,11 @@
 import Foundation
 import UIKit
 
-class CustomSearchToolBar: UIToolbar {
+class CustomSearchToolBar: UIView {
     //MARK: Properties
     private var searchResultsByRange = [NSRange]()
     private var searchResultPointerIndex = Int()
     
-//    private var currentRange: NSRange = .init()
-
     var textView: UITextView?
     var layoutManager: HighlightLayoutManager?
 
@@ -24,23 +22,27 @@ class CustomSearchToolBar: UIToolbar {
     var doneButton = UIBarButtonItem()
     var chevronUp = UIBarButtonItem()
     var chevronDown = UIBarButtonItem()
+    
+    var chevronUpBut =   UIButton()
+    var chevronDonwBut = UIButton()
 
+    let inset = CGFloat(5)
     //MARK: Inherited
     required init(textView: UITextView, layoutManager: HighlightLayoutManager) {
+        print("searchview" )
         self.textView = textView
         self.layoutManager = layoutManager
         super.init(frame: .zero)
-        configureToolBar()
         configureSearchBar()
         configureView()
         configureLabels()
 
     }
-
-    required init?(coder: NSCoder) {
+    
+    required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
     //MARK: External methods
     func configureLabels(){
         searchBar.placeholder = "edit.searchPlaceholder".localized
@@ -57,31 +59,44 @@ class CustomSearchToolBar: UIToolbar {
         textView?.setNeedsDisplay()
     }
 
-    private func configureToolBar(){
-        self.translatesAutoresizingMaskIntoConstraints = false
-        self.barStyle = .default
-
-    }
     //MARK: Configure Subviews
     private func configureSearchBar(){
+        print("searchview 1" )
+
         searchBar.delegate = self
-        searchBar.contentMode = .scaleAspectFit
         searchBar.translatesAutoresizingMaskIntoConstraints = false
-
-        self.addSubview(searchBar)
-
-        NSLayoutConstraint.activate([
-            searchBar.widthAnchor.constraint(equalTo: self.widthAnchor, multiplier: 0.7),
-            searchBar.heightAnchor.constraint(equalTo: self.heightAnchor, multiplier: 0.9)
-        ])
+        searchBar.backgroundImage = UIImage()
     }
     private func configureView(){
+        chevronUpBut = {
+            let button = UIButton()
+            button.translatesAutoresizingMaskIntoConstraints = false
+            button.tintColor = .label
+            button.contentMode = .scaleAspectFit
+            return button
+        }()
+        chevronDonwBut = {
+            let button = UIButton()
+            button.translatesAutoresizingMaskIntoConstraints = false
+            button.tintColor = .label
+            button.contentMode = .scaleAspectFit
+            return button
+        }()
+        chevronUpBut.setImage(UIImage(systemName: "chevron.up"), for: .normal)
+        chevronUpBut.addTarget(self, action: #selector(navigateToPreviousResult(sender: )), for: .touchUpInside)
+        
+        chevronDonwBut.setImage(UIImage(systemName: "chevron.down"), for: .normal)
+        chevronDonwBut.addTarget(self, action: #selector(navigateToNextResult(sender: )), for: .touchUpInside)
+            
+
+        
         chevronUp = UIBarButtonItem(
             image: UIImage(systemName: "chevron.up"),
             style: .done,
             target: self,
             action: #selector(navigateToPreviousResult(sender: )))
         chevronUp.tintColor = .label
+
         chevronDown = UIBarButtonItem(
             image: UIImage(systemName: "chevron.down"),
             style: .done,
@@ -89,13 +104,30 @@ class CustomSearchToolBar: UIToolbar {
             action: #selector(navigateToNextResult(sender: )))
         chevronDown.tintColor = .label
 
+        
+        
+        self.addSubviews(chevronUpBut, chevronDonwBut, searchBar)
+        
+        NSLayoutConstraint.activate([
+            chevronDonwBut.topAnchor.constraint(equalTo: topAnchor),
+            chevronDonwBut.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -inset),
+            chevronDonwBut.bottomAnchor.constraint(equalTo: bottomAnchor),
+            chevronDonwBut.widthAnchor.constraint(equalTo: chevronDonwBut.heightAnchor),
+            
+            chevronUpBut.trailingAnchor.constraint(equalTo: chevronDonwBut.leadingAnchor),
+            chevronUpBut.topAnchor.constraint(equalTo: topAnchor),
+            chevronUpBut.bottomAnchor.constraint(equalTo: bottomAnchor),
+            chevronUpBut.widthAnchor.constraint(equalTo: chevronUpBut.heightAnchor),
+            
+            searchBar.topAnchor.constraint(equalTo: topAnchor),
+            searchBar.bottomAnchor.constraint(equalTo: bottomAnchor),
+            searchBar.leadingAnchor.constraint(equalTo: leadingAnchor, constant: inset),
+            searchBar.trailingAnchor.constraint(equalTo: chevronUpBut.leadingAnchor),
+        ])
 
-        let searchButton = UIBarButtonItem(customView: searchBar)
-        let spaceButton = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        self.items = [searchButton, spaceButton, chevronUp, chevronDown]
 
-        self.sizeToFit()
-        self.barStyle = .default
+        self.backgroundColor = .secondarySystemBackground
+
     }
 
     //MARK: System methods.
@@ -153,6 +185,10 @@ class CustomSearchToolBar: UIToolbar {
         self.scrollRangeToVisibleCenter(range: range)
         self.textView?.setNeedsDisplay()
     }
+    
+//    func updateLabels(){
+//        self.searchBar.placeholder = "edit.searchPlaceholder".localized
+//    }
 
 
     //MARK: Selected index related.

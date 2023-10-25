@@ -318,14 +318,9 @@ class DataConverter {
     }
     
     private func completedRange(){
-        let first = initialLogData.first?.accessDate
+        let firstDate = initialLogData.first?.accessDate ?? Date().timeStripped
         let lastDate = Date().timeStripped
-        
-        guard let firstDate = first else {
-            print("Failed to get first and last days from provided log sequence")
-            return
-        }
-        
+                
         let calendar = Calendar.current
         let componentForFirstDate = calendar.dateComponents([.yearForWeekOfYear, .weekOfYear],
                                                             from: firstDate)
@@ -413,7 +408,7 @@ class DataConverter {
         
         for day in filledLogData {
             let dayLit = dayLitFormatter.string(from: day.date)
-            print("On \(day.date) you accesses \(day.count) times ")
+//            print("On \(day.date) you accesses \(day.count) times ")
             
             week.append(DayLog(order:   day.order,
                                date:    dayLit ,

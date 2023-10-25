@@ -71,11 +71,13 @@ class EditViewModel {
     ///Converting passed Words objects  into string.
     private func parseArrayToText(with words: [WordsEntity], name: String) -> ParsedDictionary{
         var textToEdit = ""
+        var textByLines = [String]()
         for pair in words {
             let line = "\(pair.word) \(settingModel.appSeparators.value) \(pair.meaning)"
-            oldTextByLines.append(line)
+            textByLines.append(line)
             textToEdit += line + "\n\n"
         }
+        oldTextByLines = textByLines
         return ParsedDictionary(name: name, text: textToEdit)
     }
     
@@ -91,10 +93,11 @@ class EditViewModel {
         }
         self.dictionaryName = name
         let lines = text.split(separator: "\n", omittingEmptySubsequences: true)
-        let newCollection = lines.map({ String($0) })
+        let newCollection = lines.map({ String($0)})
+        print(newCollection)
+        print(oldCollection)
         let patch = patch(from: oldCollection, to: newCollection)
         
-        var indexShift = 0
         print(patch)
         for i in patch{
             switch i {
@@ -102,8 +105,7 @@ class EditViewModel {
                 words.remove(at: index)
             case .insertion(index: let index, element: let text):
                 do {
-                    
-                    words.insert( try model.createWordFromLine(for: dictionary, text: text, index: index, id: UUID()), at: index + indexShift)
+                    words.insert( try model.createWordFromLine(for: dictionary, text: text, index: index, id: UUID()), at: index)
                     print("\(dictionary.language), \(text), \(index)")
                 } catch {
                     output.send(.shouldPresentError(error))

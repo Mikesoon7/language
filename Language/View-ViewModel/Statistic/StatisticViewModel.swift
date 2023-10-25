@@ -69,7 +69,7 @@ class StatisticViewModel{
             .sink { [weak self] type in
                 switch type{
                 case .viewDidLoad:
-                    self?.configureDataFor(range: .allTime)
+                    self?.configureDataFor(range: .currentMonth)
                     self?.output.send(.shouldUpdateCustomInterval)
                 case .selectedIntervalUpdated(let interval):
                     self?.configureDataForCustomRange(interval)
@@ -166,12 +166,13 @@ class StatisticViewModel{
         
         for (index, dict) in dictionariesByAccessCount.sorted(by: {$0.accessCount > $1.accessCount}).enumerated() {
             
-            let percents = String(format: "%.1f", Double(dict.accessCount) / Double(totalAccessCount) * 100.0) + "%"
+            let percents = Double(dict.accessCount) / Double(totalAccessCount) * 100
+            let percentsString = String(format: "%.1f", percents.isNaN ? 0 : percents) + "%"
             
             pieChartDataEntries.append(
                 PieChartDataEntry(
                     value: Double(dict.accessCount),
-                    label: percents,
+                    label: percentsString,
                     data: dict.dictionary.language
                 )
             )
@@ -181,7 +182,7 @@ class StatisticViewModel{
                     colour: pieChartColours[index],
                     title: dict.dictionary.language,
                     value: dict.accessCount,
-                    percents: percents
+                    percents: percentsString
                 )
             )
         }

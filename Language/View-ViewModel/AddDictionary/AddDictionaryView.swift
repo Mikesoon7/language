@@ -250,11 +250,7 @@ extension AddDictionaryView: TutorialSecondPartDelegate{
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.7, execute: {
             self.textInputView.textView.becomeFirstResponder()
             
-        })
-//        self.tutorialVC.becomeFirstResponder()
-        
-//        (UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate)?.window?.
-        
+        })        
     }
 }
 extension AddDictionaryView {

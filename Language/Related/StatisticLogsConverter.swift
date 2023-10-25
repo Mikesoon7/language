@@ -82,7 +82,7 @@ class StatisticLogConverter {
               let currentMonthFirstDate = currentCalendar.date(
                 from: currentMonthStartComponents),
               let currentMonthLastDate = currentCalendar.date(
-                byAdding: .day, value: currentMonthRange.count,
+                byAdding: .day, value: currentMonthRange.count - 1,
                 to: currentMonthFirstDate)
         else {
             return sortedLogsData
@@ -109,7 +109,7 @@ class StatisticLogConverter {
                 of: .day, in: .month,
                 for: previousMonthFirstDate),
               let previousMonthLastDate = currentCalendar.date(
-                byAdding: .day, value: previousMonthRange.count,
+                byAdding: .day, value: previousMonthRange.count - 1,
                 to: previousMonthFirstDate)
         else {
             return sortedLogsData

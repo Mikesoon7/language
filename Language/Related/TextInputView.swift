@@ -150,7 +150,8 @@ extension TextInputView: UITextViewDelegate{
 
 class CustomTextView: UITextView{
     
-    var customToolBar: UIToolbar = .init()
+    var customToolBar: UIToolbar = UIToolbar()
+
     var isTextUpdateRequired: Bool = false
     
     private var softReturnButton = UIBarButtonItem()
@@ -188,10 +189,10 @@ class CustomTextView: UITextView{
         return true
     }
     
-//    func updateText(){
-//
-//    }
     private func addKeyboardToolbar() {
+        let toolbar = UIToolbar(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 44))
+        toolbar.sizeToFit()
+        
         softReturnButton = UIBarButtonItem(
             title: "system.newLine".localized,
             style: .done,
@@ -199,13 +200,12 @@ class CustomTextView: UITextView{
             action: #selector(softReturnPressed)
         )
         softReturnButton.tintColor = .label
-
-        let toolbar = UIToolbar()
-        toolbar.sizeToFit()
-        toolbar.items = [UIBarButtonItem(systemItem: .flexibleSpace, menu: nil), softReturnButton]
         
+        toolbar.items = [UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil), softReturnButton]
+        
+        self.inputAccessoryView = toolbar
         self.customToolBar = toolbar
-        self.inputAccessoryView = customToolBar
+
     }
     
     @objc private func softReturnPressed() {
