@@ -148,25 +148,15 @@ class EditView: UIViewController {
     }
     func configureSearchView(){
         view.addSubview(customSearchToolBar)
-        print("Layout in VC")
-//        NSLayoutConstraint.activate([
-            print("searchview 8")
-
-        customSearchToolBar.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor).isActive = true
-//        customSearchToolBar.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -50).isActive = true
-
-            print("searchview 9")
-
-            customSearchToolBar.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-            print("searchview 10")
-
-            customSearchToolBar.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-            print("searchview 11")
-
-            customSearchToolBar.heightAnchor.constraint(equalToConstant: 44).isActive = true
-//            print("searchview12")
-
-//        ])
+        NSLayoutConstraint.activate([
+            customSearchToolBar.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor),
+            customSearchToolBar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            
+            customSearchToolBar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            
+            customSearchToolBar.heightAnchor.constraint(equalToConstant: 44)
+            
+        ])
     }
     
     private func configureTextField(){

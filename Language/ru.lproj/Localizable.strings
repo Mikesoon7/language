@@ -165,24 +165,24 @@
 "edit.emptyText.message" = "Сохранение словаря в таком состоянии приведет к его удалению";
 //MARK: - Tutorial
 //FirstView
-"tutorial.firstViewLabel.title" = "Привет. Мы рады поприветствовать вас в Learny!";
-"tutorial.firstViewLabel" = "Learny помогает в повторении информации посредтсвом организации ее в удобные ячейкию. \n С помощью нескольких правил приложение делит ваш текст и создает карточку для каждого блока. \n \n Давайте рассмотрим возможности этого приложения!";
+"tutorial.firstViewLabel.title" = "Привет! Добро пожаловать в Learny!";
+"tutorial.firstViewLabel" = "Learny превращает ваш текст в удобные для повторения блоки. С помощью нескольких простых правил, приложение разбивает ваш материал на карточки. Немного о функционале, и вы готовы к работе!";
 //SecondView
-"tutorial.secondViewLabel" = "На вашем главном экране вы можете просмотреть ваши существующие словари, а также, с помощью свайпа, проверить статистику, редактировать или удалять их.";
+"tutorial.secondViewLabel" = "На главном экране нажмите, чтобы получить доступ, и свайпите для управления словарями и просмотра статистики.";
 //ThirdView
-"tutorial.thirdViewLabel" = "Новый словарь можно создать, просто добавив его содержимое и название. \n \n Давайте приступим!";
+"tutorial.thirdViewLabel" = "Добавьте текст и название, чтобы создать ваш первый словарь! \n \n Приступим!";
 //FourthView
-"tutorial.fourthViewLabel" = " Почти закончили! Пару слов о разделении текста: Каждая новая строка служит разделителем для нового блока. \n Если вы не хотите прерывать текущий блок, используейте кнопу \"С новой строки\" в верхней части клавиатуры.";
+"tutorial.fourthViewLabel" = "Почти готово! Помните, что новые строки служат для разделения текста на блоки. Чтобы сохранить текст в одном блоке, используйте кнопку 'С новой строки' в верхней части клавиатуры.";
 //FifthView
-"tutorial.fifthViewLabel" = "Чтобы разделить текст внутри блока, например, слово и его определение, используйте разделительный символ, отделенный пробелом с обеих сторон. Его можно изменить в настройках. По умолчанию это \"-\", и вы увидите его в подсказке при редактировании.";
+"tutorial.fifthViewLabel" = "Для конкретных сочетаний, например, термина и его определения, используйте разделитель. Его можно изменить в настройках, и он будет отображаться во время редактирования.";
 //SixthView
-"tutorial.sixthViewLabel" = "И это всё. Мы хотели бы поблагодарить вас за то, что дали нам шанс помочь вам в достижении ваших целей. \n \n Желаем удачи и приятного использования.";
+"tutorial.sixthViewLabel" = "Ну вот и все! Мы рады быть частью вашего пути обучения. \n \n Желаем удачи и приятного использования.";
 //MARK: Exceptions
-"exception.title" = "Exception symbols";
-"exception.firstPart" = "Here you can provide symbols, which will be cut of the begining and the end of every block of text";
-"exception.secondPart" = "Let's say, you are copying text with enumaration and you want ommit the numbers. In this case you can provide exception numbers to avoid extraneous data in you learning process";
-"exception.infoPart" = "Note: Exception symbols won't affect your text, unless you will use letters as symbols. Symbols, which are exception, but surrounded by another symbols, won't be affected as well.";
-"exception.placeholder" = "Text";
-"exception.alertTitle" = "Type any number of symbols.";
-"exception.alertErrorTitle" = "Invalid input";
-"exception.alertSpaceMessage" = "Please, don't use spaces only";
+"exception.title" = "Символы для исключения";
+"exception.firstPart" = "Укажите символы, которые следует игнорировать в начале и в конце текстовых блоков.";
+"exception.secondPart" = "К примеру, если в тексте есть номера, которые вы хотели бы убрать – добавьте их сюда.";
+"exception.infoPart" = "Внимание: символы-исключения могут влиять на текст, если среди них будут буквы. Символы, окружённые другими, останутся без изменений.";
+"exception.placeholder" = "Введите символы здесь...";
+"exception.alertTitle" = "Введите символы для исключения.";
+"exception.alertErrorTitle" = "Ошибка ввода";
+"exception.alertSpaceMessage" = "Пожалуйста, не вводите только пробелы";

@@ -165,24 +165,24 @@
 "edit.emptyText.message" = "Saving dictionary in this state will cause it's deletion. \nAre you sure?";
 //MARK: - Tutorial
 //FirstView
-"tutorial.firstViewLabel.title" = "Вітаємо у Learny!";
-"tutorial.firstViewLabel" = "Learny допоможе вам організувати інформацію у зручні блоки для легшого повторення. За допомогою кількох правил, додаток розділяє ваш текст і створює картку для кожного блоку. \n \n Давайте розглянемо можливості цього додатка!";
+"tutorial.firstViewLabel.title" = "Вітаємо! Ласково просимо до Learny!";
+"tutorial.firstViewLabel" = "Learny перетворює ваш текст на зручні для повторення блоки. За допомогою декількох простих правил, програма поділяє ваш матеріал на картки. Декілька слів про функціонал, і ви готові до роботи!";
 //SecondView
-"tutorial.secondViewLabel" = "На головному екрані ви можете переглядати ваши словники, а також перевіряти статистику, редагувати або видаляти їх за допомогою свайпа.";
+"tutorial.secondViewLabel" = "На головному екрані натисніть, щоб отримати доступ, та свайпіть для керування словниками та перегляду статистики.";
 //ThirdView
-"tutorial.thirdViewLabel" = "Додавання нового словника просте: введіть його зміст та назву. \n \n Цікаво? Давайте створимо перший словник!";
+"tutorial.thirdViewLabel" = "Додайте текст та назву, щоб створити ваш перший словник! \n \n Починаємо!";
 //FourthView
-"tutorial.fourthViewLabel" = "Майже готово! Трохи про розділення тексту: кожен новий рядок розділяє блоки тексту. Якщо не хочете розділяти блок, використовуйте кнопку \"З нового рядка\" вгорі клавіатури.";
+"tutorial.fourthViewLabel" = "Майже готово! Пам'ятайте, що нові рядки служать для поділу тексту на блоки. Щоб зберегти текст в одному блоку, використовуйте кнопку 'З нового рядка' у верхній частині клавіатури.";
 //FifthView
-"tutorial.fifthViewLabel" = "Для специфічного розділення, як наприклад слово та його визначення, користуйтеся розділювачем. Його можна змінити в налаштуваннях. Поточний розділювач завжди відображається у підказці перед редагуванням.";
+"tutorial.fifthViewLabel" = "Для конкретних комбінацій, наприклад, терміну та його визначення, використовуйте роздільник. Його можна змінити в налаштуваннях, і він буде відображатися під час редагування.";
 //SixthView
-"tutorial.sixthViewLabel" = "От і все! Ми вдячні за можливість допомогти вам досягти ваших мет. \n \n Бажаємо успіху та приємного використання!";
+"tutorial.sixthViewLabel" = "tutorial.sixthViewLabel" = "Отже, все готово! Ми раді бути частиною вашого навчального шляху. \n \n Бажаємо успіху та приємного користування!";
 //MARK: Exceptions
-"exception.title" = "Exception symbols";
-"exception.firstPart" = "Here you can provide symbols, which will be cut of the begining and the end of every block of text";
-"exception.secondPart" = "Let's say, you are copying text with enumaration and you want ommit the numbers. In this case you can provide exception numbers to avoid extraneous data in you learning process";
-"exception.infoPart" = "Note: Exception symbols won't affect your text, unless you will use letters as symbols. Symbols, which are exception, but surrounded by another symbols, won't be affected as well.";
-"exception.placeholder" = "Text";
-"exception.alertTitle" = "Type any number of symbols.";
-"exception.alertErrorTitle" = "Invalid input";
-"exception.alertSpaceMessage" = "Please, don't use spaces only";
+"exception.title" = "Символи для виключення";
+"exception.firstPart" = "Вкажіть символи, які потрібно ігнорувати на початку та в кінці ваших текстових блоків.";
+"exception.secondPart" = "Наприклад, якщо у тексті є номери, яких ви хочете позбутися – додайте їх сюди.";
+"exception.infoPart" = "Увага: символи-виключення можуть впливати на текст, якщо серед них будуть літери. Символи, що знаходяться між іншими, залишаться без змін.";
+"exception.placeholder" = "Введіть символи тут...";
+"exception.alertTitle" = "Введіть символи для виключення.";
+"exception.alertErrorTitle" = "Помилка вводу";
+"exception.alertSpaceMessage" = "Будь ласка, не вводьте лише пробіли";

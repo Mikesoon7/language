@@ -17,7 +17,7 @@
                BlueprintIdentifier = "9A7B91C1298D6D9600E60CDD"
                BuildableName = "Language.app"
                BlueprintName = "Language"
-               ReferencedContainer = "container:Language.xcodeproj">
+               ReferencedContainer = "container:Learny.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -36,7 +36,7 @@
                BlueprintIdentifier = "9A7B91D7298D6D9900E60CDD"
                BuildableName = "LanguageTests.xctest"
                BlueprintName = "LanguageTests"
-               ReferencedContainer = "container:Language.xcodeproj">
+               ReferencedContainer = "container:Learny.xcodeproj">
             </BuildableReference>
          </TestableReference>
          <TestableReference
@@ -47,7 +47,7 @@
                BlueprintIdentifier = "9A7B91E1298D6D9A00E60CDD"
                BuildableName = "LanguageUITests.xctest"
                BlueprintName = "LanguageUITests"
-               ReferencedContainer = "container:Language.xcodeproj">
+               ReferencedContainer = "container:Learny.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -70,7 +70,7 @@
             BlueprintIdentifier = "9A7B91C1298D6D9600E60CDD"
             BuildableName = "Language.app"
             BlueprintName = "Language"
-            ReferencedContainer = "container:Language.xcodeproj">
+            ReferencedContainer = "container:Learny.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <LocationScenarioReference
@@ -91,7 +91,7 @@
             BlueprintIdentifier = "9A7B91C1298D6D9600E60CDD"
             BuildableName = "Language.app"
             BlueprintName = "Language"
-            ReferencedContainer = "container:Language.xcodeproj">
+            ReferencedContainer = "container:Learny.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
