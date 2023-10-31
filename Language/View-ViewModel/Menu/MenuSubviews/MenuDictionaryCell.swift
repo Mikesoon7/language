@@ -69,7 +69,7 @@ class MenuDictionaryCell: UITableViewCell{
     var languageLabel : UILabel = {
         var label = UILabel()
         label.attributedText = NSAttributedString(
-            string: LanguageChangeManager.shared.localizedString(forKey: "tableCellName"),
+            string: LanguageChangeManager.shared.localizedString(forKey: "menu.cell.name"),
             attributes: [NSAttributedString.Key.font : UIFont(name: "Georgia-BoldItalic", size: 20) ?? UIFont(),
                          NSAttributedString.Key.foregroundColor: UIColor.label])
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -79,7 +79,7 @@ class MenuDictionaryCell: UITableViewCell{
     var cardsLabel : UILabel = {
         var label = UILabel()
         label.attributedText = .attributedString(
-            string: "tableCellNumberOfCards".localized,
+            string: "menu.cell.number".localized,
             with: .georgianBoldItalic,
             ofSize: 20)
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -495,8 +495,8 @@ class MenuDictionaryCell: UITableViewCell{
     }
     //LanguageChange
     @objc func languageDidChange(sender: Any){
-        languageLabel.text = LanguageChangeManager.shared.localizedString(forKey: "tableCellName")
-        cardsLabel.text = LanguageChangeManager.shared.localizedString(forKey: "tableCellNumberOfCards")
+        languageLabel.text = LanguageChangeManager.shared.localizedString(forKey: "menu.cell.name")
+        cardsLabel.text = LanguageChangeManager.shared.localizedString(forKey: "menu.cell.number")
     }
 }
 //private

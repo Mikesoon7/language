@@ -149,7 +149,7 @@ class AddWordsView: UIViewController {
     }
     /// Congifure all text properties of the view.
     private func configureText(){
-        navigationItem.title = "addWordTitle".localized
+        navigationItem.title = "addWord.title".localized
         saveButton.setAttributedTitle(
             .attributedString(string: "system.save".localized, with: .georgianBoldItalic, ofSize: 18), for: .normal)
         doneButton.title = "system.done".localized

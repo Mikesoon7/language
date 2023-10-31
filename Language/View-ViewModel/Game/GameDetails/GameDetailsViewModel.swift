@@ -133,8 +133,9 @@ class GameDetailsViewModel{
         
         cancel.setValue(UIColor.label, forKey: "titleTextColor")
         
+        //TODO: - Finish the alert ,essages.
         guard let numberOfWords = getCurrentNumberOfWords() else {
-            output.send(.error(DictionaryErrorType.deleteFailed))
+            output.send(.error(DictionaryErrorType.deleteFailed(selectedWord.dictionary?.language ?? "")))
             return
         }
         

@@ -196,7 +196,7 @@ class AddDictionaryView: UIViewController {
             .attributedString(string: "system.save".localized,
                               with: .georgianBoldItalic, ofSize: 18), for: .normal)
         
-        self.navigationItem.title = "addDictTitle".localized
+        self.navigationItem.title = "addDict.title".localized
         nameInputField.placeholder = "fieldPlaceholder".localized
         doneButton.title = "system.done".localized
         textInputView.textView.isTextUpdateRequired = true

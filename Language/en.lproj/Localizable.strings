@@ -1,17 +1,15 @@
 //MARK: - TabBarController
-"tabBarDictionaries" = "Dictionaries";
-"tabBarSearch" = "Search";
-"tabBarSettings" = "Settings";
+"tabBar.dictionaries" = "Dictionaries";
+"tabBar.search" = "Search";
+"tabBar.settings" = "Settings";
 //MARK: - MainVC
-"menuVCTitle" = "Dictionaries";
+"menu.title" = "Dictionaries";
 "menu.deleteDictionary" = "Delete dictionary?";
-"tableCellName" = "Name";
-"tableCellNumberOfCards" = "Total cards";
-"tableCellImport" = "Import new dictionary";
-"statisticCellNumberOfUse" = "Accessed";
-"statisticCellCreationDate" = "Since";
+"menu.cell.name" = "Name";
+"menu.cell.number" = "Total cards";
+"menu.cell.import" = "Add dictionary";
 //MARK: - StatisticView
-"statistic.title" = "Dictionaries statistic";
+"statistic.title" = "Statistic";
 "statistic.beginDate" = "Begin date:";
 "statistic.endDate" = "End date:";
 //Custom options
@@ -21,46 +19,44 @@
 "statistic.allTime" = "All time";
 "statistic.custom" = "Custom";
 //MARK: - SettingsVC
-"settingsVCTitle" = "Settings";
+"settings.title" = "Settings";
 //Sections
-"generalSection" = "General";
-"searchSection" = "Search";
-"dictionarySection" = "Dictionary";
+"settings.sections.general" = "General";
+"settings.sections.search" = "Search";
+"settings.sections.dictionaries" = "Dictionaries";
 //Items for General
-"languageItem" = "Language";
-"themeItem" = "Theme";
+"settings.general.language" = "Language";
+"settings.general.theme" = "Theme";
     //Choose options
-"darkTheme" = "Dark";
-"lightTheme" = "Light";
-"systemTheme" = "System";
+"settings.general.theme.dark" = "Dark";
+"settings.general.theme.light" = "Light";
+"settings.general.theme.system" = "System";
 
-"notificationItem" = "Notifications";
+"settings.general.notification" = "Notifications";
 //Items for Search
-"searchBarPositionItem" = "Search bar position";
-"top" = "Top";
-"bottom" = "Bottom";
-//Items for Dictionary
-"dictionaries" = "Dictionaries";
-"separatorItem" = "Symbols for pairs dividing";
-"exceptionsItem" = "Exception symbols";
-"duplicatesItem" = "Duplicates";
-    //Options
-"keep" = "Keep";
-"remove" = "Remove";
+"settings.search.barPosition" = "Search bar position";
+//Items for Dictionaries
+"settings.dictionaries.separator" = "Separator symbols";
+"settings.dictionaries.exception" = "Exception symbols";
 //Items for SignHeader
-"propositionForSign" = "Connect your Apple ID to pass your data beteen devices and store it in the iCloud";
+"settings.iCloud.sign" = "Connect your Apple ID to pass your data beteen devices and store it in the iCloud";
 //MARK: - AddDictionary or WordsVC
-"addDictTitle" = "Dictionary creation";
-"addWordTitle" = "Text Uploading";
+"addDict.title" = "Creation";
+"addWord.title" = "Adding";
 "viewPlaceholderWord" = "Word ";
 "viewPlaceholderMeaning" = " description";
 "fieldPlaceholder" = "Name";
 "dictionaryName" = "Dictionary name";
+//Alerts
+"textAlert" = "Enter the text";
+"nameAlert" = "Enter the name";
+"textInfo" = "Please, enter at least 1 pair of words.";
+"nameInfo" = "Almost done. Please, name your dictionary";
 
 //MARK: - System
 "system.cancel" = "Cancel";
 "system.agreeFormal" = "Understand";
-"system.agreeInformal" = "Okey";
+"system.agreeInformal" = "Okay";
 "system.save" = "Save";
 "system.create" = "Create";
 "system.great" = "Great";
@@ -75,31 +71,25 @@
 "system.letsGo" = "Let's go";
 "system.skip" = "Skip";
 
-//MARK: - AlertText
-"textAlert" = "Enter the text";
-"nameAlert" = "Enter the name";
-"textInfo" = "Please, enter at least 1 pair of words.";
-"nameInfo" = "Almost done. Please, name your dictionary";
-
 //MARK: - DetailsVC
-"detailsTitle" = "Details";
-"randomize" = "Randomize cards";
-"goal" = "Set the goal";
-"addWords" = "Add new words";
-"start" = "Start";
+"details.title" = "Details";
+"details.randomize" = "Randomize cards";
+"details.goal" = "Set the goal";
+"details.addWords" = "Add new words";
+"details.start" = "Start";
 
 //MARK: - GameVC
-"gameTitle" = "Cards";
+"game.title" = "Cards";
 //MARK: - GameDetailsVc
-"gameDetails.information" = "Tap on any word to uncover its meaning using the built-in iOS dictionary. You can also edit or delete your card if necessary. This is your personalized learning space - make the most out of it.";
-"gameDetails.suggestion1Part" = "If you encounter any issues with accessing dictionaries, you may need to download or update them. To do so, navigate to";
+"gameDetails.information" = "Tap on any word to uncover its meaning using the built-in iOS dictionary. You can also edit or delete your card if necessary";
+"gameDetails.suggestion1Part" = "If you encounter any issues accessing dictionaries, you might need to download or update them. Navigate to";
 "gameDetails.suggestion2Part" = "on your device and ensure the required dictionaries are installed.";
 "gameDetails.settingsPath" = " Settings -> General -> Dictionaries ";
-"gameDetails.deleteAlert.title" = "Delete current card";
+"gameDetails.deleteAlert.title" = "Delete the current card";
 "gameDetails.deleteAlert.message" = "Are you sure you want to delete this pair?";
-"gameDetails.deleteAlert.message.warning" = "\n This is the last card, so your dictionary will also be deleted.";
-"gameDetails.emptyTextAlert.title" = "Text can not me empty.";
-"gameDetails.emptyTextAlert.message" = "Saveing empty values will cause deleting current card?";
+"gameDetails.deleteAlert.message.warning" = "\n This is the last card; deleting it will also remove your dictionary.";
+"gameDetails.emptyTextAlert.title" = "Text cannot be empty.";
+"gameDetails.emptyTextAlert.message" = "Saving empty values will cause the current card to be deleted.";
 
 //MARK: - Notification
 "notification.allowNotification" = "Allow notification";
@@ -108,12 +98,12 @@
 //Frequency Option
 "everyDay" = "Every day";
 "onceAWeek" = "Once a week";
-"onWeekdays" = "On the weekday";
+"onWeekdays" = "On weekdays";
 "onTheWeekend" = "On the weekend";
 "custom" = "Custom";
 //Notification message
 "notification.notificationTitle" = "Memory Check-In Time";
-"notification.notificationMessage" = "Hey there! Remember those important things you wanted to master? Your flashcards are waiting for a quick review. Swipe now to stay sharp!";
+"notification.notificationMessage" = "Just 10 minutes a day ensures 5 hours of active study a month!";
 //Notification Denied Alert
 "notification.alertTitle" = "Enable Notifications to stay connected";
 "notification.alertMessage" = "We understand your concerns, and we won't overwhelm you with notifications. We'll send only one message per day to keep you updated and remind you about us. You can always change your preferences in the settings";
@@ -121,39 +111,38 @@
 "searchVCTitle" = "Search";
 "yourWord" = "Insert your text";
 //MARK: - SeparatorsVC
-"separators.addChar" = "Add character";
-"separators.placeholder" = "Text";
-"separators.alertErrorTitle" = "Invalid input";
-"separators.alertTitle" = "Type from 1 to 3 characters";
-"separators.alertDuplicateMessage" = "Please, don't use duplicates";
-"separators.alertSpaceMessage" = "Please, don't use spaces only";
+"separators.addChar" = "Add Character";
+"separators.placeholder" = "Enter Text";
+"separators.alertErrorTitle" = "Invalid Entry";
+"separators.alertTitle" = "Enter 1 to 3 characters";
+"separators.alertDuplicateMessage" = "No duplicates allowed";
+"separators.alertSpaceMessage" = "Spaces only are not allowed";
 
-"separators.title" = "Text Division and Separators";
-"separators.infoFirstPart" = "First, the provided text is broken into chunks, using a new line to signal the beginning of a new chunk. You can transition to a new line without breaking the current block by using the \"New line\" button at the top of the keyboard.";
-"separators.infoSecondPart" = "With these defined blocks, the app uses the provided separator symbol to create a pair within each block.";
-"separators.infoFinalPart" = "Applying a new separator won't affect existing dictionaries. If a text block contains multiple special symbols, only the first one is counted as the separator.";
+"separators.title" = "Text Divisions & Separators";
+"separators.infoFirstPart" = "Initially, the text is split into chunks based on new lines. Use the 'New line' button atop the keyboard to move to a new line without splitting the current block.";
+"separators.infoSecondPart" = "Given these blocks, the app utilizes the designated separator symbol to establish pairs within each block.";
+"separators.infoFinalPart" = "Adding a new separator won't modify existing dictionaries. If a block has several special symbols, only the first is recognized as the separator.";
 //MARK: - SystemErrors
 //Dictionary
-"coreDataError.dictionary.creation" = "Unable to create dictionary.";
-"coreDataError.dictionary.deletion" = "Unable to delete dictionary.";
-"coreDataError.dictionary.fetch" = "Unable to load dictionaries.";
-"coreDataError.dictionary.update" = "Unable to update dictionary.";
-"coreDataError.dictionary.addition" = "Unable to extend dictionary.";
-"coreDataError.dictionary.orderUpdate" = "Unable to update dictionary order.";
+"coreDataError.dictionary.creation" = "Unable to create";
+"coreDataError.dictionary.deletion" = "Unable to delete";
+"coreDataError.dictionary.fetch" = "Unable to load saved dictionaries.";
+"coreDataError.dictionary.update" = "Unable to update";
+"coreDataError.dictionary.addition" = "Unable to extend";
+"coreDataError.dictionary.orderUpdate" = "Unable to update dictionaries order.";
 //Words.Title
-"coreDataError.words.creation." = "Unable to create word pair.";
-"coreDataError.words.deletion" = "Unable to delete word pair.";
-"coreDataError.words.fetch" = "Unable to load dictionary content.";
-"coreDataError.words.update" = "Unable to update words.";
-"coreDataError.words.orderUpdate" = "Unable to update word order.";
-"coreDataError.words.emptyWord" = "Unable to create/update word.";
+"coreDataError.words.deletion" = "Unable to delete pair";
+"coreDataError.words.fetch" = "Unable to load content for";
+"coreDataError.words.emptyWord" = "Unable to create or update pair";
 //Words.Message
-"coreDataError.words.emptyWord.message" = "Provided symbols may have truncated the text.";
+"coreDataError.words.emptyWord.message" = "Provided exclusion symbols may have truncated the text.";
 //Logs
-"coreDataError.logs.creation" = "Unable to create access inforamtion.";
-"coreDataError.logs.update" = "Unable to update access log for dictionary.";
-"coreDataError.logs.fetch" = "Unable to fetch access logs for dictionary.";
+"coreDataError.logs.creation" = "Unable to create statistical information for";
+"coreDataError.logs.update" = "Unable to update statistical information for";
+"coreDataError.logs.fetch" = "Failed to fetch statistics for dictionaries.";
 //Unknown
+"unknownError.save.title" = "Unable to save changes.";
+"unknownError.save.message" = "Please contact the support team to describe the problem and help us resolve it.";
 "unknownError.title" = "Unexpected error occurred.";
 "unknownError.message" = "Please retry or contact support if this persists.";
 "unknownGameError.title" = "Unexpected issue detected.";
@@ -165,18 +154,22 @@
 "edit.emptyText.title" = "The edit text is empty";
 "edit.emptyText.message" = "Saving dictionary in this state will cause it's deletion. \nAre you sure?";
 //MARK: - Tutorial
-"tutorial.firstViewLabel.title" = "Hello! Welcome to Learny.";
-"tutorial.firstViewLabel" = "Learny organizes your studies into easy-to-digest chunks. The app uses a few rules to split your text and create cards for each block. Let's get you started with a brief overview!";
+"tutorial.firstViewLabel.title" = "Hello! \n Welcome to Learny.";
+"tutorial.firstViewLabel" = "Learny organizes your studies into easy-to-digest chunks. The app uses a few rules to split your text and create cards for each block. \n\n Let's get you started with a brief overview!";
 //SecondView
 "tutorial.secondViewLabel" = "On the main screen, tap to access, and swipe to manage dictionaries or view your stats.";
 //ThirdView
-"tutorial.thirdViewLabel" = "Ready for more? Add by typing in content and a name. Dive in and craft your first dictionary!";
+"tutorial.thirdViewLabel" = "Ready for more? Add new dictionaries by typing it's content and a name. \n \n Dive in and craft your first dictionary!";
 //FourthView
 "tutorial.fourthViewLabel" = "Almost there! Remember, new lines determine where text chunks split. To keep sequences intact, use the 'New line' button atop the keyboard.";
 //FifthView
 "tutorial.fifthViewLabel" = "For specific pairings, like terms and definitions, rely on the separator symbol. You can customize it in settings, and it'll be displayed as a hint during editing.";
 //SixthView
-"tutorial.sixthViewLabel" = "All set! We're honored to be part of your learning journey. Here's to enjoyable and effective study sessions. Best of luck!";
+"tutorial.sixthViewLabel" = "All set! We're honored to be part of your learning journey. Here's to enjoyable and effective study sessions. \n \n Best of luck!";
+"tutorial.card.name" = "Hello";
+"tutorial.card.title" = "We're thrilled to be part of your learning journey! ";
+"tutorial.card.message" = " \r\rP.S. We're always \rstriving for improvement. \rIf you like Learny, please \rrate us on the App Store. \r\rGood luck with your studies!";
+
 //MARK: Exceptions
 "exception.title" = "Exclusion Symbols";
 "exception.firstPart" = "Here, you can specify symbols to be removed from the beginning and end of each text block.";

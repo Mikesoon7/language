@@ -77,11 +77,11 @@ class MenuView: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         //TODO: Dont forget to change on release method.
-//        viewModel.validateLaunchStatus()
-        if firstLaunch {
-            pushTutorialVC()
-            firstLaunch = false
-        }
+        viewModel.validateLaunchStatus()
+//        if firstLaunch {
+//            pushTutorialVC()
+//            firstLaunch = false
+//        }
     }
     //MARK: - StyleChange Responding
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -150,7 +150,7 @@ class MenuView: UIViewController {
     }
     
     private func configureLabels(){
-        navigationItem.title = "menuVCTitle".localized
+        navigationItem.title = "menu.title".localized
     }
     
     //MARK: Configuring and presenting VC's

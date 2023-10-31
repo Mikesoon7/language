@@ -164,7 +164,7 @@
 		9A77B0212AD58960006DA151 /* ExceptionsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExceptionsVC.swift; sourceTree = "<group>"; };
 		9A77B0232AD58974006DA151 /* ExceptionsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExceptionsViewModel.swift; sourceTree = "<group>"; };
 		9A77B0252AD6C94A006DA151 /* ExceptionExampleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExceptionExampleView.swift; sourceTree = "<group>"; };
-		9A7B91C2298D6D9600E60CDD /* Language.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Language.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		9A7B91C2298D6D9600E60CDD /* Learny.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Learny.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9A7B91C5298D6D9600E60CDD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		9A7B91C7298D6D9600E60CDD /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		9A7B91CE298D6D9900E60CDD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -462,7 +462,7 @@
 		9A7B91C3298D6D9600E60CDD /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				9A7B91C2298D6D9600E60CDD /* Language.app */,
+				9A7B91C2298D6D9600E60CDD /* Learny.app */,
 				9A7B91D8298D6D9900E60CDD /* LanguageTests.xctest */,
 				9A7B91E2298D6D9A00E60CDD /* LanguageUITests.xctest */,
 			);
@@ -685,9 +685,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		9A7B91C1298D6D9600E60CDD /* Language */ = {
+		9A7B91C1298D6D9600E60CDD /* Learny */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 9A7B91EC298D6D9A00E60CDD /* Build configuration list for PBXNativeTarget "Language" */;
+			buildConfigurationList = 9A7B91EC298D6D9A00E60CDD /* Build configuration list for PBXNativeTarget "Learny" */;
 			buildPhases = (
 				B2CCEEEB2BC63B0F2B4FE0C0 /* [CP] Check Pods Manifest.lock */,
 				9A7B91BE298D6D9600E60CDD /* Sources */,
@@ -699,13 +699,13 @@
 			);
 			dependencies = (
 			);
-			name = Language;
+			name = Learny;
 			packageProductDependencies = (
 				9A2092E22A3DF37000184124 /* Differ */,
 				9AF756842AA74FB700CE3B25 /* DGCharts */,
 			);
 			productName = Language;
-			productReference = 9A7B91C2298D6D9600E60CDD /* Language.app */;
+			productReference = 9A7B91C2298D6D9600E60CDD /* Learny.app */;
 			productType = "com.apple.product-type.application";
 		};
 		9A7B91D7298D6D9900E60CDD /* LanguageTests */ = {
@@ -788,7 +788,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				9A7B91C1298D6D9600E60CDD /* Language */,
+				9A7B91C1298D6D9600E60CDD /* Learny */,
 				9A7B91D7298D6D9900E60CDD /* LanguageTests */,
 				9A7B91E1298D6D9A00E60CDD /* LanguageUITests */,
 			);
@@ -1050,12 +1050,12 @@
 /* Begin PBXTargetDependency section */
 		9A7B91DA298D6D9900E60CDD /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 9A7B91C1298D6D9600E60CDD /* Language */;
+			target = 9A7B91C1298D6D9600E60CDD /* Learny */;
 			targetProxy = 9A7B91D9298D6D9900E60CDD /* PBXContainerItemProxy */;
 		};
 		9A7B91E4298D6D9A00E60CDD /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 9A7B91C1298D6D9600E60CDD /* Language */;
+			target = 9A7B91C1298D6D9600E60CDD /* Learny */;
 			targetProxy = 9A7B91E3298D6D9A00E60CDD /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -1344,7 +1344,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		9A7B91EC298D6D9A00E60CDD /* Build configuration list for PBXNativeTarget "Language" */ = {
+		9A7B91EC298D6D9A00E60CDD /* Build configuration list for PBXNativeTarget "Learny" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				9A7B91ED298D6D9A00E60CDD /* Debug */,

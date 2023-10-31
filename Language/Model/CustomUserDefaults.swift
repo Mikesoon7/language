@@ -260,13 +260,13 @@ enum AppTheme: String, Codable, CaseIterable {
     case dark, light, system
     
     var title: String{
-        return "themeItem".localized
+        return "settings.general.theme".localized
     }
     var value: String{
         switch self {
-        case .light:    return "lightTheme".localized
-        case .dark:     return "darkTheme".localized
-        case .system:   return "systemTheme".localized
+        case .light:    return "settings.general.theme.light".localized
+        case .dark:     return "settings.general.theme.dark".localized
+        case .system:   return "settings.general.theme.system".localized
         }
     }
     var userInterfaceStyle: UIUserInterfaceStyle {
@@ -285,7 +285,7 @@ enum AppLanguage: String, Codable, CaseIterable{
     case english, russian, ukrainian
     
     var title: String{
-        return "languageItem".localized
+        return "settings.general.language".localized
     }
     var value: String{
         switch self {
@@ -309,7 +309,7 @@ struct AppPairSeparators: Codable{
     var availableSeparators: [String]
     
     var title: String{
-        return "separatorItem".localized
+        return "settings.dictionaries.separator".localized
     }
     var value: String
     var maxCapacity: Int = 5
@@ -340,7 +340,7 @@ struct AppExceptions: Codable{
     
         
     var title: String {
-        return "exceptionsItem".localized
+        return "settings.dictionaries.exception".localized
     }
     
     var selectedExceptions: [Selection] {
@@ -358,7 +358,7 @@ enum AppSearchBarPosition: String, Codable{
     case onTop, atTheBottom
     
     var title: String{
-        return "searchBarPositionItem".localized
+        return "settings.search.barPosition".localized
     }
     var value: String{
         return ""
@@ -382,7 +382,7 @@ enum AppDuplicates: String, Codable, CaseIterable{
 struct AppPushNotifications: Codable{
     static let key = "AppNotifications"
     var title: String{
-        return "notificationItem".localized
+        return "settings.general.notification".localized
     }
     var notificationState: NotificationState
     var notificationFrequency: NotificationFrequency

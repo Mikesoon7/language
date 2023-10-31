@@ -11,13 +11,14 @@ import CoreData
 protocol LogsManaging{
     func accessLog(for dictionary: DictionariesEntity) throws
     func fetchAllLogs(for dictionary: DictionariesEntity?) throws -> [DictionariesAccessLog]
-    func testFetchAllLogsForEveryDictioanry()
+//    func testFetchAllLogsForEveryDictioanry()
     
 }
 
 extension CoreDataHelper: LogsManaging{
     //MARK: - Working with logs
-    private func fetchLog(for dictionary: DictionariesEntity, at date: Date) -> DictionariesAccessLog? {
+    ///Return log entity, assosiated with passed dictionary at the specific date.
+    private func fetchLog(for dictionary: DictionariesEntity, at date: Date = Date()) -> DictionariesAccessLog? {
         let dateWithoutTime = date.timeStripped
         print(dateWithoutTime)
         let fetchRequest: NSFetchRequest<DictionariesAccessLog> = DictionariesAccessLog.fetchRequest()
@@ -31,48 +32,49 @@ extension CoreDataHelper: LogsManaging{
             return nil
         }
     }
-
-    private func createNewLog(for dictionary: DictionariesEntity, at date: Date) throws -> DictionariesAccessLog {
+    ///Creating new log entity for passed dictionary.
+    private func createNewLog(for dictionary: DictionariesEntity, at date: Date = Date()) throws -> DictionariesAccessLog {
         let log = DictionariesAccessLog(context: context)
         log.accessDate = date.timeStripped
         log.accessCount = 0
         log.dictionary = dictionary
+        
         do {
-            try context.save()
+            try saveContext()
         } catch {
-            throw LogsErrorType.creationFailed
+            throw LogsErrorType.creationFailed(dictionary.language)
         }
         return log
     }
     
-    func testFetchAllLogsForEveryDictioanry() {
-        let fetchRequest: NSFetchRequest<DictionariesAccessLog> = DictionariesAccessLog.fetchRequest()
-        do {
-            let logs = try context.fetch(fetchRequest)
-            logs.forEach { log in
-                print("\(log.dictionary?.language) have \(log.accessCount) on \(log.accessDate)")
-            }
-        } catch {
-            print("Error")
-        }
-    }
+//    func testFetchAllLogsForEveryDictioanry() {
+//        let fetchRequest: NSFetchRequest<DictionariesAccessLog> = DictionariesAccessLog.fetchRequest()
+//        do {
+//            let logs = try context.fetch(fetchRequest)
+//            logs.forEach { log in
+//                print("\(log.dictionary?.language) have \(log.accessCount) on \(log.accessDate)")
+//            }
+//        } catch {
+//            print("Error")
+//        }
+//    }
     func accessLog(for dictionary: DictionariesEntity) throws {
-        guard let log = fetchLog(for: dictionary, at: Date()) else {
+        guard let log = fetchLog(for: dictionary) else {
             do {
-                let log = try createNewLog(for: dictionary, at: Date())
+                let log = try createNewLog(for: dictionary)
                 log.accessCount += 1
+                try saveContext()
             } catch {
                 throw error
             }
             return
         }
-        print("added 1 to existing accessLog")
         log.accessCount += 1
         
         do {
             try saveContext()
         } catch {
-            throw LogsErrorType.accessFailed
+            throw LogsErrorType.accessFailed(dictionary.language)
         }
     }
     

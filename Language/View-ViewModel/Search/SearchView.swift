@@ -132,6 +132,7 @@ class SearchView: UIViewController {
                     self.refreshSearchBars()
                 case .shouldUpdateLabels:
                     self.configureLabels()
+                    self.bottomSearchView.configureLabels()
                 case .shouldReplaceSearchBarOnTop(_):
                     self.prepeareForNewPosition()
                 }
@@ -258,7 +259,6 @@ class SearchView: UIViewController {
     private func configureLabels(){
         title = "searchVCTitle".localized
         topSearchController.searchBar.placeholder = "yourWord".localized
-        bottomSearchView.searchBar.placeholder = "yourWord".localized
     }
 
     

@@ -43,13 +43,13 @@ final class CoreDataHelperV2{
     }
     
     //Error cases
-    enum CoreDataError: Error {
-        case fetchFailed
-        case saveFailed
-        case dictionaryCreationFailed
-        case logCreationFailed
-        case dictionaryNotFound
-    }
+//    enum CoreDataError: Error {
+//        case fetchFailed
+//        case saveFailed
+//        case dictionaryCreationFailed
+//        case logCreationFailed
+//        case dictionaryNotFound
+//    }
     
     //MARK: - Method helpers
     //Get actual number of dictionaries.
@@ -68,9 +68,8 @@ final class CoreDataHelperV2{
     private func saveContext() throws {
         do {
             try context.save()
-            print("Debug: Context saved.")
         } catch {
-            throw CoreDataError.saveFailed
+            throw CoreDataErrorType.saveFailed
         }
     }
 }

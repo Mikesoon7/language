@@ -50,20 +50,20 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let firstVC = MenuView(factory: viewModelFactory)
         let firstNC = CustomNavigationController(rootViewController: firstVC)
         firstNC.tabBarItem = UITabBarItem(
-            title: LanguageChangeManager.shared.localizedString(forKey: "tabBarDictionaries"),
+            title: LanguageChangeManager.shared.localizedString(forKey: "tabBar.dictionaries"),
             image: UIImage(systemName: "books.vertical"),
             selectedImage: UIImage(systemName: "books.vertical.fill")?.withTintColor(.black))
         let secondVC = SearchView(factory: viewModelFactory)
         let secondNC = UINavigationController(rootViewController: secondVC)
         secondNC.tabBarItem = UITabBarItem(
-            title: LanguageChangeManager.shared.localizedString(forKey: "tabBarSearch"),
+            title: LanguageChangeManager.shared.localizedString(forKey: "tabBar.search"),
             image: UIImage(systemName: "magnifyingglass"),
             selectedImage:
                 UIImage(systemName: "magnifyingglass")?.withTintColor(.black))
         let thirdVC = SettingsVC(factory: viewModelFactory)
         let thirdNC = CustomNavigationController(rootViewController: thirdVC)
         thirdVC.tabBarItem = UITabBarItem(
-            title: LanguageChangeManager.shared.localizedString(forKey: "tabBarSettings"),
+            title: LanguageChangeManager.shared.localizedString(forKey: "tabBar.settings"),
             image:  UIImage(systemName: "gearshape"),
             selectedImage:
                 UIImage(systemName: "gearshape.fill")?.withTintColor(.black))
@@ -84,9 +84,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func validateFirstLaunch(settings: UserSettingsStorageProtocol, dataModel: DictionaryManaging){
         if settings.appLaunchStatus.isFirstLaunch {
             do {
-               try dataModel.createDictionary(language: "Welcome", text: "-")
+                try dataModel.createDictionary(language: "tutorial.card.name".localized, text: "tutorial.card.title".localized + settings.appSeparators.value + "tutorial.card.message".localized)
             } catch {
-                print("Error")
+                print("This is for the developer. He checked every inch, but failed at the very begining")
             }
         }
     }
@@ -109,9 +109,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 for (index, item) in tabBarItems.enumerated(){
                     item.title = {
                         switch index {
-                        case 0: return "tabBarDictionaries".localized
-                        case 1: return "tabBarSearch".localized
-                        case 2: return "tabBarSettings".localized
+                        case 0: return "tabBar.dictionaries".localized
+                        case 1: return "tabBar.search".localized
+                        case 2: return "tabBar.settings".localized
                         default: return ""
                         }
                     }()

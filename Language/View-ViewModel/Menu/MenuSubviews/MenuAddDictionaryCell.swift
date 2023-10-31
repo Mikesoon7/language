@@ -78,7 +78,7 @@ class MenuAddDictionaryCell: UITableViewCell {
     func configureLabels(){
         importLabel.attributedText =
             .attributedString(
-                string: "tableCellImport".localized,
+                string: "menu.cell.import".localized,
                 with: .georgianBoldItalic,
                 ofSize: 20)
     }

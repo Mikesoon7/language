@@ -114,11 +114,12 @@ extension CoreDataHelper: WordsManaging{
             print("Debug purpose: FetchWords method worked for dictionary: \(dictionary.language) with number: \(words.count)")
             return words
         } catch {
-            throw WordsErrorType.fetchFailed
+            throw WordsErrorType.fetchFailed(dictionary.language)
 //            ("coreData.wordsFetch".localized)
         }
     }
-    
+    //Called inside the dictionary update method.
+    ///Reassign words order index for passed dictionary.
     func updateWordsOrder(for dictionary: DictionariesEntity) throws{
         let words = try fetchWords(for: dictionary)
         
@@ -126,14 +127,13 @@ extension CoreDataHelper: WordsManaging{
             word.order = Int64(index)
         }
         
-        try context.save()
+        try saveContext()
         print("Debug purpose: UpdateWordsOrder method worked for dictionary: \(dictionary.language) with number of words: \(words.count)")
     }
     
     func deleteWord(word: WordsEntity) throws {
         guard let associatedDictionary = word.dictionary else {
-            throw WordsErrorType.deleteFailed
-//            ("Some text")
+            throw WordsErrorType.deleteFailed(word.word.prefix(20) + (word.word.count > 20 ? "..." : ""))
         }
         
         if associatedDictionary.words?.count == 1 {

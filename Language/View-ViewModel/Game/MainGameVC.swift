@@ -217,7 +217,7 @@ class MainGameVC: UIViewController{
     }
     
     private func configureLabels(){
-        navigationItem.title = "gameTitle".localized
+        navigationItem.title = "game.title".localized
     }
 
 }

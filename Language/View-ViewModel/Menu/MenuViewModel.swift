@@ -66,9 +66,7 @@ final class MenuViewModel{
     }
     func validateLaunchStatus(){
         let isFirst = settingsModel.appLaunchStatus.isFirstLaunch
-        print("validating, status equals \(isFirst)")
         if isFirst {
-            print("isFirst")
             settingsModel.reload(newValue: .lauchStatus(.isNotFirst))
             output.send(.shouldPresentTutorialView)
         }

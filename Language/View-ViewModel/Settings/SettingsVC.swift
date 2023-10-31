@@ -122,7 +122,7 @@ class SettingsVC: UIViewController {
     }
     
     private func configureLabels(){
-        navigationItem.title = "settingsVCTitle".localized
+        navigationItem.title = "settings.title".localized
         
     }
 }

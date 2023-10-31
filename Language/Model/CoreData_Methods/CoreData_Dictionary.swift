@@ -26,7 +26,7 @@ extension CoreDataHelper: DictionaryManaging{
     
     func createDictionary(language: String, text: String) throws {
         guard let dictionary = createNewDictionary(language: language) else {
-            throw DictionaryErrorType.creationFailed
+            throw DictionaryErrorType.creationFailed(language)
 
         }
         
@@ -49,7 +49,7 @@ extension CoreDataHelper: DictionaryManaging{
             numberOfDictionaries += 1
         } catch {
             context.rollback()
-            throw DictionaryErrorType.creationFailed
+            throw DictionaryErrorType.creationFailed(language)
         }
     }
     
@@ -73,7 +73,7 @@ extension CoreDataHelper: DictionaryManaging{
             dictionaryDidChange.send(.wasDeleted(Int(order)))
         } catch {
             context.rollback()
-            throw DictionaryErrorType.deleteFailed
+            throw DictionaryErrorType.deleteFailed(dictionary.language)
         }
         try updateDictionaryOrder()
     }
@@ -103,7 +103,7 @@ extension CoreDataHelper: DictionaryManaging{
             dictionaryDidChange.send(.wasUpdated(Int(dictionary.order)))
         } catch {
             context.rollback()
-            throw DictionaryErrorType.additionFailed
+            throw DictionaryErrorType.additionFailed(dictionary.language)
         }
     }
     
@@ -127,7 +127,7 @@ extension CoreDataHelper: DictionaryManaging{
             dictionaryDidChange.send(.wasUpdated(Int(dictionary.order)))
         } catch {
             context.rollback()
-            throw DictionaryErrorType.updateFailed
+            throw DictionaryErrorType.updateFailed(dictionary.language)
         }
     }
 }

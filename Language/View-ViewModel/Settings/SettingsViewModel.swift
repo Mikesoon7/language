@@ -43,19 +43,19 @@ class SettingsViewModel{
         settingsStructure = [
             SettingsSection(sectionIndex: 0,
                             items: [
-                                SettingsOptions.sectionHeader("generalSection"),
+                                SettingsOptions.sectionHeader("settings.sections.general"),
                                 SettingsOptions.theme(settingsModel.appTheme),
                                 SettingsOptions.language(settingsModel.appLanguage),
                                 SettingsOptions.notifications(settingsModel.appNotifications)
                             ]),
             SettingsSection(sectionIndex: 1,
                             items: [
-                                SettingsOptions.sectionHeader("searchSection"),
+                                SettingsOptions.sectionHeader("settings.sections.search"),
                                 SettingsOptions.searchBarPosition(settingsModel.appSearchBarPosition)
                             ]),
             SettingsSection(sectionIndex: 2,
                             items: [
-                                SettingsOptions.sectionHeader("dictionaries"),
+                                SettingsOptions.sectionHeader("settings.sections.dictionaries"),
                                 SettingsOptions.separators(settingsModel.appSeparators),
                                 SettingsOptions.exceptions(settingsModel.appExceptions)
 //                                SettingsOptions.duplicates(settingsModel.appDuplicates)

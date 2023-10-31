@@ -9,27 +9,28 @@ import Foundation
 
 //For error related to dictionaries
 enum DictionaryErrorType: Error {
-    case creationFailed
+    case creationFailed(String)
     case fetchFailed
-    case updateFailed
-    case additionFailed
+    case updateFailed(String)
+    case additionFailed(String)
     case updateOrderFailed
-    case deleteFailed
+    case deleteFailed(String)
 }
 
 enum WordsErrorType: Error {
-    case creationFailed
     case failedToAssignEmptyString(String)
-    case fetchFailed
-    case updateFailed
-    case updateOrderFailed
-    case deleteFailed
+    case fetchFailed(String)
+    case deleteFailed(String)
 }
 
 enum LogsErrorType: Error {
     case fetchFailed
-    case accessFailed
-    case creationFailed
+    case accessFailed(String)
+    case creationFailed(String)
+}
+
+enum CoreDataErrorType: Error {
+    case saveFailed
 }
 
 

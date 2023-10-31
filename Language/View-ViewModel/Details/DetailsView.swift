@@ -219,21 +219,21 @@ class DetailsView: UIViewController {
     }
     //Assigning text on initializing and if language changes
     func configureText(){
-        self.navigationItem.title = "detailsTitle".localized
+        self.navigationItem.title = "details.title".localized
         
-        randomizeLabel.text = "randomize".localized
-        goalLabel.text = "goal".localized
+        randomizeLabel.text = "details.randomize".localized
+        goalLabel.text = "details.goal".localized
         
         addWordsBut.setAttributedTitle(
             .attributedString(
-                string: "addWords".localized,
+                string: "details.addWords".localized,
                 with: .georgianBoldItalic,
                 ofSize: 20), for: .normal
         )
                     
         beginBut.setAttributedTitle(
             .attributedString(
-                string: "start".localized,
+                string: "details.start".localized,
                 with: .georgianBoldItalic,
                 ofSize: 20), for: .normal
         )
