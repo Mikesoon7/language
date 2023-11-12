@@ -8,6 +8,7 @@
 "menu.cell.name" = "Название";
 "menu.cell.number" = "Всего карточек";
 "menu.cell.import" = "Добавить словарь";
+"menu.undo.title" = "Вы хотите восстановить только что удаленный словарь?";
 //MARK: - StatisticView
 "statistic.title" = "Статистика";
 "statistic.beginDate" = "Начало:";
@@ -70,6 +71,7 @@
 "system.next" = "Дальше";
 "system.letsGo" = "Поехали";
 "system.skip" = "Пропустить";
+"system.restore" = "Восстановить";
 
 //MARK: - DetailsVC
 "details.title" = "Подробности";

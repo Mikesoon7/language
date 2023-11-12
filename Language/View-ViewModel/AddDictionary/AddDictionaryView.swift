@@ -115,6 +115,8 @@ class AddDictionaryView: UIViewController {
                     self?.navigationController?.popViewController(animated: true)
                 case .shouldPresentError(let error):
                     self?.presentError(error)
+                case .shouldHighlightError(let word):
+                    self?.highlightErrorFor(word)
                 case .shouldUpdatePlaceholder:
                     self?.textInputView.updatePlaceholder()
                 case .shouldUpdateText:
@@ -203,7 +205,8 @@ class AddDictionaryView: UIViewController {
     }
     ///Returns textFiled value. If value equals nil, return nil and present an error.
     private func validateName() -> String? {
-        guard let text = nameInputField.text, !text.isEmpty else {
+        guard let text = nameInputField.text,
+              !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
             let insertNameAllert = UIAlertController(
                 title: "nameAlert".localized,
                 message: "nameInfo".localized,
@@ -220,7 +223,7 @@ class AddDictionaryView: UIViewController {
     }
     ///Returns textView value. If value equals nil, return nil and present an error.
     private func validateText() -> String?{
-        guard let text = textInputView.textView.text, !text.isEmpty else {
+        guard let text = textInputView.textView.text, !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
             let insertTextAllert = UIAlertController(
                 title: "textAlert".localized,
                 message: "textInfo".localized ,
@@ -241,6 +244,16 @@ class AddDictionaryView: UIViewController {
         textInputViewHeightAnchor.isActive = !keyboardIsVisable
         textInputViewBottomAnchor.isActive = keyboardIsVisable
         view.layoutIfNeeded()
+    }
+    
+    private func highlightErrorFor(_ word: String){
+        guard let text = self.textInputView.textView.text, let range = text.range(of: word, options: .caseInsensitive, range: word.startIndex..<text.endIndex) else {
+            return
+        }
+        
+        let NSRAnge = NSRange(range, in: text)
+        print(range)
+        self.textInputView.highlightError(NSRAnge)
     }
 }
 //MARK: - Actions

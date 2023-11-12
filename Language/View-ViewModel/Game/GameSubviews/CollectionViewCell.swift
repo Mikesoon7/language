@@ -27,7 +27,7 @@ class CollectionViewCell: UICollectionViewCell {
         label.font = .georgianBoldItalic.withSize(20)
         label.numberOfLines = 0
         label.textColor = .label
-        label.text = "???"
+        label.text = ""
         label.textAlignment = .center
 
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -42,7 +42,7 @@ class CollectionViewCell: UICollectionViewCell {
         label.numberOfLines = 0
         label.textColor = .label
         
-        label.text = "???"
+        label.text = ""
         label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
         label.minimumScaleFactor = 0.9
@@ -94,8 +94,11 @@ class CollectionViewCell: UICollectionViewCell {
     }
     override func prepareForReuse() {
         super.prepareForReuse()
-        translation.text = nil
-        word.text = nil
+//        translation.text = ""
+//        word.text = ""
+        word.isHidden = true
+        translation.isHidden = true
+        
         self.gestureRecognizers = nil
     }
     
@@ -104,17 +107,21 @@ class CollectionViewCell: UICollectionViewCell {
     ///Assigning passed values to labels and asks stackView to layout subviews.
     func configure(with data: WordsEntity){
         word.text = data.word
-        translation.text = data.meaning
-//        if !data.meaning.isEmpty {
-//            translation.text = data.meaning
-//            stackView.addArrangedSubview(translation)
-//        }
-//        stackView.layoutIfNeeded()
+        word.isHidden = false
+        // Set the visibility based on whether there is a meaning to display
+        if !data.meaning.isEmpty {
+            translation.text = data.meaning
+            translation.isHidden = false
+        } else {
+            translation.isHidden = true
+        }
     }
 
     private func configureStackView(){
-        stackView.addArrangedSubviews(word)
         cardView.addSubview(stackView)
+        
+        stackView.addArrangedSubviews(word, translation)
+
         
         NSLayoutConstraint.activate([
             stackView.topAnchor.constraint(equalTo: cardView.topAnchor, constant: subviewsInsets),
@@ -132,12 +139,12 @@ class CollectionViewCell: UICollectionViewCell {
             word.topAnchor.constraint(equalTo: cardView.topAnchor, constant: subviewsInsets),
             word.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: subviewsInsets),
             word.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -subviewsInsets),
+            word.bottomAnchor.constraint(lessThanOrEqualTo: cardView.bottomAnchor, constant: -subviewsInsets),
             
-            translation.bottomAnchor.constraint(lessThanOrEqualTo: cardView.bottomAnchor, constant: -subviewsInsets),
+            translation.topAnchor.constraint(lessThanOrEqualTo: word.bottomAnchor, constant: subviewsInsets),
             translation.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: subviewsInsets),
             translation.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -subviewsInsets),
-            translation.topAnchor.constraint(equalTo: word.bottomAnchor, constant: subviewsInsets),
-            
+            translation.bottomAnchor.constraint(equalTo: cardView.bottomAnchor, constant: -subviewsInsets),
         ])
     }
 
@@ -147,7 +154,6 @@ class CollectionViewCell: UICollectionViewCell {
         cardShadowView.layer.shadowOffset = initialShadowValue
         cardShadowView.addSubview(cardView)
         
-//        cardView.addSubviews(word, translation)
         
         NSLayoutConstraint.activate([
             cardView.topAnchor.constraint(equalTo: self.contentView.topAnchor),
@@ -155,7 +161,8 @@ class CollectionViewCell: UICollectionViewCell {
             cardView.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor),
             cardView.trailingAnchor.constraint(equalTo: self.contentView.trailingAnchor),
         ])
-        configureLabels()
+//        configureLabels()
+        configureStackView()
     }
     
     //MARK: Other

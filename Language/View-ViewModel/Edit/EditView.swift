@@ -110,6 +110,8 @@ class EditView: UIViewController {
                     self?.customSearchToolBar.configureLabels()
                 case .editSucceed:
                     self?.navigationController?.popViewController(animated: true)
+                case .shouldHighlightErrorLine(let word):
+                    self?.higlightErrorFor(word)
                 }
             }
             .store(in: &cancellables)
@@ -186,6 +188,8 @@ class EditView: UIViewController {
         textView.isTextUpdateRequired = true
         customSearchToolBar.configureLabels()
     }
+    
+    //MARK: Activate search fucntionality
     /// Changing searchView appearence.
     private func changeSearchSessionState(activate: Bool){
         textView.inputAccessoryView = activate ? nil : textView.customToolBar
@@ -204,6 +208,21 @@ class EditView: UIViewController {
             textView.backgroundColor = .systemBackground
         }
         isSearching = activate
+    }
+    //MARK: Error Responding
+    /// Defines error range and tells layout manager to draw glyph for it
+    private func higlightErrorFor(_ word: String){
+        guard let text = self.textView.text, let range = text.range(of: word, options: .caseInsensitive, range: text.startIndex..<text.endIndex) else   {
+            return
+        }
+        
+        let NSRAnge = NSRange(range, in: text)
+        self.textView.scrollRangeToVisible(NSRAnge)
+        self.layoutManager.errorRange = NSRAnge
+        self.textView.setNeedsDisplay()
+        
+
+        
     }
 }
 
@@ -261,14 +280,17 @@ extension EditView: UITextViewDelegate{
         if isSearching {
             textView.setNeedsDisplay()
         }
+        
     }
     
-    ///Reloading input accessory view, finishing search session.
+    ///Reloading input accessory view, finishing search session or cleaning error glyph.
     func textViewDidBeginEditing(_ textView: UITextView) {
         if isSearching {
             changeSearchSessionState(activate: false)
+        } else if layoutManager.errorRange != nil {
+            layoutManager.errorRange = nil
+            textView.setNeedsDisplay()
         }
-//        textView.contentInset.bottom -= textView.inputAccessoryView!.bounds.height
         self.navigationItem.rightBarButtonItems = [doneButton, searchButton]
         
     }

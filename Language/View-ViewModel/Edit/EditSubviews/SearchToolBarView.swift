@@ -93,8 +93,7 @@ class CustomSearchToolBar: UIView {
         self.searchBar.becomeFirstResponder()
     }
     func endSearchSession() {
-        layoutManager?.highlightRanges = []
-        layoutManager?.currentRange = NSRange()
+        layoutManager?.clearContentHiglight()
         searchResultsByRange = []
         searchResultPointerIndex = 0
         searchBar.text = nil

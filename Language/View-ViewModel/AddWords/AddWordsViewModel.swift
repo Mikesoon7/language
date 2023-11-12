@@ -13,7 +13,8 @@ import UIKit
 class AddWordsViewModel {
     
     enum Output {
-        case shouldPresentEerror(Error)
+        case shouldPresentError(Error)
+        case shouldHighlightError(String)
         case shouldPop
         case shouldUpdateText
         case shouldUpdatePlaceholder
@@ -49,27 +50,51 @@ class AddWordsViewModel {
             try dataModel.addWordsTo(dictionary: dictionary, words: words)
             output.send(.shouldPop)
         } catch {
-            output.send(.shouldPresentEerror(error))
+            output.send(.shouldPresentError(error))
         }
     }
 
     func getNewWordsFrom(_ text: String){
         let numberOfWords = dictionary.words?.count ?? Int(dictionary.numberOfCards)
         let lines = text.split(separator: "\n", omittingEmptySubsequences: true).map { String($0) }
-        for (index, line) in lines.enumerated(){
-            let correctIndex = numberOfWords + index
-            do {
-                newArray.append( try dataModel.createWordFromLine(
-                    for: dictionary,
-                    text: line,
-                    index: correctIndex,
-                    id: UUID())
-                )
-            } catch {
-                output.send(.shouldPresentEerror(error))
-            }
+        var errorAppeared = false
+        
+        do {
+            let newWords = try dataModel.createWordsFromText(for: dictionary, text: text)
+            extendDictionary(dictionary, with: newWords)
+        } catch {
+            if let emptyLineError = error as? WordsErrorType {
+                    switch emptyLineError {
+                    case .failedToAssignEmptyString(let word):
+                        output.send(.shouldHighlightError(word))
+                    default: break
+                    }
+                }
+                output.send(.shouldPresentError(error))
         }
-        extendDictionary(dictionary, with: newArray)
+//        for (index, line) in lines.enumerated(){
+//            guard !errorAppeared else { break }
+//            let correctIndex = numberOfWords + index
+//            do {
+//                newArray.append( try dataModel.createWordFromLine(
+//                    for: dictionary,
+//                    text: line,
+//                    index: correctIndex,
+//                    id: UUID())
+//                )
+//            } catch {
+//                if let emptyLineError = error as? WordsErrorType {
+//                    switch emptyLineError {
+//                    case .failedToAssignEmptyString(let word):
+//                        output.send(.shouldHighlightError(word))
+//                    default: break
+//                    }
+//                }
+//
+//                output.send(.shouldPresentError(error))
+//            }
+        
+//        extendDictionary(dictionary, with: newArray)
     }
     
     //MARK: Action

@@ -18,8 +18,6 @@ protocol CustomCellDataDelegate: AnyObject{
     func deleteButtonDidTap(for cell: UITableViewCell)
     
     func editButtonDidTap(for cell: UITableViewCell)
-    
-    func statisticButtonDidTap(for cell: UITableViewCell)
 }
 
 class MenuView: UIViewController {
@@ -83,6 +81,10 @@ class MenuView: UIViewController {
 //            firstLaunch = false
 //        }
     }
+    override var canBecomeFirstResponder: Bool {
+        return true
+    }
+
     //MARK: - StyleChange Responding
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
@@ -124,7 +126,37 @@ class MenuView: UIViewController {
             .store(in: &cancellables)
     }
     
-    //MARK: - TableView SetUP
+    //MARK: Dictionary restore
+    override func motionEnded(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
+        if motion == .motionShake {
+            if viewModel.canUndo() {
+                undoActionWasDetected()
+            }
+        }
+    }
+    
+    private func undoActionWasDetected(){
+        let alertController = UIAlertController
+            .alertWithAction(alertTitle: "menu.undo.title".localized,
+                             action1Title: "system.cancel".localized,
+                             action1Style: .cancel
+            )
+        let restoreAction = UIAlertAction(title: "system.restore".localized,
+                                          style: .default) { _ in
+            self.undoLastDeletion()
+        }
+        restoreAction.setValue(UIColor.label, forKey: "titleTextColor")
+        alertController.addAction(restoreAction)
+        self.present(alertController, animated: true)
+    }
+
+
+    private func undoLastDeletion() {
+        viewModel.undoLastDeletion()
+    }
+
+    
+    //MARK: Subviews setUp & Layout
     private func configureTableView(){
         tableView.delegate = self
         tableView.dataSource = self
@@ -138,7 +170,6 @@ class MenuView: UIViewController {
         ])
     }
     
-    //MARK: - NavigationBar SetUp
     private func configureNavBar(){
         //Statisctic BarButton
         let rightButton = UIBarButtonItem(
@@ -218,7 +249,6 @@ extension MenuView: UITableViewDelegate, UITableViewDataSource{
 extension MenuView: TutorialCellHintProtocol{
     func stopShowingHint() {
         if let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? MenuDictionaryCell{
-            print("activated")
             cell.activate(false)
         } else {
             print("failed")
@@ -261,7 +291,6 @@ extension MenuView: CustomCellDataDelegate{
             return
         }
     }
-    
     func deleteButtonDidTap(for cell: UITableViewCell) {
         var completion = { [weak self] cell in
             self?.menuAccessedForCell = nil
@@ -287,8 +316,4 @@ extension MenuView: CustomCellDataDelegate{
         guard let index = tableView.indexPath(for: cell) else { return }
         viewModel.editDictionary(at: index)
     }
-    func statisticButtonDidTap(for cell: UITableViewCell){
-        
-    }
-    
 }

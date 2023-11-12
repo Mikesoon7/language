@@ -14,6 +14,7 @@ class AddDictionaryViewModel {
         case shouldPresentError(Error)
         case shouldUpdateText
         case shouldUpdatePlaceholder
+        case shouldHighlightError(String)
         case shouldPop
     }
     
@@ -43,6 +44,13 @@ class AddDictionaryViewModel {
             try dataModel.createDictionary(language: name, text: text)
             output.send(.shouldPop)
         } catch {
+            if let emptyLineError = error as? WordsErrorType {
+                switch emptyLineError {
+                case .failedToAssignEmptyString(let word):
+                    output.send(.shouldHighlightError(word))
+                default: break
+                }
+            }
             output.send(.shouldPresentError(error))
         }
     }

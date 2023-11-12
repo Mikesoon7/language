@@ -55,7 +55,15 @@ final class MenuViewModel{
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
-    
+    //MARK: System
+    func validateLaunchStatus(){
+        let isFirst = settingsModel.appLaunchStatus.isFirstLaunch
+        if isFirst {
+            settingsModel.reload(newValue: .lauchStatus(.isNotFirst))
+            output.send(.shouldPresentTutorialView)
+        }
+    }
+
     //MARK: Fetch and update local dictionary variable.
     func fetch(){
         do {
@@ -64,12 +72,14 @@ final class MenuViewModel{
             output.send(.error(error))
         }
     }
-    func validateLaunchStatus(){
-        let isFirst = settingsModel.appLaunchStatus.isFirstLaunch
-        if isFirst {
-            settingsModel.reload(newValue: .lauchStatus(.isNotFirst))
-            output.send(.shouldPresentTutorialView)
-        }
+    //MARK: Deleted dictionary restoring
+    ///Asks model is restore available
+    func canUndo() -> Bool {
+        return model.canUndo()
+    }
+    ///Tells model to restore last deleted dictionary
+    func undoLastDeletion(){
+        model.undoDeletion()
     }
     
     //MARK: Cell swipe actions related.

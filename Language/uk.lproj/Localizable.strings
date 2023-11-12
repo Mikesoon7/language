@@ -8,6 +8,7 @@
 "menu.cell.name" = "Імʼя";
 "menu.cell.number" = "Всього карток";
 "menu.cell.import" = "Додади словник";
+"menu.undo.title" = "Ви хочете відновити щойно видалений словник?";
 //MARK: - StatisticView
 "statistic.title" = "Статистика";
 "statistic.beginDate" = "Початок:";
@@ -70,6 +71,7 @@
 "system.next" = "Далі";
 "system.letsGo" = "Поіхали";
 "system.skip" = "Пропустити";
+"system.restore" = "Відновити";
 
 //MARK: - DetailsVC
 "details.title" = "Подробиці";

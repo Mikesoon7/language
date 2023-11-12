@@ -17,17 +17,18 @@ protocol DictionaryManaging{
     func fetchDictionaries() throws -> [DictionariesEntity]
     func addWordsTo(dictionary: DictionariesEntity, words: [WordsEntity]) throws
     func delete(dictionary: DictionariesEntity) throws
+    func undoDeletion()
+    func canUndo() -> Bool
     func updateDictionaryOrder() throws
     func update(dictionary: DictionariesEntity, words: [WordsEntity], name: String?) throws
 }
 
 //MARK: - Working with dictioanries.
 extension CoreDataHelper: DictionaryManaging{
-    
+    //MARK: Creation
     func createDictionary(language: String, text: String) throws {
         guard let dictionary = createNewDictionary(language: language) else {
             throw DictionaryErrorType.creationFailed(language)
-
         }
         
         var words: [WordsEntity] = []
@@ -52,7 +53,7 @@ extension CoreDataHelper: DictionaryManaging{
             throw DictionaryErrorType.creationFailed(language)
         }
     }
-    
+    //MARK: Fetch
     func fetchDictionaries() throws -> [DictionariesEntity] {
         let fetchRequest = NSFetchRequest<DictionariesEntity>(entityName: "DictionariesEntity")
         let sortDescriptor = NSSortDescriptor(key: "order", ascending: true)
@@ -64,9 +65,10 @@ extension CoreDataHelper: DictionaryManaging{
             throw DictionaryErrorType.fetchFailed
         }
     }
-    
+    //MARK: Deletion
     func delete(dictionary: DictionariesEntity) throws {
         let order = dictionary.order
+        context.undoManager?.registerUndo(withTarget: self, selector: #selector(undoDeleteEntity(entity: )), object: dictionary)
         context.delete(dictionary)
         do {
             try saveContext()
@@ -78,6 +80,23 @@ extension CoreDataHelper: DictionaryManaging{
         try updateDictionaryOrder()
     }
     
+    func canUndo() -> Bool{
+        return context.undoManager?.canUndo ?? false
+    }
+    @objc private func undoDeleteEntity(entity: DictionariesEntity) {
+        context.insert(entity)
+
+        do {
+            try context.save()
+        } catch {
+            // Handle the error
+        }
+    }
+    func undoDeletion() {
+        self.context.undoManager?.undo()
+        self.dictionaryDidChange.send(.wasAdded)
+    }
+    //MARK: Update
     func updateDictionaryOrder() throws {
         let dictionaries = try fetchDictionaries()
         for (index, dictionary) in dictionaries.enumerated() {
@@ -99,7 +118,7 @@ extension CoreDataHelper: DictionaryManaging{
         
         do {
             try saveContext()
-            print("Debug purpose: AddWordsTo(dictionary) method worked with dictionary name: \(dictionary.language)")
+//            print("Debug purpose: AddWordsTo(dictionary) method worked with dictionary name: \(dictionary.language)")
             dictionaryDidChange.send(.wasUpdated(Int(dictionary.order)))
         } catch {
             context.rollback()

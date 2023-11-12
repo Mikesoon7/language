@@ -13,7 +13,11 @@ protocol PlaceholderTextViewDelegate: AnyObject{
 }
 
 final class TextInputView: UIView {
-    
+    let textContainerInsets: UIEdgeInsets = .init(top: 5, left: 5, bottom: 5, right: 5)
+    private lazy var layoutManager = HighlightLayoutManager(textInsets: self.textContainerInsets)
+    private let textContainer = NSTextContainer()
+    private let textStorage = NSTextStorage()
+
     weak var delegate: PlaceholderTextViewDelegate?
     
     //MARK: Views
@@ -26,8 +30,8 @@ final class TextInputView: UIView {
         return label
     }()
     
-    var textView: CustomTextView = {
-        var textView = CustomTextView()
+    lazy var textView: CustomTextView = {
+        var textView = CustomTextView(frame: .zero, textContainer: textContainer)
         textView.translatesAutoresizingMaskIntoConstraints = false
         textView.layer.cornerRadius = 9
         textView.backgroundColor = .clear
@@ -84,9 +88,13 @@ final class TextInputView: UIView {
     
     //MARK: Subviews SetUp
     private func configureTableView() {
-        self.addSubviews(placeholderLabel, textView, pasteButton)
+        layoutManager.addTextContainer(textContainer)
+        
+        textStorage.addLayoutManager(layoutManager)
         
         textView.delegate = self
+
+        self.addSubviews(placeholderLabel, textView, pasteButton)
         
         NSLayoutConstraint.activate([
             textView.topAnchor.constraint(equalTo: topAnchor),
@@ -102,6 +110,8 @@ final class TextInputView: UIView {
         ])
         pasteButton.addTarget(self, action: #selector(pasteButtonDidTap(sender:)), for: .touchUpInside)
     }
+    
+    
     
     //MARK: System
     private func pasteTextToTextView(){
@@ -129,6 +139,13 @@ final class TextInputView: UIView {
         placeholderLabel.text = delegate?.configurePlaceholderText() ?? ""
         placeholderLabel.sizeToFit()
     }
+    
+    func highlightError(_ range: NSRange){
+        textView.scrollRangeToVisible(range)
+        textView.selectedRange = range
+        layoutManager.errorRange = range
+        textView.setNeedsDisplay()
+    }
     //MARK: Action
     @objc func pasteButtonDidTap(sender: Any){
         pasteTextToTextView()
@@ -136,6 +153,8 @@ final class TextInputView: UIView {
 }
 extension TextInputView: UITextViewDelegate{
     func textViewDidBeginEditing(_ textView: UITextView) {
+        layoutManager.clearContentHiglight()
+        textView.setNeedsDisplay()
         //Showing button for keyboard dismissing
         guard let delegate = self.delegate else { return }
         delegate.textViewWillAppear()
@@ -187,6 +206,47 @@ class CustomTextView: UITextView{
             isTextUpdateRequired = false
         }
         return true
+    }
+    
+//    private func scrollRangeToVisibleCenter(range: NSRange) {
+//        
+//        let glyphRect = getGlyphRectangle(for: range, from: textView)
+//        
+//        let visibleHeight = textView.bounds.height - textView.contentInset.bottom - textView.contentInset.top - (textView.inputAccessoryView?.bounds.height ?? 40)
+//        
+//        let yOffset = glyphRect.origin.y - min(glyphRect.origin.y, (visibleHeight / 2))
+//        let newOffset = CGPoint(x: textView.contentOffset.x, y: yOffset)
+//        
+//        textView.setContentOffset(newOffset, animated: true)
+//
+//        textView.isScrollEnabled = false
+//        textView.isScrollEnabled = true
+//        layoutManager.applyErrorRange(errorRange: range)
+//        textView.setNeedsDisplay()
+//    }
+    
+    private func getGlyphRectangle(for range: NSRange, from textView: UITextView) -> CGRect {
+        let layoutManager = textView.layoutManager
+        let textContainer = textView.textContainer
+        
+        let glyphRange = layoutManager.glyphRange(forCharacterRange: range, actualCharacterRange: nil)
+        let glyphRect = layoutManager.boundingRect(forGlyphRange: glyphRange, in: textContainer)
+
+        return glyphRect
+    }
+    
+    override func scrollRangeToVisible(_ range: NSRange) {
+        let glyphRect = getGlyphRectangle(for: range, from: self)
+        
+        let visibleHeight = self.bounds.height - self.contentInset.bottom - self.contentInset.top - (self.inputAccessoryView?.bounds.height ?? 40)
+        
+        let yOffset = glyphRect.origin.y - min(glyphRect.origin.y, (visibleHeight / 2))
+        let newOffset = CGPoint(x: self.contentOffset.x, y: yOffset)
+        
+        self.setContentOffset(newOffset, animated: true)
+
+        self.isScrollEnabled = false
+        self.isScrollEnabled = true
     }
     
     private func addKeyboardToolbar() {

@@ -22,27 +22,26 @@ protocol WordsManaging{
 }
 
 extension CoreDataHelper: WordsManaging{
-    
-//    enum WordsErrorType: Error {
-//        case creationFailed(String)
-//        case fetchFailed(String)
-//        case failedToAssignEmptyString
-//        case updateFailed(String)
-//        case updateOrderFailed(String)
-//        case deleteFailed(String)
-//        case failedToDefineDictionary(String)
-//    }
-    
+    //MARK: Creation
     /// Iterate over passed text, divided by lines. Returns array of Words Entities
     func createWordsFromText(for dictionary : DictionariesEntity, text: String) throws -> [WordsEntity] {
         var results = [WordsEntity]()
+        let currentNumberOfCards = Int(dictionary.numberOfCards)
         let lines = text.split(separator: "\n", omittingEmptySubsequences: true)
         
         for (index, line) in lines.enumerated() {
-            let newWord = try createWordFromLine(for: dictionary, text: String(line), index: index)
-            results.append(newWord)
+            guard line != "\r" else { break }
+            do {
+                //Validating line
+                let newWord = try createWordFromLine(for: dictionary, text: String(line), index:  index + currentNumberOfCards)
+                results.append(newWord)
+                
+            } catch {
+                context.rollback()
+                throw error
+            }
+            print(index)
         }
-        print("Debug purpose: TextInitialDivider method worked with number of returned words: \(results.count)")
         return results
     }
     ///Assigning requiered properties for Words Entity. Passes word entity and text to complete creation.
@@ -51,11 +50,7 @@ extension CoreDataHelper: WordsManaging{
         newWord.order = Int64(index)
         newWord.identifier = id
         newWord.dictionary = dictionary
-//        do {
-            try assignWordsProperties(for: newWord, from: text)
-//        } catch {
-//            throw WordsErrorType.failedToAssignEmptyString
-//        }
+        try assignWordsProperties(for: newWord, from: text)
         return newWord
     }
     ///Assigning text and description values to passed word with  devided passed text.
@@ -65,6 +60,7 @@ extension CoreDataHelper: WordsManaging{
         var newWord = String()
         var newDescription = String()
         
+        print(text)
         let exceptions = settingModel.appExceptions.availableExceptionsInString
         
         trimmedText = text.trimmingCharacters(in: CharacterSet(charactersIn: exceptions + exceptions.uppercased()))
@@ -95,28 +91,12 @@ extension CoreDataHelper: WordsManaging{
         wordEntity.meaning = newDescription
         
         
-        print("Debug purpose: AsignProperties method worked with wordsEntity name: \(wordEntity.word)")
+//        print("Debug purpose: AsignProperties method worked with wordsEntity name: \(wordEntity.word)")
     }
-    
+    //MARK: Update
     func reassignWordsProperties(for newWord: WordsEntity, from text: String) throws {
         try assignWordsProperties(for: newWord, from: text)
         try saveContext()
-    }
-
-    func fetchWords(for dictionary: DictionariesEntity) throws -> [WordsEntity] {
-        let fetchRequest = NSFetchRequest<WordsEntity>(entityName: "WordsEntity")
-        let predicate = NSPredicate(format: "dictionary == %@", dictionary)
-        fetchRequest.predicate = predicate
-        let sortDescriptor = NSSortDescriptor(key: "order", ascending: true)
-        fetchRequest.sortDescriptors = [sortDescriptor]
-        do {
-            let words = try context.fetch(fetchRequest)
-            print("Debug purpose: FetchWords method worked for dictionary: \(dictionary.language) with number: \(words.count)")
-            return words
-        } catch {
-            throw WordsErrorType.fetchFailed(dictionary.language)
-//            ("coreData.wordsFetch".localized)
-        }
     }
     //Called inside the dictionary update method.
     ///Reassign words order index for passed dictionary.
@@ -128,9 +108,26 @@ extension CoreDataHelper: WordsManaging{
         }
         
         try saveContext()
-        print("Debug purpose: UpdateWordsOrder method worked for dictionary: \(dictionary.language) with number of words: \(words.count)")
+//        print("Debug purpose: UpdateWordsOrder method worked for dictionary: \(dictionary.language) with number of words: \(words.count)")
     }
-    
+
+    //MARK: Fetch
+    func fetchWords(for dictionary: DictionariesEntity) throws -> [WordsEntity] {
+        let fetchRequest = NSFetchRequest<WordsEntity>(entityName: "WordsEntity")
+        let predicate = NSPredicate(format: "dictionary == %@", dictionary)
+        fetchRequest.predicate = predicate
+        let sortDescriptor = NSSortDescriptor(key: "order", ascending: true)
+        fetchRequest.sortDescriptors = [sortDescriptor]
+        do {
+            let words = try context.fetch(fetchRequest)
+//            print("Debug purpose: FetchWords method worked for dictionary: \(dictionary.language) with number: \(words.count)")
+            return words
+        } catch {
+            throw WordsErrorType.fetchFailed(dictionary.language)
+//            ("coreData.wordsFetch".localized)
+        }
+    }
+        //MARK: Delete
     func deleteWord(word: WordsEntity) throws {
         guard let associatedDictionary = word.dictionary else {
             throw WordsErrorType.deleteFailed(word.word.prefix(20) + (word.word.count > 20 ? "..." : ""))

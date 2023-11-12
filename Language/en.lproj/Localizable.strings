@@ -8,6 +8,7 @@
 "menu.cell.name" = "Name";
 "menu.cell.number" = "Total cards";
 "menu.cell.import" = "Add dictionary";
+"menu.undo.title" = "Do you want to restore the dictionary you just deleted?";
 //MARK: - StatisticView
 "statistic.title" = "Statistic";
 "statistic.beginDate" = "Begin date:";
@@ -70,6 +71,7 @@
 "system.next" = "Next";
 "system.letsGo" = "Let's go";
 "system.skip" = "Skip";
+"system.restore" = "Restore";
 
 //MARK: - DetailsVC
 "details.title" = "Details";

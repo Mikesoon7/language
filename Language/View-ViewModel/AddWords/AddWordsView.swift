@@ -79,7 +79,7 @@ class AddWordsView: UIViewController {
         viewModel?.output
             .sink { [weak self] output in
                 switch output {
-                case .shouldPresentEerror(let error):
+                case .shouldPresentError(let error):
                     self?.presentError(error)
                 case .shouldPop:
                     self?.navigationController?.popViewController(animated: true)
@@ -88,6 +88,8 @@ class AddWordsView: UIViewController {
                 case .shouldUpdateText:
                     self?.textInputView.updatePlaceholder()
                     self?.configureText()
+                case .shouldHighlightError(let word):
+                    self?.highlightErrorFor(word)
                 }
             }
             .store(in: &cancellable)
@@ -132,7 +134,7 @@ class AddWordsView: UIViewController {
     //MARK: System
     ///Returns textView value. If value equals nil, return nil and present an error.
     private func validateText() -> String?{
-        guard let text = textInputView.textView.text, !text.isEmpty else {
+        guard let text = textInputView.textView.text, !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
             let insertTextAllert = UIAlertController(
                 title: "textAlert".localized,
                 message: "textInfo".localized ,
@@ -162,6 +164,17 @@ class AddWordsView: UIViewController {
         textInputViewBottomAnchor.isActive = keyboardIsvisable
         view.layoutIfNeeded()
     }
+    
+    private func highlightErrorFor(_ word: String){
+        guard let text = self.textInputView.textView.text, let range = text.range(of: word, options: .caseInsensitive, range: word.startIndex..<text.endIndex) else {
+            return
+        }
+        
+        let NSRAnge = NSRange(range, in: text)
+        print(range)
+        self.textInputView.highlightError(NSRAnge)
+    }
+
 
 //MARK: - Actions
     //Done button, which appears when user activate keyboard.

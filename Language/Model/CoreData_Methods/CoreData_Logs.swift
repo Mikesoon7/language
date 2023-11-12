@@ -16,7 +16,7 @@ protocol LogsManaging{
 }
 
 extension CoreDataHelper: LogsManaging{
-    //MARK: - Working with logs
+    //MARK: Fetch
     ///Return log entity, assosiated with passed dictionary at the specific date.
     private func fetchLog(for dictionary: DictionariesEntity, at date: Date = Date()) -> DictionariesAccessLog? {
         let dateWithoutTime = date.timeStripped
@@ -28,10 +28,27 @@ extension CoreDataHelper: LogsManaging{
             let logs = try context.fetch(fetchRequest)
             return logs.first
         } catch {
-            print("Failed to fetch log: \(error)")
+//            print("Failed to fetch log: \(error)")
             return nil
         }
     }
+    func fetchAllLogs(for dictionary: DictionariesEntity?) throws -> [DictionariesAccessLog] {
+        let fetchRequest = NSFetchRequest<DictionariesAccessLog>(entityName: "DictionariesAccessLog")
+        if let dictionary = dictionary {
+            let predicate = NSPredicate(format: "dictionary == %@", dictionary)
+            fetchRequest.predicate = predicate
+        }
+        let sortDescriptor = NSSortDescriptor(key: "accessDate", ascending: true)
+        fetchRequest.sortDescriptors = [sortDescriptor]
+        
+        do{
+            let logs = try context.fetch(fetchRequest)
+            return logs
+        } catch {
+            throw LogsErrorType.fetchFailed
+        }
+    }
+    //MARK: Creation
     ///Creating new log entity for passed dictionary.
     private func createNewLog(for dictionary: DictionariesEntity, at date: Date = Date()) throws -> DictionariesAccessLog {
         let log = DictionariesAccessLog(context: context)
@@ -58,6 +75,7 @@ extension CoreDataHelper: LogsManaging{
 //            print("Error")
 //        }
 //    }
+    //MARK: Update
     func accessLog(for dictionary: DictionariesEntity) throws {
         guard let log = fetchLog(for: dictionary) else {
             do {
@@ -78,22 +96,6 @@ extension CoreDataHelper: LogsManaging{
         }
     }
     
-    func fetchAllLogs(for dictionary: DictionariesEntity?) throws -> [DictionariesAccessLog] {
-        let fetchRequest = NSFetchRequest<DictionariesAccessLog>(entityName: "DictionariesAccessLog")
-        if let dictionary = dictionary {
-            let predicate = NSPredicate(format: "dictionary == %@", dictionary)
-            fetchRequest.predicate = predicate
-        }
-        let sortDescriptor = NSSortDescriptor(key: "accessDate", ascending: true)
-        fetchRequest.sortDescriptors = [sortDescriptor]
-        
-        do{
-            let logs = try context.fetch(fetchRequest)
-            return logs
-        } catch {
-            throw LogsErrorType.fetchFailed
-        }
-    }
     
 
 }

@@ -19,6 +19,7 @@ class EditViewModel {
         case shouldPresentData(ParsedDictionary)
         case shouldPresentAlert(UIAlertController)
         case shouldPresentError(Error)
+        case shouldHighlightErrorLine(String)
         case shouldUpdateLabels
         case editSucceed
     }
@@ -94,21 +95,26 @@ class EditViewModel {
         self.dictionaryName = name
         let lines = text.split(separator: "\n", omittingEmptySubsequences: true)
         let newCollection = lines.map({ String($0)})
-        print(newCollection)
-        print(oldCollection)
         let patch = patch(from: oldCollection, to: newCollection)
         
-        print(patch)
+        var errorAppeared = false
         for i in patch{
+            if errorAppeared {
+                break
+            }
             switch i {
             case .deletion(index: let index):
                 words.remove(at: index)
+                oldTextByLines.remove(at: index)
             case .insertion(index: let index, element: let text):
                 do {
                     words.insert( try model.createWordFromLine(for: dictionary, text: text, index: index, id: UUID()), at: index)
+                    oldTextByLines.insert(text, at: index)
                     print("\(dictionary.language), \(text), \(index)")
                 } catch {
+                    errorAppeared = true
                     output.send(.shouldPresentError(error))
+                    output.send(.shouldHighlightErrorLine(text))
                 }
             }
         }

@@ -15,9 +15,7 @@ typealias Dictionary_Words_LogsManager = DictionaryManaging & WordsManaging & Lo
 
 
 class CoreDataHelper {
-    
-//    static let shared = CoreDataHelper()
-    
+        
     //MARK: - Properties
     internal var numberOfDictionaries: Int64 = 0
     var settingModel: UserSettingsStorageProtocol
@@ -28,6 +26,7 @@ class CoreDataHelper {
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         self.context = appDelegate.persistentContainer.viewContext
         self.settingModel = settingsModel
+        self.context.undoManager = UndoManager()
 
         do {
             self.numberOfDictionaries = try fetchNumberOfDictionaries()
