@@ -99,7 +99,6 @@ class SearchViewModel {
                 data.append(contentsOf: words)
                 self.filteredWords = data
                 self.allWords = data
-                print("Fetched words for search")
             })
         } catch {
             output.send(.error(error))

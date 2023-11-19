@@ -42,6 +42,7 @@ class StatisticViewModel{
     
     //MARK: Properties
     private var dataModel: Dictionary_Words_LogsManager
+    private var settingModel: UserSettingsStorageProtocol
 
     private var dataConverter = StatisticLogConverter()
     
@@ -51,13 +52,14 @@ class StatisticViewModel{
     private var pieChartColours: [UIColor] = []
     private var pieChartSelectedEntry: PieChartDataEntry?
     
-    private var selectedCustomOption: CustomOptions = .allTime
+    private var selectedCustomOption: CustomOptions = .currentMonth
     
     var output = PassthroughSubject<Output, Never>()
     private var cancellable = Set<AnyCancellable>()
 
     
-    init(dataModel: Dictionary_Words_LogsManager){
+    init(dataModel: Dictionary_Words_LogsManager, settingsModel: UserSettingsStorageProtocol){
+        self.settingModel = settingsModel
         self.dataModel = dataModel
         self.fetchDictionaries()
     }
@@ -225,9 +227,11 @@ class StatisticViewModel{
         pieChartData.setValueFont(.helveticaNeueMedium.withSize(15))
         
         output.send(.shouldUpdatePieChartWith(pieChartData))
-
     }
-    
+    func currentLocale() -> Locale {
+        let lnCode = settingModel.appLanguage.languageCode
+        return Locale(identifier: lnCode)
+    }
 
     //MARK: TableView Related
     func numberOfRowsInTableView() -> Int {

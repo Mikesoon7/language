@@ -85,9 +85,12 @@ class NotificationViewModel{
     
     func getSelectedDays() -> [Int]{
         selectedNotificationDays
-        
     }
-
+    func getCurrentLocale() -> Locale {
+        let lnCode = settingsModel.appLanguage.languageCode
+        return Locale(identifier: lnCode)
+    }
+    
     //MARK: - Methods for UITableView
     func numberOfCellsIn(section: Int) -> Int{
         return settingReference[section].count

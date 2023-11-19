@@ -305,13 +305,18 @@ class DataConverter {
     private var filledLogData: [DayLogRaw] = [DayLogRaw]()
     private var filledDaySequence = [Date]()
     
-    private let dayLitFormatter: DateFormatter = {
+    private var locale: Locale
+    
+    private lazy var dayLitFormatter: DateFormatter = {
         let formatter = DateFormatter()
+//        let currentIdentifier = UserDefaults.standard.string(forKey: "AppleLanguages") ?? "en"
         formatter.dateFormat = "EEE"
+        formatter.locale = self.locale
         return formatter
     }()
      
-    init(logs: [DictionariesAccessLog]){
+    init(logs: [DictionariesAccessLog], locale: Locale){
+        self.locale = locale
         initialLogData = logs.sorted(by: { $0.accessDate! < $1.accessDate!})
         completedRange()
         completeFinalLogs()
@@ -403,11 +408,17 @@ class DataConverter {
         var weekDates = [Date]()
         var week = [DayLog]()
         
-        let dayDigFormatter = DateFormatter()
-        dayDigFormatter.dateFormat = "dd"
+//        let dayDigFormatter = DateFormatter()
+//        let currentIdentifier = UserDefaults.standard.string(forKey: "AppleLanguages") ?? "en"
+//        dayDigFormatter.dateFormat = "dd"
+//        dayDigFormatter.locale = Locale(identifier: currentIdentifier)
+//        UserDefaults.standard.value(forKey: "AppleLanguages")
+//        UserDefaults.standard.set([languageKey], forKey: "AppleLanguages")
+
         
         for day in filledLogData {
             let dayLit = dayLitFormatter.string(from: day.date)
+            print(dayLit)
 //            print("On \(day.date) you accesses \(day.count) times ")
             
             week.append(DayLog(order:   day.order,

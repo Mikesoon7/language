@@ -60,8 +60,8 @@ class StatisticView: UIViewController {
     private lazy var leftPickerView: PickerCallView = {
         let view = PickerCallView(
             title: "statistic.beginDate".localized,
-            subtitle: convertDateToString(
-                Date()))
+            subtitle: "---"
+        )
         
         view.backgroundColor = .systemBackground
         view.layer.borderColor = UIColor.label.cgColor
@@ -74,8 +74,8 @@ class StatisticView: UIViewController {
     private lazy var rightPickerView: PickerCallView = {
         let view = PickerCallView(
             title: "statistic.endDate".localized,
-            subtitle: convertDateToString(
-                Date()))
+            subtitle: "---"
+        )
         
         view.backgroundColor = .systemBackground
         view.layer.borderColor = UIColor.label.cgColor
@@ -316,6 +316,7 @@ class StatisticView: UIViewController {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
         formatter.timeStyle = .none
+        formatter.locale = viewModel?.currentLocale()
         
         return formatter.string(from: date)
     }

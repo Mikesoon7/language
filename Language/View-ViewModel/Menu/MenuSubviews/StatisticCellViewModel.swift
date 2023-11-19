@@ -20,11 +20,13 @@ class StatisticCellViewModel {
     
     var dictionary: DictionariesEntity
     private var dataModel: Dictionary_Words_LogsManager
+    private var settingsModel: UserSettingsStorageProtocol
     
     var output = PassthroughSubject<StatisticCellOutput, Never>()
 
-    init(model: Dictionary_Words_LogsManager ,dictionary: DictionariesEntity){
-        self.dataModel = model
+    init(dataModel: Dictionary_Words_LogsManager, settingModel: UserSettingsStorageProtocol, dictionary: DictionariesEntity){
+        self.dataModel = dataModel
+        self.settingsModel = settingModel
         self.dictionary = dictionary
     }
 
@@ -38,7 +40,8 @@ class StatisticCellViewModel {
     }
     
     private func convertData(data: [DictionariesAccessLog]){
-        let data = DataConverter(logs: data).getDataDividedByWeeks()
+        let locale = Locale(identifier: settingsModel.appLanguage.languageCode)
+        let data = DataConverter(logs: data, locale: locale).getDataDividedByWeeks()
         output.send(.data(data))
     }
     

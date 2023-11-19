@@ -15,6 +15,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         //Creating observer for changing tabBar string values
         self.observeLanguageChange()
+        self.checkAppVersionAccessability()
         //Creating data model, which will be stored in viewModel factory class.
         let settingsModel: UserSettingsStorageProtocol = UserSettings()
         let dataModel: Dictionary_Words_LogsManager = CoreDataHelper(settingsModel: settingsModel)
@@ -77,6 +78,18 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         tabBarController.tabBar.backgroundImage = UIImage()
         
         return tabBarController
+    }
+    func checkAppVersionAccessability(){
+        if let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String,
+               let build = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String {
+               let versionAndBuild = version + "." + build
+               UserDefaults.standard.set(versionAndBuild, forKey: "app_version")
+               UserDefaults.standard.synchronize()
+            print("Data was synchronized")
+            }
+        print(UserDefaults.standard.value(forKey: "app_version"))
+        print(UserDefaults.standard.value(forKey: "AppleLanguages"))
+
     }
     func configureViewModelFactoryWith(_ dataModel: Dictionary_Words_LogsManager, settingsModel: UserSettingsStorageProtocol) -> ViewModelFactory {
         return ViewModelFactory(dataModel: dataModel, settingsModel: settingsModel)

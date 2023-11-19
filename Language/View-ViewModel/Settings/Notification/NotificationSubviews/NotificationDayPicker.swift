@@ -12,12 +12,13 @@ class NotificationDayPicker: UIView{
     
     private var selectedDaysSet : [Int]!
     private weak var viewModel: NotificationViewModel!
-    
+        
     //Array of names for each day, starts from the same as in system day.
-    private let arrayOfDays: [String] = {
+    private lazy var arrayOfDays: [String] = {
         let calendar = Calendar.current
         let firstDay = calendar.firstWeekday
         let formatter = DateFormatter()
+        formatter.locale = viewModel.getCurrentLocale()
         var array: [String] = []
         for i in 0..<7 {
             let index = (firstDay - 1 + i) % 7
@@ -27,7 +28,7 @@ class NotificationDayPicker: UIView{
     }()
 
     //MARK: Inherited
-    init(viewModel: NotificationViewModel){
+    required init(viewModel: NotificationViewModel){
         super.init(frame: .zero)
         self.selectedDaysSet = viewModel.getSelectedDays()
         self.viewModel = viewModel

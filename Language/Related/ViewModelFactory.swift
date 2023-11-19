@@ -45,10 +45,12 @@ final class ViewModelFactory{
         NotificationViewModel(settingsModel: settingsModel)
     }
     func configureStatisticModel(dictionary: DictionariesEntity) -> StatisticCellViewModel{
-        StatisticCellViewModel(model: dataModel, dictionary: dictionary)
+        StatisticCellViewModel(dataModel: dataModel,
+                               settingModel: settingsModel,
+                               dictionary: dictionary)
     }
     func configureStatisticViewModel() -> StatisticViewModel{
-        StatisticViewModel(dataModel: dataModel)
+        StatisticViewModel(dataModel: dataModel, settingsModel: settingsModel)
     }
     func configureExceptionViewModel() -> ExceptioonsViewModel{
         ExceptioonsViewModel(settingsModel: settingsModel)
