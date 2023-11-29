@@ -99,6 +99,12 @@ class CustomSearchToolBar: UIView {
         searchBar.text = nil
         textView?.setNeedsDisplay()
     }
+    func enterBackgroundState(){
+        self.searchBar.resignFirstResponder()
+    }
+    func isFirstResponder() -> Bool{
+        return searchBar.isFirstResponder
+    }
 
     //MARK: System methods.
     ///Finding matches and assinging founded ranges to local array.

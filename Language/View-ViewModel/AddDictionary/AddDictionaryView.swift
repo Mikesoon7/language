@@ -85,6 +85,19 @@ class AddDictionaryView: UIViewController {
         configureNameInputView()
         configureSaveButton()
         configureText()
+        
+//        NotificationCenter.default.addObserver(
+//            self,
+//            selector: #selector(appDidEnterBackground(sender: )),
+//            name: UIScene.didEnterBackgroundNotification,
+//            object: nil
+//        )
+//        NotificationCenter.default.addObserver(
+//            self,
+//            selector: #selector(appDidActivate(sender: )),
+//            name: UIScene.didActivateNotification,
+//            object: nil
+//        )
     }
     override func viewDidAppear(_ animated: Bool) {
         if isFirstLaunch {
@@ -295,6 +308,14 @@ extension AddDictionaryView {
     @objc func keyboardWillHide(sender: Notification){
         updateTextViewConstraits(keyboardIsVisable: false)
     }
+    
+//    @objc func appDidEnterBackground(sender: Notification){
+//        textInputView.textView.resignFirstResponder()
+//    }
+//    @objc func appDidActivate(sender: Notification){
+//        textInputView.textView.becomeFirstResponder()
+//    }
+
     
 }
 

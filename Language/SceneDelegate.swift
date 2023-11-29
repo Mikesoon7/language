@@ -10,18 +10,21 @@ import UIKit
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
+    var settingsModel: UserSettingsStorageProtocol!
+    var dataModel: Dictionary_Words_LogsManager!
     
-    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-
+    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions){
+        
         //Creating observer for changing tabBar string values
         self.observeLanguageChange()
         self.checkAppVersionAccessability()
         //Creating data model, which will be stored in viewModel factory class.
-        let settingsModel: UserSettingsStorageProtocol = UserSettings()
-        let dataModel: Dictionary_Words_LogsManager = CoreDataHelper(settingsModel: settingsModel)
+        settingsModel = UserSettings()
+        dataModel = CoreDataHelper(settingsModel: settingsModel)
         
-        validateFirstLaunch(settings: settingsModel, dataModel: dataModel)
-        
+        self.validateInitialSettings(settings: settingsModel)
+        self.validateFirstLaunch(settings: settingsModel, dataModel: dataModel)
+
         //Initializing TabBarController
         guard let window = (scene as? UIWindowScene) else { return }
         self.window = UIWindow(frame: window.coordinateSpace.bounds)
@@ -29,7 +32,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         self.window?.rootViewController = setUpTabBarController(viewModelFactory: configureViewModelFactoryWith(dataModel, settingsModel: settingsModel))
         //Method called at this point to apply changes to the existing UIScene
         
-        self.use(theme: settingsModel.appTheme, language: settingsModel.appLanguage)
+        
+
         self.window?.makeKeyAndVisible()
         
         
@@ -85,11 +89,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                let versionAndBuild = version + "." + build
                UserDefaults.standard.set(versionAndBuild, forKey: "app_version")
                UserDefaults.standard.synchronize()
-            print("Data was synchronized")
             }
-        print(UserDefaults.standard.value(forKey: "app_version"))
-        print(UserDefaults.standard.value(forKey: "AppleLanguages"))
-
     }
     func configureViewModelFactoryWith(_ dataModel: Dictionary_Words_LogsManager, settingsModel: UserSettingsStorageProtocol) -> ViewModelFactory {
         return ViewModelFactory(dataModel: dataModel, settingsModel: settingsModel)
@@ -103,9 +103,23 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             }
         }
     }
-    func use(theme: AppTheme, language: AppLanguage){
-        LanguageChangeManager.shared.changeLanguage(to: language.languageCode)
-        self.window?.overrideUserInterfaceStyle = theme.userInterfaceStyle
+    func validateInitialSettings(settings: UserSettingsStorageProtocol){
+        let systemLangauge = UserDefaults.standard.array(forKey: "AppleLanguages")
+        let languageKey = (systemLangauge?.first as? String)?.prefix(2)
+        let languageCode = String(languageKey ?? "en")
+        
+        self.window?.overrideUserInterfaceStyle = settings.appTheme.userInterfaceStyle
+
+        guard languageCode == settings.appLanguage.languageCode else {
+            switch languageCode {
+            case "uk": settings.reload(newValue: .language(.ukrainian))
+            case "ru": settings.reload(newValue: .language(.russian))
+            default: settings.reload(newValue: .language(.english))
+            }
+            return
+        }
+        LanguageChangeManager.shared.changeLanguage(to: languageCode)
+        
     }
         
     func observeLanguageChange(){
@@ -114,6 +128,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
     @objc func languageDidChange(sender: Any){
         print("recieved language notification in AppScene")
+        settingsModel.reload(newValue: .notifications(settingsModel.appNotifications))
         if let tabBarController = self.window?.rootViewController as? UITabBarController {
             print("successfully extracted tabBarController")
             if let tabBarItems = tabBarController.tabBar.items {

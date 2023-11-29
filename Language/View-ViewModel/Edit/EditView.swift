@@ -20,7 +20,9 @@ class EditView: UIViewController {
     private let textStorage = NSTextStorage()
 
     private var isSearching = false
-
+    private var textViewShouldBecomeActive = false
+    private var searchViewShouldBecomeActive = false
+    
     //MARK: - Views
     private lazy var customSearchToolBar: CustomSearchToolBar = {
         let view = CustomSearchToolBar(textView: textView, layoutManager: layoutManager)
@@ -82,9 +84,24 @@ class EditView: UIViewController {
         print("Search view initialization")
         configureSearchView()
         configureNavBar()
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(appDidEnterBackground(sender: )),
+            name: UIScene.didEnterBackgroundNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(appDidActivate(sender: )),
+            name: UIScene.didActivateNotification,
+            object: nil
+        )
+
     }
     deinit {
-        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
+//        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
+        NotificationCenter.default.removeObserver(self)
     }
     //MARK: Binding View and ViewModel
     private func bind(){
@@ -254,7 +271,7 @@ extension EditView {
         if let userInfo = sender.userInfo,
            let keyboardEndFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
             let convertedEndFrame = view.convert(keyboardEndFrame, from: view.window)
-            var overlap = textView.frame.maxY - convertedEndFrame.minY
+            let overlap = textView.frame.maxY - convertedEndFrame.minY
             
             if overlap > 0 {
                 textView.contentInset.bottom = overlap
@@ -270,6 +287,25 @@ extension EditView {
         guard !isSearching else { return }
         changeSearchSessionState(activate: true)
     }
+    @objc func appDidEnterBackground(sender: Notification){
+        if textView.isFirstResponder {
+            textView.resignFirstResponder()
+            textViewShouldBecomeActive = true
+        } else if customSearchToolBar.isFirstResponder() {
+            customSearchToolBar.enterBackgroundState()
+            searchViewShouldBecomeActive = true
+        }
+    }
+    @objc func appDidActivate(sender: Notification){
+        if searchViewShouldBecomeActive {
+            customSearchToolBar.beginSearchSession()
+            searchViewShouldBecomeActive = false
+        } else if textViewShouldBecomeActive {
+            textView.becomeFirstResponder()
+            textViewShouldBecomeActive = false
+        }
+    }
+
     
 }
 
@@ -280,7 +316,6 @@ extension EditView: UITextViewDelegate{
         if isSearching {
             textView.setNeedsDisplay()
         }
-        
     }
     
     ///Reloading input accessory view, finishing search session or cleaning error glyph.

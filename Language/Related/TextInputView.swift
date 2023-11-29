@@ -20,6 +20,8 @@ final class TextInputView: UIView {
 
     weak var delegate: PlaceholderTextViewDelegate?
     
+    private var shouldBecomeActive = false
+    
     //MARK: Views
     private let placeholderLabel: UILabel = {
         let label = UILabel()
@@ -71,11 +73,29 @@ final class TextInputView: UIView {
         configureView()
         configureTableView()
         updatePlaceholder()
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(appDidEnterBackground(sender: )),
+            name: UIScene.didEnterBackgroundNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(appDidActivate(sender: )),
+            name: UIScene.didActivateNotification,
+            object: nil
+        )
+
     }
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         fatalError("Coder wasn's imported")
+    }
+    deinit {
+        NotificationCenter.default.removeObserver(self, name: UIScene.didEnterBackgroundNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIScene.didActivateNotification, object: nil)
     }
     
     //MARK: View SetUp
@@ -113,6 +133,7 @@ final class TextInputView: UIView {
     
     
     
+    
     //MARK: System
     private func pasteTextToTextView(){
         guard let text = UIPasteboard.general.string, text != "" else {
@@ -146,10 +167,21 @@ final class TextInputView: UIView {
         layoutManager.errorRange = range
         textView.setNeedsDisplay()
     }
+    
     //MARK: Action
     @objc func pasteButtonDidTap(sender: Any){
         pasteTextToTextView()
     }
+    @objc func appDidEnterBackground(sender: Notification){
+        shouldBecomeActive = textView.isFirstResponder
+        textView.resignFirstResponder()
+    }
+    @objc func appDidActivate(sender: Notification){
+        if shouldBecomeActive {
+            textView.becomeFirstResponder()
+        }
+    }
+
 }
 extension TextInputView: UITextViewDelegate{
     func textViewDidBeginEditing(_ textView: UITextView) {

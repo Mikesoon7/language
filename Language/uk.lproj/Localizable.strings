@@ -1,7 +1,7 @@
 //MARK: - TabBarController
 "tabBar.dictionaries" = "Словники";
 "tabBar.search" = "Пошук";
-"tabBar.settings" = "Налаштування";
+"tabBar.settings" = "Параметри";
 //MARK: - MainVC
 "menu.title" = "Словники";
 "menu.deleteDictionary" = "Видалити словник?";

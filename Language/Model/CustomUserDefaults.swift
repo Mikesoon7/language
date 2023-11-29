@@ -40,7 +40,7 @@ protocol UserSettingsStorageProtocol{
     var appNotifications: AppPushNotifications      { get set }
     var appSearchBarPosition: AppSearchBarPosition  { get set }
     var appSeparators: AppPairSeparators            { get set }
-    var appExceptions: AppExceptions            { get set }
+    var appExceptions: AppExceptions                { get set }
 //    var appDuplicates: AppDuplicates                { get set }
     
     init(manager: UserSettingsManagerProtocol, helper: UserSettingsUpdateHelper)
@@ -315,19 +315,6 @@ struct AppPairSeparators: Codable{
     var maxCapacity: Int = 5
 }
 
-//hi, can you share some ideas on the solution. I have an [[String]], which is stored in UserDefaults.
-//struct AppTextExceptions: Codable{
-//    static let key = "AppExeptions"
-//
-//    var availableExceptions: [[String]]
-//
-//    var title: String {
-//        return "exceptionsItem".localized
-//    }
-//}
-//
-//User can add symbols, and select multiple arrays, which can be used in app. How can I track the selection ?
-//
 struct AppExceptions: Codable{
     static let key = "AppExeptions"
     

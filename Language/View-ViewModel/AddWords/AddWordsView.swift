@@ -24,7 +24,7 @@ class AddWordsView: UIViewController {
     private lazy var doneButton: UIBarButtonItem = {
         let button = UIBarButtonItem(
             title: "system.done".localized,
-            style: .plain,
+            style: .done,
             target: self,
             action: #selector(rightBarButDidTap(sender:))
         )

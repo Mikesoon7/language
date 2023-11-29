@@ -8,15 +8,9 @@
 	<array>
 		<dict>
 			<key>Type</key>
-			<string>PSGroupSpecifier</string>
-			<key>Title</key>
-			<string>About</string>
-		</dict>
-		<dict>
-			<key>Type</key>
 			<string>PSChildPaneSpecifier</string>
 			<key>Title</key>
-			<string>Acknowledgments</string>
+			<string>about.licence</string>
 			<key>File</key>
 			<string>Acknowledgments</string>
 		</dict>
@@ -24,7 +18,7 @@
 			<key>Type</key>
 			<string>PSTitleValueSpecifier</string>
 			<key>Title</key>
-			<string>Version</string>
+			<string>about.version</string>
 			<key>Key</key>
 			<string>app_version</string>
 			<key>DefaultValue</key>

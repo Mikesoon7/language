@@ -77,7 +77,7 @@ extension CoreDataHelper: WordsManaging{
         if parts.count == 2{
             newDescription = String(parts[1]).trimmingCharacters(in: .whitespacesAndNewlines)
         } else if parts.count > 2{
-            newDescription = parts[1...].joined(separator: " ").trimmingCharacters(in: .whitespacesAndNewlines)
+            newDescription = parts[1...].joined(separator: " \(settingModel.appSeparators.value) ").trimmingCharacters(in: .whitespacesAndNewlines)
         }
         
         wordEntity.word = {
