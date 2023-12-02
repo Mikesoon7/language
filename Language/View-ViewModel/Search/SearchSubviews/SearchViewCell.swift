@@ -128,7 +128,6 @@ class SearchViewCell: UITableViewCell {
         UIView.transition(with: self.descriptionLabel, duration: 0.5, options: [ .transitionCrossDissolve, .curveEaseOut], animations: {
             self.descriptionLabel.numberOfLines = expand ? 0: 1
             self.setNeedsUpdateConstraints()
-            print("descriptionLabel is changing")
             self.layoutIfNeeded()
         })
     }

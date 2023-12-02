@@ -16,7 +16,6 @@ class LaunchAnimation{
     private var label2 : UILabel!
     
     private var userInterfaceStyle: UIUserInterfaceStyle
-//    var userInterfaceStyle: UIUserInterfaceStyle = UserSettings.shared.appTheme.userInterfaceStyle
     
     init(bounds: CGRect, interfaceStyle: UIUserInterfaceStyle){
         self.userInterfaceStyle = interfaceStyle
@@ -34,12 +33,11 @@ class LaunchAnimation{
 //MARK: - AnimationViews SetUp
     func animationViewsCustomization(){
         cardView = {
-//            let view = UIView(frame: CGRect(x: 0, y: 0,
-//                                            width: animationView.frame.width * 0.7,
-//                                            height: animationView.frame.height * 0.5))
-            let view = UIView(frame: CGRect(x: 0, y: 0,
-                                            width: animationView.frame.height * 0.35,
-                                            height: animationView.frame.height * 0.55))
+            let view = UIView(
+                frame: CGRect(x: 0,
+                              y: 0,
+                              width: animationView.frame.height * 0.35,
+                              height: animationView.frame.height * 0.55))
 
             view.center = animationView.center
             view.backgroundColor = .systemBackground
@@ -134,6 +132,7 @@ class LaunchAnimation{
                     return UIColor.black.cgColor
                 case .dark:
                     return UIColor.white.cgColor
+    
                 default: return UIColor.label.cgColor
                 }
             }()

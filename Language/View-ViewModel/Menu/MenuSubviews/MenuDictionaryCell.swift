@@ -88,7 +88,7 @@ class MenuDictionaryCell: UITableViewCell{
     
     var languageResultLabel : UILabel = {
         var label = UILabel()
-        label.font = UIFont(name: .SelectedFonts.georigaItalic.rawValue, size: 15)
+        label.font = .georgianItalic.withSize(15)
         label.textAlignment = .right
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -96,7 +96,7 @@ class MenuDictionaryCell: UITableViewCell{
     
     var cardsResultLabel : UILabel = {
         var label = UILabel()
-        label.font = UIFont(name: .SelectedFonts.georigaItalic.rawValue, size: 15)
+        label.font = .georgianItalic.withSize(15)
         label.textAlignment = .right
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -520,7 +520,7 @@ class CustomActionView: UIView{
     private let actionButtonWidthRatio: CGFloat = 0.2
     
     //MARK: Constants
-
+    
     
     init(frontView: UIView){
         self.titleFrontView = frontView
@@ -549,7 +549,7 @@ class CustomActionView: UIView{
             height: self.frame.height), cornerRadius: cornerRadius)
     }
     
-        
+    
     private func configureCustomActions(imageName: String, colour: UIColor) -> UIView{
         let actionView: UIView = {
             let view = UIView()
@@ -585,12 +585,12 @@ class CustomActionView: UIView{
     var initialActionConstant: CGFloat!
     var currentDeleteConstant: CGFloat!
     var finalDeleteConstant: CGFloat!
-
+    
     var editViewLeadingAnchor: NSLayoutConstraint!
     var initialEditConstant: CGFloat!
     var currentEditConstant: CGFloat!
     var finalEditConstant: CGFloat!
-        
+    
     var statViewLeadingAnchor: NSLayoutConstraint!
     var initilStatConstant: CGFloat!
     var finalStatConstant: CGFloat!
@@ -610,103 +610,10 @@ class CustomActionView: UIView{
             titleFrontView.leadingAnchor.constraint(equalTo: leadingAnchor),
             titleFrontView.bottomAnchor.constraint(equalTo: bottomAnchor),
             titleFrontView.topAnchor.constraint(equalTo: topAnchor),
-
+            
             
             
         ])
     }
-
-//    func configureHolderView(){
-//        contentView.addSubview(holderView)
-//        holderView.addSubviews(mainView, statisticView, statView, editView, deleteView)
-//
-//        contentViewWidth = contentView.frame.width
-//        contentViewHeight = contentView.frame.height
-//        initialActionConstant = -cornerRadius
-//
-//        //Related to the holder
-//        initialHolderConstant = 0
-//        currentHolderConstant = 0
-//        finalHolderConstant = -(contentViewWidth * 0.6 - cornerRadius * 2)
-//        holderViewLeadingAnchor = holderView.leadingAnchor.constraint(
-//            equalTo: contentView.leadingAnchor, constant: currentHolderConstant)
-//
-//        //Related to Delete
-//        currentDeleteConstant = -cornerRadius
-//        finalDeleteConstant = contentViewWidth * 0.4 - cornerRadius * 2
-//        deleteViewLeadingAnchor = deleteView.leadingAnchor.constraint(
-//            equalTo: mainView.trailingAnchor, constant: initialActionConstant)
-//
-//        //Related to Edit
-//        currentEditConstant = -cornerRadius
-//        finalEditConstant = contentViewWidth * 0.2 - cornerRadius * 1.5
-//        editViewLeadingAnchor = editView.leadingAnchor.constraint(
-//            equalTo: mainView.trailingAnchor, constant: initialActionConstant)
-//
-//        finalStatConstant = -(contentViewWidth * 0.2) - cornerRadius * 0.5
-//        statViewLeadingAnchor = statView.leadingAnchor.constraint(
-//            equalTo: mainView.trailingAnchor, constant: initialActionConstant)
-//
-//        statViewInitialWidth = -contentViewWidth
-//        statViewFinalWifth = 0
-//        statViewWidthAnchor = statisticView.widthAnchor.constraint(equalTo: contentView.widthAnchor, constant: statViewInitialWidth)
-//
-//        statViewInitialLeadingAnchor = statisticView.leadingAnchor.constraint(equalTo: statView.leadingAnchor)
-//        statViewFinalLeadingAnchor = statisticView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor)
-//
-//        NSLayoutConstraint.activate([
-//            holderViewLeadingAnchor,
-//            holderView.topAnchor.constraint(equalTo: contentView.topAnchor),
-//            holderView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
-//            holderView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 1.6),
-//
-//            mainView.topAnchor.constraint(equalTo: holderView.topAnchor),
-//            mainView.leadingAnchor.constraint(equalTo: holderView.leadingAnchor),
-//            mainView.bottomAnchor.constraint(equalTo: holderView.bottomAnchor),
-//            mainView.widthAnchor.constraint(equalTo: contentView.widthAnchor),
-//
-//            deleteView.topAnchor.constraint(equalTo: mainView.topAnchor),
-//            deleteViewLeadingAnchor,
-//            deleteView.bottomAnchor.constraint(equalTo: mainView.bottomAnchor),
-//            deleteView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.2),
-//
-//            editView.topAnchor.constraint(equalTo: mainView.topAnchor),
-//            editViewLeadingAnchor,
-//            editView.bottomAnchor.constraint(equalTo: mainView.bottomAnchor),
-//            editView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.2),
-//
-//            statView.topAnchor.constraint(equalTo: mainView.topAnchor),
-//            statViewLeadingAnchor,
-//            statView.bottomAnchor.constraint(equalTo: mainView.bottomAnchor),
-//            statView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.2),
-//
-//            statViewInitialLeadingAnchor,
-//            statisticView.topAnchor.constraint(equalTo: statView.topAnchor),
-//            statisticView.bottomAnchor.constraint(equalTo: statView.bottomAnchor),
-//            statisticView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.8, constant: ViewConstants.cornerRadius + ViewConstants.overlayPoints)
-//            ])
-//    }
-//    func configureMainView(){
-//        mainView.addSubviews(languageResultLabel, languageLabel, cardsLabel, cardsResultLabel)
-//
-//        NSLayoutConstraint.activate([
-//            languageLabel.topAnchor.constraint(equalTo: mainView.topAnchor, constant: 15),
-//            languageLabel.leadingAnchor.constraint(equalTo: mainView.leadingAnchor, constant: 15),
-//            languageLabel.heightAnchor.constraint(equalToConstant: 25),
-//
-//            cardsLabel.topAnchor.constraint(equalTo: mainView.topAnchor, constant: 64),
-//            cardsLabel.leadingAnchor.constraint(equalTo: mainView.leadingAnchor, constant: 15),
-//            cardsLabel.heightAnchor.constraint(equalToConstant: 25),
-//
-//            languageResultLabel.topAnchor.constraint(equalTo: mainView.topAnchor, constant: 15),
-//            languageResultLabel.trailingAnchor.constraint(equalTo: mainView.trailingAnchor, constant: -15),
-//            languageResultLabel.heightAnchor.constraint(equalToConstant: 25),
-//
-//            cardsResultLabel.topAnchor.constraint(equalTo: mainView.topAnchor, constant: 64),
-//            cardsResultLabel.trailingAnchor.constraint(equalTo: mainView.trailingAnchor, constant: -15),
-//            cardsResultLabel.heightAnchor.constraint(equalToConstant: 25)
-//        ])
-//
-//    }
-//
+    
 }

@@ -124,15 +124,4 @@ final class MenuViewModel{
     }
 }
 
-//func configureDataForDiagram(with data: [Date: Double]) -> ChartData {
-//    var entries = [BarChartDataEntry]()
-//    let formatter = DateFormatter()
-//    formatter.dateFormat = "dd"
-//    data.forEach { (key: Date, value: Double) in
-//        entries.append(BarChartDataEntry(x: Double(formatter.string(from: key))!, y: value))
-//    }
-//    let barDataSet = BarChartDataSet(entries: entries)
-//    let chart = ChartData(dataSet: barDataSet)
-//    return  chart
-//}
 

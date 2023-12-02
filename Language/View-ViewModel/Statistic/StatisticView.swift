@@ -505,7 +505,4 @@ extension StatisticView: ChartViewDelegate{
         guard let pieEntry = entry as? PieChartDataEntry else { return }
         input?.send(.selectedChartEntryUpdated(pieEntry))
     }
-//    func chartValueNothingSelected(_ chartView: ChartViewBase) {
-//        input?.send(.selectedChartEntryUpdated(nil))
-//    }
 }

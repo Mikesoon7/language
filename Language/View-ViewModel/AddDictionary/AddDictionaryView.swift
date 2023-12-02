@@ -308,15 +308,7 @@ extension AddDictionaryView {
     @objc func keyboardWillHide(sender: Notification){
         updateTextViewConstraits(keyboardIsVisable: false)
     }
-    
-//    @objc func appDidEnterBackground(sender: Notification){
-//        textInputView.textView.resignFirstResponder()
-//    }
-//    @objc func appDidActivate(sender: Notification){
-//        textInputView.textView.becomeFirstResponder()
-//    }
 
-    
 }
 
 //MARK: - Extending for PlaceholderTextView

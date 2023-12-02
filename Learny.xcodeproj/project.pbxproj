@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7D3C3F9F2B1745A200025234 /* UIVC Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D3C3F9E2B1745A200025234 /* UIVC Extension.swift */; };
+		7D3C3FA12B17462500025234 /* UIColor Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D3C3FA02B17462500025234 /* UIColor Extension.swift */; };
+		7D3C3FA32B17467B00025234 /* UIButton Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D3C3FA22B17467B00025234 /* UIButton Extension.swift */; };
 		7D59FEBC2B07925B00FAD332 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 7D59FEBB2B07925B00FAD332 /* Settings.bundle */; };
 		7DB5A5AE2AF8D7FE003B0E0A /* HiglightLayoutManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DB5A5AD2AF8D7FE003B0E0A /* HiglightLayoutManager.swift */; };
 		7DB5A5B02AF8D8A5003B0E0A /* TextViewErrorHighlighter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DB5A5AF2AF8D8A5003B0E0A /* TextViewErrorHighlighter.swift */; };
@@ -57,7 +60,6 @@
 		9A883CEE2A6EA0A6008682F3 /* StatisticCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A883CED2A6EA0A6008682F3 /* StatisticCellViewModel.swift */; };
 		9A90775A2A9CB83D00C88DD3 /* PieStatisticView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A9077592A9CB83D00C88DD3 /* PieStatisticView.swift */; };
 		9A912FC62A06BB540004A91A /* NotificationTextCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A912FC52A06BB540004A91A /* NotificationTextCell.swift */; };
-		9A912FC82A078E250004A91A /* SearchViewAICell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A912FC72A078E250004A91A /* SearchViewAICell.swift */; };
 		9A94B9592A5EB1FA00DF6E4C /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9A94B9582A5EB1FA00DF6E4C /* Launch Screen.storyboard */; };
 		9A94B95B2A5ED84900DF6E4C /* MenuStatisticView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A94B95A2A5ED84900DF6E4C /* MenuStatisticView.swift */; };
 		9A9970FC29D9D662007EE635 /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A9970FB29D9D661007EE635 /* SearchView.swift */; };
@@ -83,7 +85,6 @@
 		9AB039D62A9175A6003FE10C /* CustomSearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB039D52A9175A6003FE10C /* CustomSearchBar.swift */; };
 		9AB2453D29E6A5E900E05E59 /* NotificationVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB2453C29E6A5E900E05E59 /* NotificationVC.swift */; };
 		9AB2453F29E8556100E05E59 /* NotificationSwitchCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB2453E29E8556100E05E59 /* NotificationSwitchCell.swift */; };
-		9AB2454329E9498A00E05E59 /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB2454229E9498A00E05E59 /* UserDefaults.swift */; };
 		9AB40FF229CC6A9D00353FFC /* MenuDictionaryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB40FF129CC6A9D00353FFC /* MenuDictionaryCell.swift */; };
 		9AB43A1629F3E72D00984350 /* SearchViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB43A1529F3E72D00984350 /* SearchViewCell.swift */; };
 		9AB43A1929F40EA000984350 /* LearnyLocal.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 9AB43A1729F40EA000984350 /* LearnyLocal.xcdatamodeld */; };
@@ -137,6 +138,9 @@
 		4121A20842A28AFB6BE6300F /* Pods-Language.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Language.debug.xcconfig"; path = "Target Support Files/Pods-Language/Pods-Language.debug.xcconfig"; sourceTree = "<group>"; };
 		70FFD6789A2C77AF5C8E9A93 /* Pods-Language-LanguageUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Language-LanguageUITests.release.xcconfig"; path = "Target Support Files/Pods-Language-LanguageUITests/Pods-Language-LanguageUITests.release.xcconfig"; sourceTree = "<group>"; };
 		757339EAF854D7722382C475 /* Pods-Language-LanguageUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Language-LanguageUITests.debug.xcconfig"; path = "Target Support Files/Pods-Language-LanguageUITests/Pods-Language-LanguageUITests.debug.xcconfig"; sourceTree = "<group>"; };
+		7D3C3F9E2B1745A200025234 /* UIVC Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIVC Extension.swift"; sourceTree = "<group>"; };
+		7D3C3FA02B17462500025234 /* UIColor Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor Extension.swift"; sourceTree = "<group>"; };
+		7D3C3FA22B17467B00025234 /* UIButton Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIButton Extension.swift"; sourceTree = "<group>"; };
 		7D59FEBB2B07925B00FAD332 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		7DB5A5AD2AF8D7FE003B0E0A /* HiglightLayoutManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HiglightLayoutManager.swift; sourceTree = "<group>"; };
 		7DB5A5AF2AF8D8A5003B0E0A /* TextViewErrorHighlighter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextViewErrorHighlighter.swift; sourceTree = "<group>"; };
@@ -191,7 +195,6 @@
 		9A883CED2A6EA0A6008682F3 /* StatisticCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticCellViewModel.swift; sourceTree = "<group>"; };
 		9A9077592A9CB83D00C88DD3 /* PieStatisticView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PieStatisticView.swift; sourceTree = "<group>"; };
 		9A912FC52A06BB540004A91A /* NotificationTextCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationTextCell.swift; sourceTree = "<group>"; };
-		9A912FC72A078E250004A91A /* SearchViewAICell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewAICell.swift; sourceTree = "<group>"; };
 		9A94B9582A5EB1FA00DF6E4C /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		9A94B95A2A5ED84900DF6E4C /* MenuStatisticView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuStatisticView.swift; sourceTree = "<group>"; };
 		9A9970FB29D9D661007EE635 /* SearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchView.swift; sourceTree = "<group>"; };
@@ -217,7 +220,6 @@
 		9AB039D52A9175A6003FE10C /* CustomSearchBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomSearchBar.swift; sourceTree = "<group>"; };
 		9AB2453C29E6A5E900E05E59 /* NotificationVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationVC.swift; sourceTree = "<group>"; };
 		9AB2453E29E8556100E05E59 /* NotificationSwitchCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationSwitchCell.swift; sourceTree = "<group>"; };
-		9AB2454229E9498A00E05E59 /* UserDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaults.swift; sourceTree = "<group>"; };
 		9AB40FF129CC6A9D00353FFC /* MenuDictionaryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuDictionaryCell.swift; sourceTree = "<group>"; };
 		9AB43A1529F3E72D00984350 /* SearchViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewCell.swift; sourceTree = "<group>"; };
 		9AB43A1829F40EA000984350 /* LearnyLocal.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = LearnyLocal.xcdatamodel; sourceTree = "<group>"; };
@@ -326,7 +328,6 @@
 		9A5641F82A5D744900027BCD /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				9AB2454229E9498A00E05E59 /* UserDefaults.swift */,
 				9AAC8A062A88E9E00068828C /* CustomUserDefaults.swift */,
 				9A883CE42A6C6889008682F3 /* CoreData_Methods */,
 				9AB43A1A29F4669900984350 /* CoreData_Subclass */,
@@ -539,6 +540,9 @@
 				9AA7AB5329AE3CF400CCC9F4 /* Extensions.swift */,
 				9AABAEAB2A8527060032C008 /* UIFont.swift */,
 				9A883CE22A6C65D7008682F3 /* UIView Extensions.swift */,
+				7D3C3F9E2B1745A200025234 /* UIVC Extension.swift */,
+				7D3C3FA02B17462500025234 /* UIColor Extension.swift */,
+				7D3C3FA22B17467B00025234 /* UIButton Extension.swift */,
 			);
 			path = Extentions;
 			sourceTree = "<group>";
@@ -629,7 +633,6 @@
 			isa = PBXGroup;
 			children = (
 				9AB43A1529F3E72D00984350 /* SearchViewCell.swift */,
-				9A912FC72A078E250004A91A /* SearchViewAICell.swift */,
 				9AB039D52A9175A6003FE10C /* CustomSearchBar.swift */,
 			);
 			path = SearchSubviews;
@@ -962,6 +965,7 @@
 				9AFFCE7B299D073D00C12B94 /* MenuAddDictionaryCell.swift in Sources */,
 				9AE34A782A115DD300F8BB65 /* GameDetailsVC.swift in Sources */,
 				9A77B0222AD58960006DA151 /* ExceptionsVC.swift in Sources */,
+				7D3C3FA32B17467B00025234 /* UIButton Extension.swift in Sources */,
 				9AB9A96129FD71F000694FE8 /* SeparatorsView.swift in Sources */,
 				9A9970FE29DB2D86007EE635 /* LaunchAnimation.swift in Sources */,
 				9AB43A3629F4695B00984350 /* CoreDataMethods.swift in Sources */,
@@ -985,7 +989,6 @@
 				9AADA5162A8E298C0044708E /* SeparatorsExampleView.swift in Sources */,
 				9A5641FF2A5D779400027BCD /* EditViewModel.swift in Sources */,
 				9AB43A4429F4760700984350 /* WordsEntity+CoreDataProperties.swift in Sources */,
-				9AB2454329E9498A00E05E59 /* UserDefaults.swift in Sources */,
 				7DB5A5AE2AF8D7FE003B0E0A /* HiglightLayoutManager.swift in Sources */,
 				9A883CE62A6C68E0008682F3 /* DictionariesLogsConverter.swift in Sources */,
 				9A8284142AC70FA70071D4D7 /* TutorialInformationView.swift in Sources */,
@@ -993,6 +996,7 @@
 				9A02AA602AA2040700644820 /* PickerCallView.swift in Sources */,
 				9AABAEAC2A8527060032C008 /* UIFont.swift in Sources */,
 				9A883CEC2A6D37C4008682F3 /* CoreData_Logs.swift in Sources */,
+				7D3C3F9F2B1745A200025234 /* UIVC Extension.swift in Sources */,
 				9A8284082ABDF2890071D4D7 /* TutorialSecondPart.swift in Sources */,
 				9A5D51D72A680EED00F85720 /* CoreDataCustomErrors.swift in Sources */,
 				9A1F67CF29E166C4003993C5 /* LanguageChangeManager.swift in Sources */,
@@ -1014,8 +1018,8 @@
 				9AAECFC029B5055100439C0B /* EndVc.swift in Sources */,
 				9A4D211A2AB0B74400EA9196 /* CustomNavigationController.swift in Sources */,
 				9A3825EC2ABB284E00113AAD /* Tutorial.swift in Sources */,
-				9A912FC82A078E250004A91A /* SearchViewAICell.swift in Sources */,
 				9AFFCE7D299E747400C12B94 /* StatisticView.swift in Sources */,
+				7D3C3FA12B17462500025234 /* UIColor Extension.swift in Sources */,
 				9A8541782A477642000E2DA2 /* DictionariesEntity+CoreDataProperties.swift in Sources */,
 				9A5641F72A5AE9C800027BCD /* CoreDataHelperV2.swift in Sources */,
 				9A7B91C6298D6D9600E60CDD /* AppDelegate.swift in Sources */,

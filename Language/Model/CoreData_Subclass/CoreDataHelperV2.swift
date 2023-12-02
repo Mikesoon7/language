@@ -42,14 +42,6 @@ final class CoreDataHelperV2{
         }
     }
     
-    //Error cases
-//    enum CoreDataError: Error {
-//        case fetchFailed
-//        case saveFailed
-//        case dictionaryCreationFailed
-//        case logCreationFailed
-//        case dictionaryNotFound
-//    }
     
     //MARK: - Method helpers
     //Get actual number of dictionaries.
@@ -74,17 +66,3 @@ final class CoreDataHelperV2{
     }
 }
 
-//extension CoreDataHelperV2: DictionariesEntityHandling{
-//    func createDictionary(with text: String, name: String) -> AnyPublisher<Never, Error> {
-//    }
-//    
-//    func fetchDitctionaries() -> AnyPublisher<[DictionariesEntity], Error> {
-//        
-//    }
-//    
-//    func delete(dictionary: DictionariesEntity) -> AnyPublisher<Never, Error> {
-//        
-//    }
-//    
-//    
-//}

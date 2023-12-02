@@ -160,8 +160,6 @@ class UserSettings: UserSettingsStorageProtocol{
             self.appSeparators = separator
         case .exceptions(let exeptions):
             self.appExceptions = exeptions
-//        case .duplicates(let duplicate):
-//            self.appDuplicates = duplicate
         case .lauchStatus(let status):
             self.appLaunchStatus = status
         case .sectionHeader(_):
@@ -239,8 +237,6 @@ enum SettingsOptions: Codable{
     case searchBarPosition(AppSearchBarPosition)
     case separators(AppPairSeparators)
     case exceptions(AppExceptions)
-//    case duplicates(AppDuplicates)
-    
 }
 
 enum AppLaunchStatus: Codable{

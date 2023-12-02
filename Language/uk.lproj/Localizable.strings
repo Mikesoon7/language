@@ -72,6 +72,7 @@
 "system.letsGo" = "Поіхали";
 "system.skip" = "Пропустити";
 "system.restore" = "Відновити";
+"system.total" = "Всього";
 
 //MARK: - DetailsVC
 "details.title" = "Подробиці";

@@ -24,8 +24,6 @@ class TutorialVC: UIViewController{
     private weak var delegate: TutorialCellHintProtocol?
 
     //MARK: Views
-    
-        
     //View for background dimming.
     private let dimView: UIView = {
         let view = UIView()

@@ -58,7 +58,6 @@ class SettingsViewModel{
                                 SettingsOptions.sectionHeader("settings.sections.dictionaries"),
                                 SettingsOptions.separators(settingsModel.appSeparators),
                                 SettingsOptions.exceptions(settingsModel.appExceptions)
-//                                SettingsOptions.duplicates(settingsModel.appDuplicates)
                             ])
         ]
     }
@@ -113,8 +112,6 @@ class SettingsViewModel{
             return DataForSettingsTextCell(title: separators.title, value: nil)
         case .exceptions(let exception):
             return DataForSettingsTextCell(title: exception.title, value: nil)
-//        case .duplicates(let duplicates):
-//            return DataForSettingsTextCell(title: duplicates.title, value: duplicates.value)
         case .lauchStatus(_):
             return DataForSettingsTextCell(title: "", value: "")
         }

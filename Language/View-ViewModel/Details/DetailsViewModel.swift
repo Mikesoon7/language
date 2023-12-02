@@ -23,7 +23,7 @@ class DetailsViewModel{
     private var dictionary: DictionariesEntity
     private var cancellable = Set<AnyCancellable>()
     
-    private let cardsDivider: Int = 25
+    private let cardsDivider: Int = 10
     private var numberOfCards: Int = 0
 
     private lazy var selectedNumber: Int = min(numberOfCards, cardsDivider)

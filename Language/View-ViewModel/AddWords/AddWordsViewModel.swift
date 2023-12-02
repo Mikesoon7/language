@@ -72,29 +72,6 @@ class AddWordsViewModel {
                 }
                 output.send(.shouldPresentError(error))
         }
-//        for (index, line) in lines.enumerated(){
-//            guard !errorAppeared else { break }
-//            let correctIndex = numberOfWords + index
-//            do {
-//                newArray.append( try dataModel.createWordFromLine(
-//                    for: dictionary,
-//                    text: line,
-//                    index: correctIndex,
-//                    id: UUID())
-//                )
-//            } catch {
-//                if let emptyLineError = error as? WordsErrorType {
-//                    switch emptyLineError {
-//                    case .failedToAssignEmptyString(let word):
-//                        output.send(.shouldHighlightError(word))
-//                    default: break
-//                    }
-//                }
-//
-//                output.send(.shouldPresentError(error))
-//            }
-        
-//        extendDictionary(dictionary, with: newArray)
     }
     
     //MARK: Action

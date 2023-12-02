@@ -22,9 +22,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         settingsModel = UserSettings()
         dataModel = CoreDataHelper(settingsModel: settingsModel)
         
-        self.validateInitialSettings(settings: settingsModel)
-        self.validateFirstLaunch(settings: settingsModel, dataModel: dataModel)
-
+        
         //Initializing TabBarController
         guard let window = (scene as? UIWindowScene) else { return }
         self.window = UIWindow(frame: window.coordinateSpace.bounds)
@@ -33,6 +31,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         //Method called at this point to apply changes to the existing UIScene
         
         
+        self.validateInitialSettings(settings: settingsModel)
+        self.validateFirstLaunch(settings: settingsModel, dataModel: dataModel)
 
         self.window?.makeKeyAndVisible()
         

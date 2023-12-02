@@ -200,7 +200,10 @@ class MenuView: UIViewController {
         self.navigationController?.pushViewController(vc, animated: true)
     }
     func pushTutorialVC(){
-        var vc = TutorialVC(delegate: self, topInset: view.safeAreaInsets.top, bottomInset: navigationController?.tabBarController?.tabBar.bounds.height ?? 0)
+        let vc = TutorialVC(
+            delegate: self,
+            topInset: view.safeAreaInsets.top,
+            bottomInset: navigationController?.tabBarController?.tabBar.bounds.height ?? 0)
         vc.modalPresentationStyle = .overFullScreen
         self.present(vc, animated: false)
     }
@@ -210,7 +213,6 @@ class MenuView: UIViewController {
         let vm = viewModelFactory.configureStatisticViewModel()
         let vc = StatisticView(viewModel: vm)
         self.present(vc, animated: true)
-        //TODO: Call new vc with the model.
     }
 }
 //MARK: - UITableView Delegate & DataSource
@@ -292,7 +294,7 @@ extension MenuView: CustomCellDataDelegate{
         }
     }
     func deleteButtonDidTap(for cell: UITableViewCell) {
-        var completion = { [weak self] cell in
+        let completion = { [weak self] cell in
             self?.menuAccessedForCell = nil
             guard let index = self?.tableView.indexPath(for: cell) else { return }
             self?.viewModel.deleteDictionary(at: index)

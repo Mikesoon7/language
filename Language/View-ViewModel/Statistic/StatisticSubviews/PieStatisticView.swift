@@ -56,8 +56,8 @@ class PieStatisticView: UIView {
     ///Assigning passed data to the pie chart
     func setUpChartData(_ chartData: PieChartData){
         if let totalNumber = chartData.dataSet?.label {
-            var attributedText = NSMutableAttributedString.attributedMutableString(
-                string: "Total \n\(totalNumber)",
+            let attributedText = NSMutableAttributedString.attributedMutableString(
+                string: "\("system.total".localized) \n\(totalNumber)",
                 with: .helveticaNeueBold,
                 ofSize: 24,
                 alignment: .center

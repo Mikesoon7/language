@@ -186,7 +186,7 @@ class TutorialSecondPart: UIViewController {
 
     ///Animating container view and changing opacity for dimming view
     private func animateViewDismiss() {
-        var viewDismiss = UIViewPropertyAnimator(duration: 0.3, curve: .easeInOut){ [weak self] in
+        let viewDismiss = UIViewPropertyAnimator(duration: 0.3, curve: .easeInOut){ [weak self] in
             guard let self = self else { return }
         
             self.dimView.alpha = 0

@@ -72,6 +72,7 @@
 "system.letsGo" = "Let's go";
 "system.skip" = "Skip";
 "system.restore" = "Restore";
+"system.total" = "Total";
 
 //MARK: - DetailsVC
 "details.title" = "Details";

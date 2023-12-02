@@ -9,51 +9,8 @@ import Foundation
 import UIKit
 import CoreData
 
-public let shadowColorForDarkIdiom = UIColor.clear.cgColor
-public let shadowColorForLightIdiom = UIColor.systemGray2.cgColor
 
-
-
-extension UIColor {
-    static var systemBackground_Secondary: UIColor {
-        UIColor { traitCollection in
-            if traitCollection.userInterfaceStyle == .dark {
-                return .secondarySystemBackground
-            } else {
-                return .systemBackground
-            }
-        }
-    }
-    static var searchModeBackground:  UIColor {
-        UIColor { traitCollection in
-            if traitCollection.userInterfaceStyle == .dark {
-                return .clear
-            } else {
-                return .systemGray2
-            }
-        }
-    }
-    static var searchModeSelection: UIColor {
-        UIColor { traitCollection in
-            if traitCollection.userInterfaceStyle == .dark {
-                return .systemGray2
-            } else {
-                return .white
-            }
-        }
-    }
-}
-
-extension UIButton {
-    func setUpCustomButton(){
-        self.layer.cornerRadius = 9
-        self.tintColor = .label
-        self.addRightSideShadow()
-        self.backgroundColor = .secondarySystemBackground
-        self.translatesAutoresizingMaskIntoConstraints = false
-    }
-}
-
+//MARK: - UISwitch
 extension UISwitch {
     func setUpCustomSwitch(isOn: Bool){
         self.onTintColor = .systemGray2
@@ -62,7 +19,7 @@ extension UISwitch {
         self.translatesAutoresizingMaskIntoConstraints = false
     }
 }
-// MARK: CGFloat
+//MARK: - CGFloat
 extension CGFloat{
     enum Multipliers {
         case forViews
@@ -80,6 +37,7 @@ extension CGFloat{
     }
     
 }
+//MARK: - UINavigationViewController
 extension UINavigationController{
     func pushViewControllerFromRight (controller: UIViewController) {
         let transition = CATransition ()
@@ -93,67 +51,16 @@ extension UINavigationController{
          
     }
 }
-extension UIButton{
-    func addTargetTouchBegin(){
-        super.addTarget(self, action: #selector(animationBegin(sender:)), for: .touchDown)
-        
-    }
-    func addTargetOutsideTouchStop(){
-        super.addTarget(self, action: #selector(animationEnded(sender:)), for: .touchUpOutside)
-    }
-    func addTargetInsideTouchStop(){
-        super.addTarget(self, action: #selector(animationEnded(sender: )), for: .touchUpInside)
-    }
-    
-    @objc func animationBegin( sender: UIButton){
-        UIView.animate(withDuration: 0.20, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 0, options: .curveEaseIn, animations: {
-            sender.transform = CGAffineTransform(scaleX: 0.92, y: 0.92)
-            sender.layer.shadowOffset = CGSize(width: 0, height: 0)
-        })
-    }
-    @objc func animationEnded( sender: UIButton){
-        UIView.animate(withDuration: 0.15, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 0, options: .curveEaseIn, animations: {
-            sender.transform = CGAffineTransform(scaleX: 1, y: 1)
-            sender.layer.shadowOffset = CGSize(width: 4, height: 5)
-        })
-    }
-}
 
-extension UITableViewCell{
-    func cellTouchDownAnimation(){
-        UIView.animate(withDuration: 0.20, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseIn, animations: {
-            self.transform = CGAffineTransform(scaleX: 0.92, y: 0.92)
-            self.contentView.layer.shadowOffset = CGSize(width: 0, height: 0)
-
-        })
-
-    }
-    func cellTouchUpAnimation(){
-        UIView.animate(withDuration: 0.15, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 0, options: .curveEaseIn, animations: {
-            self.transform = CGAffineTransform(scaleX: 1, y: 1)
-            self.contentView.layer.shadowOffset = CGSize(width: 4, height: 5)
-        })
-    }
-}
-extension NSAttributedString{    
-    static func textAttributes(with font: UIFont, ofSize: CGFloat, foregroundColour: UIColor = .label, backgroundColour: UIColor = .clear) -> [NSAttributedString.Key : Any]{
-        let attributes = [NSAttributedString.Key.font:
-                            font.withSize(ofSize),
-                          NSAttributedString.Key.foregroundColor:
-                             foregroundColour,
-                          NSAttributedString.Key.backgroundColor:
-                             backgroundColour]
-        return attributes as [NSAttributedString.Key : Any]
-    }
+//MARK: - NSAttributedString
+extension NSAttributedString{
     static func attributedString(string: String, with font: UIFont, ofSize: CGFloat, foregroundColour: UIColor = .label, backgroundColour: UIColor = .clear) -> NSAttributedString{
-        let attributes = NSAttributedString(string: string,
-                                            attributes: [NSAttributedString.Key.font :
-                                                            font.withSize(ofSize),
-                                                         NSAttributedString.Key.foregroundColor:
-                                                            foregroundColour,
-                                                         NSAttributedString.Key.backgroundColor:
-                                                            backgroundColour
-                                                        ])
+        let attributes = NSAttributedString(
+            string: string,
+            attributes: 
+                [NSAttributedString.Key.font : font.withSize(ofSize),
+                 NSAttributedString.Key.foregroundColor: foregroundColour,
+                 NSAttributedString.Key.backgroundColor: backgroundColour])
         return attributes
     }
     
@@ -166,14 +73,13 @@ extension NSAttributedString{
 }
 extension NSMutableAttributedString{
     static func attributedMutableString(string: String, with font: UIFont, ofSize: CGFloat, foregroundColour: UIColor = .label, backgroundColour: UIColor = .clear, alignment: NSTextAlignment = .center) -> NSMutableAttributedString{
-        let attributes = NSMutableAttributedString(string: string,
-                                            attributes: [NSMutableAttributedString.Key.font :
-                                                            font.withSize(ofSize),
-                                                         NSMutableAttributedString.Key.foregroundColor:
-                                                            foregroundColour,
-                                                         NSMutableAttributedString.Key.backgroundColor:
-                                                            backgroundColour,
-                                                        ])
+        let attributes = NSMutableAttributedString(
+            string: string,
+            attributes: 
+                [NSMutableAttributedString.Key.font : font.withSize(ofSize),
+                 NSMutableAttributedString.Key.foregroundColor: foregroundColour,
+                 NSMutableAttributedString.Key.backgroundColor: backgroundColour,
+                ])
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.alignment = alignment
         attributes.addAttribute(.paragraphStyle, value: paragraphStyle , range: NSRange(location: 0, length: attributes.length))
@@ -181,7 +87,7 @@ extension NSMutableAttributedString{
     }
 
 }
-//MARK: -AddSubviews method.
+//MARK: - Animation
 extension CABasicAnimation{
     static func rotationAnimation() -> CABasicAnimation {
         let rotationAnimation = CABasicAnimation(keyPath: "transform.rotation.y")
@@ -204,34 +110,6 @@ extension CAKeyframeAnimation {
         return animation
     }
 }
-extension UIColor{
-    static func getColoursArray(_ count: Int) -> [UIColor]{
-        var base: [UIColor] = [.systemRed, .systemBlue, .systemPink, .systemCyan, .systemGray,  .systemMint, .systemBrown, .systemGreen, .systemIndigo, .systemOrange, .systemPurple, .systemYellow]
-        var appendedColors = [UIColor]()
-        
-        let exceedCount = count - base.count
-        if exceedCount > 0 {
-            for i in 0..<count {
-                let baseColor = base[i % base.count]
-                let alpha = CGFloat(1 - 0.1 * Double(i / base.count))
-                let appendedColor = baseColor.withAlphaComponent(alpha)
-                appendedColors.append(appendedColor)
-            }
-        } else {
-            appendedColors = Array(base.prefix(count))
-        }
-        
-        return appendedColors
-    }
-    
-}
-extension String{
-    enum SelectedFonts: String{
-        case georgiaBoldItalic = "Georgia-BoldItalic"
-        case georigaItalic = "Georgia-Italic"
-        case charter = ""
-    }
-}
 
 extension NSManagedObject{
     enum ChangeType{
@@ -240,12 +118,11 @@ extension NSManagedObject{
         case update
     }
 }
-
+//MARK: - Notifications
 extension Notification.Name{
     static let appLanguageDidChange = Notification.Name("appLanguageDidChange")
     static let appThemeDidChange = Notification.Name("appThemeDidChange")
     static let appSearchBarPositionDidChange = Notification.Name("appSearchBarPositionDidChange")
-//    static let appNotificationTimeDidChange = Notification.Name(
     static let appNotificationSettingsDidChange = Notification.Name("appNotificationSettingsDidChange")
     static let appDataDidChange = Notification.Name("appDataDidChange")
     static let appSeparatorDidChange = Notification.Name("separatorDidChange")
@@ -255,18 +132,8 @@ extension String{
     var localized: String{
         return LanguageChangeManager.shared.localizedString(forKey: self)
     }
-    
-    func load() -> UIImage {
-        do{
-            guard let url = URL(string: self) else { return UIImage()}
-            let data: Data = try Data(contentsOf: url, options: .uncached)
-            return UIImage(data: data) ?? UIImage()
-        } catch {
-            
-        }
-        return UIImage()
-    }
 }
+//MARK: - UIAlertController
 extension UIAlertController {
     static func alertWithAction(alertTitle: String, alertMessage: String? = nil, alertStyle: UIAlertController.Style = .actionSheet,
                          action1Title: String = "", action1Style: UIAlertAction.Style = .default,
@@ -285,87 +152,14 @@ extension UIAlertController {
         return alert
     }
 }
-extension UIViewController{
-    func presentUnknownError(){
-        let alertController = UIAlertController(
-            title: "unknownError.title".localized,
-            message: "unknownError.message".localized,
-            preferredStyle: .alert)
-        
-        alertController.addAction(UIAlertAction(title: "system.agreeFormal".localized, style: .default))
-        self.present(alertController, animated: true, completion: nil)
-    }
-    func presentError(_ error: Error) {
-        var title = String()
-        var message = "unknownError.message".localized
-        
-        switch error{
-        case let error as DictionaryErrorType:
-            switch error{
-            case .creationFailed(let name):
-                title = "coreDataError.dictionary.creation".localized + " '\(name)'"
-            case .fetchFailed:
-                title = "coreDataError.dictionary.fetch".localized
-            case .updateFailed(let name):
-                title = "coreDataError.dictionary.update".localized + " '\(name)'"
-            case .additionFailed(let name):
-                title = "coreDataError.dictionary.addition".localized + " '\(name)'"
-            case .updateOrderFailed:
-                title = "coreDataError.dictionary.orderUpdate".localized
-            case .deleteFailed(let name):
-                title = "coreDataError.dictionary.deletion".localized + " '\(name)'"
-            }
-        case let error as WordsErrorType:
-            switch error{
-//            case .creationFailed:
-//                title = "coreDataError.words.creation".localized
-            case .deleteFailed(let word):
-                title = "coreDataError.words.deletion".localized + " '\(word)'"
-            case .fetchFailed(let name):
-                title = "coreDataError.words.fetch".localized + " '\(name)'"
-//            case .updateFailed:
-//                title = "coreDataError.words.update".localized
-//            case .updateOrderFailed:
-//                title = "coreDataError.words.orderUpdate".localized
-            case .failedToAssignEmptyString(let word):
-                title = "coreDataError.words.emptyWord".localized + " '\(word)'"
-                message = "coreDataError.words.emptyWord.message".localized
-            }
-        case let error as LogsErrorType:
-            switch error {
-            case .creationFailed(let name):
-                title = "coreDataError.logs.creation".localized + " '\(name)'"
-            case .accessFailed(let name):
-                title = "coreDataError.logs.update".localized + " '\(name)'"
-            case .fetchFailed:
-                title = "coreDataError.logs.fetch".localized
-            }
-            
-        case let error as CoreDataErrorType:
-            switch error{
-            case .saveFailed:
-                title = "unknownError.save.title".localized
-                message = "unknownError.save.message".localized
-            }
-        default:
-            title = "unknownError.title".localized
-        }
-        let alert = UIAlertController
-            .alertWithAction(
-                alertTitle: title,
-                alertMessage: message,
-                alertStyle: .alert,
-                action1Title: "system.agreeFormal".localized,
-                action1Style: .cancel)
-        self.present(alert, animated: true, completion: nil)
-    }
-}
+//MARK: - Date
 extension Date {
     var timeStripped: Date {
         let components = Calendar.current.dateComponents([.year, .month, .day], from: self)
         return Calendar.current.date(from: components) ?? self
     }
 }
+//MARK: - UITextView
 extension UITextView {
     override open func paste(_ sender: Any?) {
         if let pasteboardText = UIPasteboard.general.string {
@@ -378,7 +172,6 @@ extension UITextView {
             if delegate != nil {
                 delegate?.textViewDidChange?(self)
             }
-            print("Extenstion worked")
         }
     }
 }

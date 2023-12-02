@@ -79,21 +79,3 @@ struct MenuStatisticView: View {
         }
     }
 }
-
- 
-//class FakeLogs {
-//    static let formatter: DateFormatter = {
-//        let df = DateFormatter()
-//        df.dateFormat = "dd/MM/yy"
-//        return df
-//    }()
-//
-//    var date: Date
-//    var accessCount: Int
-//
-//    init(date: String, accessCount: Int){
-//        self.date = Self.formatter.date(from: date) ?? Date()
-//        self.accessCount = accessCount
-//    }
-//
-//}
