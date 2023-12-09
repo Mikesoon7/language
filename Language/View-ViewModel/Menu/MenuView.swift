@@ -10,7 +10,7 @@ import Charts
 import CoreData
 import Combine
 
-protocol CustomCellDataDelegate: AnyObject{
+protocol MenuCellDelegate: AnyObject{
     func panningBegan(for cell: UITableViewCell)
 
     func panningEnded(active: Bool)
@@ -29,7 +29,8 @@ class MenuView: UIViewController {
     private var menuAccessedForCell: IndexPath?
     private var isUpdateNeeded: Bool = false
     
-    var firstLaunch = true
+//    var firstLaunch = true
+    
     //MARK: Views
     var tableView: UITableView = {
         var tableView = UITableView(frame: .zero, style: .insetGrouped)
@@ -273,7 +274,7 @@ extension MenuView: TutorialCellHintProtocol{
     }
 }
 //MARK: - Delegate for cells action.
-extension MenuView: CustomCellDataDelegate{
+extension MenuView: MenuCellDelegate{
     func panningBegan(for cell: UITableViewCell){
         let index = tableView.indexPath(for: cell)
         //Dismiss another swiped cell.

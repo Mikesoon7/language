@@ -71,12 +71,15 @@ class ExceptionExampleView: UIView {
         let secondLine = secondLineText.trimmingCharacters(in: CharacterSet(charactersIn: exception + "\n" + exception.uppercased()))
         
         self.firstLineLabel.text = firstLine
-        self.firstLineLabel.onTypingAnimationFinished = {
-            self.secondLineLabel.text = secondLine
-            self.initialAnimationFinished = true
-            self.firstLineLabel.onTypingAnimationFinished = { }
+        self.firstLineLabel.onTypingAnimationFinished = { [weak self] in
+            self?.secondLineLabel.text = secondLine
+            self?.initialAnimationFinished = true
+            self?.firstLineLabel.onTypingAnimationFinished = { }
         }
-        self.secondLineLabel.onTypingAnimationFinished = { self.initialAnimationFinished = true }
+        self.secondLineLabel.onTypingAnimationFinished = { [weak self] in
+            self?.initialAnimationFinished = true
+            self?.secondLineLabel.onTypingAnimationFinished = { }
+        }
     }
 
     //MARK: Update separator.

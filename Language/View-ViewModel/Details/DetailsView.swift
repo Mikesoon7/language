@@ -12,7 +12,7 @@ import Combine
 class DetailsView: UIViewController {
     
     //MARK: - ViewModel related
-    private var viewModel: DetailsViewModel
+    private var viewModel: DetailsViewModel?
     private var viewModelFactory: ViewModelFactory
     private var cancellable = Set<AnyCancellable>()
         
@@ -65,6 +65,7 @@ class DetailsView: UIViewController {
     }()
     
     private let picker = UIPickerView()
+    
 //    //MARK: Local variables.
     private var randomIsOn: Bool = false
     
@@ -108,20 +109,20 @@ class DetailsView: UIViewController {
     
     //MARK: - ViewModel bind
     func bind(){
-        viewModel.output
+        viewModel?.output
             .receive(on: DispatchQueue.main)
-            .sink { output in
+            .sink { [weak self] output in
                 switch output{
                 case .shouldUpdateText:
-                    self.configureText()
+                    self?.configureText()
                 case .error(let error):
-                    self.presentError(error)
+                    self?.presentError(error)
                 case .shouldUpdatePicker:
-                    self.picker.reloadAllComponents()
+                    self?.picker.reloadAllComponents()
                 case .shouldPresentAddWordsView(let dict):
-                    self.presentAddWordsViewWith(dictionary: dict)
+                    self?.presentAddWordsViewWith(dictionary: dict)
                 case .shouldPresentGameView(let dict, let number):
-                    self.presentMainGameViewWith(dictionary: dict, selectedNumber: number)
+                    self?.presentMainGameViewWith(dictionary: dict, selectedNumber: number)
                 }
             }
             .store(in: &cancellable)
@@ -260,11 +261,11 @@ extension DetailsView{
     }
     
     @objc func startButtonTap(sender: UIButton){
-        viewModel.startButtonTapped()
+        viewModel?.startButtonTapped()
     }
 
     @objc func addWordsButtonTap(sender: UIButton){
-        viewModel.addWordsButtonTapped()
+        viewModel?.addWordsButtonTapped()
     }
 }
 
@@ -275,14 +276,14 @@ extension DetailsView: UIPickerViewDelegate, UIPickerViewDataSource{
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        viewModel.didSelectPickerRow(row: row)
+        viewModel?.didSelectPickerRow(row: row)
     }
     
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        viewModel.numberOfRowsInComponent()
+        viewModel?.numberOfRowsInComponent() ?? 0
     }
     
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        viewModel.titleForPickerAt(row: row)
+        viewModel?.titleForPickerAt(row: row) ?? ""
      }
 }

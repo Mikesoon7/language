@@ -11,14 +11,14 @@ import UIKit
 class NotificationDayPicker: UIView{
     
     private var selectedDaysSet : [Int]!
-    private weak var viewModel: NotificationViewModel!
+    private var viewModel: NotificationViewModel?
         
     //Array of names for each day, starts from the same as in system day.
     private lazy var arrayOfDays: [String] = {
         let calendar = Calendar.current
         let firstDay = calendar.firstWeekday
         let formatter = DateFormatter()
-        formatter.locale = viewModel.getCurrentLocale()
+        formatter.locale = viewModel?.getCurrentLocale()
         var array: [String] = []
         for i in 0..<7 {
             let index = (firstDay - 1 + i) % 7
@@ -28,9 +28,9 @@ class NotificationDayPicker: UIView{
     }()
 
     //MARK: Inherited
-    required init(viewModel: NotificationViewModel){
+    required init(viewModel: NotificationViewModel?){
         super.init(frame: .zero)
-        self.selectedDaysSet = viewModel.getSelectedDays()
+        self.selectedDaysSet = viewModel?.getSelectedDays()
         self.viewModel = viewModel
 
         configureView()
@@ -46,7 +46,6 @@ class NotificationDayPicker: UIView{
     }
     override func layoutSubviews() {
         if let stackView = self.subviews.first as? UIStackView, let firstButton = stackView.arrangedSubviews.first as? UIButton, let lastButton = stackView.arrangedSubviews.last as? UIButton {
-            print("mask was configured")
             firstButton.layer.mask = configureOneSideRoundedMask(for: firstButton, left: true, cornerRadius: 9)
             lastButton.layer.mask = configureOneSideRoundedMask(for: lastButton, left: false, cornerRadius: 9)
         }
@@ -115,7 +114,7 @@ class NotificationDayPicker: UIView{
             selectedDaysSet.append(sender.tag)
         }
         updateButtonState(button: sender, isSelected: selectedDaysSet.contains(sender.tag))
-        viewModel.updateSelectedDaysSet(with: sender.tag)
+        viewModel?.updateSelectedDaysSet(with: sender.tag)
     }
 
     //Reflecting on state change.

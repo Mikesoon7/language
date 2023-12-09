@@ -25,12 +25,6 @@ class HighlightLayoutManager: NSLayoutManager {
         fatalError("init(coder:) has not been implemented")
     }
     
-//    internal func applyErrorRange(errorRange: NSRange) {
-//        self.highlightRanges = [errorRange]
-//        self.errorRange = errorRange
-//    }
-    
-    
     internal func clearContentHiglight(){
         self.errorRange = nil
         self.currentRange = nil

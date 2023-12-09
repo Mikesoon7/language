@@ -134,13 +134,6 @@ class SettingsViewModel{
                 }))
             }
             output.send(.needPresentAlertWith(alertOptions))
-//        case .duplicates(_):
-//            for option in AppDuplicates.allCases{
-//                alertOptions.append(UIAlertAction(title: option.value, style: .default, handler: { [weak self]_ in
-//                    self?.handleValueUpdateFor(newValue: .duplicates(option))
-//                }))
-//            }
-//            output.send(.needPresentAlertWith(alertOptions))
         case .exceptions(_):
             output.send(.needPresentExceptionsView)
         case .notifications(_):

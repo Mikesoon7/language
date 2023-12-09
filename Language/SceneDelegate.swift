@@ -127,13 +127,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
         
     @objc func languageDidChange(sender: Any){
-        print("recieved language notification in AppScene")
         settingsModel.reload(newValue: .notifications(settingsModel.appNotifications))
         if let tabBarController = self.window?.rootViewController as? UITabBarController {
-            print("successfully extracted tabBarController")
             if let tabBarItems = tabBarController.tabBar.items {
-                
-                print("successfully extract barItems")
                 for (index, item) in tabBarItems.enumerated(){
                     item.title = {
                         switch index {

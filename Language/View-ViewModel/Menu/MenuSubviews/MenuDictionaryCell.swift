@@ -31,7 +31,7 @@ class MenuDictionaryCell: UITableViewCell{
     private var isStatActive: Bool = false
 
     private var statisticHostingController: UIHostingController<MenuStatisticView>!
-    private weak var delegate: CustomCellDataDelegate?
+    private weak var delegate: MenuCellDelegate?
     
     //MARK: - Views
     lazy var statisticView: UIView = {
@@ -184,7 +184,7 @@ class MenuDictionaryCell: UITableViewCell{
         }
     }
     //MARK: - Cell SetUp
-    func configureCellWith(viewModel: StatisticCellViewModel, delegate: CustomCellDataDelegate) {
+    func configureCellWith(viewModel: StatisticCellViewModel, delegate: MenuCellDelegate) {
         self.languageResultLabel.text = viewModel.dictionary.language
         self.cardsResultLabel.text = String(viewModel.dictionary.numberOfCards)
         self.viewModel = viewModel
@@ -416,7 +416,6 @@ class MenuDictionaryCell: UITableViewCell{
         let holderConstant = currentHolderConstant + translation
         let editConstant = currentEditConstant + -(translation / 3)
         let deleteConstant = currentDeleteConstant + -(translation / 1.5)
-//        let actionConstant = currentDeleteConstant + -(translation / 2)
         
         direction = (0 < translation ? .right : .left)
 
@@ -500,120 +499,120 @@ class MenuDictionaryCell: UITableViewCell{
     }
 }
 //private
-class CustomActionView: UIView{
-    //MARK: Views
-    var titleFrontView: UIView
-    
-    lazy var statView: UIView = configureCustomActions(
-        imageName: "chart.bar",
-        colour: .systemGray5)
-    lazy var editView: UIView = configureCustomActions(
-        imageName: "pencil",
-        colour: .systemGray4)
-    lazy var deleteView: UIView = configureCustomActions(
-        imageName: "trash",
-        colour: .systemGray3)
-    
-    //MARK: Dimentions
-    private let cornerRadius: CGFloat = 9
-    private let overlayPoints: CGFloat = 2
-    private let actionButtonWidthRatio: CGFloat = 0.2
-    
-    //MARK: Constants
-    
-    
-    init(frontView: UIView){
-        self.titleFrontView = frontView
-        super.init(frame: .zero)
-        configureView()
-    }
-    required init?(coder: NSCoder) {
-        fatalError("init?(coder: NSCoder) wasn't imported.")
-    }
-    
-    private func configureView(){
-        backgroundColor = .clear
-        layer.cornerRadius = cornerRadius
-        clipsToBounds = true
-        translatesAutoresizingMaskIntoConstraints = false
-    }
-    func configureMasks(){
-        statView.layer.mask = UIView().configureActionMaskWith(size: CGSize(
-            width: self.frame.width * 0.2 + overlayPoints,
-            height: self.frame.height), cornerRadius: cornerRadius)
-        editView.layer.mask = UIView().configureActionMaskWith(size: CGSize(
-            width: self.frame.width * 0.2 + overlayPoints,
-            height: self.frame.height), cornerRadius: cornerRadius)
-        deleteView.layer.mask = UIView().configureActionMaskWith(size: CGSize(
-            width: self.frame.width * 0.2 + overlayPoints,
-            height: self.frame.height), cornerRadius: cornerRadius)
-    }
-    
-    
-    private func configureCustomActions(imageName: String, colour: UIColor) -> UIView{
-        let actionView: UIView = {
-            let view = UIView()
-            view.backgroundColor = colour
-            view.translatesAutoresizingMaskIntoConstraints = false
-            return view
-        }()
-        let imageView: UIImageView = {
-            let view = UIImageView()
-            view.image = UIImage(systemName: imageName)
-            view.translatesAutoresizingMaskIntoConstraints = false
-            view.tintColor = .label
-            view.contentMode = .center
-            return view
-        }()
-        
-        actionView.addSubview(imageView)
-        
-        imageView.centerXAnchor.constraint(equalTo: actionView.centerXAnchor, constant: 9 / 2).isActive = true
-        imageView.centerYAnchor.constraint(equalTo: actionView.centerYAnchor).isActive = true
-        
-        return actionView
-    }
-    var contentViewWidth: CGFloat!
-    var contentViewHeight: CGFloat!
-    
-    var holderViewLeadingAnchor: NSLayoutConstraint!
-    var initialHolderConstant: CGFloat!
-    var currentHolderConstant: CGFloat!
-    var finalHolderConstant: CGFloat!
-    
-    var deleteViewLeadingAnchor: NSLayoutConstraint!
-    var initialActionConstant: CGFloat!
-    var currentDeleteConstant: CGFloat!
-    var finalDeleteConstant: CGFloat!
-    
-    var editViewLeadingAnchor: NSLayoutConstraint!
-    var initialEditConstant: CGFloat!
-    var currentEditConstant: CGFloat!
-    var finalEditConstant: CGFloat!
-    
-    var statViewLeadingAnchor: NSLayoutConstraint!
-    var initilStatConstant: CGFloat!
-    var finalStatConstant: CGFloat!
-    
-    var statViewInitialLeadingAnchor: NSLayoutConstraint!
-    var statViewFinalLeadingAnchor: NSLayoutConstraint!
-    
-    var statViewWidthAnchor: NSLayoutConstraint!
-    var statViewInitialWidth: CGFloat!
-    var statViewFinalWifth: CGFloat!
-    
-    private func configureSubviews(){
-        self.addSubviews(deleteView, editView, statView, titleFrontView)
-        
-        NSLayoutConstraint.activate([
-            titleFrontView.topAnchor.constraint(equalTo: topAnchor),
-            titleFrontView.leadingAnchor.constraint(equalTo: leadingAnchor),
-            titleFrontView.bottomAnchor.constraint(equalTo: bottomAnchor),
-            titleFrontView.topAnchor.constraint(equalTo: topAnchor),
-            
-            
-            
-        ])
-    }
-    
-}
+//class CustomActionView: UIView{
+//    //MARK: Views
+//    var titleFrontView: UIView
+//    
+//    lazy var statView: UIView = configureCustomActions(
+//        imageName: "chart.bar",
+//        colour: .systemGray5)
+//    lazy var editView: UIView = configureCustomActions(
+//        imageName: "pencil",
+//        colour: .systemGray4)
+//    lazy var deleteView: UIView = configureCustomActions(
+//        imageName: "trash",
+//        colour: .systemGray3)
+//    
+//    //MARK: Dimentions
+//    private let cornerRadius: CGFloat = 9
+//    private let overlayPoints: CGFloat = 2
+//    private let actionButtonWidthRatio: CGFloat = 0.2
+//    
+//    //MARK: Constants
+//    
+//    
+//    init(frontView: UIView){
+//        self.titleFrontView = frontView
+//        super.init(frame: .zero)
+//        configureView()
+//    }
+//    required init?(coder: NSCoder) {
+//        fatalError("init?(coder: NSCoder) wasn't imported.")
+//    }
+//    
+//    private func configureView(){
+//        backgroundColor = .clear
+//        layer.cornerRadius = cornerRadius
+//        clipsToBounds = true
+//        translatesAutoresizingMaskIntoConstraints = false
+//    }
+//    func configureMasks(){
+//        statView.layer.mask = UIView().configureActionMaskWith(size: CGSize(
+//            width: self.frame.width * 0.2 + overlayPoints,
+//            height: self.frame.height), cornerRadius: cornerRadius)
+//        editView.layer.mask = UIView().configureActionMaskWith(size: CGSize(
+//            width: self.frame.width * 0.2 + overlayPoints,
+//            height: self.frame.height), cornerRadius: cornerRadius)
+//        deleteView.layer.mask = UIView().configureActionMaskWith(size: CGSize(
+//            width: self.frame.width * 0.2 + overlayPoints,
+//            height: self.frame.height), cornerRadius: cornerRadius)
+//    }
+//    
+//    
+//    private func configureCustomActions(imageName: String, colour: UIColor) -> UIView{
+//        let actionView: UIView = {
+//            let view = UIView()
+//            view.backgroundColor = colour
+//            view.translatesAutoresizingMaskIntoConstraints = false
+//            return view
+//        }()
+//        let imageView: UIImageView = {
+//            let view = UIImageView()
+//            view.image = UIImage(systemName: imageName)
+//            view.translatesAutoresizingMaskIntoConstraints = false
+//            view.tintColor = .label
+//            view.contentMode = .center
+//            return view
+//        }()
+//        
+//        actionView.addSubview(imageView)
+//        
+//        imageView.centerXAnchor.constraint(equalTo: actionView.centerXAnchor, constant: 9 / 2).isActive = true
+//        imageView.centerYAnchor.constraint(equalTo: actionView.centerYAnchor).isActive = true
+//        
+//        return actionView
+//    }
+//    var contentViewWidth: CGFloat!
+//    var contentViewHeight: CGFloat!
+//    
+//    var holderViewLeadingAnchor: NSLayoutConstraint!
+//    var initialHolderConstant: CGFloat!
+//    var currentHolderConstant: CGFloat!
+//    var finalHolderConstant: CGFloat!
+//    
+//    var deleteViewLeadingAnchor: NSLayoutConstraint!
+//    var initialActionConstant: CGFloat!
+//    var currentDeleteConstant: CGFloat!
+//    var finalDeleteConstant: CGFloat!
+//    
+//    var editViewLeadingAnchor: NSLayoutConstraint!
+//    var initialEditConstant: CGFloat!
+//    var currentEditConstant: CGFloat!
+//    var finalEditConstant: CGFloat!
+//    
+//    var statViewLeadingAnchor: NSLayoutConstraint!
+//    var initilStatConstant: CGFloat!
+//    var finalStatConstant: CGFloat!
+//    
+//    var statViewInitialLeadingAnchor: NSLayoutConstraint!
+//    var statViewFinalLeadingAnchor: NSLayoutConstraint!
+//    
+//    var statViewWidthAnchor: NSLayoutConstraint!
+//    var statViewInitialWidth: CGFloat!
+//    var statViewFinalWifth: CGFloat!
+//    
+//    private func configureSubviews(){
+//        self.addSubviews(deleteView, editView, statView, titleFrontView)
+//        
+//        NSLayoutConstraint.activate([
+//            titleFrontView.topAnchor.constraint(equalTo: topAnchor),
+//            titleFrontView.leadingAnchor.constraint(equalTo: leadingAnchor),
+//            titleFrontView.bottomAnchor.constraint(equalTo: bottomAnchor),
+//            titleFrontView.topAnchor.constraint(equalTo: topAnchor),
+//            
+//            
+//            
+//        ])
+//    }
+//    
+//}

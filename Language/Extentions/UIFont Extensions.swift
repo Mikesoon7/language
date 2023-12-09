@@ -25,7 +25,7 @@ extension UIFont{
         UIFont(name: "Helvetica Neue", size: 1 )    ?? UIFont()
     }
     static var helveticaNeueBold: UIFont {
-        UIFont(name: "Helvetica Neue Bold", size: 1 )   ?? UIFont()
+        UIFont(name: "Helvetica Neue Bold", size: 1 )  ?? UIFont()
     }
     static var helveticaNeueMedium: UIFont {
         UIFont(name: "Helvetica Neue Medium", size: 1) ?? UIFont()

@@ -6,7 +6,7 @@ import Combine
 
 class NotificationView: UIViewController {
 
-    private let viewModel: NotificationViewModel
+    private var viewModel: NotificationViewModel?
     private var cancellable = Set<AnyCancellable>()
     
     //MARK: - Views
@@ -79,10 +79,10 @@ class NotificationView: UIViewController {
     private lazy var currentConstant = initalContainerConstant
     
     private var firstStage: CGFloat {
-        return viewModel.notificationAreOn() ? secondStageContainerConstant : firstStageContainerConstant
+        return (viewModel?.notificationAreOn() ?? false) ? secondStageContainerConstant : firstStageContainerConstant
     }
     private var finalStage: CGFloat {
-        return viewModel.customFrequencyIsOn() ? finalStageContainerConstant : thirdStageContainerConstant
+        return (viewModel?.customFrequencyIsOn() ?? false) ? finalStageContainerConstant : thirdStageContainerConstant
     }
     
     required init(factory: ViewModelFactory){
@@ -128,8 +128,9 @@ class NotificationView: UIViewController {
     }
     //MARK: - Bind View and VM
     func bind(){
-        viewModel.output
-            .sink { output in
+        viewModel?.output
+            .sink { [weak self] output in
+                guard let self = self else { return }
                 switch output{
                 case .shouldValidateFirstStage:
                     self.animateTransitionTo(self.firstStage)
@@ -273,7 +274,7 @@ class NotificationView: UIViewController {
     private func dismissView(){
         animateContainer(present: false)
         animateDimmingView(present: false)
-        viewModel.save()
+        viewModel?.save()
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
             self.dismiss(animated: true)
         }
@@ -378,8 +379,7 @@ extension NotificationView{
     }
     @objc func timePickerValueChanged(picker: UIDatePicker){
         let date = picker.date
-        print(date)
-        viewModel.updateNotificationTime(with: date)
+        viewModel?.updateNotificationTime(with: date)
     }
 }
 
@@ -393,6 +393,7 @@ extension NotificationView: UITableViewDelegate, UITableViewDataSource{
         guard let textCell = tableView.dequeueReusableCell(
             withIdentifier: NotificationTextCell.identifier)
                 as? NotificationTextCell else { return UITableViewCell() }
+        guard let viewModel = viewModel else { return UITableViewCell() }
         
         switch (indexPath.section){
         case 0:
@@ -408,13 +409,13 @@ extension NotificationView: UITableViewDelegate, UITableViewDataSource{
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch (indexPath.section, indexPath.row){
         case (0, 0):
-            animateTransitionTo( firstStage )
+            animateTransitionTo(firstStage)
         case (1, 0):
-            let index = viewModel.selectedRowForFrequencyPicker()
+            let index = viewModel?.selectedRowForFrequencyPicker() ?? IndexPath()
             frequencyPicker.selectRow(index.row, inComponent: index.section, animated: true)
             animateToFrequencyPicker()
         case (1, 1):
-            let time = viewModel.selectedDateForTimePicker()
+            let time = viewModel?.selectedDateForTimePicker() ?? Date()
             timePicker.date = time
             animateToDatePicker()
         default: break
@@ -422,10 +423,10 @@ extension NotificationView: UITableViewDelegate, UITableViewDataSource{
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        viewModel.numberOfCellsIn(section: section)
+        viewModel?.numberOfCellsIn(section: section) ?? 0
     }
     func numberOfSections(in tableView: UITableView) -> Int {
-        viewModel.numberOfSections()
+        viewModel?.numberOfSections() ?? 0
     }
 }
 
@@ -435,13 +436,13 @@ extension NotificationView: UIPickerViewDelegate, UIPickerViewDataSource {
         1
     }
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        viewModel.numberOfRowsInComponent()
+        viewModel?.numberOfRowsInComponent() ?? 0
     }
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        viewModel.titleForRow(for: row)
+        viewModel?.titleForRow(for: row) ?? ""
     }
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        viewModel.updateFrequency(row: row)
+        viewModel?.updateFrequency(row: row)
     }
 }
 
