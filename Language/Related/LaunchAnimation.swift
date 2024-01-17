@@ -37,7 +37,8 @@ class LaunchAnimation{
                 frame: CGRect(x: 0,
                               y: 0,
                               width: animationView.frame.height * 0.35,
-                              height: animationView.frame.height * 0.55))
+                              height: animationView.frame.height * 0.55)
+            )
 
             view.center = animationView.center
             view.backgroundColor = .systemBackground

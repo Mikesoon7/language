@@ -105,12 +105,12 @@ class TestDateLogExtractor {
         formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
         formatter.timeZone = TimeZone.current
         
-        print(formatter.string(from: currentDay))
-        print(currentDay)
-        print(calendar.locale)
-        print(calendar.timeZone)
+//        print(formatter.string(from: currentDay))
+//        print(currentDay)
+//        print(calendar.locale)
+//        print(calendar.timeZone)
         
-        let dateFormatter = DateFormatter()
+//        let dateFormatter = DateFormatter()
         var weekComponents = calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: currentDay)
         weekComponents.hour = 0
         weekComponents.minute = 0

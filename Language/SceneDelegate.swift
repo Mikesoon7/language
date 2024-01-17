@@ -3,7 +3,14 @@
 //  Language
 //
 //  Created by Star Lord on 03/02/2023.
-//
+
+// MARK: - - - -
+
+//I've tried to use dependence injection in my project, since i'm planning to upgrade storage for iCloud synchronization.
+//And it's just the right pattern to use.
+
+// MARK: - - - - -
+
 
 import UIKit
 
@@ -14,43 +21,43 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var dataModel: Dictionary_Words_LogsManager!
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions){
-        
-        //Creating observer for changing tabBar string values
-        self.observeLanguageChange()
-        self.checkAppVersionAccessability()
-        //Creating data model, which will be stored in viewModel factory class.
-        settingsModel = UserSettings()
-        dataModel = CoreDataHelper(settingsModel: settingsModel)
-        
-        
-        //Initializing TabBarController
+        //1. Initializing settings and data model for futhe dependence injection.
+        self.setUpDataModels()
+                
+        //2. Initializing window.
         guard let window = (scene as? UIWindowScene) else { return }
         self.window = UIWindow(frame: window.coordinateSpace.bounds)
         self.window?.windowScene = window
-        self.window?.rootViewController = setUpTabBarController(viewModelFactory: configureViewModelFactoryWith(dataModel, settingsModel: settingsModel))
-        //Method called at this point to apply changes to the existing UIScene
+        self.window?.makeKeyAndVisible()
         
-        
+        //3. Applying theme and language settings for created window.
         self.validateInitialSettings(settings: settingsModel)
+        
+        //4. Creating tabBarController.
+        self.window?.rootViewController = setUpTabBarController(viewModelFactory: configureViewModelFactoryWith(dataModel, settingsModel: settingsModel))
+        
+        //5. If it's the first launch, creating dictioanry with greeting card.
         self.validateFirstLaunch(settings: settingsModel, dataModel: dataModel)
 
-        self.window?.makeKeyAndVisible()
-        
-        
-        var animationView: LaunchAnimation? = LaunchAnimation(bounds: UIWindow().bounds, interfaceStyle: settingsModel.appTheme.userInterfaceStyle)
-        animationView?.animate()
-        animationView?.makeKeyView()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3.5) {
-            animationView?.animationView.removeFromSuperview()
-            animationView = nil
-        }
-        
-        self.window?.makeKeyAndVisible()
+        //6. Presenting view with launch aimation.
+        self.launchAnimation()
+        //7.Creating observers on language change for tabBar.
+        self.postLaunchSetUp()
     }
-    //MARK: - TabBar SetUp
-    func setUpTabBarController(viewModelFactory: ViewModelFactory ) -> UITabBarController{
-        let tabBarController = UITabBarController()
-        tabBarController.tabBar.backgroundColor = .systemBackground
+    
+    
+    //MARK: TabBar SetUp
+    private func setUpTabBarController(viewModelFactory: ViewModelFactory ) -> UITabBarController{
+        
+        let tabBarController: UITabBarController = {
+            let controller = UITabBarController()
+            controller.tabBar.tintColor = .label
+            controller.tabBar.backgroundColor = .systemBackground
+            controller.tabBar.isTranslucent = false
+            controller.tabBar.shadowImage = UIImage()
+            controller.tabBar.backgroundImage = UIImage()
+            return controller
+        }()
         
         let firstVC = MenuView(factory: viewModelFactory)
         let firstNC = CustomNavigationController(rootViewController: firstVC)
@@ -75,15 +82,36 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         
         tabBarController.setViewControllers([firstNC, secondNC, thirdNC], animated: true)
-        tabBarController.tabBar.tintColor = .label
-        tabBarController.tabBar.backgroundColor = .systemBackground
-        tabBarController.tabBar.isTranslucent = false
-        tabBarController.tabBar.shadowImage = UIImage()
-        tabBarController.tabBar.backgroundImage = UIImage()
-        
+                
         return tabBarController
     }
-    func checkAppVersionAccessability(){
+    
+    //MARK: System
+    private func configureViewModelFactoryWith(_ dataModel: Dictionary_Words_LogsManager, settingsModel: UserSettingsStorageProtocol) -> ViewModelFactory {
+        return ViewModelFactory(dataModel: dataModel, settingsModel: settingsModel)
+    }
+
+    private func setUpDataModels(){
+        settingsModel = UserSettings()
+        dataModel = CoreDataHelper(settingsModel: settingsModel)
+    }
+    
+    private func postLaunchSetUp(){
+        self.observeLanguageChange()
+        self.checkAppVersionAccessability()
+    }
+    private func launchAnimation(){
+        var animationView: LaunchAnimation? = LaunchAnimation(bounds: UIWindow().bounds, interfaceStyle: settingsModel.appTheme.userInterfaceStyle)
+        animationView?.animate()
+        animationView?.makeKeyView()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3.5) {
+            animationView?.animationView.removeFromSuperview()
+            animationView = nil
+        }
+    }
+
+    //MARK: Settings related customization
+    private func checkAppVersionAccessability(){
         if let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String,
                let build = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String {
                let versionAndBuild = version + "." + build
@@ -91,19 +119,18 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                UserDefaults.standard.synchronize()
             }
     }
-    func configureViewModelFactoryWith(_ dataModel: Dictionary_Words_LogsManager, settingsModel: UserSettingsStorageProtocol) -> ViewModelFactory {
-        return ViewModelFactory(dataModel: dataModel, settingsModel: settingsModel)
-    }
-    func validateFirstLaunch(settings: UserSettingsStorageProtocol, dataModel: DictionaryManaging){
+    private func validateFirstLaunch(settings: UserSettingsStorageProtocol, dataModel: DictionaryManaging){
         if settings.appLaunchStatus.isFirstLaunch {
             do {
                 try dataModel.createDictionary(language: "tutorial.card.name".localized, text: "tutorial.card.title".localized + settings.appSeparators.value + "tutorial.card.message".localized)
             } catch {
-                print("This is for the developer. He checked every inch, but failed at the very begining")
+                print("This is for the developers. It seems, that author checked to the inch, but failed at the very begining")
             }
         }
     }
-    func validateInitialSettings(settings: UserSettingsStorageProtocol){
+    
+    //Since user can change the language throught apps section in settings, we need to track this changes by comparing values in UserDefaults and custom settings storage class.
+    private func validateInitialSettings(settings: UserSettingsStorageProtocol){
         let systemLangauge = UserDefaults.standard.array(forKey: "AppleLanguages")
         let languageKey = (systemLangauge?.first as? String)?.prefix(2)
         let languageCode = String(languageKey ?? "en")
@@ -122,12 +149,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
     }
         
-    func observeLanguageChange(){
+    private func observeLanguageChange(){
         NotificationCenter.default.addObserver(self, selector: #selector(languageDidChange(sender:)), name: .appLanguageDidChange, object: nil)
     }
         
+    //MARK: Actions
     @objc func languageDidChange(sender: Any){
-        settingsModel.reload(newValue: .notifications(settingsModel.appNotifications))
         if let tabBarController = self.window?.rootViewController as? UITabBarController {
             if let tabBarItems = tabBarController.tabBar.items {
                 for (index, item) in tabBarItems.enumerated(){

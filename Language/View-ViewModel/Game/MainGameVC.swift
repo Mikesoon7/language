@@ -317,7 +317,7 @@ extension MainGameVC: MainGameVCDelegate {
                 self.present(alert, animated: true)
                 return
             }
-            
+
             var snapshot = self.dataSource.snapshot()
             currentValue.word = currentValue.word
             currentValue.meaning = currentValue.meaning
@@ -389,13 +389,11 @@ class CustomFlowLayout: UICollectionViewFlowLayout {
 
         guard let collectionView = collectionView else { return }
 
-        let height = collectionView.bounds.height * 0.75
-        let width = height * 0.7
-//        let itemWidth = collectionView.bounds.width * 0.8
-//        let itemHeight = collectionView.bounds.width * 1.2
         let itemHeight = collectionView.bounds.height * 0.7
         let itemWidth = itemHeight * 0.7
-        itemSize = CGSize(width: itemWidth, height: itemHeight)
+//        let itemHeight = collectionView.bounds.height * 0.55
+//        let itemWidth = collectionView.bounds.height *  0.35
+        self.itemSize = CGSize(width: itemWidth, height: itemHeight)
     
         scrollDirection = .horizontal
 
@@ -407,6 +405,7 @@ class CustomFlowLayout: UICollectionViewFlowLayout {
         minimumInteritemSpacing = 10
         collectionView.decelerationRate = .normal
     }
+
     override func targetContentOffset(forProposedContentOffset proposedContentOffset: CGPoint, withScrollingVelocity velocity: CGPoint) -> CGPoint {
         guard let collectionView = collectionView, !collectionView.bounds.isEmpty else {
             return super.targetContentOffset(forProposedContentOffset: proposedContentOffset, withScrollingVelocity: velocity)

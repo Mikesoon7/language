@@ -52,7 +52,7 @@ class ExceptioonsViewModel{
     
     ///Returns stored in memory exception symbols, joined by separator
     func selectedExceptions() -> String {
-        var selectedSymbols =  settingsModel.appExceptions.selectedExceptions.map { $0.content }
+        let selectedSymbols =  settingsModel.appExceptions.selectedExceptions.map { $0.content }
         return selectedSymbols.joined().joined(separator: " ")
     }
 

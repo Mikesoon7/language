@@ -275,7 +275,6 @@ extension AddDictionaryView: TutorialSecondPartDelegate{
     func activateKeyboard() {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.7, execute: {
             self.textInputView.textView.becomeFirstResponder()
-            
         })        
     }
 }

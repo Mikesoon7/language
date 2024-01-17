@@ -55,9 +55,9 @@ class AddWordsViewModel {
     }
 
     func getNewWordsFrom(_ text: String){
-        let numberOfWords = dictionary.words?.count ?? Int(dictionary.numberOfCards)
-        let lines = text.split(separator: "\n", omittingEmptySubsequences: true).map { String($0) }
-        var errorAppeared = false
+//        let numberOfWords = dictionary.words?.count ?? Int(dictionary.numberOfCards)
+//        let lines = text.split(separator: "\n", omittingEmptySubsequences: true).map { String($0) }
+//        var errorAppeared = false
         
         do {
             let newWords = try dataModel.createWordsFromText(for: dictionary, text: text)

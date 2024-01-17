@@ -77,10 +77,6 @@ class MenuView: UIViewController {
         super.viewDidAppear(animated)
         //TODO: Dont forget to change on release method.
         viewModel.validateLaunchStatus()
-//        if firstLaunch {
-//            pushTutorialVC()
-//            firstLaunch = false
-//        }
     }
     override var canBecomeFirstResponder: Bool {
         return true

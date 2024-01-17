@@ -7,14 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		08594B0A2B39A937004A1398 /* Learny.workspace.xcworkspace in Resources */ = {isa = PBXBuildFile; fileRef = 08594B092B39A937004A1398 /* Learny.workspace.xcworkspace */; };
+		1567E4F8113AE56A0C77715E /* Pods_Learny.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0EA2F0AB3029B88D7E50A487 /* Pods_Learny.framework */; };
+		27C0BF9BE55BE402BB327A84 /* Pods_Learny_LanguageUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 65588950843395498C7458E3 /* Pods_Learny_LanguageUITests.framework */; };
 		7D3C3F9F2B1745A200025234 /* UIVC Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D3C3F9E2B1745A200025234 /* UIVC Extension.swift */; };
 		7D3C3FA12B17462500025234 /* UIColor Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D3C3FA02B17462500025234 /* UIColor Extension.swift */; };
 		7D3C3FA32B17467B00025234 /* UIButton Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D3C3FA22B17467B00025234 /* UIButton Extension.swift */; };
 		7D59FEBC2B07925B00FAD332 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 7D59FEBB2B07925B00FAD332 /* Settings.bundle */; };
 		7DB5A5AE2AF8D7FE003B0E0A /* HiglightLayoutManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DB5A5AD2AF8D7FE003B0E0A /* HiglightLayoutManager.swift */; };
-		7DB5A5B02AF8D8A5003B0E0A /* TextViewErrorHighlighter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DB5A5AF2AF8D8A5003B0E0A /* TextViewErrorHighlighter.swift */; };
-		96E529EC3FAFAF16B8D95DFF /* Pods_Language_LanguageUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B8F8F9A54FB795FEB1629A56 /* Pods_Language_LanguageUITests.framework */; };
 		9A02AA5C2AA0B47100644820 /* StatisticViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A02AA5B2AA0B47100644820 /* StatisticViewCell.swift */; };
 		9A02AA602AA2040700644820 /* PickerCallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A02AA5F2AA2040700644820 /* PickerCallView.swift */; };
 		9A02B2842A222B3D00652FC3 /* UIBezierPathTestController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A02B2832A222B3C00652FC3 /* UIBezierPathTestController.swift */; };
@@ -113,7 +112,6 @@
 		9AFFCE7B299D073D00C12B94 /* MenuAddDictionaryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AFFCE7A299D073D00C12B94 /* MenuAddDictionaryCell.swift */; };
 		9AFFCE7D299E747400C12B94 /* StatisticView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AFFCE7C299E747400C12B94 /* StatisticView.swift */; };
 		9AFFCE8129A4DFEF00C12B94 /* DetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AFFCE8029A4DFEE00C12B94 /* DetailsView.swift */; };
-		AEA1DEA69ADA44D8FDB7233E /* Pods_Language.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B7B4CD3DD0BE219CC35B9912 /* Pods_Language.framework */; };
 		F328BAF8010B4AF8142752A4 /* Pods_LanguageTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A8C0C034D45839C10B61B331 /* Pods_LanguageTests.framework */; };
 /* End PBXBuildFile section */
 
@@ -135,17 +133,18 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		08594B092B39A937004A1398 /* Learny.workspace.xcworkspace */ = {isa = PBXFileReference; lastKnownFileType = wrapper.workspace; name = Learny.workspace.xcworkspace; path = ../Learny.workspace.xcworkspace; sourceTree = "<group>"; };
+		0711FB6F83B94DDABBAB795D /* Pods-Learny.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Learny.debug.xcconfig"; path = "Target Support Files/Pods-Learny/Pods-Learny.debug.xcconfig"; sourceTree = "<group>"; };
 		08594B0B2B39A95A004A1398 /* Learny.workspace.xcworkspace */ = {isa = PBXFileReference; lastKnownFileType = wrapper.workspace; path = Learny.workspace.xcworkspace; sourceTree = "<group>"; };
-		4121A20842A28AFB6BE6300F /* Pods-Language.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Language.debug.xcconfig"; path = "Target Support Files/Pods-Language/Pods-Language.debug.xcconfig"; sourceTree = "<group>"; };
-		70FFD6789A2C77AF5C8E9A93 /* Pods-Language-LanguageUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Language-LanguageUITests.release.xcconfig"; path = "Target Support Files/Pods-Language-LanguageUITests/Pods-Language-LanguageUITests.release.xcconfig"; sourceTree = "<group>"; };
-		757339EAF854D7722382C475 /* Pods-Language-LanguageUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Language-LanguageUITests.debug.xcconfig"; path = "Target Support Files/Pods-Language-LanguageUITests/Pods-Language-LanguageUITests.debug.xcconfig"; sourceTree = "<group>"; };
+		0EA2F0AB3029B88D7E50A487 /* Pods_Learny.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Learny.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		4EF67BB85DE5E9D3190CB709 /* Pods-Learny-LanguageUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Learny-LanguageUITests.debug.xcconfig"; path = "Target Support Files/Pods-Learny-LanguageUITests/Pods-Learny-LanguageUITests.debug.xcconfig"; sourceTree = "<group>"; };
+		549F8354F82A699C9E79DE75 /* Pods-Learny-LanguageUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Learny-LanguageUITests.release.xcconfig"; path = "Target Support Files/Pods-Learny-LanguageUITests/Pods-Learny-LanguageUITests.release.xcconfig"; sourceTree = "<group>"; };
+		65588950843395498C7458E3 /* Pods_Learny_LanguageUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Learny_LanguageUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		71069AC4622AB4346EE47C7C /* Pods-Learny.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Learny.release.xcconfig"; path = "Target Support Files/Pods-Learny/Pods-Learny.release.xcconfig"; sourceTree = "<group>"; };
 		7D3C3F9E2B1745A200025234 /* UIVC Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIVC Extension.swift"; sourceTree = "<group>"; };
 		7D3C3FA02B17462500025234 /* UIColor Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor Extension.swift"; sourceTree = "<group>"; };
 		7D3C3FA22B17467B00025234 /* UIButton Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIButton Extension.swift"; sourceTree = "<group>"; };
 		7D59FEBB2B07925B00FAD332 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		7DB5A5AD2AF8D7FE003B0E0A /* HiglightLayoutManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HiglightLayoutManager.swift; sourceTree = "<group>"; };
-		7DB5A5AF2AF8D8A5003B0E0A /* TextViewErrorHighlighter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextViewErrorHighlighter.swift; sourceTree = "<group>"; };
 		9A02AA5B2AA0B47100644820 /* StatisticViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticViewCell.swift; sourceTree = "<group>"; };
 		9A02AA5F2AA2040700644820 /* PickerCallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerCallView.swift; sourceTree = "<group>"; };
 		9A02B2832A222B3C00652FC3 /* UIBezierPathTestController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIBezierPathTestController.swift; sourceTree = "<group>"; };
@@ -249,10 +248,7 @@
 		9AFFCE7C299E747400C12B94 /* StatisticView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticView.swift; sourceTree = "<group>"; };
 		9AFFCE8029A4DFEE00C12B94 /* DetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailsView.swift; sourceTree = "<group>"; };
 		A8C0C034D45839C10B61B331 /* Pods_LanguageTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_LanguageTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		B7B4CD3DD0BE219CC35B9912 /* Pods_Language.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Language.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		B8F8F9A54FB795FEB1629A56 /* Pods_Language_LanguageUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Language_LanguageUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C1D6CC25A5B8C572EE65A97D /* Pods-LanguageTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LanguageTests.release.xcconfig"; path = "Target Support Files/Pods-LanguageTests/Pods-LanguageTests.release.xcconfig"; sourceTree = "<group>"; };
-		DF6C0C6DFF97A5BC51FE8C87 /* Pods-Language.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Language.release.xcconfig"; path = "Target Support Files/Pods-Language/Pods-Language.release.xcconfig"; sourceTree = "<group>"; };
 		E44A24AE16A3BB084E3F8214 /* Pods-LanguageTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LanguageTests.debug.xcconfig"; path = "Target Support Files/Pods-LanguageTests/Pods-LanguageTests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -263,7 +259,7 @@
 			files = (
 				9A2092E32A3DF37000184124 /* Differ in Frameworks */,
 				9AF756852AA74FB700CE3B25 /* DGCharts in Frameworks */,
-				AEA1DEA69ADA44D8FDB7233E /* Pods_Language.framework in Frameworks */,
+				1567E4F8113AE56A0C77715E /* Pods_Learny.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -279,7 +275,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				96E529EC3FAFAF16B8D95DFF /* Pods_Language_LanguageUITests.framework in Frameworks */,
+				27C0BF9BE55BE402BB327A84 /* Pods_Learny_LanguageUITests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -289,12 +285,12 @@
 		193AA18A94BF67BB62C02EA7 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				4121A20842A28AFB6BE6300F /* Pods-Language.debug.xcconfig */,
-				DF6C0C6DFF97A5BC51FE8C87 /* Pods-Language.release.xcconfig */,
-				757339EAF854D7722382C475 /* Pods-Language-LanguageUITests.debug.xcconfig */,
-				70FFD6789A2C77AF5C8E9A93 /* Pods-Language-LanguageUITests.release.xcconfig */,
 				E44A24AE16A3BB084E3F8214 /* Pods-LanguageTests.debug.xcconfig */,
 				C1D6CC25A5B8C572EE65A97D /* Pods-LanguageTests.release.xcconfig */,
+				0711FB6F83B94DDABBAB795D /* Pods-Learny.debug.xcconfig */,
+				71069AC4622AB4346EE47C7C /* Pods-Learny.release.xcconfig */,
+				4EF67BB85DE5E9D3190CB709 /* Pods-Learny-LanguageUITests.debug.xcconfig */,
+				549F8354F82A699C9E79DE75 /* Pods-Learny-LanguageUITests.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -302,9 +298,9 @@
 		7CCEB7FD987137218CB39F7A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				B7B4CD3DD0BE219CC35B9912 /* Pods_Language.framework */,
-				B8F8F9A54FB795FEB1629A56 /* Pods_Language_LanguageUITests.framework */,
 				A8C0C034D45839C10B61B331 /* Pods_LanguageTests.framework */,
+				0EA2F0AB3029B88D7E50A487 /* Pods_Learny.framework */,
+				65588950843395498C7458E3 /* Pods_Learny_LanguageUITests.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -460,7 +456,6 @@
 		9A7B91B9298D6D9600E60CDD = {
 			isa = PBXGroup;
 			children = (
-				08594B092B39A937004A1398 /* Learny.workspace.xcworkspace */,
 				9A7B91C4298D6D9600E60CDD /* Language */,
 				9A7B91DB298D6D9900E60CDD /* LanguageTests */,
 				9A7B91E5298D6D9A00E60CDD /* LanguageUITests */,
@@ -561,7 +556,6 @@
 				9A94B9582A5EB1FA00DF6E4C /* Launch Screen.storyboard */,
 				9AABAEAF2A87D3E00032C008 /* TextInputView.swift */,
 				7DB5A5AD2AF8D7FE003B0E0A /* HiglightLayoutManager.swift */,
-				7DB5A5AF2AF8D8A5003B0E0A /* TextViewErrorHighlighter.swift */,
 				9AD4E2462A963A89009090EA /* ViewModelFactory.swift */,
 				9A4D21192AB0B74400EA9196 /* CustomNavigationController.swift */,
 			);
@@ -814,7 +808,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				08594B0A2B39A937004A1398 /* Learny.workspace.xcworkspace in Resources */,
 				7D59FEBC2B07925B00FAD332 /* Settings.bundle in Resources */,
 				9A1F67C829DFFD39003993C5 /* Localizable.strings in Resources */,
 				9A94B9592A5EB1FA00DF6E4C /* Launch Screen.storyboard in Resources */,
@@ -867,15 +860,15 @@
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Language-LanguageUITests/Pods-Language-LanguageUITests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-Learny-LanguageUITests/Pods-Learny-LanguageUITests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Language-LanguageUITests/Pods-Language-LanguageUITests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-Learny-LanguageUITests/Pods-Learny-LanguageUITests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Language-LanguageUITests/Pods-Language-LanguageUITests-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Learny-LanguageUITests/Pods-Learny-LanguageUITests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		B1B8C648E33C9D6943A410F8 /* [CP] Check Pods Manifest.lock */ = {
@@ -893,7 +886,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-Language-LanguageUITests-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-Learny-LanguageUITests-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -915,7 +908,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-Language-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-Learny-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -928,15 +921,15 @@
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Language/Pods-Language-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-Learny/Pods-Learny-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Language/Pods-Language-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-Learny/Pods-Learny-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Language/Pods-Language-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Learny/Pods-Learny-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -1015,7 +1008,6 @@
 				9ABAEE1A2A76A20B0065494A /* NotificationWeekCell.swift in Sources */,
 				9A883CEE2A6EA0A6008682F3 /* StatisticCellViewModel.swift in Sources */,
 				9A3B83442AAE24850093060E /* GameDetailsViewModel.swift in Sources */,
-				7DB5A5B02AF8D8A5003B0E0A /* TextViewErrorHighlighter.swift in Sources */,
 				9ABAEE1C2A79BFA10065494A /* NotificationView.swift in Sources */,
 				9ABDE1D12A4AF1B100EA37B9 /* MenuStatisticCell.swift in Sources */,
 				9AAECFC029B5055100439C0B /* EndVc.swift in Sources */,
@@ -1208,7 +1200,7 @@
 		};
 		9A7B91ED298D6D9A00E60CDD /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 4121A20842A28AFB6BE6300F /* Pods-Language.debug.xcconfig */;
+			baseConfigurationReference = 0711FB6F83B94DDABBAB795D /* Pods-Learny.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -1241,7 +1233,7 @@
 		};
 		9A7B91EE298D6D9A00E60CDD /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = DF6C0C6DFF97A5BC51FE8C87 /* Pods-Language.release.xcconfig */;
+			baseConfigurationReference = 71069AC4622AB4346EE47C7C /* Pods-Learny.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -1316,7 +1308,7 @@
 		};
 		9A7B91F3298D6D9A00E60CDD /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 757339EAF854D7722382C475 /* Pods-Language-LanguageUITests.debug.xcconfig */;
+			baseConfigurationReference = 4EF67BB85DE5E9D3190CB709 /* Pods-Learny-LanguageUITests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
@@ -1335,7 +1327,7 @@
 		};
 		9A7B91F4298D6D9A00E60CDD /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 70FFD6789A2C77AF5C8E9A93 /* Pods-Language-LanguageUITests.release.xcconfig */;
+			baseConfigurationReference = 549F8354F82A699C9E79DE75 /* Pods-Learny-LanguageUITests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;

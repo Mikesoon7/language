@@ -86,6 +86,8 @@ class UserSettings: UserSettingsStorageProtocol{
         }
         set{
             manager.update(newValue, forKey: AppLanguage.key)
+            //Maybe this isn't the right play to perform it. But every language change should invalidate the notification settigns and update language.
+            manager.update(self.appNotifications, forKey: AppPushNotifications.key)
             apply(newValue: .language(newValue))
         }
     }
@@ -129,18 +131,6 @@ class UserSettings: UserSettingsStorageProtocol{
         }
     }
 
-    
-//    var appDuplicates: AppDuplicates{
-//        get{
-//            manager.load(AppDuplicates.self, forKey: AppDuplicates.key) ?? .keep
-//
-//        }
-//        set{
-//            manager.update(newValue, forKey: AppDuplicates.key)
-//            apply(newValue: .duplicates(newValue))
-//        }
-//    }
-    
     required init(manager: UserSettingsManagerProtocol = UserSettingsManager(), helper: UserSettingsUpdateHelper = SettingsUpdateHelper()){
         self.manager = manager
         self.helper = helper

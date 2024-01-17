@@ -86,7 +86,6 @@ class HighlightLayoutManager: NSLayoutManager {
             drawRange(errorRange, with: .systemRed, inVisibleGlyphs: visibleGlyphRange, at: origin)
         }
     }
-//    private func displaySearchGlyph(
 }
     
     

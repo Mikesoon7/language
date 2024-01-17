@@ -62,6 +62,7 @@ class SettingsViewModel{
         ]
     }
     
+        
     //MARK: Retrieve indexPath for passedValue.
     func getTablePositionFor(option: SettingsOptions) -> IndexPath{
         switch option{

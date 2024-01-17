@@ -16,10 +16,11 @@ enum Direction{
 
 class MenuDictionaryCell: UITableViewCell{
 
-    private struct ViewConstants{
+    private enum ViewConstants{
         static let cornerRadius = CGFloat(9)
         static let overlayPoints = CGFloat(2)
     }
+    
     static let identifier = "dictCell"
     
     private var viewModel: StatisticCellViewModel!
@@ -68,11 +69,12 @@ class MenuDictionaryCell: UITableViewCell{
 
     var languageLabel : UILabel = {
         var label = UILabel()
-        label.attributedText = NSAttributedString(
-            string: LanguageChangeManager.shared.localizedString(forKey: "menu.cell.name"),
-            attributes: [NSAttributedString.Key.font : UIFont(name: "Georgia-BoldItalic", size: 20) ?? UIFont(),
-                         NSAttributedString.Key.foregroundColor: UIColor.label])
-        label.translatesAutoresizingMaskIntoConstraints = false
+        label.attributedText = .attributedString(
+            string: "menu.cell.name".localized,
+            with: .georgianBoldItalic,
+            ofSize: 20
+        )
+                label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
@@ -145,6 +147,7 @@ class MenuDictionaryCell: UITableViewCell{
     var statViewFinalWifth: CGFloat!
     
     private lazy var temoraryRecognizer: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(cellDidTap(sender: )))
+    
     //MARK: - Inherited Methods
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -498,121 +501,3 @@ class MenuDictionaryCell: UITableViewCell{
         cardsLabel.text = LanguageChangeManager.shared.localizedString(forKey: "menu.cell.number")
     }
 }
-//private
-//class CustomActionView: UIView{
-//    //MARK: Views
-//    var titleFrontView: UIView
-//    
-//    lazy var statView: UIView = configureCustomActions(
-//        imageName: "chart.bar",
-//        colour: .systemGray5)
-//    lazy var editView: UIView = configureCustomActions(
-//        imageName: "pencil",
-//        colour: .systemGray4)
-//    lazy var deleteView: UIView = configureCustomActions(
-//        imageName: "trash",
-//        colour: .systemGray3)
-//    
-//    //MARK: Dimentions
-//    private let cornerRadius: CGFloat = 9
-//    private let overlayPoints: CGFloat = 2
-//    private let actionButtonWidthRatio: CGFloat = 0.2
-//    
-//    //MARK: Constants
-//    
-//    
-//    init(frontView: UIView){
-//        self.titleFrontView = frontView
-//        super.init(frame: .zero)
-//        configureView()
-//    }
-//    required init?(coder: NSCoder) {
-//        fatalError("init?(coder: NSCoder) wasn't imported.")
-//    }
-//    
-//    private func configureView(){
-//        backgroundColor = .clear
-//        layer.cornerRadius = cornerRadius
-//        clipsToBounds = true
-//        translatesAutoresizingMaskIntoConstraints = false
-//    }
-//    func configureMasks(){
-//        statView.layer.mask = UIView().configureActionMaskWith(size: CGSize(
-//            width: self.frame.width * 0.2 + overlayPoints,
-//            height: self.frame.height), cornerRadius: cornerRadius)
-//        editView.layer.mask = UIView().configureActionMaskWith(size: CGSize(
-//            width: self.frame.width * 0.2 + overlayPoints,
-//            height: self.frame.height), cornerRadius: cornerRadius)
-//        deleteView.layer.mask = UIView().configureActionMaskWith(size: CGSize(
-//            width: self.frame.width * 0.2 + overlayPoints,
-//            height: self.frame.height), cornerRadius: cornerRadius)
-//    }
-//    
-//    
-//    private func configureCustomActions(imageName: String, colour: UIColor) -> UIView{
-//        let actionView: UIView = {
-//            let view = UIView()
-//            view.backgroundColor = colour
-//            view.translatesAutoresizingMaskIntoConstraints = false
-//            return view
-//        }()
-//        let imageView: UIImageView = {
-//            let view = UIImageView()
-//            view.image = UIImage(systemName: imageName)
-//            view.translatesAutoresizingMaskIntoConstraints = false
-//            view.tintColor = .label
-//            view.contentMode = .center
-//            return view
-//        }()
-//        
-//        actionView.addSubview(imageView)
-//        
-//        imageView.centerXAnchor.constraint(equalTo: actionView.centerXAnchor, constant: 9 / 2).isActive = true
-//        imageView.centerYAnchor.constraint(equalTo: actionView.centerYAnchor).isActive = true
-//        
-//        return actionView
-//    }
-//    var contentViewWidth: CGFloat!
-//    var contentViewHeight: CGFloat!
-//    
-//    var holderViewLeadingAnchor: NSLayoutConstraint!
-//    var initialHolderConstant: CGFloat!
-//    var currentHolderConstant: CGFloat!
-//    var finalHolderConstant: CGFloat!
-//    
-//    var deleteViewLeadingAnchor: NSLayoutConstraint!
-//    var initialActionConstant: CGFloat!
-//    var currentDeleteConstant: CGFloat!
-//    var finalDeleteConstant: CGFloat!
-//    
-//    var editViewLeadingAnchor: NSLayoutConstraint!
-//    var initialEditConstant: CGFloat!
-//    var currentEditConstant: CGFloat!
-//    var finalEditConstant: CGFloat!
-//    
-//    var statViewLeadingAnchor: NSLayoutConstraint!
-//    var initilStatConstant: CGFloat!
-//    var finalStatConstant: CGFloat!
-//    
-//    var statViewInitialLeadingAnchor: NSLayoutConstraint!
-//    var statViewFinalLeadingAnchor: NSLayoutConstraint!
-//    
-//    var statViewWidthAnchor: NSLayoutConstraint!
-//    var statViewInitialWidth: CGFloat!
-//    var statViewFinalWifth: CGFloat!
-//    
-//    private func configureSubviews(){
-//        self.addSubviews(deleteView, editView, statView, titleFrontView)
-//        
-//        NSLayoutConstraint.activate([
-//            titleFrontView.topAnchor.constraint(equalTo: topAnchor),
-//            titleFrontView.leadingAnchor.constraint(equalTo: leadingAnchor),
-//            titleFrontView.bottomAnchor.constraint(equalTo: bottomAnchor),
-//            titleFrontView.topAnchor.constraint(equalTo: topAnchor),
-//            
-//            
-//            
-//        ])
-//    }
-//    
-//}
