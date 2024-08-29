@@ -133,6 +133,8 @@ class SearchView: UIViewController {
                 case .shouldUpdateLabels:
                     self.configureLabels()
                     self.bottomSearchView.configureLabels()
+                case .shouldUpdateFonts:
+                    self.configureFont()
                 case .shouldReplaceSearchBarOnTop(_):
                     self.prepeareForNewPosition()
                 }
@@ -148,10 +150,15 @@ class SearchView: UIViewController {
     }
     //MARK:  NavBar SetUp
     func configureNavBar(){
-        navigationController?.navigationBar.titleTextAttributes = NSAttributedString.textAttributesForNavTitle()
-        
-        self.navigationController?.navigationBar.tintColor = .label
-        self.navigationController?.navigationBar.isTranslucent = true
+        navigationController?.navigationBar.titleTextAttributes = FontChangeManager.shared.VCTitleAttributes()
+
+//        self.navigationController?.navigationBar.tintColor = .label
+//        self.navigationController?.navigationBar.isTranslucent = true
+    }
+    
+    private func configureFont(){
+        navigationController?.navigationBar.titleTextAttributes =  FontChangeManager.shared.VCTitleAttributes()
+        self.tableView.reloadData()
     }
     
     //MARK:  TableView SetUP

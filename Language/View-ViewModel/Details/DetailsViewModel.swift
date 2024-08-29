@@ -13,7 +13,8 @@ class DetailsViewModel{
     
     enum Output {
         case error(Error)
-        case shouldUpdateText
+        case shouldUpdateLangauge
+        case shouldUpdateFont
         case shouldUpdatePicker
         case shouldPresentAddWordsView(DictionariesEntity)
         case shouldPresentGameView(DictionariesEntity, Int)
@@ -47,6 +48,9 @@ class DetailsViewModel{
 
         NotificationCenter.default.addObserver(
             self, selector: #selector(languageDidChange(sender: )), name: .appLanguageDidChange, object: nil)
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(fontDidChange(sender: )), name: .appFontDidChange, object: nil)
+
     }
     deinit {
         NotificationCenter.default.removeObserver(self)
@@ -100,6 +104,9 @@ class DetailsViewModel{
     }
 
     @objc func languageDidChange(sender: Any){
-        output.send(.shouldUpdateText)
+        output.send(.shouldUpdateLangauge)
+    }
+    @objc func fontDidChange(sender: Any){
+        output.send(.shouldUpdateFont)
     }
 }

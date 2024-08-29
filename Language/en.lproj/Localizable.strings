@@ -34,6 +34,7 @@
 "settings.general.theme.system" = "System";
 
 "settings.general.notification" = "Notifications";
+"settings.general.fonts" = "Font";
 //Items for Search
 "settings.search.barPosition" = "Search bar position";
 //Items for Dictionaries

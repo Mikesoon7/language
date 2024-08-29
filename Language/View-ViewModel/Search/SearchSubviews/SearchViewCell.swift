@@ -35,7 +35,6 @@ class SearchViewCell: UITableViewCell {
     //MARK: - Views
     let wordLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: "Helvetica Neue Medium", size: 14)
         label.tintColor = .label
         label.numberOfLines = 1
         label.contentMode = .topLeft
@@ -44,7 +43,6 @@ class SearchViewCell: UITableViewCell {
     }()
     let descriptionLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: "Helvetica Neue Medium", size: 11)
         label.numberOfLines = 1
         label.tintColor = .systemGray3
         label.contentMode = .topLeft
@@ -77,7 +75,10 @@ class SearchViewCell: UITableViewCell {
     func configureCellWith(data: DataForSearchCell){
         wordLabel.text = data.word
         descriptionLabel.text = data.description
-        
+    
+        wordLabel.font = .selectedFont.withSize(14)
+        descriptionLabel.font = .selectedFont.withSize(11)
+
         //If cell have onlu word, we use first first set og constraits.
         if !data.description.isEmpty {
             NSLayoutConstraint.deactivate(wordLabelConstraints)

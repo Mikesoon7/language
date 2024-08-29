@@ -74,7 +74,7 @@ class MenuDictionaryCell: UITableViewCell{
             with: .georgianBoldItalic,
             ofSize: 20
         )
-                label.translatesAutoresizingMaskIntoConstraints = false
+        label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
@@ -153,12 +153,14 @@ class MenuDictionaryCell: UITableViewCell{
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         configureHolderView()
         configureMainView()
+//        configureLabels()
 
         configurePanGesture()
         configureTapGesture()
         
         contentView.backgroundColor = .clear
         NotificationCenter.default.addObserver(self, selector: #selector(languageDidChange(sender:)), name: .appLanguageDidChange, object: nil)
+//        NotificationCenter.default.addObserver(self, selector: #selector(fontDidChange(sender: )), name: .appFontDidChange, object: nil)
     }
     required init?(coder: NSCoder) {
         fatalError("coder wasn't imported")
@@ -192,6 +194,7 @@ class MenuDictionaryCell: UITableViewCell{
         self.cardsResultLabel.text = String(viewModel.dictionary.numberOfCards)
         self.viewModel = viewModel
         self.delegate = delegate
+        self.configureLabels()
         self.bind()
     }
     
@@ -300,6 +303,22 @@ class MenuDictionaryCell: UITableViewCell{
         ])
 
     }
+    
+    func configureLabels() {
+//        print(FontChangeManager.shared.currentFont().withSize(20))
+        let ascender = FontChangeManager.shared.currentFont().withSize(20).ascender
+        let decender = FontChangeManager.shared.currentFont().withSize(20).descender
+//        if ascender + Int64(decender) > cardsLabel.bounds.height
+        
+        print(ascender, decender)
+        self.cardsLabel.font = FontChangeManager.shared.currentFont().withSize(20)
+//        self.cardsLabel.textAlig
+        
+        self.cardsResultLabel.font = FontChangeManager.shared.currentFont().withSize(15)
+        self.languageLabel.font = FontChangeManager.shared.currentFont().withSize(20)
+        self.languageResultLabel.font = FontChangeManager.shared.currentFont().withSize(15)
+    }
+    
     func configureCustomActions(imageName: String, colour: UIColor) -> UIView{
         let actionView: UIView = {
             let view = UIView()
@@ -410,6 +429,11 @@ class MenuDictionaryCell: UITableViewCell{
         }
         return true
     }
+    
+    func updateLabelsFont(){
+        self.cardsResultLabel.font = UIFont()
+//        self.
+    }
     //MARK: - Actions
     //Panning
     @objc func viewDidPan(sender: UIPanGestureRecognizer){
@@ -500,4 +524,11 @@ class MenuDictionaryCell: UITableViewCell{
         languageLabel.text = LanguageChangeManager.shared.localizedString(forKey: "menu.cell.name")
         cardsLabel.text = LanguageChangeManager.shared.localizedString(forKey: "menu.cell.number")
     }
+//    @objc func fontDidChange(sender: Any){
+//        languageLabel.font = FontChangeManager.shared.currentFont().withSize(20)
+//        cardsLabel.font = FontChangeManager.shared.currentFont().withSize(20)
+//        cardsResultLabel.font = FontChangeManager.shared.currentFont().withSize(15)
+//        languageResultLabel.font = FontChangeManager.shared.currentFont().withSize(15)
+//
+//    }
 }

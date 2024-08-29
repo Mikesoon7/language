@@ -70,9 +70,13 @@ class SettingsVC: UIViewController {
                     self?.presentAlertWith(action: actions)
                 case .needUpdateRowAt(let index):
                     self?.tableView.reloadRows(at: [index], with: .fade)
+                case .needUpdateFont:
+                    self?.tableView.reloadData()
                 case .needUpdateLanguage:
                     self?.configureLabels()
                     self?.tableView.reloadData()
+                case .needPresentFontView:
+                    self?.presentFontVC()
                 case .needPresentNotificationView:
                     self?.presentNotificationVC()
                 case .needPresentSeparatorsView:
@@ -103,6 +107,13 @@ class SettingsVC: UIViewController {
         let vc = NotificationView(factory: viewModelFactory)
         vc.modalPresentationStyle = .overFullScreen
         self.present(vc, animated: false)
+    }
+    private func presentFontVC(){
+        let fontConfig = UIFontPickerViewController.Configuration()
+        fontConfig.includeFaces = true
+        let fontPicker = UIFontPickerViewController(configuration: fontConfig)
+        fontPicker.delegate = self
+        self.present(fontPicker, animated: true, completion: nil)
     }
     private func presentSeparatorVC(){
         let vc = SeparatorsView(factory: viewModelFactory)
@@ -170,5 +181,14 @@ extension SettingsVC: UITableViewDelegate,  UITableViewDataSource{
             return 80
         }
         return UITableView.automaticDimension
+    }
+}
+
+extension SettingsVC: UIFontPickerViewControllerDelegate {
+    func fontPickerViewControllerDidPickFont(_ viewController: UIFontPickerViewController) {
+        guard let selectedFont = viewController.selectedFontDescriptor else { return }
+        viewModel.updateSelectedFont(font: selectedFont)
+        
+        viewController.dismiss(animated: true)
     }
 }

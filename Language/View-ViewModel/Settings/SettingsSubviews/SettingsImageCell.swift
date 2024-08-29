@@ -77,7 +77,8 @@ class SettingsImageCell: UITableViewCell {
     //MARK: Configure cell with passed data.
     //Called after dequing in table view delegate.
     func configureCellWithData(_ data: DataForSettingsImageCell){
-                self.titleLabel.text = data.title
+        self.titleLabel.text = data.title
+        titleLabel.font = .selectedFont.withSize(17)
         topImageView.tintColor = data.isBarOnTop ? .label : .systemGray3
         bottomImageView.tintColor = data.isBarOnTop ? .systemGray3 : .label
         selectedImage = data.valueChangeHandler

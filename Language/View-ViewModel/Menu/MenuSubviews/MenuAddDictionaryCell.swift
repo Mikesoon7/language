@@ -21,7 +21,7 @@ class MenuAddDictionaryCell: UITableViewCell {
     private let addButton : UIButton = {
         var button = UIButton()
         button.backgroundColor = .systemGray5
-        button.setImage(UIImage(systemName: "square.and.arrow.up", withConfiguration: UIImage.SymbolConfiguration(weight: .medium)), for: .normal)
+        button.setImage(UIImage(systemName: "square.and.arrow.up", withConfiguration: UIImage.SymbolConfiguration(weight: UIFont.selectedFont.fontWeight.symbolWeight())), for: .normal)
         button.imageView?.center = button.center
         button.tintColor = .label
         
@@ -54,7 +54,8 @@ class MenuAddDictionaryCell: UITableViewCell {
         self.clipsToBounds = true
         self.selectionStyle = .none
         
-        NotificationCenter.default.addObserver(self, selector: #selector(languageChanged(sender:)), name: .appLanguageDidChange, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(languageDidChange(sender:)), name: .appLanguageDidChange, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(fontDidChange(sender:)), name: .appFontDidChange, object: nil)
     }
     
     //MARK: Configuring and laying out subviews.
@@ -79,11 +80,15 @@ class MenuAddDictionaryCell: UITableViewCell {
         importLabel.attributedText =
             .attributedString(
                 string: "menu.cell.import".localized,
-                with: .georgianBoldItalic,
+                with: FontChangeManager.shared.currentFont(),
                 ofSize: 20)
     }
     
-    @objc func languageChanged(sender: Any){
+    @objc func languageDidChange(sender: Any){
         configureLabels()
+    }
+    @objc func fontDidChange(sender: Any){
+        importLabel.font = .selectedFont.withSize(20)
+        addButton.setImage(UIImage(systemName: "square.and.arrow.up", withConfiguration: UIImage.SymbolConfiguration(weight: UIFont.selectedFont.fontWeight.symbolWeight())), for: .normal)
     }
 }

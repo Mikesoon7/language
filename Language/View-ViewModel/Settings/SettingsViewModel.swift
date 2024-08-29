@@ -13,6 +13,8 @@ class SettingsViewModel{
         case needPresentAlertWith([UIAlertAction])
         case needPresentSeparatorsView
         case needUpdateLanguage
+        case needUpdateFont
+        case needPresentFontView
         case needUpdateRowAt(IndexPath)
         case needPresentNotificationView
         case needPresentExceptionsView
@@ -33,6 +35,8 @@ class SettingsViewModel{
         configureSettingsStructure()
 
         NotificationCenter.default.addObserver(self, selector: #selector(appLanguageDidChange(sender: )), name: .appLanguageDidChange, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(appFontDidChange(sender: )), name: .appFontDidChange, object: nil)
+
     }
     deinit {
         NotificationCenter.default.removeObserver(self, name: .appLanguageDidChange, object: nil)
@@ -46,6 +50,7 @@ class SettingsViewModel{
                                 SettingsOptions.sectionHeader("settings.sections.general"),
                                 SettingsOptions.theme(settingsModel.appTheme),
                                 SettingsOptions.language(settingsModel.appLanguage),
+                                SettingsOptions.font(settingsModel.appFont),
                                 SettingsOptions.notifications(settingsModel.appNotifications)
                             ]),
             SettingsSection(sectionIndex: 1,
@@ -68,7 +73,8 @@ class SettingsViewModel{
         switch option{
         case .theme(_): return IndexPath(row: 1 , section: 0)
         case .language(_): return IndexPath(row: 2 , section: 0)
-        case .notifications(_): return IndexPath(row: 3 , section: 0)
+        case .font(_): return IndexPath(row: 3, section: 0)
+        case .notifications(_): return IndexPath(row: 4 , section: 0)
         case .searchBarPosition(_): return IndexPath(row: 1 , section: 1)
         case .separators(_): return IndexPath(row: 1 , section: 2)
         case .exceptions(_): return IndexPath(row: 2, section: 2)
@@ -102,6 +108,8 @@ class SettingsViewModel{
             return DataForSettingsTextCell(title: theme.title, value: theme.value)
         case .language(let language):
             return DataForSettingsTextCell(title: language.title, value: language.value)
+        case .font(let font):
+            return DataForSettingsTextCell(title: font.title, value: font.value)
         case .notifications(let notifications):
             return DataForSettingsTextCell(title: notifications.title, value: nil)
         case .searchBarPosition(let position):
@@ -135,6 +143,8 @@ class SettingsViewModel{
                 }))
             }
             output.send(.needPresentAlertWith(alertOptions))
+        case .font(_):
+            output.send(.needPresentFontView)
         case .exceptions(_):
             output.send(.needPresentExceptionsView)
         case .notifications(_):
@@ -147,6 +157,15 @@ class SettingsViewModel{
     }
     //MARK: Updating model and local settings reference.
     //Since we use cell, which automaticaly responce on user touches, we dont need to update searchBarPosition row.
+    func updateSelectedFont(font: UIFontDescriptor) {
+        //        settingModel.reload(newValue: .font())
+        let font = UIFont(descriptor: font, size: 17)
+        settingsModel.reload(newValue: .font(.init(selectedFontName: font.fontName)))
+        configureSettingsStructure()
+        output.send(.needUpdateRowAt(self.getTablePositionFor(option: .font(.init(selectedFontName: font.fontName)))))
+    }
+    
+        
     func updateSearchBarPosition(position: AppSearchBarPosition){
         settingsModel.reload(newValue: .searchBarPosition(position))
         configureSettingsStructure()
@@ -161,6 +180,10 @@ class SettingsViewModel{
     @objc func appLanguageDidChange(sender: Any){
         output.send(.needUpdateLanguage)
     }
+    @objc func appFontDidChange(sender: Any){
+        output.send(.needUpdateFont)
+    }
+    
     
 }
 

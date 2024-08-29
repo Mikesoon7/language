@@ -29,7 +29,7 @@ class AddDictionaryView: UIViewController {
     }()
     private let nameLabel: UILabel = {
         let label = UILabel()
-        label.font = .georgianBoldItalic.withSize(18)
+        label.font = .selectedFont.withSize(18)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -37,7 +37,7 @@ class AddDictionaryView: UIViewController {
         let field = UITextField()
         field.textColor = .label
         field.textAlignment = .right
-        field.font = .georgianItalic.withSize(15)
+        field.font = .selectedFont.withSize(15)
         field.translatesAutoresizingMaskIntoConstraints = false
         return field
     }()
@@ -135,7 +135,11 @@ class AddDictionaryView: UIViewController {
                 case .shouldUpdateText:
                     self?.textInputView.updatePlaceholder()
                     self?.configureText()
+                case .shouldUpdateFont:
+                    self?.textInputView.updatePlaceholder()
+                    self?.configureFont()
                 }
+            
             }
             .store(in: &cancellabel)
     }
@@ -209,13 +213,23 @@ class AddDictionaryView: UIViewController {
 
         saveButton.setAttributedTitle(
             .attributedString(string: "system.save".localized,
-                              with: .georgianBoldItalic, ofSize: 18), for: .normal)
+                              with: .selectedFont,
+                              ofSize: 18), for: .normal)
         
         self.navigationItem.title = "addDict.title".localized
         nameInputField.placeholder = "fieldPlaceholder".localized
         doneButton.title = "system.done".localized
         textInputView.textView.isTextUpdateRequired = true
     }
+    private func configureFont(){
+        nameLabel.font = .selectedFont.withSize(17)
+        saveButton.setAttributedTitle(
+            .attributedString(string: "system.save".localized,
+                              with: .selectedFont,
+                              ofSize: 18), for: .normal)
+        nameInputField.font = .selectedFont.withSize(15)
+    }
+    
     ///Returns textFiled value. If value equals nil, return nil and present an error.
     private func validateName() -> String? {
         guard let text = nameInputField.text,

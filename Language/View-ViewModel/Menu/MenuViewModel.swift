@@ -20,6 +20,7 @@ final class MenuViewModel{
         case shouldPresentEditView(DictionariesEntity)
         case shouldPresentTutorialView
         case shouldUpdateLabels
+        case shouldUpdateFont
         case error(Error)
     }
 
@@ -50,6 +51,7 @@ final class MenuViewModel{
             .store(in: &cancellables)
         fetch()
         NotificationCenter.default.addObserver(self, selector: #selector(languageDidChange(sender:)), name: .appLanguageDidChange, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(fontDidChange(sender:)), name: .appFontDidChange, object: nil)
     }
     
     deinit {
@@ -80,6 +82,11 @@ final class MenuViewModel{
     ///Tells model to restore last deleted dictionary
     func undoLastDeletion(){
         model.undoDeletion()
+    }
+    func currentFont() -> UIFont {
+        let font = settingsModel.appFont.selectedFont
+        
+        return font.withSize(23)
     }
     
     //MARK: Cell swipe actions related.
@@ -121,6 +128,9 @@ final class MenuViewModel{
     
     @objc func languageDidChange(sender: Any){
         output.send(.shouldUpdateLabels)
+    }
+    @objc func fontDidChange(sender: Any){
+        output.send(.shouldUpdateFont)
     }
 }
 

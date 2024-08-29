@@ -37,7 +37,7 @@ class EditView: UIViewController {
         view.allowsEditingTextAttributes = true
         view.textColor = .label
         view.backgroundColor = .systemBackground
-        view.font = .timesNewRoman.withSize(20)
+        view.font = .selectedFont.withSize(20)
         view.alwaysBounceVertical = true
         view.textContainer.lineBreakMode = .byWordWrapping
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -50,7 +50,7 @@ class EditView: UIViewController {
         field.backgroundColor = .clear
         field.textColor = .label
         
-        field.font = .georgianBoldItalic.withSize(23)
+        field.font = .selectedFont.withSize(23)
         field.adjustsFontSizeToFitWidth = true
         
         field.textAlignment = .center
@@ -125,6 +125,8 @@ class EditView: UIViewController {
                 case .shouldUpdateLabels:
                     self?.configureLabels()
                     self?.customSearchToolBar.configureLabels()
+                case .shouldUpdateFont:
+                    self?.updateFont()
                 case .editSucceed:
                     self?.navigationController?.popViewController(animated: true)
                 case .shouldHighlightErrorLine(let word):
@@ -204,6 +206,10 @@ class EditView: UIViewController {
 
         textView.isTextUpdateRequired = true
         customSearchToolBar.configureLabels()
+    }
+    private func updateFont(){
+        textField.font = .selectedFont.withSize(23)
+        textView.font = .selectedFont.withSize(20)
     }
     
     //MARK: Activate search fucntionality

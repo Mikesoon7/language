@@ -61,9 +61,10 @@ class CollectionViewLastCell: UICollectionViewCell {
     private let scoreLabel : UILabel = {
         let label = UILabel()
         label.textAlignment = .center
-        label.font = .georgianBoldItalic.withSize(40)
+        label.font = .selectedFont.withSize(40)
         label.textColor = .label
         label.text = "???"
+        label.adjustsFontSizeToFitWidth = true
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -94,6 +95,7 @@ class CollectionViewLastCell: UICollectionViewCell {
     }
     
     func configure(with data: DataForLastCell){
+        scoreLabel.font = .selectedFont.withSize(40)
         scoreLabel.text = "\((data.score).rounded())%"
         delegate = data.delegate
     }

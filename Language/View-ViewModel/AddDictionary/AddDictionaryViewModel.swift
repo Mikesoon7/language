@@ -13,6 +13,7 @@ class AddDictionaryViewModel {
     enum Output {
         case shouldPresentError(Error)
         case shouldUpdateText
+        case shouldUpdateFont
         case shouldUpdatePlaceholder
         case shouldHighlightError(String)
         case shouldPop
@@ -27,13 +28,17 @@ class AddDictionaryViewModel {
         self.dataModel = model
         self.settingsmodel = settingsModel
         
-        NotificationCenter.default.addObserver(self, selector: #selector(appLanguageDidChange(sender: )), name: .appLanguageDidChange, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(appSeparatorDidChange(sender: )), name: .appSeparatorDidChange, object: nil)
-        
+        NotificationCenter.default.addObserver(self, selector: #selector(appLanguageDidChange(sender: )), name:
+                .appLanguageDidChange, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(appSeparatorDidChange(sender: )), name:
+                .appSeparatorDidChange, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(appFontDidChange(sender: )), name:
+                .appFontDidChange, object: nil)
     }
     deinit{
         NotificationCenter.default.removeObserver(self, name: .appLanguageDidChange, object: nil)
         NotificationCenter.default.removeObserver(self, name: .appSeparatorDidChange, object: nil)
+        NotificationCenter.default.removeObserver(self, name: .appFontDidChange, object: nil)
     }
     func configureTextPlaceholder() -> String{
         return "viewPlaceholderWord".localized + " \(settingsmodel.appSeparators.value) " + "viewPlaceholderMeaning".localized
@@ -62,5 +67,9 @@ class AddDictionaryViewModel {
     @objc func appSeparatorDidChange(sender: Any){
         output.send(.shouldUpdatePlaceholder)
     }
+    @objc func appFontDidChange(sender: Any){
+        output.send(.shouldUpdateFont)
+    }
+
     
 }

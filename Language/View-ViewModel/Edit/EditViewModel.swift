@@ -21,6 +21,7 @@ class EditViewModel {
         case shouldPresentError(Error)
         case shouldHighlightErrorLine(String)
         case shouldUpdateLabels
+        case shouldUpdateFont
         case editSucceed
     }
 
@@ -56,6 +57,7 @@ class EditViewModel {
             self, selector: #selector(separatorDidChange(sender: )), name: .appSeparatorDidChange, object: nil)
         NotificationCenter.default.addObserver(
             self, selector: #selector(languageDidChange(sender: )), name: .appLanguageDidChange, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(fontDidChange(sedner: )), name: .appFontDidChange, object: nil)
     }
     deinit {
         NotificationCenter.default.removeObserver(self, name: .appSeparatorDidChange, object: nil)
@@ -167,6 +169,9 @@ class EditViewModel {
     @objc private func separatorDidChange(sender: Notification){
         let parsedDictionary = parseArrayToText(with: words, name: dictionary.language)
         output.send(.shouldPresentData(parsedDictionary))
+    }
+    @objc private func fontDidChange(sedner: Notification){
+        output.send(.shouldUpdateFont)
     }
 }
 

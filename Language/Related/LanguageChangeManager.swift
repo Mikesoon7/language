@@ -10,21 +10,25 @@ import UIKit
 
 class LanguageChangeManager {
     static let shared = LanguageChangeManager()
+    static let key = "AppleLanguages"
     private var bundle: Bundle
     
     private init() {
-        let language = UserDefaults.standard.string(forKey: "AppleLanguages") ?? "en"
-        let path = Bundle.main.path(forResource: language, ofType: "lproj")!
-        bundle = Bundle(path: path)!
+        let language = UserDefaults.standard.string(forKey: LanguageChangeManager.key) ?? "en"
+        guard let path = Bundle.main.path(forResource: language, ofType: "lproj") else {
+            bundle = Bundle.main
+            return
+        }
+        bundle = Bundle(path: path) ?? Bundle.main
     }
     func changeLanguage(to languageKey: String){
         let path = Bundle.main.path(forResource: languageKey, ofType: "lproj")
-        UserDefaults.standard.set([languageKey], forKey: "AppleLanguages")
+        UserDefaults.standard.set([languageKey], forKey: LanguageChangeManager.key)
 
         if let newPath = path, let newBundle = Bundle(path: newPath) {
             bundle = newBundle
         } else {
-            print("No another language")
+            print("No lanugage found.")
         }
         NotificationCenter.default.post(name: .appLanguageDidChange, object: nil)
     }

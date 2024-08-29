@@ -13,6 +13,7 @@ class GameViewModel{
     
     enum Output{
         case updateLables
+        case shouldUpdateFont
         case error(Error)
     }
     
@@ -23,6 +24,7 @@ class GameViewModel{
     private var words: [WordsEntity] = []
     
     private var isRandom: Bool
+    private var initialNumberOfCards = Int()
     private var selectedNumberOfWords: Int
     
     var output = PassthroughSubject<Output, Never>()
@@ -36,12 +38,12 @@ class GameViewModel{
         self.selectedNumberOfWords = selectedNumber
         configureData()
         
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(languageDidUpdate(sender:)),
-            name: .appLanguageDidChange,
-            object: nil
+        NotificationCenter.default.addObserver(self, selector: #selector(languageDidUpdate(sender:)), name: .appLanguageDidChange,object: nil
         )
+        NotificationCenter.default.addObserver(self, selector: #selector(fontDidChange(sender:)), name: .appFontDidChange,object: nil
+        )
+
+        
     }
     deinit {
         NotificationCenter.default.removeObserver(self, name: .appLanguageDidChange, object: nil)
@@ -49,7 +51,7 @@ class GameViewModel{
     
     //MARK: Methods
     func configureCompletionPercent() -> Float{
-        Float(selectedNumberOfWords) / Float(words.count) * 100.0
+        Float(selectedNumberOfWords) / Float(initialNumberOfCards) * 100.0
     }
     
     func dataForDiffableDataSource() -> [WordsEntity]{
@@ -78,6 +80,7 @@ class GameViewModel{
             self.output.send(.error(error))
         }
 
+        self.initialNumberOfCards = words.count
         self.words = prepareWords(words: words, isRandom: isRandom, restrictBy: selectedNumberOfWords)
     }
 
@@ -92,6 +95,9 @@ class GameViewModel{
     
     @objc func languageDidUpdate(sender: Any){
         self.output.send(.updateLables)
+    }
+    @objc func fontDidChange(sender: Any){
+        self.output.send(.shouldUpdateFont)
     }
 
 }

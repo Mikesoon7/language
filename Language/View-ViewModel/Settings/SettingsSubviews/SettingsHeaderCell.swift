@@ -19,7 +19,6 @@ class SettingsHeaderCell: UITableViewCell {
     let label: UILabel = {
         let label = UILabel()
         label.textColor = .systemGray2
-        label.font = .helveticaNeueMedium.withSize(19)
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textAlignment = .left
         return label
@@ -49,6 +48,7 @@ class SettingsHeaderCell: UITableViewCell {
     //Called after dequing in table view delegate.
     func configureCellWithData(_ data: DataForSettingsHeaderCell){
         label.text = data.title
+        label.font = .selectedFont.withSize(19)
     }
     
     //MARK: Configure subviews layout.

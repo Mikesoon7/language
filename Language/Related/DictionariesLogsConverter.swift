@@ -54,143 +54,63 @@ struct DataForLogs{
     var logs: [Date]
 }
 
-class TestDateLogExtractor {
-    var formatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MM/dd/yyy"
-        formatter.timeZone = .autoupdatingCurrent
-        return formatter
-    }()
-    private lazy var initialLogsData: [DataForLogs] = [
-        DataForLogs(dictionary: "Swift", logs: [
-            formatter.date(from: "08.04.2023")!,
-            formatter.date(from: "09.03.2023")!,
-            formatter.date(from: "09.04.2023")!,
-            formatter.date(from: "09.05.2023")!,
-            formatter.date(from: "09.06.2023")!,
-            formatter.date(from: "09.04.2023")!,
-
-        ]),
-        DataForLogs(dictionary: "Language", logs: [
-            formatter.date(from: "08.04.2023")!,
-            formatter.date(from: "09.03.2023")!,
-            formatter.date(from: "09.04.2023")!,
-            formatter.date(from: "09.05.2023")!,
-            formatter.date(from: "09.06.2023")!,
-            formatter.date(from: "09.04.2023")!,
-
-        ]),
-        DataForLogs(dictionary: "actors", logs: [
-            formatter.date(from: "09.03.2023")!,
-            formatter.date(from: "09.01.2023")!,
-            formatter.date(from: "09.02.2023")!,
-            formatter.date(from: "09.05.2023")!,
-            formatter.date(from: "09.06.2023")!,
-            formatter.date(from: "09.04.2023")!,
-        ])
-    ]
-    var sortedLogsData: [DataForLogs] = []
-    
-    init(){
-        
-    }
-    func getCurrentWeekLogs(){
-        var sortedLogs: [DataForLogs] = []
-        let currentDay = Date()
-        var calendar = Calendar.autoupdatingCurrent
-        calendar.timeZone = .autoupdatingCurrent
-        calendar.locale = .autoupdatingCurrent
-
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-        formatter.timeZone = TimeZone.current
-        
-//        print(formatter.string(from: currentDay))
-//        print(currentDay)
-//        print(calendar.locale)
-//        print(calendar.timeZone)
-        
-//        let dateFormatter = DateFormatter()
-        var weekComponents = calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: currentDay)
-        weekComponents.hour = 0
-        weekComponents.minute = 0
-        
-        guard let firstDayOfTheWeek = calendar.date(from: weekComponents), let lastDayOfTheWeek = calendar.date(byAdding: .day, value: 6, to: firstDayOfTheWeek) else {
-            return
-        }
-        let interval = DateInterval(start: firstDayOfTheWeek, end: lastDayOfTheWeek)
-        
-        print("\(formatter.string(from: interval.start)) - \(formatter.string(from: interval.end))")
-        print("\(interval.start) - \(interval.end)")
-        print(interval)
-        for dictionary in initialLogsData{
-            let filteredLogs = dictionary.logs.filter { log in
-                interval.contains(log)
-            }
-            sortedLogs.append(DataForLogs(dictionary: dictionary.dictionary, logs: filteredLogs))
-        }
-        sortedLogsData = sortedLogs
-        sortedLogsData.forEach { pair in
-            print("\(pair.dictionary) current week (starts: \(firstDayOfTheWeek), ends: \(lastDayOfTheWeek) represented by:")
-            pair.logs.forEach { log in
-                print(log)
-            }
-        }
-    }
-}
-//class DateLogExtractor {
-//    var initialLogsData: [LogsForDictionary] = []
-//    var initialLogsRange = DateInterval()
-//    var sortedLogsData: [LogsForDictionary] = []
-//    var sortedLogsDataRange = DateInterval()
+//class TestDateLogExtractor {
+//    var formatter: DateFormatter = {
+//        let formatter = DateFormatter()
+//        formatter.dateFormat = "MM/dd/yyy"
+//        formatter.timeZone = .autoupdatingCurrent
+//        return formatter
+//    }()
+//    private lazy var initialLogsData: [DataForLogs] = [
+//        DataForLogs(dictionary: "Swift", logs: [
+//            formatter.date(from: "08.04.2023")!,
+//            formatter.date(from: "09.03.2023")!,
+//            formatter.date(from: "09.04.2023")!,
+//            formatter.date(from: "09.05.2023")!,
+//            formatter.date(from: "09.06.2023")!,
+//            formatter.date(from: "09.04.2023")!,
+//
+//        ]),
+//        DataForLogs(dictionary: "Language", logs: [
+//            formatter.date(from: "08.04.2023")!,
+//            formatter.date(from: "09.03.2023")!,
+//            formatter.date(from: "09.04.2023")!,
+//            formatter.date(from: "09.05.2023")!,
+//            formatter.date(from: "09.06.2023")!,
+//            formatter.date(from: "09.04.2023")!,
+//
+//        ]),
+//        DataForLogs(dictionary: "actors", logs: [
+//            formatter.date(from: "09.03.2023")!,
+//            formatter.date(from: "09.01.2023")!,
+//            formatter.date(from: "09.02.2023")!,
+//            formatter.date(from: "09.05.2023")!,
+//            formatter.date(from: "09.06.2023")!,
+//            formatter.date(from: "09.04.2023")!,
+//        ])
+//    ]
+//    var sortedLogsData: [DataForLogs] = []
 //    
-//    init(logs: [LogsForDictionary]){
-//        self.initialLogsData = logs
-//        self.getInitialDateRange()
-//    }
-//    
-//    
-//    func getInitialDateRange(){
-//        var upperBound = Date()
-//        let lowerBound = Date()
-//        for dictionary in initialLogsData{
-//            guard let firstDay = dictionary.affiliatedLogs.first?.accessDate else{
-//                print("failed to get first day")
-//                return
-//            }
-//            if upperBound > firstDay {
-//                upperBound = firstDay
-//            }
-//        }
-//        self.initialLogsRange = DateInterval(start: upperBound, end: lowerBound)
-//        self.sortedLogsDataRange = initialLogsRange
-//    }
-//    func getCustomLogs(beginDate: Date, endDate: Date){
-//        var sortedLogs: [LogsForDictionary] = []
-//        let interval = DateInterval(start: beginDate, end: endDate)
+//    init(){
 //        
-//        for dictionary in initialLogsData{
-//            let filteredLogs = dictionary.affiliatedLogs.filter { log in
-//                interval.contains(log.accessDate ?? Date())
-//            }
-//            sortedLogs.append(LogsForDictionary(dictionary: dictionary.dictionary, affiliatedLogs: filteredLogs))
-//        }
-//        sortedLogsData = sortedLogs
-//        sortedLogsDataRange = interval
 //    }
 //    func getCurrentWeekLogs(){
-//        var sortedLogs: [LogsForDictionary] = []
+//        var sortedLogs: [DataForLogs] = []
 //        let currentDay = Date()
-//        var calendar = Calendar.current
+//        var calendar = Calendar.autoupdatingCurrent
+//        calendar.timeZone = .autoupdatingCurrent
+//        calendar.locale = .autoupdatingCurrent
 //
 //        let formatter = DateFormatter()
 //        formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
 //        formatter.timeZone = TimeZone.current
 //        
-//        print(formatter.string(from: currentDay))
-//        print(currentDay)
+////        print(formatter.string(from: currentDay))
+////        print(currentDay)
+////        print(calendar.locale)
+////        print(calendar.timeZone)
 //        
-//        let dateFormatter = DateFormatter()
+////        let dateFormatter = DateFormatter()
 //        var weekComponents = calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: currentDay)
 //        weekComponents.hour = 0
 //        weekComponents.minute = 0
@@ -199,103 +119,29 @@ class TestDateLogExtractor {
 //            return
 //        }
 //        let interval = DateInterval(start: firstDayOfTheWeek, end: lastDayOfTheWeek)
+//        
+//        print("\(formatter.string(from: interval.start)) - \(formatter.string(from: interval.end))")
+//        print("\(interval.start) - \(interval.end)")
 //        print(interval)
 //        for dictionary in initialLogsData{
-//            let filteredLogs = dictionary.affiliatedLogs.filter { log in
-//                interval.contains(log.accessDate ?? Date())
+//            let filteredLogs = dictionary.logs.filter { log in
+//                interval.contains(log)
 //            }
-//            sortedLogs.append(LogsForDictionary(dictionary: dictionary.dictionary, affiliatedLogs: filteredLogs))
+//            sortedLogs.append(DataForLogs(dictionary: dictionary.dictionary, logs: filteredLogs))
 //        }
 //        sortedLogsData = sortedLogs
-//        sortedLogsDataRange = interval
 //        sortedLogsData.forEach { pair in
-//            print("\(pair.dictionary.language) current week (starts: \(firstDayOfTheWeek), ends: \(lastDayOfTheWeek) represented by:")
-//            pair.affiliatedLogs.forEach { log in
-//                print(log.accessDate)
-//            }
-//        }
-//    }
-//    func getCurrentMonthLogs(){
-//        var sortedLogs: [LogsForDictionary] = []
-//        let calendar = Calendar.current
-//        let currentDate = Date()
-//        
-//        // Get the range of the current month
-//        guard let currentMonthRange = calendar.range(of: .day, in: .month, for: currentDate) else {
-//            return
-//        }
-//        
-//        // Calculate the start date of the current month
-//        let startOfMonthComponents = calendar.dateComponents([.year, .month], from: currentDate)
-//        let startOfMonth = calendar.date(from: startOfMonthComponents)!
-//        
-//        // Calculate the end date of the current month
-//        let endOfMonthComponents = DateComponents(day: currentMonthRange.count)
-//        let endOfMonth = calendar.date(byAdding: endOfMonthComponents, to: startOfMonth)!
-//        
-//        let interval = DateInterval(start: startOfMonth, end: endOfMonth)
-//        
-//        for dictionary in initialLogsData{
-//            let filteredLogs = dictionary.affiliatedLogs.filter { log in
-//                interval.contains(log.accessDate ?? Date())
-//            }
-//            sortedLogs.append(LogsForDictionary(dictionary: dictionary.dictionary, affiliatedLogs: filteredLogs))
-//        }
-//        sortedLogsData = sortedLogs
-//        sortedLogsDataRange = interval
-//        
-//        sortedLogsData.forEach { pair in
-//            print("\(pair.dictionary.language) current month ( start: \(startOfMonth) end: \(endOfMonth) represented by:")
-//            pair.affiliatedLogs.forEach { log in
-//                print(log.accessDate)
-//            }
-//        }
-//    }
-//    func getPreviousMonthLogs(){
-//        var sortedLogs: [LogsForDictionary] = []
-//        let calendar = Calendar.current
-//        let currentDate = Date()
-//        
-//        let currentMonthStartComponents = calendar.dateComponents([.year, .month], from: currentDate)
-//            
-//        guard let firstDayOfTheMonth = calendar.date(from: currentMonthStartComponents) else {
-//            return
-//        }
-//        // Calculate the start date of the previous month
-//        guard let previousMonthStart = calendar.date(byAdding: .month, value: -1, to: firstDayOfTheMonth) else {
-//            return
-//        }
-//        
-//        // Get the range of the previous month
-//        guard let previousMonthRange = calendar.range(of: .day, in: .month, for: previousMonthStart) else {
-//            return
-//        }
-//        // Calculate the end date of the previous month
-//        let endOfMonthComponents = DateComponents(day: previousMonthRange.count)
-//        let endOfMonth = calendar.date(byAdding: endOfMonthComponents, to: previousMonthStart)!
-//        
-//        let interval = DateInterval(start: previousMonthStart, end: endOfMonth)
-//        
-//        for dictionary in initialLogsData{
-//            let filteredLogs = dictionary.affiliatedLogs.filter { log in
-//                interval.contains(log.accessDate ?? Date())
-//            }
-//            sortedLogs.append(LogsForDictionary(dictionary: dictionary.dictionary, affiliatedLogs: filteredLogs))
-//        }
-//        sortedLogsData = sortedLogs
-//        sortedLogsDataRange = interval
-//        
-//        sortedLogsData.forEach { pair in
-//            print("\(pair.dictionary.language) previous month (starts: \(previousMonthStart) end: \(endOfMonth) represented by:")
-//            pair.affiliatedLogs.forEach { log in
-//                print(log.accessDate)
+//            print("\(pair.dictionary) current week (starts: \(firstDayOfTheWeek), ends: \(lastDayOfTheWeek) represented by:")
+//            pair.logs.forEach { log in
+//                print(log)
 //            }
 //        }
 //    }
 //}
-
-
-class DataConverter {
+//
+//MARK: - DataConverter for cell statistics.
+///Converts access statistics, filling the date gaps and returning array of weeks.
+class DatesToWeekConverter {
     private struct DayLogRaw{
         let date: Date
         let count: Int
@@ -309,7 +155,6 @@ class DataConverter {
     
     private lazy var dayLitFormatter: DateFormatter = {
         let formatter = DateFormatter()
-//        let currentIdentifier = UserDefaults.standard.string(forKey: "AppleLanguages") ?? "en"
         formatter.dateFormat = "EEE"
         formatter.locale = self.locale
         return formatter
@@ -365,62 +210,24 @@ class DataConverter {
         filledLogData = result
     }
 
-//    private func completeFinalLogs(){
-//        var result = [DayLogRaw]()
-//        var pointer = 0 {
-//            didSet {
-//                if pointer == initialLogData.count{
-//                    pointer -= 1
-//                }
-//            }
+//    func getDataDevidedByDays() -> [DayLog] {
+//        var result = [DayLog]()
+//        for day in filledLogData{
+//            result.append(DayLog(order: day.order,
+//                                         date: dayLitFormatter.string(from: day.date ),
+//                                         count: day.count))
 //        }
-//
-//        for (index, date) in filledDaySequence.enumerated() {
-//            let day = initialLogData[pointer]
-//            if date == day.accessDate {
-//                print("\(day.accessCount)")
-//                result.append(DayLogRaw(date: date,
-//                                        count: Int(day.accessCount),
-//                                        order: index))
-//                pointer += 1
-//            } else {
-//                result.append(DayLogRaw(date: date,
-//                                        count: 0,
-//                                        order: index))
-//            }
-//        }
-//        filledLogData = result
-//
+//        print(result.count)
+//        return result
 //    }
-    func getDataDevidedByDays() -> [DayLog] {
-        var result = [DayLog]()
-        for day in filledLogData{
-            result.append(DayLog(order: day.order,
-                                         date: dayLitFormatter.string(from: day.date ),
-                                         count: day.count))
-        }
-        print(result.count)
-        return result
-    }
     func getDataDividedByWeeks() -> [WeekLog] {
         var result = [WeekLog]()
         
         var weekDates = [Date]()
         var week = [DayLog]()
         
-//        let dayDigFormatter = DateFormatter()
-//        let currentIdentifier = UserDefaults.standard.string(forKey: "AppleLanguages") ?? "en"
-//        dayDigFormatter.dateFormat = "dd"
-//        dayDigFormatter.locale = Locale(identifier: currentIdentifier)
-//        UserDefaults.standard.value(forKey: "AppleLanguages")
-//        UserDefaults.standard.set([languageKey], forKey: "AppleLanguages")
-
-        
         for day in filledLogData {
             let dayLit = dayLitFormatter.string(from: day.date)
-            print(dayLit)
-//            print("On \(day.date) you accesses \(day.count) times ")
-            
             week.append(DayLog(order:   day.order,
                                date:    dayLit ,
                                count:   day.count))

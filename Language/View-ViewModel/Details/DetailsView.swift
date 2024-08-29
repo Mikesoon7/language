@@ -27,7 +27,8 @@ class DetailsView: UIViewController {
     private let randomizeLabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .georgianBoldItalic.withSize(18)
+        label.font = .selectedFont.withSize(18)
+        label.text = "details.randomize".localized
         return label
     }()
     
@@ -47,7 +48,8 @@ class DetailsView: UIViewController {
     
     private let goalLabel : UILabel = {
         let label = UILabel()
-        label.font = .georgianBoldItalic.withSize(18)
+        label.font = .selectedFont.withSize(18)
+        label.text = "details.goal".localized
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -88,7 +90,7 @@ class DetailsView: UIViewController {
         configureGoalView()
         configureStartButton()
         configureAddWordsButton()
-        configureText()
+        configureLabels()
     }
     
     //MARK: - StyleChange Responding
@@ -113,8 +115,10 @@ class DetailsView: UIViewController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] output in
                 switch output{
-                case .shouldUpdateText:
-                    self?.configureText()
+                case .shouldUpdateLangauge:
+                    self?.configureLabels()
+                case .shouldUpdateFont:
+                    self?.configureLabels()
                 case .error(let error):
                     self?.presentError(error)
                 case .shouldUpdatePicker:
@@ -219,26 +223,34 @@ class DetailsView: UIViewController {
         beginBut.addTargetInsideTouchStop()
     }
     //Assigning text on initializing and if language changes
-    func configureText(){
+    func configureLabels(){
         self.navigationItem.title = "details.title".localized
-        
-        randomizeLabel.text = "details.randomize".localized
-        goalLabel.text = "details.goal".localized
-        
+        self.randomizeLabel.text = "details.randomize".localized
+        self.goalLabel.text = "details.goal".localized
+        configureButtons()
+    }
+    func updateFont(){
+        randomizeLabel.font = .selectedFont.withSize(18)
+        goalLabel.font = .selectedFont.withSize(18)
+        configureButtons()
+    }
+    //Easiest way to update button's title or font is to set new attributes.This function called in case of langauge or font chagne.
+    private func configureButtons(){
         addWordsBut.setAttributedTitle(
             .attributedString(
                 string: "details.addWords".localized,
-                with: .georgianBoldItalic,
+                with: .selectedFont,
                 ofSize: 20), for: .normal
         )
                     
         beginBut.setAttributedTitle(
             .attributedString(
                 string: "details.start".localized,
-                with: .georgianBoldItalic,
+                with: .selectedFont,
                 ofSize: 20), for: .normal
         )
     }
+
     
     //MARK: Configure and present child ViewControllers
     //Called after recieving the event with passed dictionary

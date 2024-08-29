@@ -27,7 +27,8 @@ extension CoreDataHelper: WordsManaging{
     func createWordsFromText(for dictionary : DictionariesEntity, text: String) throws -> [WordsEntity] {
         var results = [WordsEntity]()
         let currentNumberOfCards = Int(dictionary.numberOfCards)
-        let lines = text.split(separator: "\n", omittingEmptySubsequences: true)
+        let trimmedText = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        let lines = trimmedText.split(separator: "\n", omittingEmptySubsequences: true)
         
         for (index, line) in lines.enumerated() {
             guard line != "\r" else { break }
@@ -50,12 +51,16 @@ extension CoreDataHelper: WordsManaging{
         newWord.order = Int64(index)
         newWord.identifier = id
         newWord.dictionary = dictionary
-        try assignWordsProperties(for: newWord, from: text)
+        do {
+            try assignWordsProperties(for: newWord, from: text)
+        } catch {
+            throw error
+        }
         return newWord
     }
     ///Assigning text and description values to passed word with  devided passed text.
     internal func assignWordsProperties(for wordEntity: WordsEntity, from text: String) throws {
-
+        
         var trimmedText = String()
         var newWord = String()
         var newDescription = String()
@@ -64,19 +69,20 @@ extension CoreDataHelper: WordsManaging{
         let exceptions = settingModel.appExceptions.availableExceptionsInString
         
         trimmedText = text.trimmingCharacters(in: CharacterSet(charactersIn: exceptions + exceptions.uppercased()))
-
+        
         let parts = trimmedText.split(separator: settingModel.appSeparators.value).map { $0.trimmingCharacters(in: .whitespacesAndNewlines)}
-
-    
+        
+        
         guard !trimmedText.isEmpty, !parts.isEmpty else {
+            print(trimmedText, parts)
             throw WordsErrorType.failedToAssignEmptyString(text.prefix(20) + (text.count > 20 ? "..." : ""))
         }
         
         newWord = parts[0]
-
+        
         if parts.count == 2{
             newDescription = String(parts[1]).trimmingCharacters(in: .whitespacesAndNewlines)
-        } else if parts.count > 2{
+        } else if parts.count > 1{
             newDescription = parts[1...].joined(separator: " \(settingModel.appSeparators.value) ").trimmingCharacters(in: .whitespacesAndNewlines)
         }
         
@@ -89,10 +95,8 @@ extension CoreDataHelper: WordsManaging{
             }
         }()
         wordEntity.meaning = newDescription
-        
-        
-//        print("Debug purpose: AsignProperties method worked with wordsEntity name: \(wordEntity.word)")
     }
+    
     //MARK: Update
     func reassignWordsProperties(for newWord: WordsEntity, from text: String) throws {
         try assignWordsProperties(for: newWord, from: text)
@@ -108,7 +112,6 @@ extension CoreDataHelper: WordsManaging{
         }
         
         try saveContext()
-//        print("Debug purpose: UpdateWordsOrder method worked for dictionary: \(dictionary.language) with number of words: \(words.count)")
     }
 
     //MARK: Fetch
@@ -120,11 +123,9 @@ extension CoreDataHelper: WordsManaging{
         fetchRequest.sortDescriptors = [sortDescriptor]
         do {
             let words = try context.fetch(fetchRequest)
-//            print("Debug purpose: FetchWords method worked for dictionary: \(dictionary.language) with number: \(words.count)")
             return words
         } catch {
             throw WordsErrorType.fetchFailed(dictionary.language)
-//            ("coreData.wordsFetch".localized)
         }
     }
         //MARK: Delete

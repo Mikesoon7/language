@@ -116,6 +116,10 @@ class MenuView: UIViewController {
                     self?.pushTutorialVC()
                 case .shouldUpdateLabels:
                     self?.configureLabels()
+                case .shouldUpdateFont:
+                    self?.configurefont()
+                    
+                    self?.tableView.reloadData()
                 case .error(let error):
                     self?.presentError(error)
                 }
@@ -180,7 +184,45 @@ class MenuView: UIViewController {
     private func configureLabels(){
         navigationItem.title = "menu.title".localized
     }
-    
+    private func configurefont(){
+//        UIImage(systemName: "charts")?.withConfiguration(<#T##configuration: UIImage.Configuration##UIImage.Configuration#>)
+        print(
+            "\(FontChangeManager.shared.currentFont().fontDescriptor.object(forKey: .face))",
+            "\(FontChangeManager.shared.currentFont().fontDescriptor.object(forKey: .family))",
+            "\(FontChangeManager.shared.currentFont().fontDescriptor.object(forKey: .matrix))",
+            "\(FontChangeManager.shared.currentFont().fontDescriptor.object(forKey: .textStyle))",
+            "\(FontChangeManager.shared.currentFont().fontDescriptor.object(forKey: UIFontDescriptor.AttributeName.face))"
+
+//            "\(FontChangeManager.shared.currentFont())",
+//            "\(FontChangeManager.shared.currentFont().fontFace) font style",
+//            "\(FontChangeManager.shared.currentFont().fontWeight) font weight"
+            
+        
+        )
+        let rightButton = UIBarButtonItem(
+            
+            image: UIImage(systemName: "chart.bar")?.withConfiguration(UIImage.SymbolConfiguration(weight: UIFont.selectedFont.fontWeight.symbolWeight())),
+//            image: UIImage(systemName: "chart.bar")?.withConfiguration(UIImage.SymbolConfiguration(font: FontChangeManager.shared.currentFont().withSize(23))),
+            //                UIImage(systemName: "chart.bar")?.withConfiguration(UIImage.SymbolConfiguration(weight: .bold )),
+            style: .plain,
+            target: self,
+            action: #selector(statButtonDidTap(sender:)))
+        self.navigationItem.setRightBarButton(rightButton, animated: true)
+
+//        navigationItem.rightBarButtonItem?.image = UIImage(systemName: "chart.bar")?.withConfiguration(UIImage.SymbolConfiguration(font: FontChangeManager.shared.currentFont())).withTintColor(.label)
+//        let rightButton = UIBarButtonItem(
+//            image: UIImage(systemName: "chart.bar")?.withConfiguration(UIImage.SymbolConfiguration(font: FontChangeManager.shared.currentFont())).withTintColor(.label),
+//            style: .plain,
+//            target: self,
+//            action: #selector(statButtonDidTap(sender:)))
+//        self.navigationItem.setRightBarButton(rightButton, animated: true)
+////
+//        print(FontChangeManager.shared.currentFont())
+//        self.navigationController?.navigationBar.titleTextAttributes =
+//        [NSAttributedString.Key.font:            FontChangeManager.shared.currentFont().withSize(23),
+//         NSAttributedString.Key.foregroundColor: UIColor.label,
+//         NSAttributedString.Key.backgroundColor: UIColor.clear]
+    }
     //MARK: Configuring and presenting VC's
     func pushAddDictionaryVC(){
         let vc = AddDictionaryView(factory: self.viewModelFactory)

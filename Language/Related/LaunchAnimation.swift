@@ -9,12 +9,24 @@ import UIKit
 
 class LaunchAnimation{
     
-    var animationView : UIView!
-    private var cardView: UIView!
+    //Animation view holds other views
+    var animationView : UIView
+    private var cardView = UIView()
     
-    private var label1 : UILabel!
-    private var label2 : UILabel!
+    private var label1 : UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.attributedText = .attributedString(string: "Learny", with: .georgianBoldItalic, ofSize: 20)
+        return label
+    }()
     
+    private var label2 : UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.attributedText = .attributedString(string: "To brew something new", with: .georgianBoldItalic, ofSize: 16)
+        return label
+    }()
+
     private var userInterfaceStyle: UIUserInterfaceStyle
     
     init(bounds: CGRect, interfaceStyle: UIUserInterfaceStyle){
@@ -30,6 +42,7 @@ class LaunchAnimation{
         animationViewsCustomization()
         stokeAnimationCustomization()
     }
+    
 //MARK: - AnimationViews SetUp
     func animationViewsCustomization(){
         cardView = {
@@ -45,20 +58,6 @@ class LaunchAnimation{
             view.layer.cornerRadius = 24
             return view
         }()
-
-        label1 = {
-            let label = UILabel()
-            label.translatesAutoresizingMaskIntoConstraints = false
-            label.attributedText = .attributedString(string: "Learny", with: .georgianBoldItalic, ofSize: 20)
-            return label
-        }()
-        
-        label2 = {
-            let label = UILabel()
-            label.translatesAutoresizingMaskIntoConstraints = false
-            label.attributedText = .attributedString(string: "To brew something new", with: .georgianBoldItalic, ofSize: 16)
-            return label
-        }()
         
         animationView.addSubview(cardView)
         cardView.addSubviews(label1, label2)
@@ -71,7 +70,7 @@ class LaunchAnimation{
             label2.centerYAnchor.constraint(equalTo: cardView.centerYAnchor),
         ])
     }
-    func changeLabelColor(){
+    private func valishTitleLabel(){
         label1.alpha = 0
         label2.alpha = 0
     }
@@ -105,13 +104,14 @@ class LaunchAnimation{
         
         //Animation "Touch" and rotation.
         UIView.animate(withDuration: 0.3, delay: 2) { [weak self] in
-            self!.cardView.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
+            guard let self = self else { return }
+            self.cardView.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
         } completion: { [weak self] _ in
             UIView.animate(withDuration: 0.2, delay: 0, animations: {
-                self!.changeLabelColor()
+                self!.valishTitleLabel()
                 scaleAndRotate()
-            }
-            )}
+            })
+        }
         //Creating strokes with up/down options
         func createLineFrom(_ start: CGPoint, upper: Bool) -> CAShapeLayer{
             func controlPoint(startPoint: CGPoint, endPoint: CGPoint) -> CGPoint{
@@ -126,8 +126,7 @@ class LaunchAnimation{
             }
             
             let layer = CAShapeLayer()
-            layer.strokeColor =
-            {
+            layer.strokeColor = {
                 switch userInterfaceStyle{
                 case .light:
                     return UIColor.black.cgColor
@@ -270,7 +269,6 @@ class LoadingAnimation: UIView {
         animation.autoreverses = true
         
         dotAnimation = animation
-//        animation.beginTime = CACurrentMediaTime() + (0.2 * Double(i))
     }
     
     func startAnimating(){

@@ -45,7 +45,7 @@ final class TextInputView: UIView {
         textView.textContainerInset = .init(top: 5, left: 5, bottom: 5, right: 5)
         textView.allowsEditingTextAttributes = false
         textView.tintColor = .label
-        textView.font = .timesNewRoman.withSize(17)
+        textView.font = .selectedFont.withSize(17)
         return textView
     }()
     
@@ -86,7 +86,7 @@ final class TextInputView: UIView {
             name: UIScene.didActivateNotification,
             object: nil
         )
-
+        
     }
     
     required init?(coder: NSCoder) {
@@ -157,7 +157,9 @@ final class TextInputView: UIView {
     
     ///Changes placeholder text with provided by the delegate.
     func updatePlaceholder(){
+        textView.font = .selectedFont.withSize(17)
         placeholderLabel.text = delegate?.configurePlaceholderText() ?? ""
+        placeholderLabel.font = .selectedFont.withSize(17)
         placeholderLabel.sizeToFit()
     }
     
@@ -239,23 +241,6 @@ class CustomTextView: UITextView{
         }
         return true
     }
-    
-//    private func scrollRangeToVisibleCenter(range: NSRange) {
-//        
-//        let glyphRect = getGlyphRectangle(for: range, from: textView)
-//        
-//        let visibleHeight = textView.bounds.height - textView.contentInset.bottom - textView.contentInset.top - (textView.inputAccessoryView?.bounds.height ?? 40)
-//        
-//        let yOffset = glyphRect.origin.y - min(glyphRect.origin.y, (visibleHeight / 2))
-//        let newOffset = CGPoint(x: textView.contentOffset.x, y: yOffset)
-//        
-//        textView.setContentOffset(newOffset, animated: true)
-//
-//        textView.isScrollEnabled = false
-//        textView.isScrollEnabled = true
-//        layoutManager.applyErrorRange(errorRange: range)
-//        textView.setNeedsDisplay()
-//    }
     
     private func getGlyphRectangle(for range: NSRange, from textView: UITextView) -> CGRect {
         let layoutManager = textView.layoutManager

@@ -36,6 +36,7 @@ protocol UserSettingsStorageProtocol{
     var helper: UserSettingsUpdateHelper            { get }
     var appLaunchStatus: AppLaunchStatus            { get set }
     var appTheme: AppTheme                          { get set }
+    var appFont: AppFont                            { get set }
     var appLanguage : AppLanguage                   { get set }
     var appNotifications: AppPushNotifications      { get set }
     var appSearchBarPosition: AppSearchBarPosition  { get set }
@@ -86,9 +87,19 @@ class UserSettings: UserSettingsStorageProtocol{
         }
         set{
             manager.update(newValue, forKey: AppLanguage.key)
-            //Maybe this isn't the right play to perform it. But every language change should invalidate the notification settigns and update language.
+            //Maybe this isn't the right way to perform it. But every language change should invalidate the notification settigns and update language.
             manager.update(self.appNotifications, forKey: AppPushNotifications.key)
             apply(newValue: .language(newValue))
+        }
+    }
+    
+    var appFont: AppFont{
+        get {
+            manager.load(AppFont.self, forKey: AppFont.key) ?? .init(selectedFontName: "Georgia-BoldItalic")
+        }
+        set {
+            manager.update(newValue, forKey: AppFont.key)
+            apply(newValue: .font(newValue))
         }
     }
     
@@ -142,6 +153,8 @@ class UserSettings: UserSettingsStorageProtocol{
             self.appLanguage = language
         case .theme(let theme):
             self.appTheme = theme
+        case .font(let font):
+            self.appFont = font
         case .notifications(let notifications):
             self.appNotifications = notifications
         case .searchBarPosition(let position):
@@ -170,6 +183,8 @@ class SettingsUpdateHelper: UserSettingsUpdateHelper{
         case .theme(let theme):
             let userInterfaceStyle = theme.userInterfaceStyle
             (UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate)?.window?.overrideUserInterfaceStyle = userInterfaceStyle
+        case .font(let font):
+            FontChangeManager.shared.updateFont(fontName: font.selectedFontName)
         case .notifications(let notifications):
             NotificationUpdateHelper.invalidateExistingNotification()
             NotificationUpdateHelper.scheduleNotifications(for: notifications.notificationFrequency.selectedDays, at: notifications.time.value)
@@ -222,6 +237,7 @@ enum SettingsOptions: Codable{
     case sectionHeader(String)
     case lauchStatus(AppLaunchStatus)
     case theme(AppTheme)
+    case font(AppFont)
     case language(AppLanguage)
     case notifications(AppPushNotifications)
     case searchBarPosition(AppSearchBarPosition)
@@ -280,12 +296,30 @@ enum AppLanguage: String, Codable, CaseIterable{
         case .ukrainian:    return "Українська"
         }
     }
-    var languageCode: String{
-        switch self{
+    var languageCode: String {
+        switch self {
         case .english:      return "en"
         case .russian:      return "ru"
         case .ukrainian:    return "uk"
         }
+    }
+}
+
+struct AppFont: Codable {
+    
+    static let key = "AppFonts"
+    
+    var selectedFontName: String
+    
+    var selectedFont: UIFont {
+            return UIFont(name: selectedFontName, size: UIFont.systemFontSize) ?? UIFont.systemFont(ofSize: UIFont.systemFontSize)
+        }
+
+    var title: String {
+        return "settings.general.fonts".localized
+    }
+    var value: String {
+        return selectedFontName
     }
 }
 
@@ -294,7 +328,7 @@ struct AppPairSeparators: Codable{
 
     var availableSeparators: [String]
     
-    var title: String{
+    var title: String {
         return "settings.dictionaries.separator".localized
     }
     var value: String

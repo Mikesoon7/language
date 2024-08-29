@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="21512" systemVersion="22D68" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22522" systemVersion="23B74" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="DictionariesAccessLog" representedClassName="DictionariesAccessLog" syncable="YES">
         <attribute name="accessCount" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="accessDate" attributeType="Date" usesScalarValueType="NO"/>
@@ -11,6 +11,12 @@
         <attribute name="order" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <relationship name="accessLogs" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="DictionariesAccessLog" inverseName="dictionary" inverseEntity="DictionariesAccessLog"/>
         <relationship name="words" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="WordsEntity" inverseName="dictionary" inverseEntity="WordsEntity"/>
+    </entity>
+    <entity name="DictionariesSettings" representedClassName="DictionariesSettings" syncable="YES" codeGenerationType="class">
+        <attribute name="number" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="oneSideMode" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="random" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <relationship name="relationship" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="DictionariesEntity"/>
     </entity>
     <entity name="WordsEntity" representedClassName="WordsEntity" syncable="YES">
         <attribute name="identifier" attributeType="UUID" usesScalarValueType="NO"/>

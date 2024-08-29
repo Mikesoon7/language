@@ -83,6 +83,7 @@ extension CoreDataHelper: DictionaryManaging{
     func canUndo() -> Bool{
         return context.undoManager?.canUndo ?? false
     }
+    
     @objc private func undoDeleteEntity(entity: DictionariesEntity) {
         context.insert(entity)
 
@@ -110,6 +111,7 @@ extension CoreDataHelper: DictionaryManaging{
             throw DictionaryErrorType.updateOrderFailed
         }
     }
+    
     //Add array to existing array of entities
     func addWordsTo(dictionary: DictionariesEntity, words: [WordsEntity]) throws {
         
@@ -118,7 +120,6 @@ extension CoreDataHelper: DictionaryManaging{
         
         do {
             try saveContext()
-//            print("Debug purpose: AddWordsTo(dictionary) method worked with dictionary name: \(dictionary.language)")
             dictionaryDidChange.send(.wasUpdated(Int(dictionary.order)))
         } catch {
             context.rollback()

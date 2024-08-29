@@ -83,6 +83,8 @@ class AddWordsView: UIViewController {
                     self?.presentError(error)
                 case .shouldPop:
                     self?.navigationController?.popViewController(animated: true)
+                case .shouldUpdateFont:
+                    self?.textInputView.updatePlaceholder()
                 case .shouldUpdatePlaceholder:
                     self?.textInputView.updatePlaceholder()
                 case .shouldUpdateText:

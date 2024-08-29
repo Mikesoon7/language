@@ -41,7 +41,7 @@ class StatisticCellViewModel {
     
     private func convertData(data: [DictionariesAccessLog]){
         let locale = Locale(identifier: settingsModel.appLanguage.languageCode)
-        let data = DataConverter(logs: data, locale: locale).getDataDividedByWeeks()
+        let data = DatesToWeekConverter(logs: data, locale: locale).getDataDividedByWeeks()
         output.send(.data(data))
     }
     

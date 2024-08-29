@@ -122,6 +122,7 @@ extension NSManagedObject{
 extension Notification.Name{
     static let appLanguageDidChange = Notification.Name("appLanguageDidChange")
     static let appThemeDidChange = Notification.Name("appThemeDidChange")
+    static let appFontDidChange = Notification.Name("appFontDidChange")
     static let appSearchBarPositionDidChange = Notification.Name("appSearchBarPositionDidChange")
     static let appNotificationSettingsDidChange = Notification.Name("appNotificationSettingsDidChange")
     static let appDataDidChange = Notification.Name("appDataDidChange")

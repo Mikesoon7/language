@@ -20,6 +20,7 @@ class SearchViewModel {
         case shouldReloadView
         case shouldUpdateLabels
         case shouldReplaceSearchBarOnTop(Bool)
+        case shouldUpdateFonts
         case error(Error)
     }
     
@@ -52,11 +53,15 @@ class SearchViewModel {
         NotificationCenter.default.addObserver(
             self, selector: #selector(searchBarPositionDidChange(sender: )),
             name: .appSearchBarPositionDidChange, object: nil)
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(appFontDidChange(sender: )),
+            name: .appFontDidChange, object: nil)
     }
     
     deinit{
         NotificationCenter.default.removeObserver(self, name: .appLanguageDidChange, object: nil)
         NotificationCenter.default.removeObserver(self, name: .appSearchBarPositionDidChange, object: nil)
+        NotificationCenter.default.removeObserver(self, name: .appFontDidChange, object: nil)
     }
     
     func transform(input: AnyPublisher<Input, Never>) -> AnyPublisher<Output, Never> {
@@ -149,6 +154,9 @@ class SearchViewModel {
     @objc func searchBarPositionDidChange(sender: Notification){
         let onTop = (settingModel.appSearchBarPosition == .onTop) ? true : false
         output.send(.shouldReplaceSearchBarOnTop(onTop))
+    }
+    @objc func appFontDidChange(sender: Any) {
+        output.send(.shouldUpdateFonts)
     }
 }
 

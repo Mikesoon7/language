@@ -28,7 +28,6 @@ extension CoreDataHelper: LogsManaging{
             let logs = try context.fetch(fetchRequest)
             return logs.first
         } catch {
-//            print("Failed to fetch log: \(error)")
             return nil
         }
     }
@@ -64,17 +63,6 @@ extension CoreDataHelper: LogsManaging{
         return log
     }
     
-//    func testFetchAllLogsForEveryDictioanry() {
-//        let fetchRequest: NSFetchRequest<DictionariesAccessLog> = DictionariesAccessLog.fetchRequest()
-//        do {
-//            let logs = try context.fetch(fetchRequest)
-//            logs.forEach { log in
-//                print("\(log.dictionary?.language) have \(log.accessCount) on \(log.accessDate)")
-//            }
-//        } catch {
-//            print("Error")
-//        }
-//    }
     //MARK: Update
     func accessLog(for dictionary: DictionariesEntity) throws {
         guard let log = fetchLog(for: dictionary) else {

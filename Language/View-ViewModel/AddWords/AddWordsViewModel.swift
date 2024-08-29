@@ -15,6 +15,7 @@ class AddWordsViewModel {
     enum Output {
         case shouldPresentError(Error)
         case shouldHighlightError(String)
+        case shouldUpdateFont
         case shouldPop
         case shouldUpdateText
         case shouldUpdatePlaceholder
@@ -35,6 +36,7 @@ class AddWordsViewModel {
         
         NotificationCenter.default.addObserver(self, selector: #selector(appLanguageDidChange(sender: )), name: .appLanguageDidChange, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(appSeparatorDidChange(sender: )), name: .appSeparatorDidChange, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(appFontDidChange(sender: )), name: .appFontDidChange, object: nil)
     }
     deinit{
         NotificationCenter.default.removeObserver(self, name: .appLanguageDidChange, object: nil)
@@ -54,11 +56,7 @@ class AddWordsViewModel {
         }
     }
 
-    func getNewWordsFrom(_ text: String){
-//        let numberOfWords = dictionary.words?.count ?? Int(dictionary.numberOfCards)
-//        let lines = text.split(separator: "\n", omittingEmptySubsequences: true).map { String($0) }
-//        var errorAppeared = false
-        
+    func getNewWordsFrom(_ text: String){        
         do {
             let newWords = try dataModel.createWordsFromText(for: dictionary, text: text)
             extendDictionary(dictionary, with: newWords)
@@ -80,6 +78,9 @@ class AddWordsViewModel {
     }
     @objc func appSeparatorDidChange(sender: Any){
         output.send(.shouldUpdatePlaceholder)
+    }
+    @objc func appFontDidChange(sender: Any){
+        output.send(.shouldUpdateFont)
     }
 
 }
