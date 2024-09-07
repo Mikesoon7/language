@@ -79,6 +79,7 @@
 "details.title" = "Подробиці";
 "details.randomize" = "У перемішку";
 "details.goal" = "Встановити ціль";
+"details.hideTranslation" = "Приховати переклад";
 "details.addWords" = "Додати слів";
 "details.start" = "Почати";
 

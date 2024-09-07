@@ -10,13 +10,14 @@
         <attribute name="numberOfCards" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="order" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <relationship name="accessLogs" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="DictionariesAccessLog" inverseName="dictionary" inverseEntity="DictionariesAccessLog"/>
+        <relationship name="settings" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="DictionariesSettings" inverseName="dictionary" inverseEntity="DictionariesSettings"/>
         <relationship name="words" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="WordsEntity" inverseName="dictionary" inverseEntity="WordsEntity"/>
     </entity>
-    <entity name="DictionariesSettings" representedClassName="DictionariesSettings" syncable="YES" codeGenerationType="class">
+    <entity name="DictionariesSettings" representedClassName="DictionariesSettings" syncable="YES">
         <attribute name="number" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="oneSideMode" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="random" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
-        <relationship name="relationship" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="DictionariesEntity"/>
+        <relationship name="dictionary" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="DictionariesEntity" inverseName="settings" inverseEntity="DictionariesEntity"/>
     </entity>
     <entity name="WordsEntity" representedClassName="WordsEntity" syncable="YES">
         <attribute name="identifier" attributeType="UUID" usesScalarValueType="NO"/>

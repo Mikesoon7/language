@@ -103,9 +103,9 @@ class LaunchAnimation{
         CATransaction.commit()
         
         //Animation "Touch" and rotation.
-        UIView.animate(withDuration: 0.3, delay: 2) { [weak self] in
+        UIView.animate(withDuration: 0.3, delay: 2/*, options: .curveEaseInOut*/ ) { [weak self] in
             guard let self = self else { return }
-            self.cardView.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
+            self.cardView.transform = CGAffineTransform(scaleX: 0.9, y: 0.9)
         } completion: { [weak self] _ in
             UIView.animate(withDuration: 0.2, delay: 0, animations: {
                 self!.valishTitleLabel()
@@ -200,7 +200,7 @@ class LaunchAnimation{
             rotationAnimation.duration = 1
             
             let scaleAnimation = CABasicAnimation(keyPath: "transform.scale")
-            scaleAnimation.fromValue = 0.8
+            scaleAnimation.fromValue = 0.9
             scaleAnimation.toValue = 2.8
             scaleAnimation.duration = 1
             scaleAnimation.repeatCount = 1

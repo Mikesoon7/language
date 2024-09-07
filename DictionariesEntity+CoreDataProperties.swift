@@ -1,8 +1,8 @@
 //
 //  DictionariesEntity+CoreDataProperties.swift
-//  Language
+//  Learny
 //
-//  Created by Star Lord on 04/07/2023.
+//  Created by Star Lord on 29/08/2024.
 //
 //
 
@@ -21,6 +21,7 @@ extension DictionariesEntity {
     @NSManaged public var order: Int64
     @NSManaged public var accessLogs: NSSet?
     @NSManaged public var words: NSSet?
+    @NSManaged public var settings: NSSet?
 
 }
 

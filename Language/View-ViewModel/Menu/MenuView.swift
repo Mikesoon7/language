@@ -185,20 +185,6 @@ class MenuView: UIViewController {
         navigationItem.title = "menu.title".localized
     }
     private func configurefont(){
-//        UIImage(systemName: "charts")?.withConfiguration(<#T##configuration: UIImage.Configuration##UIImage.Configuration#>)
-        print(
-            "\(FontChangeManager.shared.currentFont().fontDescriptor.object(forKey: .face))",
-            "\(FontChangeManager.shared.currentFont().fontDescriptor.object(forKey: .family))",
-            "\(FontChangeManager.shared.currentFont().fontDescriptor.object(forKey: .matrix))",
-            "\(FontChangeManager.shared.currentFont().fontDescriptor.object(forKey: .textStyle))",
-            "\(FontChangeManager.shared.currentFont().fontDescriptor.object(forKey: UIFontDescriptor.AttributeName.face))"
-
-//            "\(FontChangeManager.shared.currentFont())",
-//            "\(FontChangeManager.shared.currentFont().fontFace) font style",
-//            "\(FontChangeManager.shared.currentFont().fontWeight) font weight"
-            
-        
-        )
         let rightButton = UIBarButtonItem(
             
             image: UIImage(systemName: "chart.bar")?.withConfiguration(UIImage.SymbolConfiguration(weight: UIFont.selectedFont.fontWeight.symbolWeight())),

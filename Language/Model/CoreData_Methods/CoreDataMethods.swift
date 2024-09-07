@@ -12,6 +12,8 @@ import Combine
 
 typealias Dictionary_WordsManager = DictionaryManaging & WordsManaging
 typealias Dictionary_Words_LogsManager = DictionaryManaging & WordsManaging & LogsManaging
+typealias DictionaryFullAccess = DictionaryManaging & WordsManaging & LogsManaging & SettingsManaging
+
 
 
 class CoreDataHelper {
@@ -54,6 +56,7 @@ class CoreDataHelper {
             try context.save()
             print("Debug: Context saved.")
         } catch {
+            print("error in saving the context")
             throw error
         }
     }

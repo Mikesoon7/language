@@ -1,8 +1,8 @@
 //
 //  DictionariesEntity+CoreDataClass.swift
-//  Language
+//  Learny
 //
-//  Created by Star Lord on 22/04/2023.
+//  Created by Star Lord on 29/08/2024.
 //
 //
 

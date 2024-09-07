@@ -18,7 +18,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
     var settingsModel: UserSettingsStorageProtocol!
-    var dataModel: Dictionary_Words_LogsManager!
+    var dataModel: DictionaryFullAccess!
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions){
         //1. Initializing settings and data model for futhe dependence injection.
@@ -87,7 +87,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     //MARK: System
-    private func configureViewModelFactoryWith(_ dataModel: Dictionary_Words_LogsManager, settingsModel: UserSettingsStorageProtocol) -> ViewModelFactory {
+    private func configureViewModelFactoryWith(_ dataModel: DictionaryFullAccess, settingsModel: UserSettingsStorageProtocol) -> ViewModelFactory {
         return ViewModelFactory(dataModel: dataModel, settingsModel: settingsModel)
     }
 

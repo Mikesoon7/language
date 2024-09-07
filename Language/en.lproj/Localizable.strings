@@ -79,6 +79,7 @@
 "details.title" = "Details";
 "details.randomize" = "Randomize cards";
 "details.goal" = "Set the goal";
+"details.hideTranslation" = "Hide transaltion";
 "details.addWords" = "Add new words";
 "details.start" = "Start";
 

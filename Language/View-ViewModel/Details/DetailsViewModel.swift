@@ -20,21 +20,33 @@ class DetailsViewModel{
         case shouldPresentGameView(DictionariesEntity, Int)
     }
     
-    private var model: Dictionary_Words_LogsManager
+    private var model: DictionaryFullAccess
     private var dictionary: DictionariesEntity
     private var cancellable = Set<AnyCancellable>()
     
     private let cardsDivider: Int = 10
     private var numberOfCards: Int = 0
-
+    
     private lazy var selectedNumber: Int = min(numberOfCards, cardsDivider)
+    
+    private var random: Bool
+    private var hideTransaltion: Bool
+    private var selectedDisplayNumber : Int
     
     var output = PassthroughSubject<Output, Never>()
     
-    init(model: Dictionary_Words_LogsManager, dictionary: DictionariesEntity){
+    init(model: DictionaryFullAccess, dictionary: DictionariesEntity){
         self.model = model
         self.dictionary = dictionary
         self.numberOfCards = Int(dictionary.numberOfCards)
+        
+        let dictionaryDetails = model.fetchSettings(for: dictionary)
+        print("dictionary details were recieved and attempted to unclose")
+        self.random = dictionaryDetails?.random ?? false
+        self.hideTransaltion = dictionaryDetails?.oneSideMode ?? false
+        self.selectedDisplayNumber = Int(dictionaryDetails?.number ?? dictionary.numberOfCards)
+        print(selectedDisplayNumber)
+        
         model.dictionaryDidChange
             .sink { type in
                 switch type {
@@ -45,20 +57,23 @@ class DetailsViewModel{
                 }
             }
             .store(in: &cancellable)
-
+        
         NotificationCenter.default.addObserver(
             self, selector: #selector(languageDidChange(sender: )), name: .appLanguageDidChange, object: nil)
         NotificationCenter.default.addObserver(
             self, selector: #selector(fontDidChange(sender: )), name: .appFontDidChange, object: nil)
-
+        
     }
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
     
+    
+    
     func updateDictionary(){
         if selectedNumber == numberOfCards {
             selectedNumber = Int(dictionary.numberOfCards)
+            selectedDisplayNumber = Int(dictionary.numberOfCards)
         }
         self.numberOfCards = Int(dictionary.numberOfCards)
         output.send(.shouldUpdatePicker)
@@ -67,7 +82,7 @@ class DetailsViewModel{
     func addWordsButtonTapped(){
         output.send(.shouldPresentAddWordsView(dictionary))
     }
-
+    
     func startButtonTapped(){
         self.incrementLogsCount(for: dictionary)
         output.send(.shouldPresentGameView(dictionary, selectedNumber))
@@ -83,12 +98,46 @@ class DetailsViewModel{
             output.send(.error(error))
         }
     }
+    //MARK: Switch related
+    func isRandomOn() -> Bool {
+        return self.random
+    }
+    func isHideTranslationOn() -> Bool {
+        return hideTransaltion
+    }
+    func selectedNumberOfCards() -> Int {
+        return selectedDisplayNumber
+    }
+    //MARK: Modify details related to the dictionary.
+    func saveDetails(isRandom: Bool, hideTransaltion: Bool) {
+        do {
+            try model.accessSettings(for: dictionary, with: isRandom, numberofCards: Int64(selectedDisplayNumber), oneSideMode: hideTransaltion)
+        } catch {
+            output.send(.error(error))
+        }
+    }
+
+    
     
     //MARK: Picker related.
+    func selectedRowForPicker() -> Int {
+//        let number = numberOfRowsInComponent()
+        let selectedRow = Int(selectedDisplayNumber / cardsDivider)
+        print(selectedDisplayNumber)
+        switch selectedDisplayNumber % cardsDivider {
+        case 0:
+            return selectedRow - 1
+        default:
+            return selectedRow
+        }
+
+    }
     func numberOfRowsInComponent() -> Int {
         switch numberOfCards % cardsDivider {
-        case 0: return numberOfCards / cardsDivider
-        default: return numberOfCards / cardsDivider + 1
+        case 0: 
+            return numberOfCards / cardsDivider
+        default: 
+            return numberOfCards / cardsDivider + 1
         }
     }
     func titleForPickerAt(row: Int) -> String{
@@ -100,7 +149,7 @@ class DetailsViewModel{
         }
     }
     func didSelectPickerRow(row: Int){
-        selectedNumber = Int(titleForPickerAt(row: row)) ?? numberOfCards
+        selectedDisplayNumber = Int(titleForPickerAt(row: row)) ?? numberOfCards
     }
 
     @objc func languageDidChange(sender: Any){

@@ -24,7 +24,6 @@ class FontChangeManager {
         NotificationCenter.default.post(name: .appFontDidChange, object: nil)
     }
     func currentFont() -> UIFont {
-        print(font.fontName)
         return font
     }
     func VCTitleAttributes() -> [NSAttributedString.Key : Any]{

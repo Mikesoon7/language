@@ -79,6 +79,7 @@
 "details.title" = "Подробности";
 "details.randomize" = "В перемешку";
 "details.goal" = "Установить цель";
+"details.hideTranslation" = "Скрыть перевод";
 "details.addWords" = "Добавить слова";
 "details.start" = "Начать";
 

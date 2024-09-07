@@ -1,8 +1,8 @@
 //
 //  DictionariesAccessLog+CoreDataProperties.swift
-//  Language
+//  Learny
 //
-//  Created by Star Lord on 04/07/2023.
+//  Created by Star Lord on 29/08/2024.
 //
 //
 

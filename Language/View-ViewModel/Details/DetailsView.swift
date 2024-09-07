@@ -45,7 +45,7 @@ class DetailsView: UIViewController {
         view.layer.masksToBounds = true
         return view
     }()
-    
+        
     private let goalLabel : UILabel = {
         let label = UILabel()
         label.font = .selectedFont.withSize(18)
@@ -54,6 +54,27 @@ class DetailsView: UIViewController {
         return label
     }()
     
+    private let hideTransaltionView: UIView = {
+        let view = UIView()
+        view.setUpCustomView()
+        view.layer.masksToBounds = true
+        return view
+    }()
+    
+    private let hideTransaltionLabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = .selectedFont.withSize(18)
+        label.text = "details.hideTranslation".localized
+        return label
+    }()
+    
+    private let hideTransaltionSwitch : UISwitch = {
+        let switcher = UISwitch()
+        switcher.setUpCustomSwitch(isOn: false)
+        return switcher
+    }()
+
     private let addWordsBut : UIButton = {
         var button = UIButton()
         button.setUpCustomButton()
@@ -70,6 +91,9 @@ class DetailsView: UIViewController {
     
 //    //MARK: Local variables.
     private var randomIsOn: Bool = false
+    private var hideTransaltionIsOn: Bool = false
+
+    
     
     
     //MARK: Inherited and initialization.
@@ -86,11 +110,19 @@ class DetailsView: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         bind()
-        configureRandomizeView()
-        configureGoalView()
+//        configureRandomizeView()
+//        configureGoalView()
+//        configureHideTransaltionView()
+        configureSwitchView()
+        configureGoalViewTest()
         configureStartButton()
         configureAddWordsButton()
         configureLabels()
+        retrieveDetailsData()
+    }
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        viewModel?.saveDetails(isRandom: randmizeSwitch.isOn, hideTransaltion: hideTransaltionSwitch.isOn)
     }
     
     //MARK: - StyleChange Responding
@@ -141,7 +173,8 @@ class DetailsView: UIViewController {
         NSLayoutConstraint.activate([
             randomizeCardsView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 35),
             randomizeCardsView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            randomizeCardsView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.91),
+            randomizeCardsView.widthAnchor.constraint(equalTo: view.widthAnchor,
+                                                      multiplier: CGFloat.widthMultiplerFor(type: .forViews)),
             randomizeCardsView.heightAnchor.constraint(lessThanOrEqualToConstant: 60),
             
             randomizeLabel.centerYAnchor.constraint(equalTo: randomizeCardsView.centerYAnchor),
@@ -153,6 +186,94 @@ class DetailsView: UIViewController {
         randmizeSwitch.addTarget(self, action: #selector(randomSwitchToggle(sender:)), for: .valueChanged)
     }
     
+    
+    let testView = {
+        let view = UIView()
+        view.setUpCustomView()
+        view.layer.masksToBounds = true
+        return view
+    }()
+    func retrieveDetailsData(){
+        self.randmizeSwitch.isOn = viewModel?.isRandomOn() ?? false
+        self.hideTransaltionSwitch.isOn = viewModel?.isHideTranslationOn() ?? false
+    
+        picker.selectRow(viewModel?.selectedRowForPicker() ?? 1, inComponent: 0, animated: true)
+    }
+    func configureSwitchView(){
+        //Cause of picker to archive desirable appearence, we need to set bounds masking, blocking shadow view. So we need to add custom one.
+        let shadowView = UIView()
+        shadowView.setUpCustomView()
+        
+        view.addSubviews(shadowView, testView)
+                
+        testView.addSubviews(randomizeLabel, randmizeSwitch, hideTransaltionLabel, hideTransaltionSwitch)
+        
+        NSLayoutConstraint.activate([
+            shadowView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 35),
+            shadowView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            shadowView.widthAnchor.constraint(equalTo: view.widthAnchor,
+                                              multiplier: CGFloat.widthMultiplerFor(type: .forViews)),
+            shadowView.heightAnchor.constraint(equalToConstant: 120),
+            
+            testView.topAnchor.constraint(equalTo: shadowView.topAnchor) ,
+            testView.leadingAnchor.constraint(equalTo: shadowView.leadingAnchor),
+            testView.bottomAnchor.constraint(equalTo: shadowView.bottomAnchor),
+            testView.trailingAnchor.constraint(equalTo: shadowView.trailingAnchor),
+            
+            randomizeLabel.centerYAnchor.constraint(equalTo: testView.centerYAnchor, constant: -30),
+            randomizeLabel.leadingAnchor.constraint(equalTo: testView.leadingAnchor, constant: 15),
+            
+            randmizeSwitch.centerYAnchor.constraint(equalTo: testView.centerYAnchor, constant: -30),
+            randmizeSwitch.trailingAnchor.constraint(equalTo: testView.trailingAnchor, constant: -25),
+            
+            hideTransaltionLabel.centerYAnchor.constraint(equalTo: testView.centerYAnchor, constant: 30),
+            hideTransaltionLabel.leadingAnchor.constraint(equalTo: testView.leadingAnchor, constant: 15),
+            
+            hideTransaltionSwitch.centerYAnchor.constraint(equalTo: testView.centerYAnchor, constant: 30 ),
+            hideTransaltionSwitch.trailingAnchor.constraint(equalTo: testView.trailingAnchor, constant: -25)
+
+        ])
+        randmizeSwitch.addTarget(self, action: #selector(randomSwitchToggle(sender:)), for: .valueChanged)
+        hideTransaltionSwitch.addTarget(self, action: #selector(hideTransaltionSwitchToggle(sender:)), for: .valueChanged)
+
+    }
+    func configureGoalViewTest(){
+        //Cause of picker to archive desirable appearence, we need to set bounds masking, blocking shadow view. So we need to add custom one.
+        let shadowView = UIView()
+        shadowView.setUpCustomView()
+        
+        view.addSubviews(shadowView, goalView)
+        
+        picker.dataSource = self
+        picker.delegate = self
+        
+        picker.translatesAutoresizingMaskIntoConstraints = false
+//        print(picker.numberOfRows(inComponent: 1))
+//        picker.selectRow(viewModel?.selectedRowForPicker() ?? 1, inComponent: 1, animated: true)
+        goalView.addSubviews(goalLabel, picker)
+        
+        NSLayoutConstraint.activate([
+            shadowView.topAnchor.constraint(equalTo: self.testView.bottomAnchor, constant: 23),
+            shadowView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            shadowView.widthAnchor.constraint(equalTo: view.widthAnchor,
+                                              multiplier: CGFloat.widthMultiplerFor(type: .forViews)),
+            shadowView.heightAnchor.constraint(equalToConstant: 60),
+            
+            goalView.topAnchor.constraint(equalTo: shadowView.topAnchor) ,
+            goalView.leadingAnchor.constraint(equalTo: shadowView.leadingAnchor),
+            goalView.bottomAnchor.constraint(equalTo: shadowView.bottomAnchor),
+            goalView.trailingAnchor.constraint(equalTo: shadowView.trailingAnchor),
+            
+            goalLabel.leadingAnchor.constraint(equalTo: goalView.leadingAnchor, constant: 15),
+            goalLabel.centerYAnchor.constraint(equalTo: goalView.centerYAnchor),
+            
+            picker.trailingAnchor.constraint(equalTo: goalView.trailingAnchor),
+            picker.centerYAnchor.constraint(equalTo: goalView.centerYAnchor),
+            picker.widthAnchor.constraint(equalTo: goalView.widthAnchor, multiplier: 0.3)
+        ])
+    }
+
+
     //MARK: - SetTheGoal SetUp
     func configureGoalView(){
         //Cause of picker to archive desirable appearence, we need to set bounds masking, blocking shadow view. So we need to add custom one.
@@ -160,7 +281,6 @@ class DetailsView: UIViewController {
         shadowView.setUpCustomView()
         
         view.addSubviews(shadowView, goalView)
-        view.addSubviews( goalView)
         
         picker.dataSource = self
         picker.delegate = self
@@ -189,6 +309,41 @@ class DetailsView: UIViewController {
             picker.widthAnchor.constraint(equalTo: goalView.widthAnchor, multiplier: 0.3)
         ])
     }
+    
+    //MARK: - HideTranslationView SetUp
+    func configureHideTransaltionView(){
+        
+        let shadowView = UIView()
+        shadowView.setUpCustomView()
+        
+        view.addSubviews(shadowView)
+        shadowView.addSubview(hideTransaltionView)
+
+        hideTransaltionSwitch.translatesAutoresizingMaskIntoConstraints = false
+        
+        hideTransaltionView.addSubviews(hideTransaltionLabel, hideTransaltionSwitch)
+        
+        NSLayoutConstraint.activate([
+            shadowView.topAnchor.constraint(equalTo: self.goalView.bottomAnchor, constant: 23),
+            shadowView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            shadowView.widthAnchor.constraint(equalTo: view.widthAnchor,
+                                              multiplier: CGFloat.widthMultiplerFor(type: .forViews)),
+            shadowView.heightAnchor.constraint(equalToConstant: 60),
+
+            hideTransaltionView.topAnchor.constraint(equalTo: shadowView.topAnchor),
+            hideTransaltionView.centerXAnchor.constraint(equalTo: shadowView.centerXAnchor),
+            hideTransaltionView.widthAnchor.constraint(equalTo: shadowView.widthAnchor),
+            hideTransaltionView.heightAnchor.constraint(equalTo: shadowView.heightAnchor),
+            
+            hideTransaltionLabel.centerYAnchor.constraint(equalTo: hideTransaltionView.centerYAnchor),
+            hideTransaltionLabel.leadingAnchor.constraint(equalTo: hideTransaltionView.leadingAnchor, constant: 15),
+            
+            hideTransaltionSwitch.centerYAnchor.constraint(equalTo: hideTransaltionView.centerYAnchor),
+            hideTransaltionSwitch.trailingAnchor.constraint(equalTo: hideTransaltionView.trailingAnchor, constant: -25)
+        ])
+        hideTransaltionSwitch.addTarget(self, action: #selector(hideTransaltionSwitchToggle(sender:)), for: .valueChanged)
+    }
+
     
     //MARK: - AddNewWord SetUp
     func configureAddWordsButton(){
@@ -260,7 +415,12 @@ class DetailsView: UIViewController {
     }
     //Initializing
     func presentMainGameViewWith(dictionary: DictionariesEntity, selectedNumber: Int){
-        let vc = MainGameVC(viewModelFactory: viewModelFactory, dictionary: dictionary, isRandom: randomIsOn, selectedNumber: selectedNumber)
+        let random = viewModel?.isRandomOn()
+        let number = viewModel?.selectedNumberOfCards()
+        let hide = viewModel?.isHideTranslationOn()
+        print(hide)
+        let vc = MainGameVC(viewModelFactory: viewModelFactory, dictionary: dictionary, isRandom:/* random ??*/ self.randmizeSwitch.isOn, hideTransaltion: /*hide ??*/ self.hideTransaltionSwitch.isOn, selectedNumber: number ?? selectedNumber)
+        print (hideTransaltionIsOn)
         self.navigationController?.pushViewController(vc, animated: true)
     }
     
@@ -272,6 +432,10 @@ extension DetailsView{
         randomIsOn = sender.isOn
     }
     
+    @objc func hideTransaltionSwitchToggle(sender: UISwitch){
+        hideTransaltionIsOn = sender.isOn
+    }
+
     @objc func startButtonTap(sender: UIButton){
         viewModel?.startButtonTapped()
     }

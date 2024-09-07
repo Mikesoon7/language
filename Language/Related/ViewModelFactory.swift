@@ -9,10 +9,10 @@ import Foundation
 import UIKit
 
 final class ViewModelFactory{
-    private var dataModel: Dictionary_Words_LogsManager
+    private var dataModel: DictionaryFullAccess
     private var settingsModel: UserSettingsStorageProtocol
     
-    init(dataModel: Dictionary_Words_LogsManager, settingsModel: UserSettingsStorageProtocol){
+    init(dataModel: DictionaryFullAccess, settingsModel: UserSettingsStorageProtocol){
         self.dataModel = dataModel
         self.settingsModel = settingsModel
     }
@@ -55,11 +55,12 @@ final class ViewModelFactory{
     func configureExceptionViewModel() -> ExceptioonsViewModel{
         ExceptioonsViewModel(settingsModel: settingsModel)
     }
-    func configureGameViewmModel(dictionary: DictionariesEntity, isRandom: Bool, selectedNumber: Int) -> GameViewModel{
+    func configureGameViewmModel(dictionary: DictionariesEntity, isRandom: Bool, hideTranslation: Bool, selectedNumber: Int) -> GameViewModel{
         GameViewModel(dataModel: dataModel,
                       settingsModel: settingsModel,
                       dictionary: dictionary,
                       isRandom: isRandom,
+                      hideTranslation: hideTranslation,
                       selectedNumber: selectedNumber
         )
     }

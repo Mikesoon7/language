@@ -43,31 +43,19 @@ class MainGameVC: UIViewController{
     
     private var selectedCell: IndexPath?
     private var isLongGestureActive: Bool = false 
-//    {
-//        didSet {
-//            print("the long gesture is \(oldValue ? "active" : "Disabled")")
-//        }
-//    }
-    
-//    {
-//        get {
-//            
-//        }
-//        set {
-//            print("longGesture state has changed")
-//        }
-//    }
     //MARK: Views
     private var collectionView: UICollectionView!
-    
+    private var hideTranslation: Bool
     
     //MARK: Inherited and required
-    required init(viewModelFactory: ViewModelFactory, dictionary: DictionariesEntity, isRandom: Bool, selectedNumber: Int) {
+    required init(viewModelFactory: ViewModelFactory, dictionary: DictionariesEntity, isRandom: Bool, hideTransaltion: Bool, selectedNumber: Int) {
         self.viewModelFactory = viewModelFactory
         self.viewModel = viewModelFactory.configureGameViewmModel(
             dictionary: dictionary,
             isRandom: isRandom,
+            hideTranslation: hideTransaltion,
             selectedNumber: selectedNumber)
+        self.hideTranslation = hideTransaltion
         super.init(nibName: nil, bundle: nil)
     }
     required init?(coder: NSCoder) {
@@ -125,121 +113,80 @@ class MainGameVC: UIViewController{
             backView.layer.cornerRadius = 10
             backView.isHidden = true // Initially hide the back view
         }
-    var isFlipped = false
+//    var isFlipped = false
 
-
+    
     func animateCellFlip(cell: CollectionViewCell, frontToBack: Bool) {
-        let animation = UIViewPropertyAnimator(duration: 0.3, curve: .easeInOut) {
-            cell.transform = CGAffineTransform(scaleX: 0.0001 , y: 1)
-//                .concatenating(CGAffineTransform.identity.translatedBy(x: 0, y: -50))
-            cell.cardShadowView.layer.shadowOffset = CGSize(width: 1, height: 1)
+        guard cell.isAccessable else {
+            UIView.animate(withDuration: 1) {
+                let shakingAnimation = CAKeyframeAnimation.shakingAnimation()
+                cell.layer.add(shakingAnimation, forKey: "animation")
+            } completion: { _ in
+//                cell.layer.removeAllAnimations()
+            }
+//            let shakingAnimation = CAKeyframeAnimation.shakingAnimation()
+//            cell.layer.add(shakingAnimation, forKey: "rotation")
+            return
+        }
+        let duration = 0.3
+        self.collectionView.isUserInteractionEnabled = false
+        
+        var perspective = CATransform3DIdentity
+        perspective.m34 = -1.0 / 5000.0
+        
+        let liftTransform = CATransform3DTranslate(perspective, 0, -50, 0)
+        let initialTransfrom = CATransform3DTranslate(perspective, 0, 0, 0)
+        
+//        let initialClockwiseTransform  = CATransform3DRotate(perspective, 0, 0, 1, 0)
+        let halfwayClockwiseTransform  = CATransform3DRotate(perspective, .pi / 2, 0, 1, 0)
+        let finalClockwiseTransform    = CATransform3DRotate(perspective, .pi, 0, 1, 0)
+        
+//        let opositeInitialTransform = CATransform3DRotate(perspective, .pi, 0, 1, 0)
+        let opositeHalfwayTransform = CATransform3DRotate(perspective, .pi / 2, 0, 1, 0)
+        let opositeFinalTransform   = CATransform3DRotate(perspective, 0, 0, 1, 0)
+
+                
+        let animation = UIViewPropertyAnimator(duration: duration, curve: .linear) {
+            if frontToBack {
+//                cell.cardView.layer.transform = initialClockwiseTransform
+//                cell.cardShadowViewTest.layer.transform = opositeInitialTransform
+                UIView.animate(withDuration: duration / 2, animations: {
+                    cell.cardView.layer.transform = CATransform3DConcat(halfwayClockwiseTransform, liftTransform)
+//                    cell.cardShadowViewTest.layer.transform = opositeHalfwayTransform
+                    
+                }) { _ in
+                    UIView.animate(withDuration: duration / 2) {
+                        cell.cardView.layer.transform = CATransform3DConcat(finalClockwiseTransform, initialTransfrom)
+//                        cell.cardShadowViewTest.layer.transform = opositeFinalTransform
+                    }
+                }
+            } else {
+//                cell.cardView.layer.transform = opositeInitialTransform
+//                cell.cardShadowViewTest.layer.transform = initialClockwiseTransform
+                
+                UIView.animate(withDuration: duration / 2, animations: {
+                    cell.cardView.layer.transform = CATransform3DConcat(opositeHalfwayTransform, liftTransform)
+
+                    
+//                    cell.cardShadowViewTest.layer.transform = halfwayClockwiseTransform
+                }) { _ in
+                    UIView.animate(withDuration: duration / 2) {
+                        cell.cardView.layer.transform = CATransform3DConcat(opositeFinalTransform, initialTransfrom)
+                        
+//                        cell.cardShadowViewTest.layer.transform = finalClockwiseTransform
+                    }
+                }
+            }
+
         }
         animation.addCompletion { _ in
             cell.word.alpha = frontToBack ? 0 : 1
-            cell.translation.alpha = frontToBack ? 0 : 1
+            cell.translation.alpha = !self.hideTranslation ? (frontToBack ? 0 : 1) : 0
             cell.translationTestLabel.alpha = frontToBack ? 1 : 0
-            let back = UIViewPropertyAnimator(duration: 0.3, curve: .easeInOut, animations: {                              
-                cell.cardShadowView.layer.shadowOffset =  cell.finalShadowValue
-                cell.transform = .identity
-            })
-            back.startAnimation()
-
+            self.collectionView.isUserInteractionEnabled = true
         }
         animation.startAnimation()
-        isFlipped.toggle()
-    }
-    func flip(cell: IndexPath) {
-//        let rotationAnimation = CABasicAnimation.rotationAnimation()
-        
-        guard let cellToRotate = collectionView.cellForItem(at: cell) as? CollectionViewCell else {
-            return
-        }
-//            let transitionOptions: UIView.AnimationOptions = [.transitionFlipFromRight, .showHideTransitionViews]
-            
-        if isFlipped {
-            //                cellToRotate.layer.add(rotationAnimation, forKey: "rotation")
-//            UIView.animate(withDuration: 0.5) {
-//                cellToRotate.transform = .identity // Rotate by 180 degrees (pi radians)
-//                cellToRotate.cardView.subviews.forEach { view in
-//                    view.alpha = 1
-//                }
-//                cellToRotate.cardView.alpha = 1
-//
-                UIView.animate(withDuration: 0.25, animations: {
-                    // First part: Scale and rotate to halfway point
-//                    cellToRotate.transform = CGAffineTransform(scaleX: -0.001 , y: 1)
-                    cellToRotate.transform = CGAffineTransform(scaleX: 0.01 , y: 1).concatenating(CGAffineTransform.identity.translatedBy(x: 0, y: -50))
-
-
-                    cellToRotate.cardShadowView.layer.shadowOffset = cellToRotate.initialShadowValue
-                    
-                }) { _ in
-                    cellToRotate.word.alpha = 1
-                    cellToRotate.translation.alpha = 1
-                    cellToRotate.translationTestLabel.alpha = 0
-                    UIView.animate(withDuration: 0.25, animations: {
-                        // Second part: Complete the flip animation
-                        cellToRotate.cardShadowView.layer.shadowOffset = cellToRotate.finalShadowValue
-                        cellToRotate.transform = .identity
-                    })
-                }
-
-                
-                        
-            //                UIView.transition(from: backView, to: collectionView.cellForItem(at: cell)?.contentView ??  UIView() , duration: 0.5, options: transitionOptions, completion: nil)
-        } else {
-//            UIView.animate(withDuration: 2, animations: {
-//                // First part: Scale and rotate to halfway point
-//                cellToRotate.transform = CGAffineTransform(scaleX: 0.01, y: 1)
-//            }) { _ in
-//                UIView.animate(withDuration: 2, animations: {
-//                    // Second part: Complete the flip animation
-//                    cellToRotate.transform = CGAffineTransform(scaleX: -1, y: 1)                })
-//
-            
-                UIView.animate(withDuration: 0.25, animations: {
-                    // First part: Scale and rotate to halfway point
-                    cellToRotate.transform = CGAffineTransform(scaleX: 0.01 , y: 1).concatenating(CGAffineTransform.identity.translatedBy(x: 0, y: -50))
-                    cellToRotate.cardShadowView.layer.shadowOffset = cellToRotate.initialShadowValue
-
-                })
-             { _ in
-                cellToRotate.word.alpha = 0
-                cellToRotate.translation.alpha = 0
-                cellToRotate.translationTestLabel.alpha = 1
-                UIView.animate(withDuration: 0.25, animations: {
-                    // Second part: Complete the flip animation
-//                    cellToRotate.transform = CGAffineTransform(scaleX: -1, y: 1)
-                    cellToRotate.transform = .identity
-
-
-                    cellToRotate.cardShadowView.layer.shadowOffset = cellToRotate.finalShadowValue
-
-                })
-            }
-            
-            
-            
-            
-            
-            
-                //            UIView.animate(withDuration: 0.5) {
-                //                cellToRotate.transform = CGAffineTransform(scaleX: -0.5, y: 0.5) // Rotate by 180 degrees (pi radians)
-                //                cellToRotate.cardView.subviews.forEach { view in
-                //                    view.alpha = 0
-                //                }
-                ////                cellToRotate.cardView.alpha = 0
-                //
-                //
-                //            }
-                
-                //                cellToRotate.layer.add(rotationAnimation, forKey: "rotation")
-                
-                
-                //                UIView.transition(from: collectionView.cellForItem(at: cell)?.contentView ??  UIView() , to: backView, duration: 0.5, options: transitionOptions, completion: nil)
-            
-        }
-            isFlipped = !isFlipped
+        cell.isFlipped.toggle()
     }
 
     
@@ -265,7 +212,7 @@ class MainGameVC: UIViewController{
     //MARK: - Cell SetUp
     private func prepareCells(){
         self.mainCell = UICollectionView.CellRegistration<CollectionViewCell, WordsEntity> { cell, indexPath, data in
-            cell.configure(with: data)
+            cell.configure(with: data, oneSideMode: !self.hideTranslation)
         }
         self.lastCell = UICollectionView.CellRegistration<CollectionViewLastCell, DataForLastCell> { cell, indexPath, data in
             cell.configure(with: data)
@@ -281,11 +228,12 @@ class MainGameVC: UIViewController{
                 let cell = collectionView.dequeueConfiguredReusableCell(using: self.mainCell,
                                                                         for: indexPath,
                                                                         item: item)
-//                let short = self.shortGestureCustomization()
-//                let long = self.longGestureCustomization()
-//
-//                cell.addGestureRecognizer(self.shortGestureCustomization())
-
+                cell.translation.alpha = hideTranslation ? 0 : 1
+                cell.oneSideMode = !hideTranslation
+//                cell.isUserInteractionEnabled = false
+//                cell.cardView.layer.transform = CATransform3DIdentity
+//                cell.translationTestLabel.alpha = 0
+//                cell.word.alpha = 1
                 cell.addGestureRecognizer(self.longGestureCustomization())
                 return cell
             } else if let item = item as? DataForLastCell{
@@ -312,62 +260,90 @@ class MainGameVC: UIViewController{
     
     //MARK: Animations
     private func shrinkCellIn(cell: CollectionViewCell, completion: @escaping () -> (Void)){
-//        let impactGenerator = UIImpactFeedbackGenerator(style: .medium)
-//
-//        impactGenerator.prepare()
-//
-//
+
         UIView.animate(withDuration: 0.2, delay: 0, options: .curveEaseInOut) {
-            cell.cardView.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
-            cell.cardShadowView.layer.shadowOffset = cell.initialShadowValue
+//            var currentTransform = cell.cardView.layer.transform
+//            let scaleTransform = CATransform3DScale(currentTransform, 0.95, 0.95, 1)
+//            cell.cardView.layer.transform = scaleTransform
+            cell.transform = cell.transform.scaledBy(x: 0.95, y: 0.95)
+//            cell.cardShadowView.layer.shadowOffset = cell.initialShadowValue
         } completion: { _ in
             DispatchQueue.main.asyncAfter(deadline: .now(), execute: completion)
         }
-//    completion: { _ in
-//            impactGenerator.impactOccurred()
-//        }
     }
     private func shrinkCellOut(cell: CollectionViewCell){
         UIView.animate(withDuration: 0.2, delay: 0, options: .curveEaseInOut) {
-            cell.cardView.transform = .identity
-            cell.cardShadowView.layer.shadowOffset = cell.finalShadowValue
+//            var currentTransform = cell.cardView.layer.transform
+//            let scaleTransform = CATransform3DScale(currentTransform, 1/0.95, 1/0.95, 1)
+//            cell.cardView.layer.transform = scaleTransform
+            cell.transform = .identity /*cell.transform.scaledBy(x: 1/0.95, y: 1/0.95)*/
+//            cell.cardShadowView.layer.shadowOffset = cell.finalShadowValue
         }
     }
     private func animateCellTransition(from cell: CollectionViewCell, to controller: UIViewController){
-        collectionView.isUserInteractionEnabled = false
-        let rotationAnimation = CABasicAnimation.rotationAnimation()
+//        UIView.animate(withDuration: 0.2) {
+//            cell.transform = .identity
+//        }
+            collectionView.isUserInteractionEnabled = false
         
-        cell.layer.add(rotationAnimation, forKey: "rotation")
-        
-        let slide = UIViewPropertyAnimator(duration: 0.3, curve: .easeInOut){
-            cell.cardView.transform = CGAffineTransform.identity.translatedBy(x: 0, y: -50)
-            cell.cardView.subviews.forEach { view in
-                view.alpha = 0
+        func rotationAnimation() -> CABasicAnimation {
+            let rotationAnimation = CABasicAnimation(keyPath: "transform.rotation.y")
+                rotationAnimation.fromValue = 0
+                rotationAnimation.toValue = -Double.pi
+                rotationAnimation.duration = 0.5 //0.6
+                rotationAnimation.isRemovedOnCompletion = false
+                rotationAnimation.fillMode = .forwards
+            return rotationAnimation
             }
-            cell.cardShadowView.layer.shadowOffset = cell.finalShadowValue
-            cell.cardShadowView.layer.shadowOpacity = 0
-        }
-        
-        slide.addCompletion { _ in
-            let neededScale = UIWindow().screen.bounds.width / cell.bounds.width
-            let neededLength = self.view.bounds.height - cell.frame.minY
-            let scaleAndSlide = UIViewPropertyAnimator(duration: 0.5, curve: .easeInOut) { //0.6
-                let scaleTransform = CGAffineTransform(scaleX: neededScale, y: neededScale)
-                let slideTransform = CGAffineTransform.identity.translatedBy(x: 0, y: neededLength )
-                cell.cardView.transform = scaleTransform.concatenating(slideTransform)
+//        if cell.transform != .identity || cell.transform != .identity.translatedBy(x: 0.95, y: 0.95) {
+//            print("animating return to the identity")
+//            UIView.animate(withDuration: 0.4, delay: 0) {
+//                cell.transform = .identity
+//            }
+//        }
+        let rotationAnimation = rotationAnimation()
+//        cell.layer.transform.m34 = -1 / 1000
+
+            cell.layer.add(rotationAnimation, forKey: "rotation")
+            
+            let slide = UIViewPropertyAnimator(duration: 0.3, curve: .easeInOut){
+
+                cell.transform = cell.transform.translatedBy(x: 0, y: -50)
+                cell.cardShadowViewTest.layer.shadowOpacity = 0
+                cell.cardView.subviews.forEach { view in
+                    view.alpha = 0
+                }
+//                fadeTheContent()
+//                cell.cardShadowView.layer.shadowOffset = cell.finalShadowValue
+//                cell.cardShadowView.layer.shadowOpacity = 0
+
             }
-            scaleAndSlide.addCompletion { _ in
-                cell.layer.removeAllAnimations()
-                rotationAnimation.fromValue = Double.pi
-                rotationAnimation.toValue = 0
-                cell.layer.add(rotationAnimation, forKey: "animation")
-                
+            
+            slide.addCompletion { _ in
+            
+                let neededScale = UIWindow().screen.bounds.width / cell.bounds.width
+                let neededLength = self.view.bounds.height - cell.frame.minY
+                let scaleAndSlide = UIViewPropertyAnimator(duration: 0.5, curve: .easeInOut) { //0.6
+                    let scaleTransform = CGAffineTransform(scaleX: neededScale, y: neededScale)
+                    let slideTransform = CGAffineTransform.identity.translatedBy(x: 0, y: neededLength )
+                    cell.transform = scaleTransform.concatenating(slideTransform)
+                }
+                scaleAndSlide.addCompletion { _ in
+                    cell.layer.removeAllAnimations()
+                    rotationAnimation.fromValue = Double.pi
+                    rotationAnimation.toValue = 0
+                    cell.layer.add(rotationAnimation, forKey: "animation")
+                    
+                }
+                scaleAndSlide.startAnimation()
+                self.present(controller, animated: false)
             }
-            scaleAndSlide.startAnimation()
-            self.present(controller, animated: false)
-        }
-        slide.startAnimation()
+
+            slide.startAnimation()
     }
+
+
+
     
     //MARK: Others
     private func configureDetailedVCFor(cellAt: IndexPath) -> UIViewController{
@@ -382,132 +358,81 @@ class MainGameVC: UIViewController{
     private func longGestureCustomization() -> UILongPressGestureRecognizer {
         let gesture = UILongPressGestureRecognizer(target: self, action: #selector(longGestureDidPress(sender: )))
         gesture.minimumPressDuration = 0.01
-        gesture.cancelsTouchesInView = true
+//        gesture.cancelsTouchesInView = true
         gesture.delegate = self
         return gesture
     }
-    private func shortGestureCustomization() -> UITapGestureRecognizer {
-        let gesture = UITapGestureRecognizer(target: self, action: #selector(shortGestureDidPress(sender: )))
-//        gesture.minimumPressDuration = 0.01
-        gesture.cancelsTouchesInView = true
-        gesture.delegate = self
-        return gesture
-    }
-    
     private func configureLabels(){
         navigationItem.title = "game.title".localized
     }
-    var isActionEnded = false
     private var longGestureOcured = false
-    {
-        didSet {
-            print( "long gesture should be \(oldValue ? "long" : "Short")")
-        }
-    }
-
+    private var longPressCompleted = false
 }
 
 
 //MARK: - Actions
 extension MainGameVC {
-    @objc func shortGestureDidPress(sender: UITapGestureRecognizer) {
-        guard let cell = sender.view as? CollectionViewCell,
-              let selectedIndex = collectionView.indexPath(for: cell) else {
-            return
-        }
-        print ( "short gesture was recognized" )
-        let point = sender.location(in: cell)
-        switch sender.state {
-        case .began:
-            selectedCell = selectedIndex
-        case .ended:
-            if cell.bounds.contains(point) {
-//                UIView.transition(from: cell.cardView, to: cell.backView, duration: 2, options: .transitionFlipFromLeft)
-                animateCellFlip(cell: cell, frontToBack: !isFlipped)
-            } else {
-                selectedCell = nil
-            }
-        default:
-            guard !isLongGestureActive else {
-                print("long gesture should be active")
-                break
-            }
-            
-            guard cell.cardView.transform == .identity else {
-                UIView.animate(withDuration: 0.2, delay: 0) {
-                    cell.cardView.transform = .identity
-                    self.selectedCell = nil
-                }
-                break
-            }
-        }
-        print (sender.state)
-        
-    }
-    
     @objc func longGestureDidPress(sender: UILongPressGestureRecognizer) {
         guard let cell = sender.view as? CollectionViewCell,
               let selectedIndex = collectionView.indexPath(for: cell) else {
             return
         }
-        let point = sender.location(in: cell)
+        
         let impactGenerator = UIImpactFeedbackGenerator(style: .medium)
-        print( "action was called")
+        let point = sender.location(in: cell)
+        
         switch sender.state {
         case .began:
-            isActionEnded = false
-            print("long gesture has began")
-            selectedCell = selectedIndex
-//            isLongGestureActive = true
+            print("touch was discovered")
             impactGenerator.prepare()
-            print(Date())
-            shrinkCellIn(cell: cell) {
-                impactGenerator.impactOccurred()
-                print(Date())
-                self.longGestureOcured = self.isActionEnded ? false : true
-                print(Date())
-            }
-//            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2, execute: DispatchWorkItem(block: {
-//                self.longGestureOcured = true
-//            }))
+            longPressCompleted = false
+            longPressCompleted = false
+            longGestureOcured = hideTranslation ? false : true
+            selectedCell = selectedIndex
+            
+//            if hideTranslation {
+                shrinkCellIn(cell: cell) {
+                    if sender.state == .began {
+                        impactGenerator.impactOccurred()
+                        self.longGestureOcured = true
+                        self.longPressCompleted = true
+                    } else {
+                        self.longGestureOcured = self.hideTranslation ? false : true
+                    }
+                }
+//            }
+            
         case .changed:
-            print("long gesture has changed")
-//            longGestureOcured = true
-//            print("something")
+            print("state has changed")
         case .ended:
-            print("long gesture has ended")
-//            isLongGestureActive = false
-            isActionEnded = true
+            if longGestureOcured && !longPressCompleted {
+                impactGenerator.impactOccurred()
+            }
+//            guard hideTranslation else {
+//                let controllerToPresent: UIViewController = configureDetailedVCFor(cellAt: selectedIndex)
+//                animateCellTransition(from: cell, to: controllerToPresent)
+//                return
+//            }
             if cell.bounds.contains(point) {
-//                impactGenerator.impactOccurred()
-//                let currentValue = self.dataSource.itemIdentifier(for: self.selectedCell!) as? WordsEntity
-                if longGestureOcured {
-                    print("with long gesture")
+                if longGestureOcured || hideTranslation != true {
                     let controllerToPresent: UIViewController = configureDetailedVCFor(cellAt: selectedIndex)
                     animateCellTransition(from: cell, to: controllerToPresent)
                 } else {
-                    print("with tap gesture")
-                    animateCellFlip(cell: cell, frontToBack: !isFlipped)
+                    animateCellFlip(cell: cell, frontToBack: !cell.isFlipped)
+                    shrinkCellOut(cell: cell)
                 }
-
             } else {
-                selectedCell = nil
                 shrinkCellOut(cell: cell)
+                selectedCell = nil
             }
-            self.longGestureOcured = false
         default:
-            print("long gesture ended with default")
-            guard cell.cardView.transform == .identity else {
-                UIView.animate(withDuration: 0.2, delay: 0) {
-                    cell.cardView.transform = .identity
+            guard cell.transform == .identity else {
+                UIView.animate(withDuration: 0.2) {
+                    cell.transform = .identity
                     self.selectedCell = nil
-//                    self.isLongGestureActive = false
                 }
                 break
             }
-            self.longGestureOcured = false
-
-            
         }
     }
 }
@@ -520,14 +445,18 @@ extension MainGameVC: MainGameVCDelegate {
         }
         
         let dimming = UIViewPropertyAnimator(duration: 0.3, curve: .easeOut){
-            cell.cardView.transform = .identity
-            cell.cardShadowView.layer.shadowOffset = cell.finalShadowValue
-            cell.cardShadowView.layer.shadowOpacity = cell.shadowOpacity
+            cell.transform = .identity
+//            cell.cardShadowView.layer.shadowOffset = cell.finalShadowValue
+//            cell.cardShadowView.layer.shadowOpacity = cell.shadowOpacity
             cell.cardView.subviews.forEach { view in
                 view.alpha = 1
             }
-            cell.translationTestLabel.alpha = self.isFlipped ? 1 : 0
+            cell.translationTestLabel.alpha = cell.isFlipped ? 1 : 0
+            cell.cardShadowViewTest.layer.shadowOpacity = cell.shadowOpacity
 //            self.collectionView.isUserInteractionEnabled = true
+        }
+        dimming.addCompletion { _ in
+            cell.layer.removeAllAnimations()
         }
         return dimming
     }
@@ -612,8 +541,15 @@ extension MainGameVC: UIScrollViewDelegate{
             let cell = collectionView.cellForItem(at: selectedCell!)
             let longGesture = cell?.gestureRecognizers?.first(where: { $0 is UILongPressGestureRecognizer })
             longGesture?.state = .cancelled
+            if let cardCell = cell as? CollectionViewCell  {
+                guard !cardCell.isFlipped else {
+                    animateCellFlip(cell: cardCell, frontToBack: false)
+                    return
+                }
+            }
             return
         }
+        
     }
     
 }
