@@ -173,7 +173,6 @@ class AddWordsView: UIViewController {
         }
         
         let NSRAnge = NSRange(range, in: text)
-        print(range)
         self.textInputView.highlightError(NSRAnge)
     }
 
@@ -201,11 +200,14 @@ class AddWordsView: UIViewController {
 }
 
 extension AddWordsView: PlaceholderTextViewDelegate{
-    func textViewWillAppear() {
+    func textViewDidBeginEditing() {
         guard navigationItem.rightBarButtonItem == doneButton else {
             navigationItem.setRightBarButton(doneButton, animated: true)
             return
         }
+    }
+    func textViewDidEndEditing() {
+        
     }
     
     func configurePlaceholderText() -> String? {

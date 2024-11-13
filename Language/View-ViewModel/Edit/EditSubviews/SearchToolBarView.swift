@@ -49,7 +49,6 @@ class CustomSearchToolBar: UIView {
     
     //MARK: Inherited
     required init(textView: UITextView, layoutManager: HighlightLayoutManager) {
-        print("searchview" )
         self.textView = textView
         self.layoutManager = layoutManager
         super.init(frame: .zero)
@@ -204,12 +203,10 @@ class CustomSearchToolBar: UIView {
         var smallestDistance: CGFloat = CGFloat.greatestFiniteMagnitude
         
         for (index, range) in ranges.sorted(by: {$0.location < $1.location}).enumerated() {
-            print(range.location)
             let glyphRect = getGlyphRectangle(for: range, from: textView)
             
             let distance = abs(glyphRect.midY - visibleMidY)
             
-            print("distance = \(distance)")
             if distance <= smallestDistance {
                 smallestDistance = distance
                 closestRangeIndex = index

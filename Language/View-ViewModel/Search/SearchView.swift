@@ -84,18 +84,25 @@ class SearchView: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+            
         input.send(.viewWillAppear)
         if searchBarDidChanged{
             configureSearchBar()
             view.layoutSubviews()
         }
     }
+    
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         configureStrokes()
         bottomSearchView.configureStrokes()
     }
+    
+    override func willTransition(to newCollection: UITraitCollection, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.willTransition(to: newCollection, with: coordinator)
+        self.tableView.reloadData()
+    }
+    
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
         if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection){
@@ -142,23 +149,21 @@ class SearchView: UIViewController {
             .store(in: &cancellable)
     }
     //MARK: - Controller SetUp
-    func configureController(){
+    private func configureController(){
         view.backgroundColor = .systemBackground
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
 
     }
     //MARK:  NavBar SetUp
-    func configureNavBar(){
+    private func configureNavBar(){
         navigationController?.navigationBar.titleTextAttributes = FontChangeManager.shared.VCTitleAttributes()
 
-//        self.navigationController?.navigationBar.tintColor = .label
-//        self.navigationController?.navigationBar.isTranslucent = true
     }
     
     private func configureFont(){
-        navigationController?.navigationBar.titleTextAttributes =  FontChangeManager.shared.VCTitleAttributes()
-        self.tableView.reloadData()
+        configureNavBar()
+        tableView.reloadData()
     }
     
     //MARK:  TableView SetUP
@@ -195,11 +200,11 @@ class SearchView: UIViewController {
         if topStroke.superlayer == nil && bottomStroke.superlayer == nil {
             topStroke = UIView().addTopStroke(vc: self)
             bottomStroke = UIView().addBottomStroke(vc: self)
-            
+
             if searchBarOnTop {
-                view.layer.addSublayer(bottomStroke)
+                self.tabBarController?.tabBar.layer.addSublayer(bottomStroke)
             } else {
-                view.layer.addSublayer(topStroke)
+                self.navigationController?.navigationBar.layer.addSublayer(topStroke)
             }
         }
     }
@@ -249,15 +254,15 @@ class SearchView: UIViewController {
     //MARK: Prepairing view by canishing current searchBar
     private func prepeareForNewPosition(){
         if searchBarOnTop {
-            view.layer.addSublayer(bottomStroke)
+            self.tabBarController?.tabBar.layer.addSublayer(bottomStroke)
             topStroke.removeFromSuperlayer()
             refreshBottomSearchBar()
             bottomSearchView.isHidden = true
         } else {
-            view.layer.addSublayer(topStroke)
             bottomStroke.removeFromSuperlayer()
             refreshTopSearchBar()
             navigationItem.searchController = nil
+            self.navigationController?.navigationBar.layer.addSublayer(topStroke)
         }
         searchBarDidChanged = true
     }
@@ -363,4 +368,5 @@ extension SearchView: UITableViewDelegate, UITableViewDataSource{
         return UITableView.automaticDimension
     }
 }
+
 

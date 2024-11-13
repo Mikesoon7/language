@@ -21,7 +21,7 @@ class DetailsViewModel{
     }
     
     private var model: DictionaryFullAccess
-    private var dictionary: DictionariesEntity
+    var dictionary: DictionariesEntity
     private var cancellable = Set<AnyCancellable>()
     
     private let cardsDivider: Int = 10
@@ -41,11 +41,9 @@ class DetailsViewModel{
         self.numberOfCards = Int(dictionary.numberOfCards)
         
         let dictionaryDetails = model.fetchSettings(for: dictionary)
-        print("dictionary details were recieved and attempted to unclose")
-        self.random = dictionaryDetails?.random ?? false
-        self.hideTransaltion = dictionaryDetails?.oneSideMode ?? false
-        self.selectedDisplayNumber = Int(dictionaryDetails?.number ?? dictionary.numberOfCards)
-        print(selectedDisplayNumber)
+        self.random = dictionaryDetails?.isRandom ?? false
+        self.hideTransaltion = dictionaryDetails?.isOneSideMode ?? false
+        self.selectedDisplayNumber = Int(dictionaryDetails?.selectedNumber ?? dictionary.numberOfCards)
         
         model.dictionaryDidChange
             .sink { type in
@@ -109,12 +107,25 @@ class DetailsViewModel{
         return selectedDisplayNumber
     }
     //MARK: Modify details related to the dictionary.
-    func saveDetails(isRandom: Bool, hideTransaltion: Bool) {
+    func saveDetails(isRandom: Bool, isOneSideMode: Bool) {
         do {
-            try model.accessSettings(for: dictionary, with: isRandom, numberofCards: Int64(selectedDisplayNumber), oneSideMode: hideTransaltion)
+            try model.accessSettings(for: dictionary, with: isRandom, numberofCards: Int64(selectedDisplayNumber), oneSideMode: isOneSideMode)
         } catch {
             output.send(.error(error))
         }
+    }
+
+    func saveDetailsTest(isRandom: Bool, isOneSideMode: Bool) {
+        do {
+            try model.accessSettings(for: dictionary, with: isRandom, numberofCards: Int64(selectedDisplayNumber), oneSideMode: isOneSideMode)
+        } catch {
+            output.send(.error(error))
+        }
+    }
+
+    func configureTextPlaceholder() -> String{
+        return "viewPlaceholderWord".localized + "  " + "viewPlaceholderMeaning".localized
+//        \(settingModel.appSeparators.value)
     }
 
     
@@ -123,7 +134,6 @@ class DetailsViewModel{
     func selectedRowForPicker() -> Int {
 //        let number = numberOfRowsInComponent()
         let selectedRow = Int(selectedDisplayNumber / cardsDivider)
-        print(selectedDisplayNumber)
         switch selectedDisplayNumber % cardsDivider {
         case 0:
             return selectedRow - 1

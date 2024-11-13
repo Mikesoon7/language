@@ -279,7 +279,6 @@ class AddDictionaryView: UIViewController {
         }
         
         let NSRAnge = NSRange(range, in: text)
-        print(range)
         self.textInputView.highlightError(NSRAnge)
     }
 }
@@ -327,7 +326,7 @@ extension AddDictionaryView {
 //MARK: - Extending for PlaceholderTextView
 extension AddDictionaryView: PlaceholderTextViewDelegate{
     ///Delegate method. Activating navigation bar bautton item.
-    func textViewWillAppear() {
+    func textViewDidBeginEditing() {
         guard navigationItem.rightBarButtonItem == doneButton else {
             navigationItem.setRightBarButton(doneButton, animated: true)
             return
@@ -347,6 +346,9 @@ extension AddDictionaryView: UITextFieldDelegate{
             navigationItem.setRightBarButton(doneButton, animated: true)
             return
         }
+    }
+    func textViewDidEndEditing() {
+        
     }
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         let maxLength = 15

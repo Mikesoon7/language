@@ -13,12 +13,18 @@ enum Direction{
     case left
     case right
 }
+private enum ViewConstants {
+    static let cornerRadius: CGFloat = 9
+    static let overlayPoints: CGFloat = 2
+    static let actionViewMultiplier: CGFloat = 0.2
+}
 
 class MenuDictionaryCell: UITableViewCell{
 
     private enum ViewConstants{
-        static let cornerRadius = CGFloat(9)
-        static let overlayPoints = CGFloat(2)
+        static let cornerRadius: CGFloat = 9
+        static let overlayPoints: CGFloat = 2
+        static let actionViewMultiplier: CGFloat = 0.2
     }
     
     static let identifier = "dictCell"
@@ -39,7 +45,7 @@ class MenuDictionaryCell: UITableViewCell{
         let view = UIView()
         view.backgroundColor = .systemGray6
 
-        view.layer.cornerRadius = cornerRadius
+        view.layer.cornerRadius = ViewConstants.cornerRadius
         view.clipsToBounds = true
 
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -49,7 +55,7 @@ class MenuDictionaryCell: UITableViewCell{
         let view = UIView()
         view.backgroundColor = .clear
         
-        view.layer.cornerRadius = cornerRadius
+        view.layer.cornerRadius = ViewConstants.cornerRadius
         view.clipsToBounds = true
         
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -60,7 +66,7 @@ class MenuDictionaryCell: UITableViewCell{
         let view = UIView()
         view.backgroundColor = .systemGray6
         
-        view.layer.cornerRadius = cornerRadius
+        view.layer.cornerRadius = ViewConstants.cornerRadius
         view.clipsToBounds = true
         
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -69,28 +75,19 @@ class MenuDictionaryCell: UITableViewCell{
 
     var languageLabel : UILabel = {
         var label = UILabel()
-        label.attributedText = .attributedString(
-            string: "menu.cell.name".localized,
-            with: .georgianBoldItalic,
-            ofSize: 20
-        )
+        label.text = "menu.cell.name".localized
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
-    
     var cardsLabel : UILabel = {
         var label = UILabel()
-        label.attributedText = .attributedString(
-            string: "menu.cell.number".localized,
-            with: .georgianBoldItalic,
-            ofSize: 20)
+        label.text = "menu.cell.number".localized
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
     var languageResultLabel : UILabel = {
         var label = UILabel()
-        label.font = .georgianItalic.withSize(15)
         label.textAlignment = .right
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -98,7 +95,6 @@ class MenuDictionaryCell: UITableViewCell{
     
     var cardsResultLabel : UILabel = {
         var label = UILabel()
-        label.font = .georgianItalic.withSize(15)
         label.textAlignment = .right
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -115,7 +111,7 @@ class MenuDictionaryCell: UITableViewCell{
     
     
     //MARK: Constrait related properties
-    let cornerRadius: CGFloat = 9
+//    var screenSize: CGFloat = UIWindow().screen.bounds.width -
 
     var contentViewWidth: CGFloat!
     var contentViewHeight: CGFloat!
@@ -134,6 +130,10 @@ class MenuDictionaryCell: UITableViewCell{
     var initialEditConstant: CGFloat!
     var currentEditConstant: CGFloat!
     var finalEditConstant: CGFloat!
+    
+    var editViewFinalConstant: NSLayoutConstraint!
+    var deleteViewFinalConstant: NSLayoutConstraint!
+    var statViewFinalConstant: NSLayoutConstraint!
         
     var statViewLeadingAnchor: NSLayoutConstraint!
     var initilStatConstant: CGFloat!
@@ -146,37 +146,52 @@ class MenuDictionaryCell: UITableViewCell{
     var statViewInitialWidth: CGFloat!
     var statViewFinalWifth: CGFloat!
     
-    private lazy var temoraryRecognizer: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(cellDidTap(sender: )))
+    var initialPreparationWereMade: Bool = false
+    
+    private lazy var temporaryRecognizer: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(cellDidTap(sender: )))
     
     //MARK: - Inherited Methods
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         configureHolderView()
         configureMainView()
-//        configureLabels()
 
         configurePanGesture()
         configureTapGesture()
         
-        contentView.backgroundColor = .clear
         NotificationCenter.default.addObserver(self, selector: #selector(languageDidChange(sender:)), name: .appLanguageDidChange, object: nil)
-//        NotificationCenter.default.addObserver(self, selector: #selector(fontDidChange(sender: )), name: .appFontDidChange, object: nil)
     }
     required init?(coder: NSCoder) {
         fatalError("coder wasn't imported")
     }
     override func layoutSubviews() {
         super.layoutSubviews()
-        
+    
         statView.layer.mask = UIView().configureActionMaskWith(size: CGSize(
             width: contentView.frame.width * 0.2 + ViewConstants.overlayPoints,
-            height: contentView.frame.height), cornerRadius: cornerRadius)
+            height: contentView.frame.height), cornerRadius: ViewConstants.cornerRadius)
         editView.layer.mask = UIView().configureActionMaskWith(size: CGSize(
             width: contentView.frame.width * 0.2 + ViewConstants.overlayPoints,
-            height: contentView.frame.height), cornerRadius: cornerRadius)
+            height: contentView.frame.height), cornerRadius: ViewConstants.cornerRadius)
         deleteView.layer.mask = UIView().configureActionMaskWith(size: CGSize(
             width: contentView.frame.width * 0.2 + ViewConstants.overlayPoints,
-            height: contentView.frame.height), cornerRadius: cornerRadius)
+            height: contentView.frame.height), cornerRadius: ViewConstants.cornerRadius)
+        
+        
+        contentViewWidth = contentView.bounds.width
+
+        finalHolderConstant = -(contentViewWidth * 0.6 - ViewConstants.cornerRadius * 3.5)
+
+        finalDeleteConstant = contentViewWidth * 0.4 - ViewConstants.cornerRadius * 3
+
+        finalEditConstant = contentViewWidth * 0.2 - ViewConstants.cornerRadius * 2
+
+        finalStatConstant = -(contentViewWidth * 0.2) - ViewConstants.cornerRadius * 0.5
+
+        editViewFinalConstant = editView.leadingAnchor.constraint(equalTo: statView.trailingAnchor, constant: -ViewConstants.cornerRadius)
+        deleteViewFinalConstant = deleteView.leadingAnchor.constraint(equalTo: editView.trailingAnchor, constant: -ViewConstants.cornerRadius)
+        statViewFinalConstant = statView.leadingAnchor.constraint(equalTo: mainView.trailingAnchor, constant: -ViewConstants.cornerRadius)
+
     }
     
     override func prepareForReuse() {
@@ -194,7 +209,7 @@ class MenuDictionaryCell: UITableViewCell{
         self.cardsResultLabel.text = String(viewModel.dictionary.numberOfCards)
         self.viewModel = viewModel
         self.delegate = delegate
-        self.configureLabels()
+        self.configureFonts()
         self.bind()
     }
     
@@ -210,35 +225,42 @@ class MenuDictionaryCell: UITableViewCell{
             }
             .store(in: &cancellables)
     }
+    
+    func stalkActionViews(){
+        
+    }
     //MARK: - HolderView SetUp
     func configureHolderView(){
+        contentView.frame = self.bounds
+
+        contentView.backgroundColor = .clear
         contentView.addSubview(holderView)
         holderView.addSubviews(mainView, statisticView, statView, editView, deleteView)
 
-        contentViewWidth = contentView.frame.width
-        contentViewHeight = contentView.frame.height
-        initialActionConstant = -cornerRadius
+        contentViewWidth = contentView.bounds.width
+        contentViewHeight = contentView.bounds.height
+        initialActionConstant = -ViewConstants.cornerRadius
 
         //Related to the holder
         initialHolderConstant = 0
         currentHolderConstant = 0
-        finalHolderConstant = -(contentViewWidth * 0.6 - cornerRadius * 2)
+        finalHolderConstant = -(contentViewWidth * 0.6 - ViewConstants.cornerRadius * 2)
         holderViewLeadingAnchor = holderView.leadingAnchor.constraint(
             equalTo: contentView.leadingAnchor, constant: currentHolderConstant)
         
         //Related to Delete
-        currentDeleteConstant = -cornerRadius
-        finalDeleteConstant = contentViewWidth * 0.4 - cornerRadius * 2
+        currentDeleteConstant = -ViewConstants.cornerRadius
+        finalDeleteConstant = contentViewWidth * 0.4 - ViewConstants.cornerRadius * 2
         deleteViewLeadingAnchor = deleteView.leadingAnchor.constraint(
             equalTo: mainView.trailingAnchor, constant: initialActionConstant)
         
         //Related to Edit
-        currentEditConstant = -cornerRadius
-        finalEditConstant = contentViewWidth * 0.2 - cornerRadius * 1.5
+        currentEditConstant = -ViewConstants.cornerRadius
+        finalEditConstant = contentViewWidth * 0.2 - ViewConstants.cornerRadius * 1.5
         editViewLeadingAnchor = editView.leadingAnchor.constraint(
             equalTo: mainView.trailingAnchor, constant: initialActionConstant)
         
-        finalStatConstant = -(contentViewWidth * 0.2) - cornerRadius * 0.5
+        finalStatConstant = -(contentViewWidth * 0.2) - ViewConstants.cornerRadius * 0.5
         statViewLeadingAnchor = statView.leadingAnchor.constraint(
             equalTo: mainView.trailingAnchor, constant: initialActionConstant)
         
@@ -253,7 +275,8 @@ class MenuDictionaryCell: UITableViewCell{
             holderViewLeadingAnchor,
             holderView.topAnchor.constraint(equalTo: contentView.topAnchor),
             holderView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
-            holderView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 1.6),
+            holderView.widthAnchor.constraint(equalTo: contentView.widthAnchor, 
+                                              multiplier: 1.6),
             
             mainView.topAnchor.constraint(equalTo: holderView.topAnchor),
             mainView.leadingAnchor.constraint(equalTo: holderView.leadingAnchor),
@@ -263,24 +286,29 @@ class MenuDictionaryCell: UITableViewCell{
             deleteView.topAnchor.constraint(equalTo: mainView.topAnchor),
             deleteViewLeadingAnchor,
             deleteView.bottomAnchor.constraint(equalTo: mainView.bottomAnchor),
-            deleteView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.2),
+            deleteView.widthAnchor.constraint(equalTo: contentView.widthAnchor,
+                                              multiplier: ViewConstants.actionViewMultiplier),
 
             editView.topAnchor.constraint(equalTo: mainView.topAnchor),
             editViewLeadingAnchor,
             editView.bottomAnchor.constraint(equalTo: mainView.bottomAnchor),
-            editView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.2),
+            editView.widthAnchor.constraint(equalTo: contentView.widthAnchor,
+                                            multiplier: ViewConstants.actionViewMultiplier),
             
             statView.topAnchor.constraint(equalTo: mainView.topAnchor),
             statViewLeadingAnchor,
             statView.bottomAnchor.constraint(equalTo: mainView.bottomAnchor),
-            statView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.2),
+            statView.widthAnchor.constraint(equalTo: contentView.widthAnchor,
+                                            multiplier: ViewConstants.actionViewMultiplier),
             
             statViewInitialLeadingAnchor,
             statisticView.topAnchor.constraint(equalTo: statView.topAnchor),
             statisticView.bottomAnchor.constraint(equalTo: statView.bottomAnchor),
             statisticView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.8, constant: ViewConstants.cornerRadius + ViewConstants.overlayPoints)
             ])
+        
     }
+
     func configureMainView(){
         mainView.addSubviews(languageResultLabel, languageLabel, cardsLabel, cardsResultLabel)
         
@@ -304,19 +332,13 @@ class MenuDictionaryCell: UITableViewCell{
 
     }
     
-    func configureLabels() {
-//        print(FontChangeManager.shared.currentFont().withSize(20))
-        let ascender = FontChangeManager.shared.currentFont().withSize(20).ascender
-        let decender = FontChangeManager.shared.currentFont().withSize(20).descender
-//        if ascender + Int64(decender) > cardsLabel.bounds.height
+    func configureFonts(){
+        self.cardsLabel.font = .selectedFont.withSize(20)
+        self.cardsResultLabel.font = .selectedFont.withSize(15)
         
-        print(ascender, decender)
-        self.cardsLabel.font = FontChangeManager.shared.currentFont().withSize(20)
-//        self.cardsLabel.textAlig
-        
-        self.cardsResultLabel.font = FontChangeManager.shared.currentFont().withSize(15)
-        self.languageLabel.font = FontChangeManager.shared.currentFont().withSize(20)
-        self.languageResultLabel.font = FontChangeManager.shared.currentFont().withSize(15)
+        self.languageLabel.font = .selectedFont.withSize(20)
+        self.languageResultLabel.font = .selectedFont.withSize(15)
+
     }
     
     func configureCustomActions(imageName: String, colour: UIColor) -> UIView{
@@ -337,7 +359,7 @@ class MenuDictionaryCell: UITableViewCell{
         
         actionView.addSubview(imageView)
         
-        imageView.centerXAnchor.constraint(equalTo: actionView.centerXAnchor, constant: cornerRadius / 2).isActive = true
+        imageView.centerXAnchor.constraint(equalTo: actionView.centerXAnchor, constant: ViewConstants.cornerRadius / 2).isActive = true
         imageView.centerYAnchor.constraint(equalTo: actionView.centerYAnchor).isActive = true
         
         return actionView
@@ -394,7 +416,18 @@ class MenuDictionaryCell: UITableViewCell{
         self.activate(!activate)
         animation.startAnimation()
     }
-    
+    func deactivateConstraints(){
+        NSLayoutConstraint.deactivate([
+            self.deleteViewLeadingAnchor,
+            self.editViewLeadingAnchor,
+            self.statViewLeadingAnchor
+        ])
+        NSLayoutConstraint.activate([
+            self.editViewFinalConstant,
+            self.deleteViewFinalConstant,
+            self.statViewFinalConstant
+        ])
+    }
     //Animation for swipe transition
     func activate(_ activate: Bool){
         let animation = UIViewPropertyAnimator(duration: 0.5, curve: .easeOut){
@@ -404,11 +437,27 @@ class MenuDictionaryCell: UITableViewCell{
             self.layoutIfNeeded()
         }
         
+//        animation.addCompletion { _ in
+//            if activate {
+//                NSLayoutConstraint.activate([
+//                    self.deleteViewLeadingAnchor,
+//                    self.editViewLeadingAnchor,
+//                    self.statViewLeadingAnchor
+//                ])
+//                NSLayoutConstraint.deactivate([
+//                    self.editViewFinalConstant,
+//                    self.deleteViewFinalConstant,
+//                    self.statViewFinalConstant
+//                ])
+//            }
+//        }
+        
         if activate {
-            mainView.addGestureRecognizer(temoraryRecognizer)
+            mainView.addGestureRecognizer(temporaryRecognizer)
         } else {
-            mainView.removeGestureRecognizer(temoraryRecognizer)
+            mainView.removeGestureRecognizer(temporaryRecognizer)
         }
+        
         
         editView.isUserInteractionEnabled = activate ? true : false
         statView.isUserInteractionEnabled = isStatActive ? true : (activate ? true : false )
@@ -430,16 +479,13 @@ class MenuDictionaryCell: UITableViewCell{
         return true
     }
     
-    func updateLabelsFont(){
-        self.cardsResultLabel.font = UIFont()
-//        self.
-    }
     //MARK: - Actions
     //Panning
     @objc func viewDidPan(sender: UIPanGestureRecognizer){
+//        deactivateConstraints()
         let translation = sender.translation(in: mainView).x
         let velocity = sender.velocity(in: mainView).x
-        
+            
         let holderConstant = currentHolderConstant + translation
         let editConstant = currentEditConstant + -(translation / 3)
         let deleteConstant = currentDeleteConstant + -(translation / 1.5)
@@ -524,11 +570,4 @@ class MenuDictionaryCell: UITableViewCell{
         languageLabel.text = LanguageChangeManager.shared.localizedString(forKey: "menu.cell.name")
         cardsLabel.text = LanguageChangeManager.shared.localizedString(forKey: "menu.cell.number")
     }
-//    @objc func fontDidChange(sender: Any){
-//        languageLabel.font = FontChangeManager.shared.currentFont().withSize(20)
-//        cardsLabel.font = FontChangeManager.shared.currentFont().withSize(20)
-//        cardsResultLabel.font = FontChangeManager.shared.currentFont().withSize(15)
-//        languageResultLabel.font = FontChangeManager.shared.currentFont().withSize(15)
-//
-//    }
 }

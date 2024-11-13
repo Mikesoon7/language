@@ -24,7 +24,7 @@ class GameViewModel{
     private var words: [WordsEntity] = []
     
     private var isRandom: Bool
-    private var hideTranslation: Bool
+    private var isOneSideMode: Bool
     private var initialNumberOfCards = Int()
     private var selectedNumberOfWords: Int
     
@@ -32,11 +32,11 @@ class GameViewModel{
     private var cancellable = Set<AnyCancellable>()
     
     //MARK: Inherited
-    init(dataModel: Dictionary_WordsManager, settingsModel: UserSettingsStorageProtocol, dictionary: DictionariesEntity, isRandom: Bool, hideTranslation: Bool, selectedNumber: Int){
+    init(dataModel: Dictionary_WordsManager, settingsModel: UserSettingsStorageProtocol, dictionary: DictionariesEntity, isRandom: Bool, isOneSideMode: Bool, selectedNumber: Int){
         self.dataModel = dataModel
         self.dictionary = dictionary
         self.isRandom = isRandom
-        self.hideTranslation = hideTranslation
+        self.isOneSideMode = isOneSideMode
         self.selectedNumberOfWords = selectedNumber
         configureData()
         

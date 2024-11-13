@@ -81,7 +81,6 @@ class EditView: UIViewController {
         configureController()
         configureTextField()
         configureTextView()
-        print("Search view initialization")
         configureSearchView()
         configureNavBar()
         

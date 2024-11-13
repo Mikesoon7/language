@@ -14,9 +14,9 @@
         <relationship name="words" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="WordsEntity" inverseName="dictionary" inverseEntity="WordsEntity"/>
     </entity>
     <entity name="DictionariesSettings" representedClassName="DictionariesSettings" syncable="YES">
-        <attribute name="number" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
-        <attribute name="oneSideMode" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
-        <attribute name="random" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="isOneSideMode" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="isRandom" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="selectedNumber" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <relationship name="dictionary" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="DictionariesEntity" inverseName="settings" inverseEntity="DictionariesEntity"/>
     </entity>
     <entity name="WordsEntity" representedClassName="WordsEntity" syncable="YES">

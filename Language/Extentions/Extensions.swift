@@ -136,9 +136,15 @@ extension String{
 }
 //MARK: - UIAlertController
 extension UIAlertController {
-    static func alertWithAction(alertTitle: String, alertMessage: String? = nil, alertStyle: UIAlertController.Style = .actionSheet,
-                         action1Title: String = "", action1Style: UIAlertAction.Style = .default,
-                         action2Title: String = "", action2Style: UIAlertAction.Style = .default) -> UIAlertController{
+    static func alertWithAction(alertTitle: String, 
+                                alertMessage: String? = nil,
+                                alertStyle: UIAlertController.Style = .actionSheet,
+                                action1Title: String = "", 
+                                action1Style: UIAlertAction.Style = .default,
+                                action2Title: String = "", 
+                                action2Style: UIAlertAction.Style = .default,
+                                sourceView: UIView? = nil,
+                                locationOfTap: CGPoint? = nil) -> UIAlertController{
         let alert = UIAlertController(title: alertTitle, message: alertMessage, preferredStyle: alertStyle)
         if action1Title != ""{
             let action = UIAlertAction(title: action1Title, style: action1Style)
@@ -150,6 +156,24 @@ extension UIAlertController {
             action.setValue(UIColor.label, forKey: "titleTextColor")
             alert.addAction(action)
         }
+        
+        //Blank fir the future iPad support.
+        if UIDevice.current.userInterfaceIdiom == .pad, let popoverController = alert.popoverPresentationController {
+                if let sourceView = sourceView, let tapLocation = locationOfTap {
+                    popoverController.sourceView = sourceView
+                    popoverController.sourceRect = CGRect(x: tapLocation.x, y: tapLocation.y, width: 1, height: 1)
+                                        
+                } else if let sourceView = sourceView {
+                    popoverController.sourceView = sourceView
+                    popoverController.sourceRect = CGRect(x: sourceView.bounds.midX, y: sourceView.bounds.midY, width: 1, height: 1)
+
+                } else {
+                    fatalError("sourceView is required for presenting actionSheet on iPad")
+                }
+            popoverController.permittedArrowDirections = locationOfTap != nil ? .left : []
+        }
+
+        
         return alert
     }
 }

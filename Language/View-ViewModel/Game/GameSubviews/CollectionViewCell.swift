@@ -21,11 +21,7 @@ class CollectionViewCell: UICollectionViewCell {
     var isFlipped = false
     var isAccessable = false
     
-    var oneSideMode = false {
-        didSet {
-            print(oneSideMode)
-        }
-    }
+    var isOneSideMode = false
     
     private let subviewsInsets: CGFloat = 10
     private var staticCardSize = CGSize()
@@ -40,9 +36,11 @@ class CollectionViewCell: UICollectionViewCell {
         label.textAlignment = .center
 
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.minimumScaleFactor = 0.7
+        label.minimumScaleFactor = 0.8
         label.adjustsFontSizeToFitWidth = true
         label.baselineAdjustment = .alignCenters
+        label.setContentCompressionResistancePriority(.required, for: .horizontal)
+        label.setContentHuggingPriority(.defaultLow, for: .horizontal)
         return label
     }()
     var translation: UILabel = {
@@ -54,9 +52,11 @@ class CollectionViewCell: UICollectionViewCell {
         label.text = ""
         label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.minimumScaleFactor = 0.9
+        label.minimumScaleFactor = 0.8
         label.adjustsFontSizeToFitWidth = true
         label.baselineAdjustment = .alignCenters
+        label.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+            label.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         return label
     }()
     let translationTestLabel: UILabel = {
@@ -68,7 +68,7 @@ class CollectionViewCell: UICollectionViewCell {
         label.text = ""
         label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.minimumScaleFactor = 0.9
+        label.minimumScaleFactor = 0.8
         label.adjustsFontSizeToFitWidth = true
         label.baselineAdjustment = .alignCenters
         label.alpha = 0
@@ -121,10 +121,10 @@ class CollectionViewCell: UICollectionViewCell {
         view.translatesAutoresizingMaskIntoConstraints = false
         view.backgroundColor = .clear
         view.spacing = 10.0
-        view.distribution = .fillProportionally
+        view.distribution = .fill
         
         view.axis = .vertical
-        view.alignment = .center
+        view.alignment = .fill
         return view
     }()
     
@@ -142,7 +142,6 @@ class CollectionViewCell: UICollectionViewCell {
         word.isHidden = true
         translation.isHidden = true
         translationTestLabel.isHidden = true
-        isFlipped = false
         self.gestureRecognizers = nil
     }
     
@@ -150,7 +149,7 @@ class CollectionViewCell: UICollectionViewCell {
     //MARK: Configure subviews.
     ///Assigning passed values to labels and asks stackView to layout subviews.
     func configure(with data: WordsEntity, oneSideMode: Bool){
-        self.oneSideMode = oneSideMode
+        self.isOneSideMode = oneSideMode
         word.text = data.word
         word.isHidden = false
         word.font = .selectedFont.withSize(20)
@@ -170,8 +169,7 @@ class CollectionViewCell: UICollectionViewCell {
         configureTextDisplay()
     }
     private func configureTextDisplay(){
-        print("already setting up")
-        if oneSideMode {
+        if isOneSideMode {
             configureStackView()
         } else {
             cardView.addSubview(word)
@@ -185,13 +183,16 @@ class CollectionViewCell: UICollectionViewCell {
     }
 
     private func configureStackView(){
-        cardView.addSubview(stackView)
-        
         stackView.addArrangedSubviews(word, translation)
+        cardView.addSubview(stackView)
+
         
         NSLayoutConstraint.activate([
             stackView.centerXAnchor.constraint(equalTo: cardView.centerXAnchor),
             stackView.centerYAnchor.constraint(equalTo: cardView.centerYAnchor),
+//            stackView.widthAnchor.constraint(equalTo: cardView.widthAnchor, constant: -subviewsInsets * 2),
+//            stackView.heightAnchor.constraint(equalTo: cardView.heightAnchor, constant: -subviewsInsets * 2)
+
             stackView.widthAnchor.constraint(lessThanOrEqualToConstant: contentView.bounds.width - subviewsInsets * 2 ),
             stackView.heightAnchor.constraint(lessThanOrEqualToConstant: contentView.bounds.height - subviewsInsets * 2 )
             

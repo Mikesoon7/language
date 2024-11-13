@@ -62,9 +62,10 @@ class CustomSearchBar: UIView {
         if topStroke.superlayer == nil {
             let path = UIBezierPath()
             path.move(to: CGPoint(x: 0, y: 0))
-            path.addLine(to: CGPoint(x: self.bounds.maxX, y: 0))
+            let bounds = UIWindow().bounds
+            path.addLine(to: CGPoint(x: max(bounds.width, bounds.height) , y: 0))
             
-            topStroke.lineWidth = 0.5
+            topStroke.lineWidth = 0.7
             topStroke.path = path.cgPath
             topStroke.strokeColor = UIColor.label.cgColor
             self.layer.addSublayer(topStroke)

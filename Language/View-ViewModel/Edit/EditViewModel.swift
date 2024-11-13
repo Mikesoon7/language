@@ -112,7 +112,6 @@ class EditViewModel {
                 do {
                     words.insert( try model.createWordFromLine(for: dictionary, text: text, index: index, id: UUID()), at: index)
                     oldTextByLines.insert(text, at: index)
-                    print("\(dictionary.language), \(text), \(index)")
                 } catch {
                     errorAppeared = true
                     output.send(.shouldPresentError(error))

@@ -28,9 +28,7 @@ class MenuView: UIViewController {
     
     private var menuAccessedForCell: IndexPath?
     private var isUpdateNeeded: Bool = false
-    
-//    var firstLaunch = true
-    
+        
     //MARK: Views
     var tableView: UITableView = {
         var tableView = UITableView(frame: .zero, style: .insetGrouped)
@@ -118,7 +116,6 @@ class MenuView: UIViewController {
                     self?.configureLabels()
                 case .shouldUpdateFont:
                     self?.configurefont()
-                    
                     self?.tableView.reloadData()
                 case .error(let error):
                     self?.presentError(error)
@@ -134,6 +131,24 @@ class MenuView: UIViewController {
                 undoActionWasDetected()
             }
         }
+    }
+    
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        
+        guard self.menuAccessedForCell == nil else {
+            if let activeCell = tableView.cellForRow(at: menuAccessedForCell!) as? MenuDictionaryCell {
+                coordinator.animate(alongsideTransition: { context in
+                    activeCell.activate(false)
+
+                }, completion: { [weak self] _ in
+                    self?.menuAccessedForCell = nil
+                })
+            }
+            return
+        }
+
+
     }
     
     private func undoActionWasDetected(){
@@ -161,6 +176,7 @@ class MenuView: UIViewController {
     private func configureTableView(){
         tableView.delegate = self
         tableView.dataSource = self
+        
         view.addSubview(tableView)
         
         NSLayoutConstraint.activate([
@@ -188,26 +204,11 @@ class MenuView: UIViewController {
         let rightButton = UIBarButtonItem(
             
             image: UIImage(systemName: "chart.bar")?.withConfiguration(UIImage.SymbolConfiguration(weight: UIFont.selectedFont.fontWeight.symbolWeight())),
-//            image: UIImage(systemName: "chart.bar")?.withConfiguration(UIImage.SymbolConfiguration(font: FontChangeManager.shared.currentFont().withSize(23))),
-            //                UIImage(systemName: "chart.bar")?.withConfiguration(UIImage.SymbolConfiguration(weight: .bold )),
             style: .plain,
             target: self,
             action: #selector(statButtonDidTap(sender:)))
         self.navigationItem.setRightBarButton(rightButton, animated: true)
 
-//        navigationItem.rightBarButtonItem?.image = UIImage(systemName: "chart.bar")?.withConfiguration(UIImage.SymbolConfiguration(font: FontChangeManager.shared.currentFont())).withTintColor(.label)
-//        let rightButton = UIBarButtonItem(
-//            image: UIImage(systemName: "chart.bar")?.withConfiguration(UIImage.SymbolConfiguration(font: FontChangeManager.shared.currentFont())).withTintColor(.label),
-//            style: .plain,
-//            target: self,
-//            action: #selector(statButtonDidTap(sender:)))
-//        self.navigationItem.setRightBarButton(rightButton, animated: true)
-////
-//        print(FontChangeManager.shared.currentFont())
-//        self.navigationController?.navigationBar.titleTextAttributes =
-//        [NSAttributedString.Key.font:            FontChangeManager.shared.currentFont().withSize(23),
-//         NSAttributedString.Key.foregroundColor: UIColor.label,
-//         NSAttributedString.Key.backgroundColor: UIColor.clear]
     }
     //MARK: Configuring and presenting VC's
     func pushAddDictionaryVC(){
@@ -271,14 +272,28 @@ extension MenuView: UITableViewDelegate, UITableViewDataSource{
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         viewModel.didSelectTableRowAt(section: indexPath.section)
     }
+        
+    func tableView(_ tableView: UITableView, didHighlightRowAt indexPath: IndexPath) {
+            if let cell = tableView.cellForRow(at: indexPath) {
+                UIView.animate(withDuration: 0.1, animations: {
+                    cell.transform = CGAffineTransform(scaleX: 0.97, y: 0.97)
+                })
+            }
+        }
+        
+        func tableView(_ tableView: UITableView, didUnhighlightRowAt indexPath: IndexPath) {
+            if let cell = tableView.cellForRow(at: indexPath) {
+                UIView.animate(withDuration: 0.1, animations: {
+                    cell.transform = CGAffineTransform.identity
+                })
+            }
+        }
 }
 //MARK: - Delegate for tutorial.
 extension MenuView: TutorialCellHintProtocol{
     func stopShowingHint() {
         if let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? MenuDictionaryCell{
             cell.activate(false)
-        } else {
-            print("failed")
         }
     }
     
@@ -325,11 +340,21 @@ extension MenuView: MenuCellDelegate{
             self?.viewModel.deleteDictionary(at: index)
         }
     
+        guard let sourceView = self.view,
+              let cellFrame = cell.superview?.convert(cell.frame, to: self.view) else {
+            return
+        }
+
+        //Defining center of the selected cell.
+        let tapLocation = CGPoint(x: cellFrame.midX, y: cellFrame.midY)
+
         let alertController = UIAlertController
             .alertWithAction(
                 alertTitle: "menu.deleteDictionary".localized,
                 action1Title: "system.cancel".localized,
-                action1Style: .cancel
+                action1Style: .cancel,
+                sourceView: sourceView,
+                locationOfTap: tapLocation
             )
         let delete = UIAlertAction(title: "system.delete".localized, style: .destructive) { _ in
             completion(cell)

@@ -122,7 +122,6 @@ class SearchViewCell: UITableViewCell {
         UIView.transition(with: wordLabel, duration: 0.5, options: [ .transitionCrossDissolve, .curveEaseOut] ) {
             self.wordLabel.numberOfLines = expand ? 0: 1
             self.setNeedsUpdateConstraints()
-            print("wordsLabel is changing")
             self.layoutIfNeeded()
             
         }

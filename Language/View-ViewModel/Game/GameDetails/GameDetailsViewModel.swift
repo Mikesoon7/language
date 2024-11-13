@@ -68,18 +68,18 @@ class GameDetailsViewModel{
     }
     
     ///Presenting alert to submit deletion.
-    func deleteWord(){
-        configureAlert(forDeletion: true)
+    func deleteWord(view: UIView?){
+        configureAlert(forDeletion: true, view: view)
     }
     
     ///Validate text and saving it dataModel.
-    func editWord(with text: String){
+    func editWord(with text: String, view: UIView?){
         guard text != currentText else {
             output.send(.shouldEndEditing)
             return
         }
         guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-            configureAlert(forDeletion: false )
+            configureAlert(forDeletion: false, view: view)
             return
         }
         
@@ -110,15 +110,16 @@ class GameDetailsViewModel{
     }
     
     ///Configures and send alert. Creates alert for edit, if delete = false.
-    private func configureAlert(forDeletion: Bool){
+    private func configureAlert(forDeletion: Bool, view: UIView?){
         let alert = UIAlertController
             .alertWithAction(
                 alertTitle: forDeletion
                 ? "gameDetails.deleteAlert.title".localized
                 : "gameDetails.emptyTextAlert.title".localized,
                 alertMessage: forDeletion
-                ? "gameDetails.emptyTextAlert.message".localized
-                : "gameDetails.deleteAlert.message".localized
+                ? "gameDetails.deleteAlert.message".localized
+                : "gameDetails.emptyTextAlert.message".localized,
+                sourceView: view
             )
         
         let confirm = UIAlertAction(title: "system.delete".localized, style: .destructive) { [weak self] _ in

@@ -79,7 +79,11 @@
 "details.title" = "Подробности";
 "details.randomize" = "В перемешку";
 "details.goal" = "Установить цель";
-"details.hideTranslation" = "Скрыть перевод";
+"details.showTranslation" = "Отображать перевод";
+"details.cardsOrder" = "Порядок карточек:";
+"details.cardsOrder.noraml" = "Обычный";
+"details.cardsOrder.random" = "Случайный";
+"details.cardsOrder.reverse" = "Обратный";
 "details.addWords" = "Добавить слова";
 "details.start" = "Начать";
 

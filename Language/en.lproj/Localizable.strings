@@ -79,7 +79,11 @@
 "details.title" = "Details";
 "details.randomize" = "Randomize cards";
 "details.goal" = "Set the goal";
-"details.hideTranslation" = "Hide transaltion";
+"details.showTranslation" = "Display translation";
+"details.cardsOrder" = "Cards order:";
+"details.cardsOrder.noraml" = "Normal";
+"details.cardsOrder.random" = "Random";
+"details.cardsOrder.reverse" = "Reverse";
 "details.addWords" = "Add new words";
 "details.start" = "Start";
 

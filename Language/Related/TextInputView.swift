@@ -8,7 +8,8 @@
 import UIKit
 
 protocol PlaceholderTextViewDelegate: AnyObject{
-    func textViewWillAppear()
+    func textViewDidBeginEditing()
+    func textViewDidEndEditing()
     func configurePlaceholderText() -> String?
 }
 
@@ -191,7 +192,11 @@ extension TextInputView: UITextViewDelegate{
         textView.setNeedsDisplay()
         //Showing button for keyboard dismissing
         guard let delegate = self.delegate else { return }
-        delegate.textViewWillAppear()
+        delegate.textViewDidBeginEditing()
+    }
+    func textViewDidEndEditing(_ textView: UITextView) {
+        guard let delegate = self.delegate else { return }
+        delegate.textViewDidEndEditing()
     }
     
     func textViewDidChange(_ textView: UITextView) {
@@ -223,7 +228,6 @@ class CustomTextView: UITextView{
     
     override open func paste(_ sender: Any?) {
         if let pasteboardText = UIPasteboard.general.string {
-            print(pasteboardText)
             let attributes = self.typingAttributes
             let attributedString = NSAttributedString(string: pasteboardText, attributes: attributes)
             

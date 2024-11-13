@@ -57,6 +57,17 @@ class CollectionViewLastCell: UICollectionViewCell {
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
+    let cardShadowTestView : UIView = {
+        let view = UIView()
+        view.backgroundColor = .clear
+        
+        view.layer.shadowOpacity = 0.1
+        view.layer.shadowRadius = 40.0
+        
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+
     
     private let scoreLabel : UILabel = {
         let label = UILabel()
@@ -102,15 +113,15 @@ class CollectionViewLastCell: UICollectionViewCell {
 
     //MARK: Subviews Configuration
     func configureCardView(){
-        self.contentView.addSubview(cardShadowView)
-        cardShadowView.addSubview(cardView)
+        self.contentView.addSubview(cardShadowTestView)
+        cardShadowTestView.addSubview(cardView)
         cardView.addSubviews(scoreLabel, finishButton)
         
         NSLayoutConstraint.activate([
-            cardShadowView.centerXAnchor.constraint(equalTo: self.contentView.centerXAnchor),
-            cardShadowView.centerYAnchor.constraint(equalTo: self.contentView.centerYAnchor),
-            cardShadowView.widthAnchor.constraint(equalTo: self.contentView.widthAnchor),
-            cardShadowView.heightAnchor.constraint(equalTo: self.contentView.heightAnchor ),
+            cardShadowTestView.centerXAnchor.constraint(equalTo: self.contentView.centerXAnchor),
+            cardShadowTestView.centerYAnchor.constraint(equalTo: self.contentView.centerYAnchor),
+            cardShadowTestView.widthAnchor.constraint(equalTo: self.contentView.widthAnchor),
+            cardShadowTestView.heightAnchor.constraint(equalTo: self.contentView.heightAnchor ),
                         
             cardView.centerXAnchor.constraint(equalTo: self.contentView.centerXAnchor),
             cardView.centerYAnchor.constraint(equalTo: self.contentView.centerYAnchor),

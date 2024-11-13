@@ -10,7 +10,7 @@ import Combine
 
 class SettingsViewModel{
     enum Output{
-        case needPresentAlertWith([UIAlertAction])
+        case needPresentAlertWith([UIAlertAction], IndexPath)
         case needPresentSeparatorsView
         case needUpdateLanguage
         case needUpdateFont
@@ -135,14 +135,14 @@ class SettingsViewModel{
                     self?.handleValueUpdateFor(newValue: .theme(option))
                 }))
             }
-            output.send(.needPresentAlertWith(alertOptions))
+            output.send(.needPresentAlertWith(alertOptions, indexPath))
         case .language(_):
             for option in AppLanguage.allCases{
                 alertOptions.append(UIAlertAction(title: option.value, style: .default, handler: { [weak self]_ in
                     self?.handleValueUpdateFor(newValue: .language(option))
                 }))
             }
-            output.send(.needPresentAlertWith(alertOptions))
+            output.send(.needPresentAlertWith(alertOptions, indexPath))
         case .font(_):
             output.send(.needPresentFontView)
         case .exceptions(_):

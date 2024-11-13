@@ -66,9 +66,7 @@ extension UIFont{
         ]
         
         for (key, value) in weightMapping {
-            print(key, value)
             if self.fontName.contains(key) {
-                print ("\(value) is the weight ")
                 return value
             }
         }
@@ -78,88 +76,12 @@ extension UIFont{
             return weight
         } else {
             for (key, value) in weightMapping {
-                print(key, value)
                 if self.fontFace.contains(key) {
-                    print ("\(value) is the weight ")
                     return value
                 }
             }
             return .regular
 
         }
-
-//        switch self.fontFace {
-//        case "UltraLight":
-//            return .ultraLight
-//        case "Thin":
-//            return .thin
-//        case "Light":
-//            return .light
-//        case "Regular":
-//            return .regular
-//        case "Medium":
-//            return .medium
-//        case "Semibold":
-//            return.semibold
-//        case "Bold":
-//            return .bold
-//        case "Heavy":
-//            return .heavy
-//        case "Black":
-//            return .black
-//        default:
-//            return .regular
-//        }
     }
-//    var fontWeightTest: UIImage.SymbolWeight {
-//        let weightMapping: [String: UIImage.SymbolWeight] = [
-//            "UltraLight": .ultraLight,
-//            "Thin": .thin,
-//            "Light": .light,
-//            "Regular": .regular,
-//            "Medium": .medium,
-//            "Semibold": .semibold,
-//            "Bold": .bold,
-//            "Heavy": .heavy,
-//            "Black": .black
-//        ]
-//        
-//        for (key, value) in weightMapping {
-//            print(key, value)
-//            if self.fontName.contains(key) {
-//                print ("\(value) is the weight ")
-//                return value
-//            }
-//        }
-//
-//        
-//        if let weight = weightMapping[self.fontFace] {
-//            return weight
-//        } else {
-//            for (key, value) in weightMapping {
-//                print(key, value)
-//                if self.fontFace.contains(key) {
-//                    print ("\(value) is the weight ")
-//                    return value
-//                }
-//            }
-//            return .unspecified
-//
-//        }
-//    }
-
-//        case .light:
-//            return .medium
-//            return .black
-//            return .bold
-//            return .heavy
-//            return .ultraLight
-//            return .semibold
-//            return .regular
-//            return .thin
-//            return .light
-////        case ""
-//        default: return .regular
-    
-
 }

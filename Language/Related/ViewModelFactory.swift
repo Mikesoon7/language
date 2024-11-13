@@ -55,12 +55,12 @@ final class ViewModelFactory{
     func configureExceptionViewModel() -> ExceptioonsViewModel{
         ExceptioonsViewModel(settingsModel: settingsModel)
     }
-    func configureGameViewmModel(dictionary: DictionariesEntity, isRandom: Bool, hideTranslation: Bool, selectedNumber: Int) -> GameViewModel{
+    func configureGameViewmModel(dictionary: DictionariesEntity, isRandom: Bool, isTwoSidesModeOn: Bool, selectedNumber: Int) -> GameViewModel{
         GameViewModel(dataModel: dataModel,
                       settingsModel: settingsModel,
                       dictionary: dictionary,
                       isRandom: isRandom,
-                      hideTranslation: hideTranslation,
+                      isOneSideMode: isTwoSidesModeOn,
                       selectedNumber: selectedNumber
         )
     }

@@ -79,7 +79,11 @@
 "details.title" = "Подробиці";
 "details.randomize" = "У перемішку";
 "details.goal" = "Встановити ціль";
-"details.hideTranslation" = "Приховати переклад";
+"details.showTranslation" = "Відображати переклад";
+"details.cardsOrder" = "Порядок карток:";
+"details.cardsOrder.noraml" = "Звичайний";
+"details.cardsOrder.random" = "Випадковий";
+"details.cardsOrder.reverse" = "Зворотний";
 "details.addWords" = "Додати слів";
 "details.start" = "Почати";
 

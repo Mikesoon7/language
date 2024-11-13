@@ -415,15 +415,11 @@ class StatisticView: UIViewController {
     //MARK: System
     ///Checks if end date greater than begin date. If not, update values with active picker as primary.
     func validateDatePickerInput(sender: UIDatePicker){
-        print("validate")
         if leftDatePicker.date > rightDatePicker.date {
-            print("needed")
             if sender === rightDatePicker {
-                print("completed")
                 leftDatePicker.date = sender.date
                 leftPickerView.updateSubtitleLabel(with: convertDateToString(sender.date))
             } else {
-                print("completed")
                 rightDatePicker.date = sender.date
                 rightPickerView.updateSubtitleLabel(with: convertDateToString(sender.date))
             }

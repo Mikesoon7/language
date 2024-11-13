@@ -16,9 +16,9 @@ extension DictionariesSettings {
         return NSFetchRequest<DictionariesSettings>(entityName: "DictionariesSettings")
     }
 
-    @NSManaged public var number: Int64
-    @NSManaged public var oneSideMode: Bool
-    @NSManaged public var random: Bool
+    @NSManaged public var selectedNumber: Int64
+    @NSManaged public var isOneSideMode: Bool
+    @NSManaged public var isRandom: Bool
     @NSManaged public var dictionary: DictionariesEntity?
 
 }

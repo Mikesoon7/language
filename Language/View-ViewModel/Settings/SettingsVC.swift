@@ -46,7 +46,6 @@ class SettingsVC: UIViewController {
         configureTableView()
         configureLabels()
     }
-    
         
     //MARK: - StyleChange Responding
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -66,8 +65,8 @@ class SettingsVC: UIViewController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] output in
                 switch output{
-                case .needPresentAlertWith(let actions):
-                    self?.presentAlertWith(action: actions)
+                case .needPresentAlertWith(let actions, let index):
+                    self?.presentAlertWith(action: actions, indexPath: index)
                 case .needUpdateRowAt(let index):
                     self?.tableView.reloadRows(at: [index], with: .fade)
                 case .needUpdateFont:
@@ -124,14 +123,42 @@ class SettingsVC: UIViewController {
         self.present(vc, animated: true)
     }
     //Attaching cancel action to passed action.
-    private func presentAlertWith(action: [UIAlertAction]){
+    private func presentAlertWith(action: [UIAlertAction], indexPath: IndexPath) {
         let alertMessage = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         let cancelAction = UIAlertAction(title: "system.cancel".localized, style: .cancel)
-        action.forEach({alertMessage.addAction($0)})
+        action.forEach { alertMessage.addAction($0) }
         alertMessage.addAction(cancelAction)
+
+        guard let cell = tableView.cellForRow(at: indexPath),
+              let cellFrame = cell.superview?.convert(cell.frame, to: self.view) else {
+            return
+        }
+
+        //Defining center of the selected cell.
+        let tapLocation = CGPoint(x: cellFrame.midX, y: cellFrame.midY)
+
+        // Blank for the future iPad support.
+        if let popoverController = alertMessage.popoverPresentationController {
+            popoverController.sourceView = self.view
+            popoverController.sourceRect = CGRect(x: tapLocation.x, y: tapLocation.y, width: 1, height: 1)
+            popoverController.permittedArrowDirections = .left
+        }
+
         self.present(alertMessage, animated: true)
     }
-    
+
+//    private func presentAlertWith(action: [UIAlertAction]){
+//        let alertMessage = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+//        let cancelAction = UIAlertAction(title: "system.cancel".localized, style: .cancel)
+//        action.forEach({alertMessage.addAction($0)})
+//        alertMessage.addAction(cancelAction)
+////        if UIDevice.current.userInterfaceIdiom == .pad {
+////            let presentationController = UIPresentationController(presentedViewController: self, presenting: alertMessage)
+////            presentationController.
+////        }
+//        self.present(alertMessage, animated: true)
+//    }
+//    
     private func configureLabels(){
         navigationItem.title = "settings.title".localized
         

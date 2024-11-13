@@ -66,7 +66,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             image: UIImage(systemName: "books.vertical"),
             selectedImage: UIImage(systemName: "books.vertical.fill")?.withTintColor(.black))
         let secondVC = SearchView(factory: viewModelFactory)
-        let secondNC = UINavigationController(rootViewController: secondVC)
+        let secondNC = CustomNavigationController(rootViewController: secondVC)
         secondNC.tabBarItem = UITabBarItem(
             title: LanguageChangeManager.shared.localizedString(forKey: "tabBar.search"),
             image: UIImage(systemName: "magnifyingglass"),

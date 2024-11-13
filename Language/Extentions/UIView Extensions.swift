@@ -80,19 +80,25 @@ extension UIView {
         let topStroke = CAShapeLayer()
         let path = UIBezierPath()
         let y = {
-            if vc.navigationController != nil {
-                return vc.view.safeAreaInsets.top
+            if let navigationBounds = vc.navigationController?.navigationBar.bounds {
+                return navigationBounds.maxY
             } else {
                 return 0
             }
         }()
+        let bounds = UIWindow().bounds
         path.move(to: CGPoint(x: 0, y: y ))
-        path.addLine(to: CGPoint(x: vc.view.bounds.maxX, y: y))
+        path.addLine(to: CGPoint(
+            x: max(bounds.width, bounds.height),
+            y: y)
+        )
+        topStroke.name = "yopStroke"
+
         topStroke.path = path.cgPath
-        topStroke.lineWidth = 0.8
+        topStroke.lineWidth = 1
         topStroke.strokeColor = UIColor.label.cgColor
         topStroke.fillColor = UIColor.clear.cgColor
-        topStroke.opacity = 0.8
+        topStroke.opacity = 1
         
         return topStroke
     }
@@ -102,11 +108,12 @@ extension UIView {
         path.addLine(to: CGPoint(x: x, y: y))
         
         let stroke = CAShapeLayer()
+        stroke.name = "Stroke"
         stroke.path = path.cgPath
         stroke.lineWidth = 1
         stroke.strokeColor = UIColor.label.cgColor
         stroke.fillColor = UIColor.clear.cgColor
-        stroke.opacity = 0.8
+        stroke.opacity = 1
         
         return stroke
 
@@ -115,21 +122,28 @@ extension UIView {
     //MARK: Create bottom stroke offset by tabBar controller.
     func addBottomStroke(vc: UIViewController) -> CAShapeLayer{
         let path = UIBezierPath()
-        let y = {
-            if vc.tabBarController?.tabBar != nil{
-                return vc.tabBarController!.tabBar.frame.minY
-            } else {
-                return 0
-            }
-        }()
+        let y = 0.0
+//        {
+//            if vc.tabBarController?.tabBar != nil{
+//                return vc.tabBarController!.tabBar.frame.minY
+//            } else {
+//                return 0
+//            }
+//        }()
+        let bounds = UIWindow().bounds
+
         path.move(to: CGPoint(x: 0, y: y))
-        path.addLine(to: CGPoint(x: vc.view.bounds.maxX, y: y))
+        path.addLine(to: CGPoint(
+            x: max(bounds.width, bounds.height),
+            y: y)
+        )
         let stroke = CAShapeLayer()
+        stroke.name = "bottom Stroke"
         stroke.path = path.cgPath
         stroke.lineWidth = 1
         stroke.strokeColor = UIColor.label.cgColor
         stroke.fillColor = UIColor.clear.cgColor
-        stroke.opacity = 0.8
+        stroke.opacity = 1
         
         return stroke
     }
