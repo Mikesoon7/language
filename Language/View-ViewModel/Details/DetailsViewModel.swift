@@ -29,7 +29,7 @@ class DetailsViewModel{
     
     private lazy var selectedNumber: Int = min(numberOfCards, cardsDivider)
     
-    private var random: Bool
+    private var selectedOrder: DictionariesSettings.CardOrder
     private var hideTransaltion: Bool
     private var selectedDisplayNumber : Int
     
@@ -41,7 +41,7 @@ class DetailsViewModel{
         self.numberOfCards = Int(dictionary.numberOfCards)
         
         let dictionaryDetails = model.fetchSettings(for: dictionary)
-        self.random = dictionaryDetails?.isRandom ?? false
+        self.selectedOrder = dictionaryDetails?.cardOrder ?? .normal
         self.hideTransaltion = dictionaryDetails?.isOneSideMode ?? false
         self.selectedDisplayNumber = Int(dictionaryDetails?.selectedNumber ?? dictionary.numberOfCards)
         
@@ -97,8 +97,8 @@ class DetailsViewModel{
         }
     }
     //MARK: Switch related
-    func isRandomOn() -> Bool {
-        return self.random
+    func selectedCardsOrder() -> DictionariesSettings.CardOrder {
+        return self.selectedOrder
     }
     func isHideTranslationOn() -> Bool {
         return hideTransaltion
@@ -107,21 +107,21 @@ class DetailsViewModel{
         return selectedDisplayNumber
     }
     //MARK: Modify details related to the dictionary.
-    func saveDetails(isRandom: Bool, isOneSideMode: Bool) {
+    func saveDetails(orderSelection: DictionariesSettings.CardOrder, isOneSideMode: Bool) {
         do {
-            try model.accessSettings(for: dictionary, with: isRandom, numberofCards: Int64(selectedDisplayNumber), oneSideMode: isOneSideMode)
+            try model.accessSettings(for: dictionary, orderSelection: orderSelection, numberofCards: Int64(selectedDisplayNumber), oneSideMode: isOneSideMode)
         } catch {
             output.send(.error(error))
         }
     }
 
-    func saveDetailsTest(isRandom: Bool, isOneSideMode: Bool) {
-        do {
-            try model.accessSettings(for: dictionary, with: isRandom, numberofCards: Int64(selectedDisplayNumber), oneSideMode: isOneSideMode)
-        } catch {
-            output.send(.error(error))
-        }
-    }
+//    func saveDetailsTest(isRandom: Bool, isOneSideMode: Bool) {
+//        do {
+//            try model.accessSettings(for: dictionary, with: isRandom, numberofCards: Int64(selectedDisplayNumber), oneSideMode: isOneSideMode)
+//        } catch {
+//            output.send(.error(error))
+//        }
+//    }
 
     func configureTextPlaceholder() -> String{
         return "viewPlaceholderWord".localized + "  " + "viewPlaceholderMeaning".localized

@@ -62,15 +62,20 @@ class MainGameVC: UIViewController{
     private var collectionView: UICollectionView!
     
     //MARK: Inherited and required
-    required init(viewModelFactory: ViewModelFactory, dictionary: DictionariesEntity, isRandom: Bool, hideTransaltion: Bool, selectedNumber: Int) {
+    required init(viewModelFactory: ViewModelFactory, dictionary: DictionariesEntity, selectedOrder: DictionariesSettings.CardOrder, hideTransaltion: Bool, selectedNumber: Int, selectedTime: Int? = nil) {
         self.viewModelFactory = viewModelFactory
         self.viewModel = viewModelFactory.configureGameViewmModel(
             dictionary: dictionary,
-            isRandom: isRandom,
+            selectedOrder: selectedOrder,
             isTwoSidesModeOn: hideTransaltion,
-            selectedNumber: selectedNumber)
+            selectedNumber: selectedNumber,
+            selectedTime: selectedTime)
+        
         self.isOneSidesMode = hideTransaltion
         super.init(nibName: nil, bundle: nil)
+        if selectedTime != nil {
+            navigationItem.setRightBarButton(UIBarButtonItem(title: "\(selectedTime!)", image: nil, target: nil, action: nil), animated: true)
+        }
     }
     required init?(coder: NSCoder) {
         fatalError("init?(coder: NSCoder) wasn't imported")

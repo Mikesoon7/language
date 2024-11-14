@@ -10,7 +10,7 @@ import CoreData
 
 
 protocol SettingsManaging{
-    func accessSettings(for dictionary: DictionariesEntity, with random: Bool, numberofCards: Int64, oneSideMode: Bool) throws
+    func accessSettings(for dictionary: DictionariesEntity, orderSelection order: DictionariesSettings.CardOrder, numberofCards: Int64, oneSideMode: Bool) throws
     func fetchSettings(for dictionary: DictionariesEntity) -> DictionariesSettings?
 }
 
@@ -33,13 +33,13 @@ extension CoreDataHelper: SettingsManaging {
         }
     }
 
-    func accessSettings(for dictionary: DictionariesEntity, with random: Bool, numberofCards: Int64, oneSideMode: Bool) throws {
+    func accessSettings(for dictionary: DictionariesEntity, orderSelection order: DictionariesSettings.CardOrder, numberofCards: Int64, oneSideMode: Bool) throws {
         guard let settings = fetchSettings(for: dictionary) else {
             do {
                 let settings = try createNewSettings(for: dictionary)
                 settings.selectedNumber = numberofCards
                 settings.isOneSideMode = oneSideMode
-                settings.isRandom = random
+                settings.cardOrder = order
                 try saveContext()
             } catch {
                 throw error
@@ -48,7 +48,7 @@ extension CoreDataHelper: SettingsManaging {
         }
         settings.selectedNumber = numberofCards
         settings.isOneSideMode = oneSideMode
-        settings.isRandom = random
+        settings.cardOrder = order
 
         do {
             try saveContext()
@@ -64,7 +64,7 @@ extension CoreDataHelper: SettingsManaging {
         let settings = DictionariesSettings(context: context)
         settings.dictionary = dictionary
         settings.selectedNumber = dictionary.numberOfCards
-        settings.isRandom = false
+        settings.cardOrder = .normal
         settings.isOneSideMode = false
         
         do {

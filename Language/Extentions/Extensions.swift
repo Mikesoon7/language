@@ -140,19 +140,21 @@ extension UIAlertController {
                                 alertMessage: String? = nil,
                                 alertStyle: UIAlertController.Style = .actionSheet,
                                 action1Title: String = "", 
+                                action1Handler: ((UIAlertAction) -> (Void))? = (.none),
                                 action1Style: UIAlertAction.Style = .default,
-                                action2Title: String = "", 
+                                action2Title: String = "",
+                                action2Handler: ((UIAlertAction) -> (Void))? = (.none),
                                 action2Style: UIAlertAction.Style = .default,
                                 sourceView: UIView? = nil,
                                 locationOfTap: CGPoint? = nil) -> UIAlertController{
         let alert = UIAlertController(title: alertTitle, message: alertMessage, preferredStyle: alertStyle)
         if action1Title != ""{
-            let action = UIAlertAction(title: action1Title, style: action1Style)
+            let action = UIAlertAction(title: action1Title, style: action1Style, handler: action1Handler)
             action.setValue(UIColor.label, forKey: "titleTextColor")
             alert.addAction(action)
         }
         if action2Title != ""{
-            let action = UIAlertAction(title: action2Title, style: action2Style)
+            let action = UIAlertAction(title: action2Title, style: action2Style, handler: action2Handler)
             action.setValue(UIColor.label, forKey: "titleTextColor")
             alert.addAction(action)
         }

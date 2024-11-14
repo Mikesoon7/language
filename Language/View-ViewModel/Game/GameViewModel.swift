@@ -23,21 +23,25 @@ class GameViewModel{
     private var dictionary: DictionariesEntity
     private var words: [WordsEntity] = []
     
-    private var isRandom: Bool
+//    private var isRandom: Bool
+    private var selectedCardsOrder: DictionariesSettings.CardOrder
     private var isOneSideMode: Bool
     private var initialNumberOfCards = Int()
     private var selectedNumberOfWords: Int
+    
+    private var selectedTime: Int?
     
     var output = PassthroughSubject<Output, Never>()
     private var cancellable = Set<AnyCancellable>()
     
     //MARK: Inherited
-    init(dataModel: Dictionary_WordsManager, settingsModel: UserSettingsStorageProtocol, dictionary: DictionariesEntity, isRandom: Bool, isOneSideMode: Bool, selectedNumber: Int){
+    init(dataModel: Dictionary_WordsManager, settingsModel: UserSettingsStorageProtocol, dictionary: DictionariesEntity, selectedOrder: DictionariesSettings.CardOrder, isOneSideMode: Bool, selectedNumber: Int, selectedTime: Int?){
         self.dataModel = dataModel
         self.dictionary = dictionary
-        self.isRandom = isRandom
+        self.selectedCardsOrder = selectedOrder
         self.isOneSideMode = isOneSideMode
         self.selectedNumberOfWords = selectedNumber
+        self.selectedTime = selectedTime
         configureData()
         
         NotificationCenter.default.addObserver(self, selector: #selector(languageDidUpdate(sender:)), name: .appLanguageDidChange,object: nil
@@ -83,15 +87,29 @@ class GameViewModel{
         }
 
         self.initialNumberOfCards = words.count
-        self.words = prepareWords(words: words, isRandom: isRandom, restrictBy: selectedNumberOfWords)
+        if selectedTime != nil {
+            self.words = prepareWords(words: words, selectedOrder: selectedCardsOrder, restrictBy: selectedNumberOfWords, selectedTime: selectedTime)
+        } else {
+            self.words = prepareWords(words: words,
+                                      selectedOrder: selectedCardsOrder,
+                                      restrictBy: selectedNumberOfWords)
+        }
+        
     }
 
     ///Creating and return  new array after applying passed random value and restriction by passed number
-    private func prepareWords(words: [WordsEntity], isRandom: Bool, restrictBy number: Int) -> [WordsEntity]{
+    private func prepareWords(words: [WordsEntity], selectedOrder: DictionariesSettings.CardOrder, restrictBy number: Int, selectedTime: Int? = nil) -> [WordsEntity]{
         var wordsArray = words
-        if isRandom {
-            wordsArray = wordsArray.shuffled()
+        switch selectedOrder {
+        case .normal:   wordsArray = words
+        case .random:   wordsArray = words.shuffled()
+        case .reverse:  wordsArray = words.reversed()
         }
+//        if selectedTime != nil {
+//            return wordsArray + wordsArray + wordsArray + wordsArray + wordsArray + wordsArray + wordsArray + wordsArray + wordsArray + wordsArray + wordsArray 
+//        } else {
+//            return Array(wordsArray.prefix(upTo: number))
+//        }
         return Array(wordsArray.prefix(upTo: number))
     }
     

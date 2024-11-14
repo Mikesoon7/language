@@ -9,7 +9,9 @@
 import UIKit
 import Combine
 
-
+protocol Presenter{
+    func startTheGame(vc: UIViewController)
+}
 //MARK: - Custom Segment control with adjustable corner radius
 class UICustomSegmentedControl: UISegmentedControl {
     
@@ -53,11 +55,11 @@ class DetailsView: UIViewController {
 //        return label
 //    }()
 //    
-    private let randomizeSwitch : UISwitch = {
-        let switcher = UISwitch()
-        switcher.setUpCustomSwitch(isOn: false)
-        return switcher
-    }()
+//    private let randomizeSwitch : UISwitch = {
+//        let switcher = UISwitch()
+//        switcher.setUpCustomSwitch(isOn: false)
+//        return switcher
+//    }()
     
     //View to define number of cards
     private let goalView : UIView = {
@@ -172,6 +174,7 @@ class DetailsView: UIViewController {
     
 //    //MARK: Local variables.
     private var randomIsOn: Bool = false
+    private var selectedCardsOrder: DictionariesSettings.CardOrder = .normal
     private var hideTransaltionIsOn: Bool = false
     
 
@@ -234,7 +237,7 @@ class DetailsView: UIViewController {
     }
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        viewModel?.saveDetails(isRandom: randomizeSwitch.isOn, isOneSideMode: isOneSideModeSwitch.isOn)
+        viewModel?.saveDetails(orderSelection: DictionariesSettings.CardOrder(rawValue: Int64(self.testSegwayView.selectedSegmentIndex)) ?? .normal  , isOneSideMode: isOneSideModeSwitch.isOn)
     }
     
     //MARK: - StyleChange Responding
@@ -376,7 +379,8 @@ class DetailsView: UIViewController {
             testSegwayView.centerXAnchor.constraint(equalTo: settingView.centerXAnchor)
 
         ])
-        randomizeSwitch.addTarget(self, action: #selector(randomSwitchToggle(sender:)), for: .valueChanged)
+//        randomizeSwitch.addTarget(self, action: #selector(randomSwitchToggle(sender:)), for: .valueChanged)
+        testSegwayView.addTarget(self, action: #selector(orderSegwayToggle(sender: )), for: .valueChanged)
         isOneSideModeSwitch.addTarget(self, action: #selector(hideTransaltionSwitchToggle(sender:)), for: .valueChanged)
 
     }
@@ -702,7 +706,8 @@ class DetailsView: UIViewController {
     
     //MARK: - Test
     func retrieveDetailsData(){
-        self.randomizeSwitch.isOn = viewModel?.isRandomOn() ?? false
+        self.selectedCardsOrder = viewModel?.selectedCardsOrder() ?? .normal
+        self.testSegwayView.selectedSegmentIndex = Int(selectedCardsOrder.rawValue)
         self.isOneSideModeSwitch.isOn = viewModel?.isHideTranslationOn() ?? false
     
         picker.selectRow(viewModel?.selectedRowForPicker() ?? 1, inComponent: 0, animated: true)
@@ -758,10 +763,10 @@ class DetailsView: UIViewController {
     }
     //Initializing
     func presentMainGameViewWith(dictionary: DictionariesEntity, selectedNumber: Int){
-        let random = viewModel?.isRandomOn()
+//        let selectedOrder = viewModel?.selectedCardsOrder()
         let number = viewModel?.selectedNumberOfCards()
-        let hide = viewModel?.isHideTranslationOn()
-        let vc = MainGameVC(viewModelFactory: viewModelFactory, dictionary: dictionary, isRandom:/* random ??*/ self.randomizeSwitch.isOn, hideTransaltion: /*hide ??*/ self.isOneSideModeSwitch.isOn, selectedNumber: number ?? selectedNumber)
+//        let hide = viewModel?.isHideTranslationOn()
+        let vc = MainGameVC(viewModelFactory: viewModelFactory, dictionary: dictionary, selectedOrder: selectedCardsOrder, hideTransaltion: /*hide ??*/ self.isOneSideModeSwitch.isOn, selectedNumber: number ?? selectedNumber)
         self.navigationController?.pushViewController(vc, animated: true)
     }
     
@@ -769,14 +774,17 @@ class DetailsView: UIViewController {
 //MARK: - Actions
 extension DetailsView{
     @objc func addNavButtonTap(sender: UIBarButtonItem){
-        let vc = AddWordsView(factory: self.viewModelFactory, dictionary: viewModel?.dictionary ?? DictionariesEntity())
-        vc.view.backgroundColor = .systemBackground
+        let vc = AddWordsPartitialController(factory: self.viewModelFactory, dictionary: viewModel?.dictionary ?? DictionariesEntity())
         present(vc, animated: true)
     }
 
     @objc func clockedSession(sender: UIBarButtonItem){
-        let vc = TimedDetailView()
-        present(vc, animated: true)
+        let vc = TimedDetailView(viewModelFactory: self.viewModelFactory, viewModel: self.viewModel, delegate: self)
+        self.present(vc, animated: true)
+    }
+    
+    @objc func orderSegwayToggle(sender: UISegmentedControl){
+        selectedCardsOrder = DictionariesSettings.CardOrder(rawValue: Int64(sender.selectedSegmentIndex)) ?? .normal
     }
 
     @objc func randomSwitchToggle(sender: UISwitch){
@@ -841,5 +849,10 @@ extension DetailsView: PlaceholderTextViewDelegate{
     
     func configurePlaceholderText() -> String? {
         viewModel?.configureTextPlaceholder()
+    }
+}
+extension DetailsView: Presenter {
+    func startTheGame(vc: UIViewController) {
+        self.navigationController?.pushViewController(vc, animated: true)
     }
 }
