@@ -4,6 +4,7 @@
 //
 //  Created by Star Lord on 13/06/2023.
 //
+//  REFACTORING STATE:  CHECKED
 
 import UIKit
 import Combine
@@ -15,41 +16,41 @@ class EditView: UIViewController {
     private var viewModelFactory: ViewModelFactory
     private var cancellables = Set<AnyCancellable>()
         
-    private lazy var layoutManager = HighlightLayoutManager(textInsets: textInsets)
-    private let textContainer = NSTextContainer()
-    private let textStorage = NSTextStorage()
-
     private var isSearching = false
     private var textViewShouldBecomeActive = false
     private var searchViewShouldBecomeActive = false
     
     //MARK: - Views
     private lazy var customSearchToolBar: CustomSearchToolBar = {
-        let view = CustomSearchToolBar(textView: textView, layoutManager: layoutManager)
+        let view = CustomSearchToolBar(textView: textInputView.textView, layoutManager: textInputView.layoutManager)
         view.translatesAutoresizingMaskIntoConstraints = false
         view.alpha = 0
         return view
     }()
 
-    lazy var textView: CustomTextView = {
-        let view = CustomTextView(frame: .zero, textContainer: textContainer)
-        view.textContainerInset = textInsets
-        view.allowsEditingTextAttributes = true
-        view.textColor = .label
-        view.backgroundColor = .systemBackground
-        view.font = .selectedFont.withSize(20)
-        view.alwaysBounceVertical = true
-        view.textContainer.lineBreakMode = .byWordWrapping
-        view.translatesAutoresizingMaskIntoConstraints = false
+    lazy var textInputView: TextInputView = {
+        let view = TextInputView(frame: .zero,
+                                 delegate: self,
+                                 textContainerInsets: textInsets )
+//        view.textView.textContainerInset = textInsets
+        view.textView.allowsEditingTextAttributes = true
+        view.textView.textColor = .label
+        view.textView.backgroundColor = .systemBackground
+        view.textView.font = .selectedFont.withSize(20)
+        view.layer.cornerRadius = 0
+        view.textView.alwaysBounceVertical = true
+        view.textView.textContainer.lineBreakMode = .byWordWrapping
+        view.textView.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
 
-    private let textField: UITextField = {
+    private lazy var textField: UITextField = {
         let field = UITextField()
         field.borderStyle = .none
         field.backgroundColor = .clear
         field.textColor = .label
         
+        field.delegate = self
         field.font = .selectedFont.withSize(23)
         field.adjustsFontSizeToFitWidth = true
         
@@ -79,7 +80,6 @@ class EditView: UIViewController {
         super.viewDidLoad()
         bind()
         configureController()
-        configureTextField()
         configureTextView()
         configureSearchView()
         configureNavBar()
@@ -99,9 +99,9 @@ class EditView: UIViewController {
 
     }
     deinit {
-//        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
         NotificationCenter.default.removeObserver(self)
     }
+    
     //MARK: Binding View and ViewModel
     private func bind(){
         viewModel.$data
@@ -118,7 +118,7 @@ class EditView: UIViewController {
                 case .shouldPresentData(let parsedDictionary):
                     self?.configure(with: parsedDictionary)
                 case .shouldPresentError(let error):
-                    self?.presentError(error)
+                    self?.presentError(error, sourceView: self?.view)
                 case .shouldPresentAlert(let alert):
                     self?.present(alert, animated: true)
                 case .shouldUpdateLabels:
@@ -147,55 +147,61 @@ class EditView: UIViewController {
     ///Assigning recieved data to text view and field.
     private func configure(with data: ParsedDictionary){
         self.textField.text = data.name
-        self.textView.text = data.text
+        self.textInputView.textView.text = data.text
     }
     
     //MARK: Subviews SetUp
     private func configureTextView(){
-        layoutManager.addTextContainer(textContainer)
-        textStorage.addLayoutManager(layoutManager)
-
-        textView.delegate = self
-                
-        view.addSubview(textView)
+        view.addSubview(textInputView)
         
         NSLayoutConstraint.activate([
-            textView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            textView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
-            textView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-            textView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            textInputView.topAnchor.constraint(
+                equalTo: view.safeAreaLayoutGuide.topAnchor),
+            textInputView.leadingAnchor.constraint(
+                equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            textInputView.bottomAnchor.constraint(
+                equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            textInputView.trailingAnchor.constraint(
+                equalTo: view.safeAreaLayoutGuide.trailingAnchor),
         ])
     }
     func configureSearchView(){
         view.addSubview(customSearchToolBar)
         NSLayoutConstraint.activate([
-            customSearchToolBar.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor),
-            customSearchToolBar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            
-            customSearchToolBar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            
-            customSearchToolBar.heightAnchor.constraint(equalToConstant: 44)
+            customSearchToolBar.bottomAnchor.constraint(
+                equalTo: view.keyboardLayoutGuide.topAnchor),
+            customSearchToolBar.leadingAnchor.constraint(
+                equalTo: view.leadingAnchor),
+            customSearchToolBar.trailingAnchor.constraint(
+                equalTo: view.trailingAnchor),
+            customSearchToolBar.heightAnchor.constraint(
+                equalToConstant: 44)
             
         ])
     }
     
-    private func configureTextField(){
-        textField.delegate = self
-        
-        NSLayoutConstraint.activate([
-            textField.widthAnchor.constraint(equalToConstant: view.bounds.width * 0.35),
-            textField.heightAnchor.constraint(equalToConstant: navigationController?.navigationBar.bounds.height ?? 30)
-        ])
-        
-    }
     private func configureNavBar(){
-        self.navigationItem.titleView = textField
-        
+        textField.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+        textField.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+
+        let containerView = UIView()
+        containerView.addSubview(textField)
+        textField.delegate = self
+        textField.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            textField.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
+            textField.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
+            textField.topAnchor.constraint(equalTo: containerView.topAnchor),
+            textField.bottomAnchor.constraint(equalTo: containerView.bottomAnchor),
+        ])
+
+        navigationItem.titleView = containerView
+            
         self.saveButton = UIBarButtonItem(title: "system.save".localized, style: .done, target: self, action: #selector(saveButTap(sender:)))
         self.doneButton = UIBarButtonItem(title: "system.done".localized, style: .done, target: self, action: #selector(doneButTap(sender:)))
         self.searchButton = UIBarButtonItem(barButtonSystemItem: .search, target: self, action: #selector(searchButDidTap(sender: )))
 
-        self.navigationItem.rightBarButtonItems = [saveButton]
+        self.navigationItem.rightBarButtonItems = [ searchButton, saveButton ]
     }
     
     ///Assigning string values to labels.
@@ -203,45 +209,48 @@ class EditView: UIViewController {
         saveButton.title = "system.save".localized
         doneButton.title = "system.done".localized
 
-        textView.isTextUpdateRequired = true
+        textInputView.updatePlaceholder()
         customSearchToolBar.configureLabels()
     }
     private func updateFont(){
         textField.font = .selectedFont.withSize(23)
-        textView.font = .selectedFont.withSize(20)
+        textInputView.textView.font = .selectedFont.withSize(20)
     }
     
     //MARK: Activate search fucntionality
     /// Changing searchView appearence.
     private func changeSearchSessionState(activate: Bool){
-        textView.inputAccessoryView = activate ? nil : textView.customToolBar
-        textView.reloadInputViews()
+        textInputView.textView.inputAccessoryView = activate ? nil : textInputView.customAccessoryView
+        textInputView.textView.reloadInputViews()
         
         UIView.animate(withDuration: 0.5) { [weak self] in
             self?.customSearchToolBar.alpha = activate ? 1 : 0
         }
         
         if activate {
+            self.navigationItem.rightBarButtonItems = [searchButton, doneButton]
+
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1, qos: .background, execute: {
                 self.customSearchToolBar.beginSearchSession()
             })
         } else {
+            
             customSearchToolBar.endSearchSession()
-            textView.backgroundColor = .systemBackground
+            textInputView.textView.backgroundColor = .systemBackground
         }
         isSearching = activate
     }
     //MARK: Error Responding
     /// Defines error range and tells layout manager to draw glyph for it
     private func higlightErrorFor(_ word: String){
-        guard let text = self.textView.text, let range = text.range(of: word, options: .caseInsensitive, range: text.startIndex..<text.endIndex) else   {
+        guard let text = self.textInputView.textView.text, let range = text.range(of: word, options: .caseInsensitive, range: text.startIndex..<text.endIndex) else   {
             return
         }
         
         let NSRAnge = NSRange(range, in: text)
-        self.textView.scrollRangeToVisible(NSRAnge)
-        self.layoutManager.errorRange = NSRAnge
-        self.textView.setNeedsDisplay()
+        self.textInputView.textView.scrollRangeToVisible(NSRAnge)
+        self.textInputView.layoutManager.errorRange = NSRAnge
+        self.textInputView.textView.setNeedsDisplay()
         
 
         
@@ -252,21 +261,22 @@ class EditView: UIViewController {
 extension EditView {
     ///Calling update methods and passing current text values.
     @objc private func saveButTap(sender: Any){
+        guard let text = textInputView.validateText() else { return }
         let name = textField.text
-        let text = textView.text
+
         viewModel.updateDictionaryWith(name: name, text: text)
     }
     
     ///Finishes current first responder session.
     @objc private func doneButTap(sender: Any){
         guard !isSearching else {
-            textView.becomeFirstResponder()
+            textInputView.textView.becomeFirstResponder()
             return
         }
         
-        self.navigationItem.rightBarButtonItems = [saveButton]
-        if textView.isFirstResponder{
-            textView.resignFirstResponder()
+        self.navigationItem.rightBarButtonItems = [searchButton, saveButton]
+        if textInputView.textView.isFirstResponder {
+            textInputView.textView.resignFirstResponder()
         } else if textField.isFirstResponder{
             textField.resignFirstResponder()
         }
@@ -276,15 +286,15 @@ extension EditView {
         if let userInfo = sender.userInfo,
            let keyboardEndFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
             let convertedEndFrame = view.convert(keyboardEndFrame, from: view.window)
-            let overlap = textView.frame.maxY - convertedEndFrame.minY
+            let overlap = textInputView.frame.maxY - convertedEndFrame.minY
             
             if overlap > 0 {
-                textView.contentInset.bottom = overlap
+                textInputView.textView.contentInset.bottom = overlap
             } else {
-                textView.contentInset.bottom = 0
+                textInputView.textView.contentInset.bottom = 0
             }
             
-            textView.scrollIndicatorInsets = textView.contentInset
+            textInputView.textView.scrollIndicatorInsets = textInputView.textView.contentInset
         }
     }
     ///Creating custom toolBar woth SearchBar. Attaching as textViews inputAccessory, and making searchBar first respodnder
@@ -292,9 +302,10 @@ extension EditView {
         guard !isSearching else { return }
         changeSearchSessionState(activate: true)
     }
+    
     @objc func appDidEnterBackground(sender: Notification){
-        if textView.isFirstResponder {
-            textView.resignFirstResponder()
+        if textInputView.textView.isFirstResponder {
+            textInputView.textView.resignFirstResponder()
             textViewShouldBecomeActive = true
         } else if customSearchToolBar.isFirstResponder() {
             customSearchToolBar.enterBackgroundState()
@@ -306,34 +317,12 @@ extension EditView {
             customSearchToolBar.beginSearchSession()
             searchViewShouldBecomeActive = false
         } else if textViewShouldBecomeActive {
-            textView.becomeFirstResponder()
+            textInputView.textView.becomeFirstResponder()
             textViewShouldBecomeActive = false
         }
     }
 
     
-}
-
-//MARK: - TextViewDelegate
-extension EditView: UITextViewDelegate{
-    ///Forcing layout manager to update existing glyphs.
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        if isSearching {
-            textView.setNeedsDisplay()
-        }
-    }
-    
-    ///Reloading input accessory view, finishing search session or cleaning error glyph.
-    func textViewDidBeginEditing(_ textView: UITextView) {
-        if isSearching {
-            changeSearchSessionState(activate: false)
-        } else if layoutManager.errorRange != nil {
-            layoutManager.errorRange = nil
-            textView.setNeedsDisplay()
-        }
-        self.navigationItem.rightBarButtonItems = [doneButton, searchButton]
-        
-    }
 }
 
 //MARK: - TextFieldDelegate
@@ -344,7 +333,7 @@ extension EditView: UITextFieldDelegate{
         }
         navigationItem.rightBarButtonItems = [doneButton]
     }
-    
+
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         let maxLength = 15
         let currentString = (textField.text ?? "") as NSString
@@ -353,4 +342,37 @@ extension EditView: UITextFieldDelegate{
         return newString.count <= maxLength
     }
 
+}
+
+//MARK: - TextViewDelegate
+extension EditView: PlaceholderTextViewDelegate {
+    ///Reloading input accessory view, finishing search session or cleaning error glyph.
+    func textViewDidBeginEditing()  {
+        if isSearching {
+            changeSearchSessionState(activate: false)
+        } else if textInputView.layoutManager.errorRange != nil {
+            textInputView.layoutManager.errorRange = nil
+            textInputView.textView.setNeedsDisplay()
+        }
+        self.navigationItem.rightBarButtonItems = [searchButton, doneButton]
+        
+    }
+    func presentErrorAlert(alert: UIAlertController) {
+        self.present(alert, animated: true)
+    }
+    func textViewDidEndEditing()    { }
+    func textViewDidChange()        { }
+    
+    func textViewDidScroll() {
+        if isSearching {
+            textInputView.textView.setNeedsDisplay()
+        }
+    }
+    
+    func currentSeparatorSymbol() -> String? {
+        viewModel.textSeparator()
+    }
+    func configurePlaceholderText() -> String? {
+        viewModel.configureTextPlaceholder()
+    }
 }

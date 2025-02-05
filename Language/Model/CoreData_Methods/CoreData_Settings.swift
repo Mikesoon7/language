@@ -7,14 +7,18 @@
 
 import Foundation
 import CoreData
+import Combine
 
 
 protocol SettingsManaging{
-    func accessSettings(for dictionary: DictionariesEntity, orderSelection order: DictionariesSettings.CardOrder, numberofCards: Int64, oneSideMode: Bool) throws
+    var settingsDidChange : PassthroughSubject<Bool, Never> { get set }
+
+    func accessSettings(for dictionary: DictionariesEntity, selectedCardsOrder order: DictionariesSettings.CardOrder, selectedNumberOfCards: Int64, isOneSideMode: Bool) throws
     func fetchSettings(for dictionary: DictionariesEntity) -> DictionariesSettings?
 }
 
 extension CoreDataHelper: SettingsManaging {
+    
     func fetchSettings(for dictionary: DictionariesEntity) -> DictionariesSettings? {
         let fetchRequest: NSFetchRequest<DictionariesSettings> = DictionariesSettings.fetchRequest()
         fetchRequest.predicate = NSPredicate(format: "dictionary == %@", dictionary)
@@ -33,12 +37,12 @@ extension CoreDataHelper: SettingsManaging {
         }
     }
 
-    func accessSettings(for dictionary: DictionariesEntity, orderSelection order: DictionariesSettings.CardOrder, numberofCards: Int64, oneSideMode: Bool) throws {
+    func accessSettings(for dictionary: DictionariesEntity, selectedCardsOrder order: DictionariesSettings.CardOrder, selectedNumberOfCards: Int64, isOneSideMode: Bool) throws {
         guard let settings = fetchSettings(for: dictionary) else {
             do {
                 let settings = try createNewSettings(for: dictionary)
-                settings.selectedNumber = numberofCards
-                settings.isOneSideMode = oneSideMode
+                settings.selectedNumber = selectedNumberOfCards
+                settings.isOneSideMode = isOneSideMode
                 settings.cardOrder = order
                 try saveContext()
             } catch {
@@ -46,12 +50,13 @@ extension CoreDataHelper: SettingsManaging {
             }
             return
         }
-        settings.selectedNumber = numberofCards
-        settings.isOneSideMode = oneSideMode
+        settings.selectedNumber = selectedNumberOfCards
+        settings.isOneSideMode = isOneSideMode
         settings.cardOrder = order
 
         do {
             try saveContext()
+            settingsDidChange.send(true)
         } catch {
             throw LogsErrorType.accessFailed(dictionary.language)
         }

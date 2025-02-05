@@ -7,11 +7,12 @@
 		<string>Ukrainian</string>
 		<string>Russian</string>
 		<string>en</string>
+		<string>Turkish</string>
 	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
-		<false/>
+		<true/>
 		<key>UISceneConfigurations</key>
 		<dict>
 			<key>UIWindowSceneSessionRoleApplication</key>

@@ -4,6 +4,7 @@
 //
 //  Created by Star Lord on 11/07/2023.
 //
+//  REFACTORING STATE: CHECKED
 
 import Foundation
 import Combine
@@ -28,7 +29,7 @@ class EditViewModel {
     //MARK: - Properties
     private let model: Dictionary_WordsManager 
     private let dictionary: DictionariesEntity
-    private let settingModel: UserSettingsStorageProtocol
+    private let settingsmodel: UserSettingsStorageProtocol
     
     private var dictionaryName: String = .init()
     private var words: [WordsEntity] = []
@@ -41,7 +42,7 @@ class EditViewModel {
     //MARK: Inhereted and initialization
     init(dataModel: Dictionary_WordsManager, settingsModel: UserSettingsStorageProtocol, dictionary: DictionariesEntity){
         self.model = dataModel
-        self.settingModel = settingsModel
+        self.settingsmodel = settingsModel
         self.dictionary = dictionary
         
         do {
@@ -76,7 +77,7 @@ class EditViewModel {
         var textToEdit = ""
         var textByLines = [String]()
         for pair in words {
-            let line = "\(pair.word) \(settingModel.appSeparators.value) \(pair.meaning)"
+            let line = "\(pair.word) \(settingsmodel.appSeparators.value) \(pair.meaning)"
             textByLines.append(line)
             textToEdit += line + "\n\n"
         }
@@ -160,6 +161,14 @@ class EditViewModel {
             output.send(.shouldPresentError(error))
         }
     }
+    
+    func configureTextPlaceholder() -> String{
+        return "viewPlaceholderWord".localized + " \(settingsmodel.appSeparators.value) " + "viewPlaceholderMeaning".localized
+    }
+    func textSeparator() -> String{
+        settingsmodel.appSeparators.value
+    }
+
     
     //MARK: Actions
     @objc private func languageDidChange(sender: Notification){

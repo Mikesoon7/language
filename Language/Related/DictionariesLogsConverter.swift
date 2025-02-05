@@ -23,11 +23,16 @@ class DayLog: Identifiable, Hashable{
     let order: Int
     let date: String
     var count: Int
+    var timeInSec: Int
+    var numberOfCards: Int
     
-    init(order: Int, date: String, count: Int){
+    
+    init(order: Int, date: String, count: Int, timeInSec: Int, numberOfCards: Int){
         self.order = order
         self.date = date
         self.count = count
+        self.timeInSec = timeInSec
+        self.numberOfCards = numberOfCards
     }
     static func == (lhs: DayLog, rhs: DayLog) -> Bool {
         return lhs.id == rhs.id
@@ -61,6 +66,8 @@ class DatesToWeekConverter {
         let date: Date
         let count: Int
         let order: Int
+        let timeInSec: Int
+        let numberOfCards: Int
     }
     private var initialLogData: [DictionariesAccessLog] = [DictionariesAccessLog]()
     private var filledLogData: [DayLogRaw] = [DayLogRaw]()
@@ -113,11 +120,17 @@ class DatesToWeekConverter {
             if let day = initialLogData.first(where: { $0.accessDate == date }) {
                 result.append(DayLogRaw(date: date,
                                         count: Int(day.accessCount),
-                                        order: index))
+                                        order: index,
+                                        timeInSec: Int(day.accessTime),
+                                        numberOfCards: Int(day.accessAmount)
+                                       )
+                )
             } else {
                 result.append(DayLogRaw(date: date,
                                         count: 0,
-                                        order: index))
+                                        order: index,
+                                        timeInSec: 0,
+                                        numberOfCards: 0))
             }
         }
         filledLogData = result
@@ -133,7 +146,9 @@ class DatesToWeekConverter {
             let dayLit = dayLitFormatter.string(from: day.date)
             week.append(DayLog(order:   day.order,
                                date:    dayLit ,
-                               count:   day.count))
+                               count:   day.count,
+                               timeInSec: day.timeInSec,
+                               numberOfCards: day.numberOfCards))
             weekDates.append(day.date)
             
             if week.count == 7 {

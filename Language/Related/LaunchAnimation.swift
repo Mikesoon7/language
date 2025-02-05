@@ -7,74 +7,156 @@
 
 import UIKit
 
+protocol LaunchAnimationDelegate: AnyObject{
+    func animationDidFinish(animationView: UIView?)
+}
 class LaunchAnimation{
+    //MARK: Properties
+    private var bounds: CGRect
+    private var window: UIWindow?
     
-    //Animation view holds other views
-    var animationView : UIView
+    private var borderWidth     = 3.0
+    private var cornerRadius    = 20.0
+    
+    private var cardWidth   = CGFloat()
+    private var cardHeight  = CGFloat()
+    
+    private var cardHeightConstant: NSLayoutConstraint = .init()
+    private var cardWidthConstant:  NSLayoutConstraint = .init()
+    
+    private var viewHeightConstraint:   NSLayoutConstraint = .init()
+    private var viewWidthConstraint:    NSLayoutConstraint = .init()
+    
+
+    private weak var delegate: LaunchAnimationDelegate?
+    
+    //MARK: Subviews
+    var animationView : UIView = UIView()
     private var cardView = UIView()
-    
-    private var label1 : UILabel = {
+
+    private var titleLabel : UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.attributedText = .attributedString(string: "Learny", with: .georgianBoldItalic, ofSize: 20)
         return label
     }()
     
-    private var label2 : UILabel = {
+    private var subtitleLabel : UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.attributedText = .attributedString(string: "To brew something new", with: .georgianBoldItalic, ofSize: 16)
         return label
     }()
-
+    
     private var userInterfaceStyle: UIUserInterfaceStyle
     
-    init(bounds: CGRect, interfaceStyle: UIUserInterfaceStyle){
+    init(window: UIWindow?, bounds: CGRect, interfaceStyle: UIUserInterfaceStyle, delegate: LaunchAnimationDelegate){
         self.userInterfaceStyle = interfaceStyle
-        animationView = {
-            let view = UIView(frame: bounds)
-            view.backgroundColor = .systemBackground
-            return view
-        }()
-    }
-
-    func animate(){
-        animationViewsCustomization()
-        stokeAnimationCustomization()
+        self.delegate = delegate
+        self.bounds = bounds
+        self.window = window
     }
     
-//MARK: - AnimationViews SetUp
-    func animationViewsCustomization(){
-        cardView = {
-            let view = UIView(
-                frame: CGRect(x: 0,
-                              y: 0,
-                              width: animationView.frame.height * 0.35,
-                              height: animationView.frame.height * 0.55)
-            )
+    func animate(){
+        self.animationViewsCustomization()
 
-            view.center = animationView.center
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2, execute: { [weak self] in
+            self?.stokeAnimationCustomization()
+        })
+    }
+    
+    //MARK: - AnimationViews SetUp
+    ///Configure laucnhAnimation subviews.
+    func animationViewsCustomization() {
+        //For iPad version we must assure that card view gonna be proportionaly correct in split view with height excedeing width twice.
+        let isSplitScreen = isInSplitScreenMode()
+        let widthToHeightRatio = bounds.width / bounds.height
+        let isWidthMainAnchor = isSplitScreen && widthToHeightRatio < 0.5
+        
+        cardHeight = isWidthMainAnchor  ? (bounds.width * 0.8) / 0.6    : (bounds.height * 0.6)
+        cardWidth = isWidthMainAnchor   ? (bounds.width * 0.8)          : (bounds.height * 0.6) * 0.6
+        
+        
+        guard let window = window else {
+            animationView = {
+                let view = UIView(frame: bounds)
+                view.backgroundColor = .systemBackground
+                return view
+            }()
+            cardView = {
+                let view = UIView(frame: CGRect(x: 0,
+                                                y: 0,
+                                                width: cardWidth,
+                                                height: cardHeight)
+                )
+                view.center = animationView.center
+                view.backgroundColor = .systemBackground
+                view.layer.cornerRadius = 20
+                return view
+            }()
+            
+            animationView.addSubview(cardView)
+            cardView.addSubviews(titleLabel, subtitleLabel)
+            
+            NSLayoutConstraint.activate([
+                titleLabel.centerXAnchor.constraint(equalTo: cardView.centerXAnchor),
+                titleLabel.topAnchor.constraint(equalTo: cardView.topAnchor, constant: 20),
+                
+                subtitleLabel.centerXAnchor.constraint(equalTo: cardView.centerXAnchor),
+                subtitleLabel.centerYAnchor.constraint(equalTo: cardView.centerYAnchor),
+            ])
+
+            return
+        }
+        self.animationView = {
+            let view = UIView()
             view.backgroundColor = .systemBackground
-            view.layer.cornerRadius = 24
+            view.translatesAutoresizingMaskIntoConstraints = false
+            
+            
+            return view
+        }()
+        cardView = {
+            let view = UIView()
+            view.translatesAutoresizingMaskIntoConstraints = false
+            view.backgroundColor = .systemBackground
+            view.layer.cornerRadius = 20
             return view
         }()
         
+        window.addSubview(animationView)
         animationView.addSubview(cardView)
-        cardView.addSubviews(label1, label2)
+        cardView.addSubviews(titleLabel, subtitleLabel)
+        
+        cardHeightConstant = cardView.heightAnchor.constraint(equalToConstant: cardHeight)
+        cardWidthConstant = cardView.widthAnchor.constraint(equalToConstant: cardWidth)
+
+        viewHeightConstraint = cardView.heightAnchor.constraint(equalTo: animationView.heightAnchor, constant: 5)
+        viewWidthConstraint = cardView.widthAnchor.constraint(equalTo: animationView.widthAnchor, constant: 5)
         
         NSLayoutConstraint.activate([
-            label1.centerXAnchor.constraint(equalTo: cardView.centerXAnchor),
-            label1.topAnchor.constraint(equalTo: cardView.topAnchor, constant: 20),
-            
-            label2.centerXAnchor.constraint(equalTo: cardView.centerXAnchor),
-            label2.centerYAnchor.constraint(equalTo: cardView.centerYAnchor),
+            animationView.leadingAnchor.constraint(equalTo: window.leadingAnchor),
+            animationView.trailingAnchor.constraint(equalTo: window.trailingAnchor),
+            animationView.topAnchor.constraint(equalTo: window.topAnchor),
+            animationView.bottomAnchor.constraint(equalTo: window.bottomAnchor),
+
+            cardWidthConstant,
+            cardHeightConstant,
+            cardView.centerXAnchor.constraint(equalTo: animationView.centerXAnchor),
+            cardView.centerYAnchor.constraint(equalTo: animationView.centerYAnchor),
         ])
+        
+        NSLayoutConstraint.activate([
+            titleLabel.centerXAnchor.constraint(equalTo: cardView.centerXAnchor),
+            titleLabel.topAnchor.constraint(equalTo: cardView.topAnchor, constant: 20),
+            
+            subtitleLabel.centerXAnchor.constraint(equalTo: cardView.centerXAnchor),
+            subtitleLabel.centerYAnchor.constraint(equalTo: cardView.centerYAnchor),
+        ])
+
     }
-    private func valishTitleLabel(){
-        label1.alpha = 0
-        label2.alpha = 0
-    }
-//MARK: - Run animation Set Up
+    
+    //MARK: - Run animation Set Up
     func makeKeyView(){
         if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
            let window = scene.windows.first{
@@ -82,37 +164,41 @@ class LaunchAnimation{
             window.bringSubviewToFront(animationView)
         }
     }
-//MARK: - CreateStroke
+    ///Cheks whether the main screen is in split mode or not
+    private func isInSplitScreenMode() -> Bool {
+        guard let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let window = scene.windows.first else {
+            return false
+        }
+        return window.bounds.width < UIScreen.main.bounds.width
+    }
+    
+    //MARK: - CreateStroke
     func stokeAnimationCustomization(){
-        let width = cardView.bounds.width
-        let height = cardView.bounds.height
-        let startY = cardView.bounds.midY
-        let curveInset = 24.0
-        
-        let upperStroke = createLineFrom(CGPoint(x: cardView.bounds.maxX, y: startY), upper: true)
-        let downStroke = createLineFrom(CGPoint(x: cardView.bounds.minX, y: startY), upper: false )
+        let width = cardWidth
+        let height = cardHeight
+        let startY = cardHeight / 2
+        let curveInset = 20.0
+                
+        let upperStroke = createLineFrom(CGPoint(x: cardWidth, y: startY), upper: true)
+        let downStroke = createLineFrom(CGPoint(x: 0, y: startY), upper: false )
         
         CATransaction.begin()
-       
-        upperStroke.add(strokeAnimation(from: 0, to: 1, inSec: 2), forKey: "Stroke")
-        downStroke.add(strokeAnimation(from: 0, to: 1, inSec: 2), forKey: "Stroke")
+        
+        upperStroke.add(strokeAnimation(inSec: 1.8), forKey: "Stroke")
+        downStroke.add(strokeAnimation(inSec: 1.8), forKey: "Stroke")
         
         cardView.layer.addSublayer(upperStroke)
         cardView.layer.addSublayer(downStroke)
         
         CATransaction.commit()
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2, execute: {
+            scaleAndRotate()
+        })
         
-        //Animation "Touch" and rotation.
-        UIView.animate(withDuration: 0.3, delay: 2/*, options: .curveEaseInOut*/ ) { [weak self] in
-            guard let self = self else { return }
-            self.cardView.transform = CGAffineTransform(scaleX: 0.9, y: 0.9)
-        } completion: { [weak self] _ in
-            UIView.animate(withDuration: 0.2, delay: 0, animations: {
-                self!.valishTitleLabel()
-                scaleAndRotate()
-            })
-        }
-        //Creating strokes with up/down options
+        
+        ///Creates a BezierPath for view's border in two pieces ( upper or  Returns CAShapeLayer with BezierPath as a path.
         func createLineFrom(_ start: CGPoint, upper: Bool) -> CAShapeLayer{
             func controlPoint(startPoint: CGPoint, endPoint: CGPoint) -> CGPoint{
                 let midPoint = CGPoint(x: (startPoint.x + endPoint.x) / 2,
@@ -138,6 +224,7 @@ class LaunchAnimation{
             }()
             layer.fillColor = UIColor.clear.cgColor
             layer.lineWidth = 3
+            layer.cornerCurve = .continuous
             let path = UIBezierPath()
             
             path.move(to: start)
@@ -185,44 +272,82 @@ class LaunchAnimation{
             }
             return layer
         }
-        //Animation for strokes
-        func strokeAnimation(from: CGFloat, to: CGFloat, inSec: CFTimeInterval) -> CABasicAnimation{
+        
+        
+        ///Returns progressive animation.
+        func strokeAnimation(from: CGFloat = 0.0 , to: CGFloat = 1.0 , inSec: CFTimeInterval) -> CABasicAnimation{
             let animation = CABasicAnimation(keyPath: "strokeEnd")
             animation.fromValue = from
             animation.toValue = to
             animation.duration = inSec
             return animation
         }
+        
+        func configureViewsBorder(){
+            cardView.layer.borderWidth = 3
+            cardView.layer.borderColor = { [weak self] in
+                switch self?.userInterfaceStyle {
+                case .light:
+                    return UIColor.black.cgColor
+                case .dark:
+                    return UIColor.white.cgColor
+                default:
+                    return UIColor.label.cgColor
+                }
+            }()
+            upperStroke.removeFromSuperlayer()
+            downStroke.removeFromSuperlayer()
+            cardView.layer.cornerCurve = CALayerCornerCurve.continuous
+        }
+        
         //Scale and rotate + fading animation view
         func scaleAndRotate(){
-            let rotationAnimation = CABasicAnimation.rotationAnimation()
-            rotationAnimation.toValue = Double.pi * 1
-            rotationAnimation.duration = 1
+            let duration = 0.8
+            let goalCornerRadius = UIDevice.current.userInterfaceIdiom == .phone ? 43.0 : cornerRadius
+            var perspective = CATransform3DIdentity
+            perspective.m34 = -1.0 / 5000.0
             
-            let scaleAnimation = CABasicAnimation(keyPath: "transform.scale")
-            scaleAnimation.fromValue = 0.9
-            scaleAnimation.toValue = 2.8
-            scaleAnimation.duration = 1
-            scaleAnimation.repeatCount = 1
-            scaleAnimation.isRemovedOnCompletion = false
-            scaleAnimation.fillMode = .forwards
+            let liftTransform       = CATransform3DTranslate(perspective, 0, -50, 0)
+            let initialTransfrom    = CATransform3DTranslate(perspective, 0, 0, 0)
+       
+            let halfwayRotateTranform   = CATransform3DRotate(perspective, .pi / 2, 0, 1, 0)
+            let finalRotateTransform    = CATransform3DRotate(perspective, .pi, 0, 1, 0)
+        
             
-            
-            let animationGroup = CAAnimationGroup()
-            animationGroup.animations = [rotationAnimation, scaleAnimation]
-            animationGroup.duration = 1
-            animationGroup.repeatCount = 1
-            animationGroup.isRemovedOnCompletion = false
-            animationGroup.fillMode = .forwards
-            
-            cardView.layer.add(animationGroup, forKey: "rotationAndScaleAnimation")
-            
-            UIView.animate(withDuration: 2, delay: 0.9) { [weak self] in
-                self!.animationView.alpha = 0
+            UIView.animate(withDuration: 0.1, delay: 0, options: .curveLinear) {
+                self.cardView.transform = CGAffineTransform(scaleX: 0.97, y: 0.97)
+            } completion: { _ in
+                UIView.animate(withDuration: duration / 2, delay: 0 ) {
+                    self.cardView.layer.transform = CATransform3DConcat(halfwayRotateTranform, liftTransform)
+                } completion: { _ in
+                    configureViewsBorder()
+                    self.titleLabel.alpha = 0
+                    self.subtitleLabel.alpha = 0
+                    UIView.animate(withDuration: duration / 2) {
+                        self.cardView.layer.transform = CATransform3DConcat(finalRotateTransform, initialTransfrom)
+                    }
+                    UIView.animate(withDuration: duration / 2 + 0.8) {
+                        self.cardWidthConstant.isActive = false
+                        self.cardHeightConstant.isActive = false
+                        
+                        self.viewWidthConstraint.isActive = true
+                        self.viewHeightConstraint.isActive = true
+                        self.cardView.layer.cornerRadius = goalCornerRadius
+                        
+                        self.animationView.layoutIfNeeded()
+                    } completion: { _ in
+                        UIView.animate(withDuration: 0.4, delay: 0) {
+                            self.animationView.alpha = 0
+                        } completion: { _ in
+                            self.delegate?.animationDidFinish(animationView: self.animationView)
+                        }
+                    }
+                }
             }
         }
     }
 }
+
 
 class LoadingAnimation: UIView {
     
@@ -272,13 +397,16 @@ class LoadingAnimation: UIView {
     }
     
     func startAnimating(){
-        for i in 0..<dots.count {
-            let dot = dots[i]
-            
-            let animation = dotAnimation
-            animation.beginTime = CACurrentMediaTime() + (0.1 * Double(i))
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            for i in 0..<dots.count {
+                let dot = dots[i]
+                
+                let animation = dotAnimation
+                animation.beginTime = CACurrentMediaTime() + (0.1 * Double(i))
 
-            dot.layer.add(animation, forKey: "loadingAnimation")
+                dot.layer.add(animation, forKey: "loadingAnimation")
+            }
         }
     }
     

@@ -4,6 +4,7 @@
 //
 //  Created by Star Lord on 29/04/2023.
 //
+//  REFACTORING STATE: CHECKED
 
 import UIKit
 import Combine
@@ -23,6 +24,9 @@ class SeparatorsView: UIViewController{
     
     private var selectedSeparator: String { viewModel?.selectedSeparator() ?? "" }
     private var availableSeparators: [String] { viewModel?.availableSeparators() ?? [""] }
+    
+    private var hasPerformedAnimation: Bool = false
+
     
     private let scrollView: UIScrollView = {
         let view = UIScrollView()
@@ -117,7 +121,13 @@ class SeparatorsView: UIViewController{
         configureContentView()
         configureSubviews()
     }
-
+    
+    override func viewDidAppear(_ animated: Bool) {
+        if !hasPerformedAnimation {
+            exampleView.animateText()
+            hasPerformedAnimation = true
+        }
+    }
     
     //MARK: - Binding with viewModel
     func bind(){
@@ -146,18 +156,28 @@ class SeparatorsView: UIViewController{
     private func configureContentView(){
         view.addSubviews(scrollView)
         scrollView.addSubview(contentView)
+        
 
         NSLayoutConstraint.activate([
-            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            scrollView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            scrollView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            scrollView.topAnchor.constraint(
+                equalTo: view.safeAreaLayoutGuide.topAnchor),
+            scrollView.leadingAnchor.constraint(
+                equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            scrollView.bottomAnchor.constraint(
+                equalTo: view.bottomAnchor),
+            scrollView.trailingAnchor.constraint(
+                equalTo: view.safeAreaLayoutGuide.trailingAnchor),
             
-            contentView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
-            contentView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
-            contentView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
-            contentView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
-            contentView.widthAnchor.constraint(equalTo: view.widthAnchor),
+            contentView.topAnchor.constraint(
+                equalTo: scrollView.contentLayoutGuide.topAnchor),
+            contentView.leadingAnchor.constraint(
+                equalTo: scrollView.contentLayoutGuide.leadingAnchor),
+            contentView.trailingAnchor.constraint(
+                equalTo: scrollView.contentLayoutGuide.trailingAnchor),
+            contentView.bottomAnchor.constraint(
+                equalTo: scrollView.contentLayoutGuide.bottomAnchor),
+            contentView.widthAnchor.constraint(
+                equalTo: view.widthAnchor),
         ])
     }
     //MARK: Setting up every subviews layout
@@ -170,35 +190,55 @@ class SeparatorsView: UIViewController{
         tableViewHeightAnchor = tableView.heightAnchor.constraint(
             equalToConstant: CGFloat(tableView.numberOfRows(inSection: 0) * 35) + 50.0)
         lastInfoLabelTopAnchor = lastInfoLabel.topAnchor.constraint(
-            equalTo: tableView.topAnchor, constant: (tableViewHeightAnchor?.constant ?? 0) + insetForSubviews )
+            equalTo: tableView.topAnchor,
+            constant: (tableViewHeightAnchor?.constant ?? 0) + insetForSubviews )
 
         NSLayoutConstraint.activate([
-            headerInfoLabel.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.9),
-            headerInfoLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: insetForSubviews),
-            headerInfoLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            headerInfoLabel.widthAnchor.constraint(
+                equalTo: contentView.widthAnchor, multiplier: 0.9),
+            headerInfoLabel.topAnchor.constraint(
+                equalTo: contentView.topAnchor, constant: insetForSubviews),
+            headerInfoLabel.centerXAnchor.constraint(
+                equalTo: contentView.centerXAnchor),
             
-            firstInfoLabel.topAnchor.constraint(equalTo: headerInfoLabel.bottomAnchor, constant: insetForSubviews),
-            firstInfoLabel.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: .widthMultiplerFor(type: .forViews)),
-            firstInfoLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            firstInfoLabel.topAnchor.constraint(
+                equalTo: headerInfoLabel.bottomAnchor, constant: insetForSubviews),
+            firstInfoLabel.widthAnchor.constraint(
+                equalTo: contentView.widthAnchor, multiplier: .widthMultiplerFor(type: .forViews)),
+            firstInfoLabel.centerXAnchor.constraint(
+                equalTo: contentView.centerXAnchor),
             
-            exampleView.topAnchor.constraint(equalTo: firstInfoLabel.bottomAnchor, constant: insetForSubviews),
-            exampleView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            exampleView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: .widthMultiplerFor(type: .forViews)),
-            exampleView.heightAnchor.constraint(equalToConstant: heightForExampleViews),
+            exampleView.topAnchor.constraint(
+                equalTo: firstInfoLabel.bottomAnchor, constant: insetForSubviews),
+            exampleView.centerXAnchor.constraint(
+                equalTo: contentView.centerXAnchor),
+            exampleView.widthAnchor.constraint(
+                equalTo: contentView.widthAnchor, multiplier: .widthMultiplerFor(type: .forViews)),
+            exampleView.heightAnchor.constraint(
+                equalToConstant: heightForExampleViews),
             
-            secondInfoLabel.topAnchor.constraint(equalTo: exampleView.bottomAnchor, constant: insetForSubviews),
-            secondInfoLabel.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: .widthMultiplerFor(type: .forViews)),
-            secondInfoLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            secondInfoLabel.topAnchor.constraint(
+                equalTo: exampleView.bottomAnchor, constant: insetForSubviews),
+            secondInfoLabel.widthAnchor.constraint(
+                equalTo: contentView.widthAnchor, multiplier: .widthMultiplerFor(type: .forViews)),
+            secondInfoLabel.centerXAnchor.constraint(
+                equalTo: contentView.centerXAnchor),
             
-            tableView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            tableView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            tableView.topAnchor.constraint(equalTo: secondInfoLabel.bottomAnchor),
+            tableView.leadingAnchor.constraint(
+                equalTo: contentView.leadingAnchor),
+            tableView.trailingAnchor.constraint(
+                equalTo: contentView.trailingAnchor),
+            tableView.topAnchor.constraint(
+                equalTo: secondInfoLabel.bottomAnchor),
             tableViewHeightAnchor,
                         
-            lastInfoLabel.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: .widthMultiplerFor(type: .forViews)),
-            lastInfoLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            lastInfoLabel.widthAnchor.constraint(
+                equalTo: contentView.widthAnchor, multiplier: .widthMultiplerFor(type: .forViews)),
+            lastInfoLabel.centerXAnchor.constraint(
+                equalTo: contentView.centerXAnchor),
             lastInfoLabelTopAnchor,
-            lastInfoLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -insetForSubviews)
+            lastInfoLabel.bottomAnchor.constraint(
+                equalTo: contentView.bottomAnchor, constant: -insetForSubviews)
         ])
     }
     //MARK: Updating subviewsConstraints.

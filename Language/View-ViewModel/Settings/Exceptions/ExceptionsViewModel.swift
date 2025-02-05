@@ -4,6 +4,7 @@
 //
 //  Created by Star Lord on 10/10/2023.
 //
+//  REFACTORING STATE: CHECKED
 
 import Foundation
 import Combine

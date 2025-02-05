@@ -18,8 +18,9 @@ extension DictionariesAccessLog {
 
     @NSManaged public var accessCount: Int64
     @NSManaged public var accessDate: Date?
+    @NSManaged public var accessTime: Int64
+    @NSManaged public var accessAmount: Int64
     @NSManaged public var dictionary: DictionariesEntity?
-
 }
 
 extension DictionariesAccessLog : Identifiable {

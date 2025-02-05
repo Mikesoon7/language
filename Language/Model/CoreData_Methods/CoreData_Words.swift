@@ -29,20 +29,27 @@ extension CoreDataHelper: WordsManaging{
         let currentNumberOfCards = Int(dictionary.numberOfCards)
         let trimmedText = text.trimmingCharacters(in: .whitespacesAndNewlines)
         let lines = trimmedText.split(separator: "\n", omittingEmptySubsequences: true)
-        
+                
         for (index, line) in lines.enumerated() {
             guard line != "\r" else { break }
             do {
                 //Validating line
                 let newWord = try createWordFromLine(for: dictionary, text: String(line), index:  index + currentNumberOfCards)
                 results.append(newWord)
-                
             } catch {
-                context.rollback()
-                throw error
+                if let wordError = error as? WordsErrorType {
+                    continue
+                } else {
+                    context.rollback()
+                    throw error
+                }
             }
-            print(index)
         }
+        if results.isEmpty {
+            context.rollback()
+            throw WordsErrorType.failedToAssignEmptyString(text.prefix(20) + (text.count > 20 ? "..." : ""))
+        }
+
         return results
     }
     ///Assigning requiered properties for Words Entity. Passes word entity and text to complete creation.
@@ -65,7 +72,6 @@ extension CoreDataHelper: WordsManaging{
         var newWord = String()
         var newDescription = String()
         
-        print(text)
         let exceptions = settingModel.appExceptions.availableExceptionsInString
         
         trimmedText = text.trimmingCharacters(in: CharacterSet(charactersIn: exceptions + exceptions.uppercased()))
@@ -74,7 +80,6 @@ extension CoreDataHelper: WordsManaging{
         
         
         guard !trimmedText.isEmpty, !parts.isEmpty else {
-            print(trimmedText, parts)
             throw WordsErrorType.failedToAssignEmptyString(text.prefix(20) + (text.count > 20 ? "..." : ""))
         }
         
@@ -138,7 +143,8 @@ extension CoreDataHelper: WordsManaging{
             try delete(dictionary: associatedDictionary)
         } else {
             associatedDictionary.removeFromWords(word)
-            associatedDictionary.numberOfCards = Int64(associatedDictionary.words?.count ?? 000)
+            associatedDictionary.numberOfCards = Int64(associatedDictionary.words?.count ??
+                                                       Int(associatedDictionary.numberOfCards - 1 ))
 
             self.dictionaryDidChange.send(.wasUpdated(Int(associatedDictionary.order)))
             try saveContext()

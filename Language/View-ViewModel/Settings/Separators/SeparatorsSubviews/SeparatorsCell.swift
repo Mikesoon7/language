@@ -4,6 +4,7 @@
 //
 //  Created by Star Lord on 29/04/2023.
 //
+//  REFACTORING STATE: CHECKED
 
 import UIKit
 
@@ -46,7 +47,6 @@ class SeparatorsCell: UITableViewCell {
     }()
     
     //MARK: Dimentions
-    private let subviewsInset: CGFloat = 15
     private let subviewsHeightMultiplier: CGFloat = 0.8
     
     //MARK: Inherited
@@ -92,19 +92,30 @@ class SeparatorsCell: UITableViewCell {
         contentView.addSubviews(cellTitle, addImage, selectedImage)
         
         NSLayoutConstraint.activate([
-            addImage.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -subviewsInset),
-            addImage.centerYAnchor.constraint(equalTo: centerYAnchor),
-            addImage.heightAnchor.constraint(equalTo: heightAnchor, multiplier: subviewsHeightMultiplier),
-            addImage.widthAnchor.constraint(equalTo: addImage.heightAnchor),
+            addImage.trailingAnchor.constraint(
+                equalTo: trailingAnchor, constant: -.innerSpacer),
+            addImage.centerYAnchor.constraint(
+                equalTo: centerYAnchor),
+            addImage.heightAnchor.constraint(
+                equalTo: heightAnchor, multiplier: subviewsHeightMultiplier),
+            addImage.widthAnchor.constraint(
+                equalTo: addImage.heightAnchor),
             
-            selectedImage.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -subviewsInset),
-            selectedImage.centerYAnchor.constraint(equalTo: centerYAnchor),
-            selectedImage.heightAnchor.constraint(equalTo: heightAnchor, multiplier: subviewsHeightMultiplier),
-            selectedImage.widthAnchor.constraint(equalTo: addImage.heightAnchor),
+            selectedImage.trailingAnchor.constraint(
+                equalTo: trailingAnchor, constant: -.innerSpacer),
+            selectedImage.centerYAnchor.constraint(
+                equalTo: centerYAnchor),
+            selectedImage.heightAnchor.constraint(
+                equalTo: heightAnchor, multiplier: subviewsHeightMultiplier),
+            selectedImage.widthAnchor.constraint(
+                equalTo: addImage.heightAnchor),
             
-            cellTitle.leadingAnchor.constraint(equalTo: leadingAnchor, constant: subviewsInset),
-            cellTitle.centerYAnchor.constraint(equalTo: centerYAnchor),
-            cellTitle.trailingAnchor.constraint(lessThanOrEqualTo: selectedImage.leadingAnchor, constant: -subviewsInset)
+            cellTitle.leadingAnchor.constraint(
+                equalTo: leadingAnchor, constant: .innerSpacer),
+            cellTitle.centerYAnchor.constraint(
+                equalTo: centerYAnchor),
+            cellTitle.trailingAnchor.constraint(
+                lessThanOrEqualTo: selectedImage.leadingAnchor, constant: -.innerSpacer)
         ])
     }
 }

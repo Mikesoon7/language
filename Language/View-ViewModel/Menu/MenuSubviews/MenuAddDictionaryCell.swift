@@ -4,10 +4,12 @@
 //
 //  Created by Star Lord on 15/02/2023.
 //
+//  REFACTORING STATE: CHECKED
 
 import UIKit
 
-class MenuAddDictionaryCell: UITableViewCell {
+
+class MenuAddDictionaryCVCell: UICollectionViewCell {
     
     static let identifier = "addCell"
     
@@ -17,11 +19,11 @@ class MenuAddDictionaryCell: UITableViewCell {
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
-    //Instead of ImageView i've used UIButton in case Apple will anounce API to work with Built in Notes.
+    //TODO: - Add import information functionality.
     private let addButton : UIButton = {
         var button = UIButton()
         button.backgroundColor = .systemGray5
-        button.setImage(UIImage(systemName: "square.and.arrow.up", withConfiguration: UIImage.SymbolConfiguration(weight: UIFont.selectedFont.fontWeight.symbolWeight())), for: .normal)
+        button.setImage(UIImage(systemName: "square.and.arrow.down", withConfiguration: UIImage.SymbolConfiguration(weight: UIFont.selectedFont.fontWeight.symbolWeight())), for: .normal)
         button.imageView?.center = button.center
         button.tintColor = .label
         
@@ -34,12 +36,13 @@ class MenuAddDictionaryCell: UITableViewCell {
     }()
     
     //MARK: Inherited and initializers.
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
+    override init(frame: CGRect) {
+        super.init(frame: frame)
         configureCellView()
         configureSubviews()
         configureLabels()
     }
+
     required init?(coder: NSCoder) {
         fatalError("coder wasn't imported")
     }
@@ -49,10 +52,8 @@ class MenuAddDictionaryCell: UITableViewCell {
     
     //MARK: Configuring views properties.
     func configureCellView(){
-        self.backgroundColor = .systemGray6
-        self.layer.cornerRadius = 9
-        self.clipsToBounds = true
-        self.selectionStyle = .none
+        self.backgroundColor = .secondarySystemBackground
+        self.layer.cornerRadius = .cornerRadius
         
         NotificationCenter.default.addObserver(self, selector: #selector(languageDidChange(sender:)), name: .appLanguageDidChange, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(fontDidChange(sender:)), name: .appFontDidChange, object: nil)
@@ -89,6 +90,6 @@ class MenuAddDictionaryCell: UITableViewCell {
     }
     @objc func fontDidChange(sender: Any){
         importLabel.font = .selectedFont.withSize(20)
-        addButton.setImage(UIImage(systemName: "square.and.arrow.up", withConfiguration: UIImage.SymbolConfiguration(weight: UIFont.selectedFont.fontWeight.symbolWeight())), for: .normal)
+        addButton.setImage(UIImage(systemName: "square.and.arrow.down", withConfiguration: UIImage.SymbolConfiguration(weight: UIFont.selectedFont.fontWeight.symbolWeight())), for: .normal)
     }
 }

@@ -4,6 +4,7 @@
 //
 //  Created by Star Lord on 08/04/2023.
 //
+//  REFACTORING STATE: CHECKED
 
 import UIKit
 
@@ -89,20 +90,31 @@ class SettingsImageCell: UITableViewCell {
         imageStackView.addArrangedSubviews(UIView(), topImageView, UIView(), bottomImageView, UIView())
         
         NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: topAnchor, constant: 10),
-            titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 15),
-            titleLabel.heightAnchor.constraint(equalToConstant: 20),
+            titleLabel.topAnchor.constraint(
+                equalTo: topAnchor, constant: .outerSpacer),
+            titleLabel.leadingAnchor.constraint(
+                equalTo: leadingAnchor, constant: .outerSpacer),
+            titleLabel.heightAnchor.constraint(
+                equalToConstant: 20),
 
-            imageStackView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor),
-            imageStackView.leadingAnchor.constraint(equalTo: leadingAnchor),
-            imageStackView.bottomAnchor.constraint(equalTo: bottomAnchor),
-            imageStackView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            imageStackView.topAnchor.constraint(
+                equalTo: titleLabel.bottomAnchor),
+            imageStackView.leadingAnchor.constraint(
+                equalTo: leadingAnchor),
+            imageStackView.bottomAnchor.constraint(
+                equalTo: bottomAnchor),
+            imageStackView.trailingAnchor.constraint(
+                equalTo: trailingAnchor),
 
-            topImageView.heightAnchor.constraint(equalTo: imageStackView.heightAnchor, multiplier: 0.5),
-            topImageView.widthAnchor.constraint(equalTo: topImageView.heightAnchor),
+            topImageView.heightAnchor.constraint(
+                equalTo: imageStackView.heightAnchor, multiplier: 0.5),
+            topImageView.widthAnchor.constraint(
+                equalTo: topImageView.heightAnchor),
 
-            bottomImageView.heightAnchor.constraint(equalTo: imageStackView.heightAnchor, multiplier: 0.5),
-            bottomImageView.widthAnchor.constraint(equalTo: bottomImageView.heightAnchor),
+            bottomImageView.heightAnchor.constraint(
+                equalTo: imageStackView.heightAnchor, multiplier: 0.5),
+            bottomImageView.widthAnchor.constraint(
+                equalTo: bottomImageView.heightAnchor),
 
         ])
     }

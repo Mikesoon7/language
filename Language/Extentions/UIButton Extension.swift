@@ -10,21 +10,52 @@ import UIKit
 
 extension UIButton{
     func setUpCustomButton(){
-        self.layer.cornerRadius = 9
+        self.layer.cornerRadius = .cornerRadius
         self.tintColor = .label
-        self.addRightSideShadow()
+        self.titleLabel?.adjustsFontSizeToFitWidth = true
+        self.titleLabel?.minimumScaleFactor = 0.5
+        self.titleLabel?.numberOfLines = 1
+        self.setTitleColor(.label, for: .normal)
+        self.addCenterShadows()
         self.backgroundColor = .secondarySystemBackground
         self.translatesAutoresizingMaskIntoConstraints = false
+        self.addTargetTouchBegin()
+        self.addTargetInsideTouchStop()
+        self.addTargetOutsideTouchStop()
+    }
+    func setUpAccessoryViewButton(image: UIImage?, title: String? = nil){
+        self.sizeToFit()
+        self.contentHorizontalAlignment = .center
+        self.translatesAutoresizingMaskIntoConstraints = false
+        self.tintColor = .label
+
+        if let title = title {
+            self.setTitle(title, for: .normal)
+            self.setTitleColor(.lightGray, for: .highlighted)
+
+            self.titleLabel?.font = UIFont.systemFont(ofSize: 14)
+            self.titleLabel?.numberOfLines = 2
+            self.titleLabel?.adjustsFontSizeToFitWidth = true
+            self.configuration = .plain()
+            self.configuration?.imagePlacement = .trailing
+            self.configuration?.imagePadding = 3.0
+            
+        }
+        if let image = image {
+            self.setImage(image, for: .normal)
+            self.setImage(image.withTintColor(.lightGray), for: .highlighted)
+            self.imageView?.contentMode = .scaleAspectFill
+        }
     }
 
-    func addTargetTouchBegin(){
+    fileprivate func addTargetTouchBegin(){
         super.addTarget(self, action: #selector(animationBegin(sender:)), for: .touchDown)
         
     }
-    func addTargetOutsideTouchStop(){
+    fileprivate func addTargetOutsideTouchStop(){
         super.addTarget(self, action: #selector(animationEnded(sender:)), for: .touchUpOutside)
     }
-    func addTargetInsideTouchStop(){
+    fileprivate func addTargetInsideTouchStop(){
         super.addTarget(self, action: #selector(animationEnded(sender: )), for: .touchUpInside)
     }
     
@@ -40,5 +71,14 @@ extension UIButton{
             sender.layer.shadowOffset = CGSize(width: 4, height: 5)
         })
     }
+    static func configureNavButtonWith(title: String, font: UIFont = .systemBold, size: CGFloat = 15) -> UIButton{
+        let button = UIButton()
+        button.configuration = .plain()
+        button.setAttributedTitle(.attributedString(string: title, with: font, ofSize: size), for: .normal)
+        button.configuration?.baseForegroundColor = .label
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }
+
 }
 

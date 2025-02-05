@@ -4,6 +4,7 @@
 //
 //  Created by Star Lord on 16/02/2023.
 //
+//  REFACTORING STATE: CHECKED
 
 import UIKit
 import Combine
@@ -17,6 +18,14 @@ private enum ActivePicker{
     case custom
 }
 class StatisticView: UIViewController {
+    
+    //MARK: HardCoded Values
+    internal struct ViewInsets {
+        static var subviewsInset: CGFloat = 20
+        static var tableCellHeight: CGFloat = 50
+        static var tableSelectedCellHeight: CGFloat = 200
+    }
+    
     //MARK: Properties
     private var viewModel: StatisticViewModel?
     private var cancellable = Set<AnyCancellable>()
@@ -31,6 +40,35 @@ class StatisticView: UIViewController {
         }
     }
     
+    //MARK: HolderViews
+    private var verticalEmbededStackView: UIStackView = {
+        let view = UIStackView()
+        view.axis = .vertical
+        view.spacing = 16
+        view.alignment = .fill
+        view.distribution = .fillProportionally
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+
+    private let scrollView: UIScrollView = {
+        let view = UIScrollView()
+        view.backgroundColor = .clear
+        view.isUserInteractionEnabled = true
+        view.alwaysBounceVertical = false
+        view.isScrollEnabled = true
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.canCancelContentTouches = false
+        return view
+    }()
+
+    private let contentView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .clear
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+
     //MARK: Views
     private let titleLabel: UILabel = {
         let label = UILabel()
@@ -43,16 +81,20 @@ class StatisticView: UIViewController {
         return label
     }()
     
+        
     private let legendTableView: UITableView = {
         let view = UITableView(frame: .zero, style: .plain)
         view.register(StatisticViewCell.self, forCellReuseIdentifier: StatisticViewCell.id)
+        view.register(StatisticViewSelectedCell.self, forCellReuseIdentifier: StatisticViewSelectedCell.id)
         
         view.separatorStyle = .none
-        view.backgroundColor = .clear
+        view.backgroundColor = .systemBackground
         
-        view.allowsSelection = false
         view.translatesAutoresizingMaskIntoConstraints = false
-        
+        view.isScrollEnabled = true
+        view.showsVerticalScrollIndicator = false
+        view.bounces = false
+
         return view
     }()
     
@@ -62,7 +104,6 @@ class StatisticView: UIViewController {
             title: "statistic.beginDate".localized,
             subtitle: "---"
         )
-        
         view.backgroundColor = .systemBackground
         view.layer.borderColor = UIColor.label.cgColor
         view.layer.borderWidth = 0.5
@@ -76,7 +117,6 @@ class StatisticView: UIViewController {
             title: "statistic.endDate".localized,
             subtitle: "---"
         )
-        
         view.backgroundColor = .systemBackground
         view.layer.borderColor = UIColor.label.cgColor
         view.layer.borderWidth = 0.5
@@ -128,13 +168,39 @@ class StatisticView: UIViewController {
     private var dismissPanGesture = UIPanGestureRecognizer()
     
     //MARK: Dimensions
-    private let subviewsInset: CGFloat = 20
-    private let customButtonsHeight: CGFloat = 50
+    private var pieViewTopAnchorToButton: NSLayoutConstraint = .init()
+    private var pieViewTopAnchorToPicker: NSLayoutConstraint = .init()
     
-    private var pieViewTopAnchorToButton: NSLayoutConstraint!
-    private var pieViewTopAnchorToPicker: NSLayoutConstraint!
+    private var tableViewTopAnchorToButton: NSLayoutConstraint = .init()
+    private var tableViewTopAnchorToPicker: NSLayoutConstraint = .init()
+    
+    private var tableViewHeightAnchor: NSLayoutConstraint = .init()
+    
+    private var widthCompactSizeConstraints: [NSLayoutConstraint] = []
+    private var widthRegularSizeConstraints: [NSLayoutConstraint] = []
+    
     
     //MARK: Inherited
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.backgroundColor = .systemBackground
+        bind()
+        
+        configureTitleLabel()
+        configureCustomButton()
+        configurePickersButton()
+        configureContentView()
+        configureCustomRangePicker()
+        configureDatePickers()
+        configurePieChartView()
+        configureTableView()
+        configurePickerDismissGesture()
+        
+        applyConstraints(for: self.traitCollection)
+        
+        input?.send(.viewDidLoad)
+    }
+    
     required init(viewModel: StatisticViewModel){
         self.viewModel = viewModel
         super.init(nibName: nil , bundle: nil)
@@ -143,52 +209,65 @@ class StatisticView: UIViewController {
     required init?(coder: NSCoder) {
         fatalError("init(coder: NSCoder) wasn't imported")
     }
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        view.backgroundColor = .systemBackground
-        bind()
-        configureTitleLabel()
-        configureCustomButton()
-        configurePickersButton()
-        configureCustomRangePicker()
-        configureDatePickers()
-        configurePieChartView()
-        configureTableView()
-        configurePickerDismissGesture()
-        
-        input?.send(.viewDidLoad)
-    }
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-    }
+
+
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        if previousTraitCollection?.horizontalSizeClass != traitCollection.horizontalSizeClass {
+            applyConstraints(for: traitCollection)
+        }
+        
         if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection){
             leftPickerView.layer.borderColor = UIColor.label.cgColor
             rightPickerView.layer.borderColor = UIColor.label.cgColor
         }
     }
-        
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        if self.activePicker != nil{
+            coordinator.animate { _ in
+                self.updateDisplayedPicker(for: self.activePicker!)
+            }
+        }
+    }
+
+    private func applyConstraints(for traitCollection: UITraitCollection) {
+        if traitCollection.horizontalSizeClass == .regular {
+                NSLayoutConstraint.deactivate(widthCompactSizeConstraints)
+                NSLayoutConstraint.activate(widthRegularSizeConstraints)
+            } else {
+                NSLayoutConstraint.deactivate(widthRegularSizeConstraints)
+                NSLayoutConstraint.activate(widthCompactSizeConstraints)
+            }
+        view.layoutIfNeeded()
+    }
+
     //MARK: Binding.
     func bind(){
         guard let output = viewModel?.transform(input: input?.eraseToAnyPublisher()) else { return }
         output
             .receive(on: DispatchQueue.main)
             .sink { [weak self] output in
+                guard let self = self else {return}
                 switch output{
                 case .shouldUpdatePieChartWith(let data):
-                    self?.pieChartView?.setUpChartData(data)
-                    self?.legendTableView.reloadData()
+                    pieChartView?.setUpChartData(data)
                 case .shouldUpdateSelectedInterval(let interval):
-                    self?.updateSelectedInterval(interval)
+                    updateSelectedInterval(interval)
                 case .shouldUpdateCustomInterval:
-                    self?.updateCustomPicker()
+                    updateCustomPicker()
                 case .shouldPresent(let error):
-                    self?.presentError(error)
+                    presentError(error, sourceView: view)
+                case .shouldUpdateSelectedTableCell:
+                    legendTableView.beginUpdates()
+                    legendTableView.reloadSections(IndexSet(integersIn: 0...legendTableView.numberOfSections - 1 ), with: .left)
+                    legendTableView.endUpdates()
+                    updateTableConstrait()
                 }
             }
             .store(in: &cancellable)
     }
+    
     
     //MARK: Subviews configuration
     ///Laying out title label.
@@ -196,12 +275,13 @@ class StatisticView: UIViewController {
         view.addSubview(titleLabel)
         
         NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: subviewsInset),
-            titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: subviewsInset),
-            titleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -subviewsInset),
+            titleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: ViewInsets.subviewsInset),
+            titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: ViewInsets.subviewsInset),
+            titleLabel.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.5),
             titleLabel.heightAnchor.constraint(equalToConstant: 30),
         ])
     }
+    
     ///Laying out and setting up customPickerButton
     private func configureCustomButton(){
         view.addSubview(customPickerCallButton)
@@ -211,99 +291,198 @@ class StatisticView: UIViewController {
         NSLayoutConstraint.activate([
             
             customPickerCallButton.centerYAnchor.constraint(equalTo: titleLabel.centerYAnchor),
-            customPickerCallButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -subviewsInset),
-            
+            customPickerCallButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -ViewInsets.subviewsInset),
         ])
     }
     
     ///Laying out and setting up  right and left picker call buttons
     private func configurePickersButton(){
         view.addSubviews(leftPickerView, rightPickerView)
-        
-        let viewWidth: CGFloat = (view.bounds.width - subviewsInset * 2) / 2
-        
+                
         leftPickerView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(leftPickerViewDidTap(sender: ))))
         rightPickerView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(rightPickerViewDidTap(sender: ))))
         
         NSLayoutConstraint.activate([
-            leftPickerView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: subviewsInset),
-            leftPickerView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: subviewsInset),
-            leftPickerView.widthAnchor.constraint(equalToConstant: viewWidth),
-            leftPickerView.heightAnchor.constraint(equalToConstant: customButtonsHeight),
+            leftPickerView.topAnchor.constraint(
+                equalTo: titleLabel.bottomAnchor, constant: ViewInsets.subviewsInset),
+            leftPickerView.leadingAnchor.constraint(
+                equalTo: view.leadingAnchor, constant: ViewInsets.subviewsInset),
+            leftPickerView.widthAnchor.constraint(
+                equalTo: view.widthAnchor, multiplier: 0.5, constant: -ViewInsets.subviewsInset),
+            leftPickerView.heightAnchor.constraint(
+                equalToConstant: ViewInsets.tableCellHeight),
             
-            
-            rightPickerView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: subviewsInset),
-            rightPickerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -subviewsInset),
-            rightPickerView.widthAnchor.constraint(equalToConstant: viewWidth),
-            rightPickerView.heightAnchor.constraint(equalToConstant: customButtonsHeight),
-            
+            rightPickerView.topAnchor.constraint(
+                equalTo: titleLabel.bottomAnchor, constant: ViewInsets.subviewsInset),
+            rightPickerView.trailingAnchor.constraint(
+                equalTo: view.trailingAnchor, constant: -ViewInsets.subviewsInset),
+            rightPickerView.widthAnchor.constraint(
+                equalTo: view.widthAnchor, multiplier: 0.5, constant: -ViewInsets.subviewsInset),
+            rightPickerView.heightAnchor.constraint(
+                equalToConstant: ViewInsets.tableCellHeight),
         ])
     }
+    
+    //MARK: - Scroll View + Subviews SetUp
+    private func configureContentView(){
+        view.addSubviews(scrollView)
+        scrollView.addSubview(contentView)
+
+        NSLayoutConstraint.activate([
+            scrollView.topAnchor.constraint(
+                equalTo: rightPickerView.bottomAnchor),
+            scrollView.leadingAnchor.constraint(
+                equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            scrollView.trailingAnchor.constraint(
+                equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            scrollView.bottomAnchor.constraint(
+                equalTo: view.bottomAnchor),
+            
+            contentView.topAnchor.constraint(
+                equalTo: scrollView.contentLayoutGuide.topAnchor),
+            contentView.leadingAnchor.constraint(
+                equalTo: scrollView.contentLayoutGuide.leadingAnchor),
+            contentView.trailingAnchor.constraint(
+                equalTo: scrollView.contentLayoutGuide.trailingAnchor),
+            contentView.bottomAnchor.constraint(
+                equalTo: scrollView.contentLayoutGuide.bottomAnchor),
+            contentView.widthAnchor.constraint(
+                equalTo: view.widthAnchor),
+        ])
+    }
+
     private func configureDatePickers(){
-        view.addSubviews(leftDatePicker, rightDatePicker)
+        contentView.addSubviews(leftDatePicker, rightDatePicker)
         
         leftDatePicker.addTarget(self, action: #selector(dataPickerDidSelect(sender: )), for: .valueChanged )
         rightDatePicker.addTarget(self, action: #selector(dataPickerDidSelect(sender: )), for: .valueChanged )
         
-        NSLayoutConstraint.activate([
-            leftDatePicker.topAnchor.constraint(equalTo: leftPickerView.bottomAnchor, constant: subviewsInset),
-            leftDatePicker.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+        widthRegularSizeConstraints.append(contentsOf: [
+            leftDatePicker.topAnchor.constraint(
+                equalTo: contentView.topAnchor, constant: ViewInsets.subviewsInset),
+            leftDatePicker.trailingAnchor.constraint(
+                equalTo: contentView.trailingAnchor, constant: -ViewInsets.subviewsInset / 2 ),
+            leftDatePicker.widthAnchor.constraint(
+                equalTo: contentView.widthAnchor, multiplier: 0.4,  constant: -ViewInsets.subviewsInset),
             
-            rightDatePicker.topAnchor.constraint(equalTo: rightPickerView.bottomAnchor, constant: subviewsInset),
-            rightDatePicker.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            rightDatePicker.topAnchor.constraint(
+                equalTo: contentView.topAnchor, constant: ViewInsets.subviewsInset),
+            rightDatePicker.trailingAnchor.constraint(
+                equalTo: contentView.trailingAnchor, constant: -ViewInsets.subviewsInset / 2),
+            rightDatePicker.widthAnchor.constraint(
+                equalTo: contentView.widthAnchor, multiplier: 0.4,  constant: -ViewInsets.subviewsInset)
+        ])
+
+        widthCompactSizeConstraints.append(contentsOf: [
+            
+            leftDatePicker.topAnchor.constraint(
+                equalTo: contentView.topAnchor, constant: ViewInsets.subviewsInset),
+            leftDatePicker.centerXAnchor.constraint(
+                equalTo: contentView.centerXAnchor),
+            rightDatePicker.topAnchor.constraint(
+                equalTo: contentView.topAnchor, constant: ViewInsets.subviewsInset),
+            rightDatePicker.centerXAnchor.constraint(
+                equalTo: contentView.centerXAnchor),
         ])
     }
     private func configureCustomRangePicker(){
-        view.addSubview(customRangePicker)
+        contentView.addSubview(customRangePicker)
         
         customRangePicker.delegate = self
         customRangePicker.dataSource = self
 
-        NSLayoutConstraint.activate([
-            customRangePicker.topAnchor.constraint(equalTo: leftPickerView.bottomAnchor, constant: subviewsInset),
-            customRangePicker.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+        widthRegularSizeConstraints.append(contentsOf: [
+            customRangePicker.topAnchor.constraint(
+                equalTo: contentView.topAnchor, constant: ViewInsets.subviewsInset),
+            customRangePicker.trailingAnchor.constraint(
+                equalTo: contentView.trailingAnchor, constant: -ViewInsets.subviewsInset / 2 ),
+            customRangePicker.widthAnchor.constraint(
+                equalTo: contentView.widthAnchor, multiplier: 0.4, constant: -ViewInsets.subviewsInset)
+
+        ])
+
+        widthCompactSizeConstraints.append(contentsOf: [
+            customRangePicker.topAnchor.constraint(
+                equalTo: contentView.topAnchor, constant: ViewInsets.subviewsInset),
+            customRangePicker.centerXAnchor.constraint(
+                equalTo: contentView.centerXAnchor),
         ])
     }
     
-    private func configurePickerDismissGesture(){
-        dismissPanGesture = UIPanGestureRecognizer(target: self, action: #selector(viewDidPan(sender:)))
-        dismissPanGesture.isEnabled = false
-        self.view.addGestureRecognizer(dismissPanGesture)
-    }
-    
+
     private func configurePieChartView(){
         guard let pieChartView = pieChartView else { return }
+        
         
         pieChartView.translatesAutoresizingMaskIntoConstraints = false
         pieChartView.delegate = self
         
-        pieViewTopAnchorToButton = pieChartView.topAnchor.constraint(equalTo: leftPickerView.bottomAnchor, constant: subviewsInset)
-        pieViewTopAnchorToPicker = pieChartView.topAnchor.constraint(equalTo: leftDatePicker.bottomAnchor, constant: subviewsInset)
-        
-        view.addSubview(pieChartView)
-        
-        NSLayoutConstraint.activate([
-            pieViewTopAnchorToButton,
-            pieChartView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            pieChartView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: .widthMultiplerFor(type: .forViews)),
-            pieChartView.heightAnchor.constraint(equalTo: pieChartView.widthAnchor, multiplier: 1),
+        pieViewTopAnchorToButton = verticalEmbededStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: ViewInsets.subviewsInset)
+        pieViewTopAnchorToPicker = verticalEmbededStackView.topAnchor.constraint(equalTo: leftDatePicker.bottomAnchor, constant: ViewInsets.subviewsInset)
+
+        widthRegularSizeConstraints.append(contentsOf: [
+            verticalEmbededStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: ViewInsets.subviewsInset),
+            
+            verticalEmbededStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            verticalEmbededStackView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.6),
+            verticalEmbededStackView.heightAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.6),
+            verticalEmbededStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
         ])
+
+        widthCompactSizeConstraints.append(contentsOf: [
+            pieViewTopAnchorToButton,
+            verticalEmbededStackView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            verticalEmbededStackView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.8),
+            verticalEmbededStackView.heightAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.8),
+        ])
+
+        contentView.addSubview(verticalEmbededStackView)
+        verticalEmbededStackView.addArrangedSubview(pieChartView)
     }
     private func configureTableView(){
-        view.addSubview(legendTableView)
+        contentView.addSubview(legendTableView)
         
         legendTableView.delegate = self
         legendTableView.dataSource = self
         
-        NSLayoutConstraint.activate([
-            legendTableView.topAnchor.constraint(equalTo: pieChartView?.bottomAnchor ?? leftPickerView.bottomAnchor, constant: 20),
-            legendTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            legendTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            legendTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+        tableViewTopAnchorToButton = legendTableView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: ViewInsets.subviewsInset)
+        tableViewTopAnchorToPicker = legendTableView.topAnchor.constraint(equalTo: rightDatePicker.bottomAnchor, constant: ViewInsets.subviewsInset)
+        
+        tableViewHeightAnchor = legendTableView.heightAnchor.constraint(
+            equalToConstant: CGFloat(legendTableView.numberOfRows(inSection: 0)) * ViewInsets.tableCellHeight + CGFloat(legendTableView.numberOfRows(inSection: 1)) * ViewInsets.tableSelectedCellHeight)
+
+
+
+        widthRegularSizeConstraints.append(contentsOf: [
+            tableViewTopAnchorToButton,
+            legendTableView.widthAnchor.constraint(equalTo: leftDatePicker.widthAnchor),
+            legendTableView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -ViewInsets.subviewsInset),
+            legendTableView.heightAnchor.constraint(equalTo: verticalEmbededStackView.heightAnchor),
+
+        ])
+
+        widthCompactSizeConstraints.append(contentsOf: [
+            legendTableView.topAnchor.constraint(equalTo: pieChartView?.bottomAnchor ?? leftPickerView.bottomAnchor, constant: ViewInsets.subviewsInset),
+            legendTableView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            legendTableView.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor),
+            legendTableView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            
+            tableViewHeightAnchor
         ])
     }
     
+    func updateTableConstrait(){
+        tableViewHeightAnchor.constant = CGFloat(legendTableView.numberOfRows(inSection: 0)) * ViewInsets.tableCellHeight + CGFloat(legendTableView.numberOfRows(inSection: 1)) * ViewInsets.tableSelectedCellHeight
+        view.layoutIfNeeded()
+    }
+    
     //MARK: System
+    private func configurePickerDismissGesture(){
+        dismissPanGesture = UIPanGestureRecognizer(target: self, action: #selector(viewDidPan(sender:)))
+        dismissPanGesture.isEnabled = false
+        self.contentView.addGestureRecognizer(dismissPanGesture)
+    }
+
     private func updateSelectedInterval(_ interval: DateInterval){
         self.leftPickerView.updateSubtitleLabel(with: convertDateToString(interval.start))
         leftDatePicker.setDate(interval.start, animated: false)
@@ -326,6 +505,20 @@ class StatisticView: UIViewController {
         let row = viewModel?.selectedRowForPicker() ?? 0
         self.customRangePicker.selectRow(row, inComponent: 0, animated: false)
     }
+    
+    ///Checks if end date greater than begin date. If not, update values with active picker as primary.
+    private func validateDatePickerInput(sender: UIDatePicker){
+        if leftDatePicker.date > rightDatePicker.date {
+            if sender === rightDatePicker {
+                leftDatePicker.date = sender.date
+                leftPickerView.updateSubtitleLabel(with: convertDateToString(sender.date))
+            } else {
+                rightDatePicker.date = sender.date
+                rightPickerView.updateSubtitleLabel(with: convertDateToString(sender.date))
+            }
+        }
+    }
+
     
     //MARK: Animations
     ///Checks if passed picker is active. If so, deactivate it. If not - changing chart  layout and reval picker.
@@ -366,6 +559,7 @@ class StatisticView: UIViewController {
                 case .none:
                     self?.updatePieChartLayout(toInitial: false)
                 }
+                
                 selectedDatePickerView?.backgroundColor =
                     .tertiarySystemGroupedBackground
                 selectedDatePicker.alpha = 1
@@ -400,32 +594,32 @@ class StatisticView: UIViewController {
     //Since there shouldn't be two constraints with the same anchor active together, we need to change order.
     ///Changing the constraints for PieView.
     private func updatePieChartLayout(toInitial: Bool){
-        UIView.animate(withDuration: 0.6) { [weak self] in
+        let regularWidth = traitCollection.horizontalSizeClass == .regular
+        UIView.animate(withDuration: 0.5) { [weak self] in
+            guard let self = self else { return }
             if toInitial {
-                self?.pieViewTopAnchorToPicker.isActive = !toInitial
-                self?.pieViewTopAnchorToButton.isActive = toInitial
+                dismissPanGesture.isEnabled = false
+                if regularWidth {
+                    tableViewTopAnchorToPicker.isActive = !toInitial
+                    tableViewTopAnchorToButton.isActive = toInitial
+                } else {
+                    pieViewTopAnchorToPicker.isActive = !toInitial
+                    pieViewTopAnchorToButton.isActive = toInitial
+                }
             } else {
-                self?.pieViewTopAnchorToButton.isActive = toInitial
-                self?.pieViewTopAnchorToPicker.isActive = !toInitial
+                dismissPanGesture.isEnabled = true
+                scrollView.setContentOffset(.zero, animated: true)
+                if regularWidth {
+                    tableViewTopAnchorToButton.isActive = toInitial
+                    tableViewTopAnchorToPicker.isActive = !toInitial
+                } else {
+                    pieViewTopAnchorToButton.isActive = toInitial
+                    pieViewTopAnchorToPicker.isActive = !toInitial
+                }
             }
-            self?.view.layoutIfNeeded()
+            view.layoutIfNeeded()
         }
     }
-    
-    //MARK: System
-    ///Checks if end date greater than begin date. If not, update values with active picker as primary.
-    func validateDatePickerInput(sender: UIDatePicker){
-        if leftDatePicker.date > rightDatePicker.date {
-            if sender === rightDatePicker {
-                leftDatePicker.date = sender.date
-                leftPickerView.updateSubtitleLabel(with: convertDateToString(sender.date))
-            } else {
-                rightDatePicker.date = sender.date
-                rightPickerView.updateSubtitleLabel(with: convertDateToString(sender.date))
-            }
-        }
-    }
-    
 }
 //MARK: - Actions
 extension StatisticView {
@@ -453,7 +647,7 @@ extension StatisticView {
 
         let translation = sender.translation(in: view).y
         
-        if translation < -10 {
+        if translation < -10 || translation > 10{
             updateDisplayedPicker(for: picker)
         }
     }
@@ -461,22 +655,48 @@ extension StatisticView {
 //MARK: - Extend for TableView delegate and DataSource
 extension StatisticView: UITableViewDelegate, UITableViewDataSource{
     func numberOfSections(in tableView: UITableView) -> Int {
-        1
+        2
     }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        viewModel?.numberOfRowsInTableView() ?? 0
+        return viewModel?.numberOfRowsInSection(section: section) ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: StatisticViewCell.id, for: indexPath) as? StatisticViewCell, let data = viewModel?.dataForTableViewCell(at: indexPath) else {
-            return UITableViewCell()
+        guard let data = viewModel?.dataForTableViewCell(at: indexPath) else { return UITableViewCell() }
+        if data.isSelected {
+            let cell = tableView.dequeueReusableCell(withIdentifier: StatisticViewSelectedCell.id, for: indexPath) as? StatisticViewSelectedCell
+            cell?.configureCellWith(data)
+            return cell ?? UITableViewCell()
+        } else {
+            let cell = tableView.dequeueReusableCell(withIdentifier: StatisticViewCell.id, for: indexPath) as? StatisticViewCell
+            cell?.configureCellWith(data, isExpanded: data.isSelected)
+            return cell ?? UITableViewCell()
         }
-        cell.configureCellWith(data)
-        return cell
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        44
+        return indexPath.section == 0 ? ViewInsets.tableCellHeight : ViewInsets.tableSelectedCellHeight
     }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        viewModel?.didSelectRow(at: indexPath)
+    }
+
+    func tableView(_ tableView: UITableView, didHighlightRowAt indexPath: IndexPath) {
+        if let cell = tableView.cellForRow(at: indexPath) {
+            UIView.animate(withDuration: 0.1, delay: 0, options: .curveEaseIn, animations: {
+                cell.transform = CGAffineTransform(scaleX: 0.97, y: 0.97)
+            })
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, didUnhighlightRowAt indexPath: IndexPath) {
+        if let cell = tableView.cellForRow(at: indexPath) {
+            UIView.animate(withDuration: 0.1, delay: 0, options: .curveEaseOut, animations: {
+                cell.transform = CGAffineTransform.identity
+            })
+        }
+    }
+    
 }
 //MARK: - Extend for PickerView Delegate and DataSource
 extension StatisticView: UIPickerViewDelegate, UIPickerViewDataSource {

@@ -4,6 +4,7 @@
 //
 //  Created by Star Lord on 27/07/2023.
 //
+//  REFACTORING STATE: NOT CHECKED
 
 // Quick intro.
 // Im haven't found the way to make it less hardcoded, so im using SettingsReference and creeation property with the ordered elements for Notifications settings.

@@ -19,6 +19,17 @@
 "statistic.previousMonth" = "Предыдущий месяц";
 "statistic.allTime" = "За все время";
 "statistic.custom" = "Свой вариант";
+//Cell Labels:
+"statistic.creationDate" = "Создано:";
+"statistic.accessNumber" = "Открыто:";
+"statistic.cardsNumber" = "Содержит:";
+"statistic.accessNumber.time" = "раз";
+"statistic.cardsNumber.card" = "карта";
+"statistic.accessNumber.times" = "раз";
+"statistic.cardsNumber.cards" = "карты";
+//Chart Labels:
+"statistic.timeSpent" = "Обучение:";
+"statistic.cardsLearned" = "Повторенных карт";
 //MARK: - SettingsVC
 "settings.title" = "Настройки";
 //Sections
@@ -44,7 +55,7 @@
 "settings.iCloud.sign" = "Подключить ваш Apple ID для передачи данных между устройствами и сохранения в iCloud";
 //MARK: - AddDictionary or WordsVC
 "addDict.title" = "Создание";
-"addWord.title" = "Добавление";
+"addWord.title" = "Добавление новых слов";
 "viewPlaceholderWord" = "Слово ";
 "viewPlaceholderMeaning" = " описание";
 "fieldPlaceholder" = "Имя";
@@ -54,6 +65,10 @@
 "nameAlert" = "Укажите имя";
 "textInfo" = "Пожалуйста, используйте как минимум одну пару слов.";
 "nameInfo" = "Осталось назвать ваш словарь.";
+"addWords.contentSaving.title" = "Содержимое не было сохранено";
+"addWords.contentSaving.text" = "Вы хотите сохранить новые слова?";
+"addWords.contentSaving.save" = "Сохранить";
+"addWords.contentSaving.clear" = "Очистить";
 
 //MARK: - System
 "system.cancel" = "Отменить";
@@ -68,12 +83,16 @@
 "system.yes" = "Да";
 "system.no" = "Нет";
 "system.settings" = "Настройки";
-"system.newLine" = "С новой строки";
+"system.newLine" = "С новой \n строки";
 "system.next" = "Дальше";
 "system.letsGo" = "Поехали";
 "system.skip" = "Пропустить";
 "system.restore" = "Восстановить";
 "system.total" = "Всего";
+"system.min.shortned" = "мин";
+"system.continue" = "Продолжить";
+"system.finish" = "Выйти";
+"system.checked" = "Проверено";
 
 //MARK: - DetailsVC
 "details.title" = "Подробности";
@@ -89,6 +108,18 @@
 
 //MARK: - GameVC
 "game.title" = "Карточки";
+"game.lastCell.congratulations" = "Congratulations";
+"game.lastCell.checked" = "You've checked:";
+"game.lastCell.spending" = "Spending:";
+"game.lastCell.bestResult" = "Best result so far !";
+"game.lastCell.avarageResult.firstPart" = "You've done it ";
+"game.lastCell.avarageResult.secondPart" = " previous time";
+"game.lastCell.slower" = "slower than";
+"game.lastCell.faster" = "faster than";
+"game.lastCell.same" = "as fast as";
+"game.lastCell.cards" = "cards";
+"game.lastCell.min" = "min";
+
 //MARK: - GameDetailsVc
 "gameDetails.information" = "Коснитесь любого слова, чтобы узнать его значение с помощью встроенного словаря iOS. Вы также можете отредактировать или удалить свою карточку при необходимости.";
 "gameDetails.suggestion1Part" = "Если у вас возникли проблемы с доступом к словарям, возможно, потребуется их скачать или обновить. Для этого перейдите в";
@@ -119,6 +150,7 @@
 //MARK: - SearchVC
 "searchVCTitle" = "Поиск";
 "yourWord" = "Введите ваш текст";
+"copied" = "Скопировано";
 //MARK: - SeparatorsVC
 "separators.addChar" = "Добавить символ";
 "separators.placeholder" = "Введите текст";

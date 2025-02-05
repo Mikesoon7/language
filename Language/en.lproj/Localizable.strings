@@ -19,6 +19,17 @@
 "statistic.previousMonth" = "Previous month";
 "statistic.allTime" = "All time";
 "statistic.custom" = "Custom";
+//Cell Labels:
+"statistic.creationDate" = "Created:";
+"statistic.accessNumber" = "Opened:";
+"statistic.cardsNumber" = "Contains:";
+"statistic.accessNumber.time" = "time";
+"statistic.cardsNumber.card" = "card";
+"statistic.accessNumber.times" = "times";
+"statistic.cardsNumber.cards" = "cards";
+//Chart Labels:
+"statistic.timeSpent" = "Studied:";
+"statistic.cardsLearned" = "Cards recalled";
 //MARK: - SettingsVC
 "settings.title" = "Settings";
 //Sections
@@ -44,7 +55,7 @@
 "settings.iCloud.sign" = "Connect your Apple ID to pass your data beteen devices and store it in the iCloud";
 //MARK: - AddDictionary or WordsVC
 "addDict.title" = "Creation";
-"addWord.title" = "Adding";
+"addWord.title" = "Adding new words";
 "viewPlaceholderWord" = "Word ";
 "viewPlaceholderMeaning" = " description";
 "fieldPlaceholder" = "Name";
@@ -54,6 +65,10 @@
 "nameAlert" = "Enter the name";
 "textInfo" = "Please, enter at least 1 pair of words.";
 "nameInfo" = "Almost done. Please, name your dictionary";
+"addWords.contentSaving.title" = "Content wasn't saved";
+"addWords.contentSaving.text" = "Would you like to save your new words?";
+"addWords.contentSaving.save" = "Save";
+"addWords.contentSaving.clear" = "Clear";
 
 //MARK: - System
 "system.cancel" = "Cancel";
@@ -68,12 +83,16 @@
 "system.yes" = "Yes";
 "system.no" = "No";
 "system.settings" = "Settings";
-"system.newLine" = "New line";
+"system.newLine" = "New \n line";
 "system.next" = "Next";
 "system.letsGo" = "Let's go";
 "system.skip" = "Skip";
 "system.restore" = "Restore";
 "system.total" = "Total";
+"system.min.shortned" = "min";
+"system.continue" = "Continue";
+"system.finish" = "Finish";
+"system.checked" = "Checked";
 
 //MARK: - DetailsVC
 "details.title" = "Details";
@@ -89,6 +108,18 @@
 
 //MARK: - GameVC
 "game.title" = "Cards";
+"game.lastCell.congratulations" = "Congratulations";
+"game.lastCell.checked" = "You've checked:";
+"game.lastCell.spending" = "Spending:";
+"game.lastCell.bestResult" = "Best result so far !";
+"game.lastCell.avarageResult.firstPart" = "You've done it ";
+"game.lastCell.avarageResult.secondPart" = " previous time";
+"game.lastCell.slower" = "slower than";
+"game.lastCell.faster" = "faster than";
+"game.lastCell.same" = "as fast as";
+"game.lastCell.cards" = "cards";
+"game.lastCell.min" = "min";
+
 //MARK: - GameDetailsVc
 "gameDetails.information" = "Tap on any word to uncover its meaning using the built-in iOS dictionary. You can also edit or delete your card if necessary";
 "gameDetails.suggestion1Part" = "If you encounter any issues accessing dictionaries, you might need to download or update them. Navigate to";
@@ -119,6 +150,7 @@
 //MARK: - SearchVC
 "searchVCTitle" = "Search";
 "yourWord" = "Insert your text";
+"copied" = "Copied";
 //MARK: - SeparatorsVC
 "separators.addChar" = "Add Character";
 "separators.placeholder" = "Enter Text";

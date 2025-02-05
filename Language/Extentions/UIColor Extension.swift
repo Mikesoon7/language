@@ -12,6 +12,15 @@ public let shadowColorForDarkIdiom = UIColor.clear.cgColor
 public let shadowColorForLightIdiom = UIColor.systemGray2.cgColor
 
 extension UIColor {
+    static var popoverSubviewsBackgroundColour: UIColor {
+        UIColor { traitCollection in
+            if traitCollection.userInterfaceStyle == .dark {
+                return .tertiarySystemBackground
+            } else {
+                return .secondarySystemBackground
+            }
+        }
+    }
     static var systemBackground_Secondary: UIColor {
         UIColor { traitCollection in
             if traitCollection.userInterfaceStyle == .dark {

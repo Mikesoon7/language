@@ -4,6 +4,7 @@
 //
 //  Created by Star Lord on 10/09/2023.
 //
+//  REFACTORING STATE: CHECKED
 
 import Foundation
 import Combine
@@ -72,6 +73,14 @@ class GameDetailsViewModel{
         configureAlert(forDeletion: true, view: view)
     }
     
+    func configureTextPlaceholder() -> String{
+        return "viewPlaceholderWord".localized + " \(settingsModel.appSeparators.value) " + "viewPlaceholderMeaning".localized
+    }
+    func textSeparator() -> String{
+        settingsModel.appSeparators.value
+    }
+    
+
     ///Validate text and saving it dataModel.
     func editWord(with text: String, view: UIView?){
         guard text != currentText else {
@@ -134,7 +143,6 @@ class GameDetailsViewModel{
         
         cancel.setValue(UIColor.label, forKey: "titleTextColor")
         
-        //TODO: - Finish the alert ,essages.
         guard let numberOfWords = getCurrentNumberOfWords() else {
             output.send(.error(DictionaryErrorType.deleteFailed(selectedWord.dictionary?.language ?? "")))
             return

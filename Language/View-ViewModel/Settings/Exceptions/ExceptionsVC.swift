@@ -4,6 +4,7 @@
 //
 //  Created by Star Lord on 10/10/2023.
 //
+//  REFACTORING STATE: CHECKED
 
 import UIKit
 import Combine
@@ -98,8 +99,8 @@ class ExceptionsVC: UIViewController {
     private let heightForExampleViews: CGFloat = 130
     private let insetForSubviews: CGFloat = 20
     
-    private var tableViewHeightAnchor : NSLayoutConstraint!
-    private var lastInfoLabelTopAnchor: NSLayoutConstraint!
+    private var tableViewHeightAnchor : NSLayoutConstraint = .init()
+    private var lastInfoLabelTopAnchor: NSLayoutConstraint = .init()
     
     //MARK: Inherited and initializing methods.
     required init(factory: ViewModelFactory){
@@ -136,7 +137,7 @@ class ExceptionsVC: UIViewController {
                     self.exampleView.updateSeparatorWith(selectedException)
                 case .shouldUpdateTablesHeight:
                     self.updateTableConstrait()
-                    self.exampleView.updateSeparatorWith(selectedSeparator)
+                    self.exampleView.updateSeparatorWith(selectedException)
                 }
             }
             .store(in: &cancellable)
@@ -152,16 +153,25 @@ class ExceptionsVC: UIViewController {
         scrollView.addSubview(contentView)
 
         NSLayoutConstraint.activate([
-            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            scrollView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            scrollView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            scrollView.topAnchor.constraint(
+                equalTo: view.safeAreaLayoutGuide.topAnchor),
+            scrollView.leadingAnchor.constraint(
+                equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            scrollView.bottomAnchor.constraint(
+                equalTo: view.bottomAnchor),
+            scrollView.trailingAnchor.constraint(
+                equalTo: view.safeAreaLayoutGuide.trailingAnchor),
             
-            contentView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
-            contentView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
-            contentView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
-            contentView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
-            contentView.widthAnchor.constraint(equalTo: view.widthAnchor),
+            contentView.topAnchor.constraint(
+                equalTo: scrollView.contentLayoutGuide.topAnchor),
+            contentView.leadingAnchor.constraint(
+                equalTo: scrollView.contentLayoutGuide.leadingAnchor),
+            contentView.trailingAnchor.constraint(
+                equalTo: scrollView.contentLayoutGuide.trailingAnchor),
+            contentView.bottomAnchor.constraint(
+                equalTo: scrollView.contentLayoutGuide.bottomAnchor),
+            contentView.widthAnchor.constraint(
+                equalTo: view.widthAnchor),
 
         ])
     }
@@ -171,43 +181,68 @@ class ExceptionsVC: UIViewController {
         tableView.delegate = self
         tableView.dataSource = self
 
+        //For some reason, computing tableView's height dinamically was the only option.
         tableViewHeightAnchor = tableView.heightAnchor.constraint(
             equalToConstant: CGFloat(tableView.numberOfRows(inSection: 0) * 35 + tableView.numberOfRows(inSection: 1) * 35) + 100.0)
 
         NSLayoutConstraint.activate([
-            headerInfoLabel.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.9),
-            headerInfoLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: insetForSubviews),
-            headerInfoLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            headerInfoLabel.widthAnchor.constraint(
+                equalTo: contentView.widthAnchor, multiplier: 0.9),
+            headerInfoLabel.topAnchor.constraint(
+                equalTo: contentView.topAnchor, constant: insetForSubviews),
+            headerInfoLabel.centerXAnchor.constraint(
+                equalTo: contentView.centerXAnchor),
 
-            firstInfoLabel.topAnchor.constraint(equalTo: headerInfoLabel.bottomAnchor, constant: insetForSubviews),
-            firstInfoLabel.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: .widthMultiplerFor(type: .forViews)),
-            firstInfoLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            firstInfoLabel.topAnchor.constraint(
+                equalTo: headerInfoLabel.bottomAnchor, constant: insetForSubviews),
+            firstInfoLabel.widthAnchor.constraint(
+                equalTo: contentView.widthAnchor, 
+                multiplier: .widthMultiplerFor(type: .forViews)),
+            firstInfoLabel.centerXAnchor.constraint(
+                equalTo: contentView.centerXAnchor),
 
-            exampleView.topAnchor.constraint(equalTo: firstInfoLabel.bottomAnchor, constant: insetForSubviews),
-            exampleView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            exampleView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: .widthMultiplerFor(type: .forViews)),
-            exampleView.heightAnchor.constraint(equalToConstant: heightForExampleViews),
+            
+            exampleView.topAnchor.constraint(
+                equalTo: firstInfoLabel.bottomAnchor, constant: insetForSubviews),
+            exampleView.centerXAnchor.constraint(
+                equalTo: contentView.centerXAnchor),
+            exampleView.widthAnchor.constraint(
+                equalTo: contentView.widthAnchor,
+                multiplier: .widthMultiplerFor(type: .forViews)),
+            exampleView.heightAnchor.constraint(
+                equalToConstant: heightForExampleViews),
 
-            secondInfoLabel.topAnchor.constraint(equalTo: exampleView.bottomAnchor, constant: insetForSubviews),
-            secondInfoLabel.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: .widthMultiplerFor(type: .forViews)),
-            secondInfoLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            secondInfoLabel.topAnchor.constraint(
+                equalTo: exampleView.bottomAnchor, constant: insetForSubviews),
+            secondInfoLabel.widthAnchor.constraint(
+                equalTo: contentView.widthAnchor,
+                multiplier: .widthMultiplerFor(type: .forViews)),
+            secondInfoLabel.centerXAnchor.constraint(
+                equalTo: contentView.centerXAnchor),
 
-            tableView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            tableView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            tableView.topAnchor.constraint(equalTo: secondInfoLabel.bottomAnchor),
+            tableView.leadingAnchor.constraint(
+                equalTo: contentView.leadingAnchor),
+            tableView.trailingAnchor.constraint(
+                equalTo: contentView.trailingAnchor),
+            tableView.topAnchor.constraint(
+                equalTo: secondInfoLabel.bottomAnchor),
             tableViewHeightAnchor,
             
-            lastInfoLabel.topAnchor.constraint(equalTo: tableView.bottomAnchor),
-            lastInfoLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: insetForSubviews),
-            lastInfoLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -insetForSubviews),
-            lastInfoLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -insetForSubviews)
+            lastInfoLabel.topAnchor.constraint(
+                equalTo: tableView.bottomAnchor),
+            lastInfoLabel.leadingAnchor.constraint(
+                equalTo: contentView.leadingAnchor, constant: insetForSubviews),
+            lastInfoLabel.trailingAnchor.constraint(
+                equalTo: contentView.trailingAnchor, constant: -insetForSubviews),
+            lastInfoLabel.bottomAnchor.constraint(
+                equalTo: contentView.bottomAnchor, constant: -insetForSubviews)
         ])
     }
 
     ///Called in response to changing number of rows in tableView.
     func updateTableConstrait(){
         tableView.reloadData()
-        tableViewHeightAnchor?.constant = CGFloat(tableView.numberOfRows(inSection: 0) * 35 + tableView.numberOfRows(inSection: 1) * 35) + 100.0
+        tableViewHeightAnchor.constant = CGFloat(tableView.numberOfRows(inSection: 0) * 35 + tableView.numberOfRows(inSection: 1) * 35) + 100.0
         view.layoutIfNeeded()
     }
     

@@ -4,6 +4,7 @@
 //
 //  Created by Star Lord on 04/04/2023.
 //
+//  REFACTORING STATE: CHECKED
 
 import UIKit
 
@@ -75,14 +76,20 @@ class SettingsTextCell: UITableViewCell {
         contentView.addSubviews(titleLabel, valueLabel, chevronImage)
         
         NSLayoutConstraint.activate([
-            titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 15),
-            titleLabel.centerYAnchor.constraint(equalTo: centerYAnchor),
+            titleLabel.leadingAnchor.constraint(
+                equalTo: leadingAnchor, constant: .outerSpacer),
+            titleLabel.centerYAnchor.constraint(
+                equalTo: centerYAnchor),
             
-            chevronImage.centerYAnchor.constraint(equalTo: centerYAnchor),
-            chevronImage.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -15),
+            chevronImage.centerYAnchor.constraint(
+                equalTo: centerYAnchor),
+            chevronImage.trailingAnchor.constraint(
+                equalTo: trailingAnchor, constant: -.outerSpacer),
             
-            valueLabel.trailingAnchor.constraint(equalTo: chevronImage.leadingAnchor, constant: -5),
-            valueLabel.centerYAnchor.constraint(equalTo: centerYAnchor)
+            valueLabel.trailingAnchor.constraint(
+                equalTo: chevronImage.leadingAnchor, constant: -.nestedSpacer),
+            valueLabel.centerYAnchor.constraint(
+                equalTo: centerYAnchor)
         ])
     }
 }

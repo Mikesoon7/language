@@ -4,6 +4,7 @@
 //
 //  Created by Star Lord on 16/09/2023.
 //
+//  REFACTORING STATE: CHECKED
 
 import Foundation
 import UIKit

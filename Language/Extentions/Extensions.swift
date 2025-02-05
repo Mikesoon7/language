@@ -35,7 +35,36 @@ extension CGFloat{
     static func widthMultiplerFor(type: Multipliers) -> CGFloat{
         return type.multiplier
     }
+    static var outerSpacer = 15.0
+    static var innerSpacer = 12.0
+    static var nestedSpacer = 10.0
+    static var cornerRadius = 9.0
+    static var longOuterSpacer = outerSpacer * 2
+    static var genericButtonHeight = 60.0
+    static var systemButtonSize = 20.0
+    static var keyboardInputAccessoryViewInset = (UIDevice.current.userInterfaceIdiom == .pad ? -44.0 : 0)
     
+    static var fontTitleSize = 23.0
+    static var fontContentSize = 18
+}
+extension UIBlurEffect {
+    static func addBlurBackground(to view: UIView, style: UIBlurEffect.Style = .light) {
+        let blurEffect = UIBlurEffect(style: style)
+        let blurEffectView = UIVisualEffectView(effect: blurEffect)
+        
+        blurEffectView.translatesAutoresizingMaskIntoConstraints = false
+        blurEffectView.layer.cornerRadius = .cornerRadius
+        blurEffectView.clipsToBounds = true
+        blurEffectView.alpha = 0.5
+        view.insertSubview(blurEffectView, at: 0)
+        
+        NSLayoutConstraint.activate([
+            blurEffectView.topAnchor.constraint(equalTo: view.topAnchor),
+            blurEffectView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            blurEffectView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            blurEffectView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+    }
 }
 //MARK: - UINavigationViewController
 extension UINavigationController{
@@ -133,6 +162,13 @@ extension String{
     var localized: String{
         return LanguageChangeManager.shared.localizedString(forKey: self)
     }
+    
+    static func timeString(from seconds: Int) -> String {
+        let minutes = seconds / 60
+        let seconds = seconds % 60
+        return String(format: "%02d:%02d", minutes, seconds)
+    }
+
 }
 //MARK: - UIAlertController
 extension UIAlertController {
@@ -146,33 +182,55 @@ extension UIAlertController {
                                 action2Handler: ((UIAlertAction) -> (Void))? = (.none),
                                 action2Style: UIAlertAction.Style = .default,
                                 sourceView: UIView? = nil,
-                                locationOfTap: CGPoint? = nil) -> UIAlertController{
+                                sourceRect: CGRect? = nil) -> UIAlertController{
         let alert = UIAlertController(title: alertTitle, message: alertMessage, preferredStyle: alertStyle)
         if action1Title != ""{
             let action = UIAlertAction(title: action1Title, style: action1Style, handler: action1Handler)
-            action.setValue(UIColor.label, forKey: "titleTextColor")
+            if action1Style != .destructive {
+                action.setValue(UIColor.label, forKey: "titleTextColor")
+            }
             alert.addAction(action)
         }
         if action2Title != ""{
             let action = UIAlertAction(title: action2Title, style: action2Style, handler: action2Handler)
-            action.setValue(UIColor.label, forKey: "titleTextColor")
+            if action2Style != .destructive {
+                action.setValue(UIColor.label, forKey: "titleTextColor")
+            }
             alert.addAction(action)
         }
-        
         //Blank fir the future iPad support.
-        if UIDevice.current.userInterfaceIdiom == .pad, let popoverController = alert.popoverPresentationController {
-                if let sourceView = sourceView, let tapLocation = locationOfTap {
+        if UIDevice.current.userInterfaceIdiom == .pad,
+           let popoverController = alert.popoverPresentationController {
+                if let sourceView = sourceView, let sourceRect = sourceRect {
                     popoverController.sourceView = sourceView
-                    popoverController.sourceRect = CGRect(x: tapLocation.x, y: tapLocation.y, width: 1, height: 1)
+                    popoverController.sourceRect = sourceRect
                                         
                 } else if let sourceView = sourceView {
                     popoverController.sourceView = sourceView
-                    popoverController.sourceRect = CGRect(x: sourceView.bounds.midX, y: sourceView.bounds.midY, width: 1, height: 1)
-
+                    popoverController.sourceRect = CGRect(x: sourceView.bounds.midX,
+                                                          y: sourceView.bounds.midY,
+                                                          width: 0,
+                                                          height: 0)
                 } else {
-                    fatalError("sourceView is required for presenting actionSheet on iPad")
+//                    let view = UIApplication.shared.connectedScenes
+//                                                        .compactMap { $0 as? UIWindowScene }
+//                                                        .flatMap { $0.windows }
+//                                                        .first { $0.isKeyWindow }?.rootViewController?.view
+                    let view = UIView.screenSizeView()
+//                    popoverController.popoverLayoutMargins = .init(top: view.frame.midY - 100,
+//                                                                   left: view.frame.midX - 100,
+//                                                                   bottom: view.frame.midY - 100,
+//                                                                   right: view.frame.midX - 100)
+                    sourceView
+                    popoverController.sourceView = view
+                    popoverController.sourceRect = CGRect(x: view.bounds.midX,
+                                                          y: view.bounds.midY,
+                                                          width: 0,
+                                                          height: 0)
                 }
-            popoverController.permittedArrowDirections = locationOfTap != nil ? .left : []
+            popoverController.permittedArrowDirections = (sourceRect != nil
+                                                          ? (popoverController.sourceView!.frame.midX > popoverController.sourceRect.midX ? .left : .right)
+                                                          : [])
         }
 
         
@@ -200,5 +258,27 @@ extension UITextView {
                 delegate?.textViewDidChange?(self)
             }
         }
+    }
+}
+extension UIDevice {
+    static var isIPadDevice: Bool = UIDevice.current.userInterfaceIdiom == .pad
+}
+
+extension UITraitCollection {
+    var isRegularWidth: Bool {
+        self.horizontalSizeClass == .regular
+    }
+}
+
+extension UIResponder {
+    func nearestViewController() -> UIViewController? {
+        var responder: UIResponder? = self
+        while responder != nil {
+            if let viewController = responder as? UIViewController {
+                return viewController
+            }
+            responder = responder?.next
+        }
+        return nil
     }
 }

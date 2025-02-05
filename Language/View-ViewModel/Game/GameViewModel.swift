@@ -4,11 +4,27 @@
 //
 //  Created by Star Lord on 22/08/2023.
 //
+//  REFACTORING STATE: CHECKED
 
 import Foundation
 import Combine
 import UIKit
 
+struct HashableWordsEntity: Hashable{
+    var identifier = UUID()
+    var wordEntity: WordsEntity
+    
+    init(wordEntity: WordsEntity) {
+        self.wordEntity = wordEntity
+    }
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(identifier)
+    }
+    
+    static func == (lhs: HashableWordsEntity, rhs: HashableWordsEntity) -> Bool{
+        lhs.identifier == rhs.identifier
+    }
+}
 class GameViewModel{
     
     enum Output{
@@ -18,30 +34,31 @@ class GameViewModel{
     }
     
     //MARK: Properties
-    private var dataModel: Dictionary_WordsManager
+    private var dataModel: DictionaryFullAccess
+    private lazy var updateManager: DataUpdateManager = DataUpdateManager(dataModel: dataModel)
     
     private var dictionary: DictionariesEntity
     private var words: [WordsEntity] = []
     
-//    private var isRandom: Bool
-    private var selectedCardsOrder: DictionariesSettings.CardOrder
-    private var isOneSideMode: Bool
-    private var initialNumberOfCards = Int()
-    private var selectedNumberOfWords: Int
+    private var selectedCardsOrder: DictionariesSettings.CardOrder = .normal
+    private var isOneSideMode: Bool = true
+    private lazy var initialNumberOfCards: Int64 = dictionary.numberOfCards
+    private lazy var selectedNumberOfWords: Int64 = dictionary.numberOfCards
     
     private var selectedTime: Int?
     
     var output = PassthroughSubject<Output, Never>()
     private var cancellable = Set<AnyCancellable>()
-    
     //MARK: Inherited
-    init(dataModel: Dictionary_WordsManager, settingsModel: UserSettingsStorageProtocol, dictionary: DictionariesEntity, selectedOrder: DictionariesSettings.CardOrder, isOneSideMode: Bool, selectedNumber: Int, selectedTime: Int?){
+    init(dataModel: DictionaryFullAccess, settingsModel: UserSettingsStorageProtocol, dictionary: DictionariesEntity, selectedOrder: DictionariesSettings.CardOrder, isOneSideMode: Bool, selectedNumber: Int, selectedTime: Int?){
         self.dataModel = dataModel
         self.dictionary = dictionary
         self.selectedCardsOrder = selectedOrder
         self.isOneSideMode = isOneSideMode
-        self.selectedNumberOfWords = selectedNumber
+        self.selectedNumberOfWords = Int64(selectedNumber)
         self.selectedTime = selectedTime
+        
+        self.initialNumberOfCards = dictionary.numberOfCards
         configureData()
         
         NotificationCenter.default.addObserver(self, selector: #selector(languageDidUpdate(sender:)), name: .appLanguageDidChange,object: nil
@@ -49,33 +66,43 @@ class GameViewModel{
         NotificationCenter.default.addObserver(self, selector: #selector(fontDidChange(sender:)), name: .appFontDidChange,object: nil
         )
 
-        
     }
     deinit {
         NotificationCenter.default.removeObserver(self, name: .appLanguageDidChange, object: nil)
     }
     
-    //MARK: Methods
+        //MARK: Methods
     func configureCompletionPercent() -> Float{
         Float(selectedNumberOfWords) / Float(initialNumberOfCards) * 100.0
     }
     
-    func dataForDiffableDataSource() -> [WordsEntity]{
-        words
+    func dataForDiffableDataSource() -> [HashableWordsEntity]{
+        var words = words.map { HashableWordsEntity(wordEntity: $0) }
+        return words
     }
     
+    func updateLogWith(time: Int, cardsChecked: Int){
+        guard !words.isEmpty else { return }
+        do {
+            try updateManager.logsDidChangeFor(dictionary, sessionTime: Int64(time), checkedCards: Int64(cardsChecked))
+        } catch {
+            output.send(.error(error))
+        }
+    }
+    //TODO: - When deleting, needs to update the slected number in cases when the biggest amount was selected.
     func deleteWord(word: WordsEntity){
         do {
-            try dataModel.deleteWord(word: word)
+            try updateManager.wordDidDeleteFor(dictionary, word: word)
             self.words.removeAll(where: {$0 == word})
+            
         } catch {
             output.send(.error(error))
         }
     }
     
     ///Returning dictionary and word object, conforming passed index.
-    func didSelectCellAt(indexPath: IndexPath) -> DataForDetailsView {
-        return DataForDetailsView(dictionary: dictionary, word: words[indexPath.row])
+    func didSelectCellAt(cell: HashableWordsEntity) -> DataForDetailsView {
+        return DataForDetailsView(dictionary: dictionary, word: cell.wordEntity)
     }
 
     ///Retrieving words from dataModel and assining results of prepare method to local property
@@ -86,30 +113,23 @@ class GameViewModel{
             self.output.send(.error(error))
         }
 
-        self.initialNumberOfCards = words.count
-        if selectedTime != nil {
-            self.words = prepareWords(words: words, selectedOrder: selectedCardsOrder, restrictBy: selectedNumberOfWords, selectedTime: selectedTime)
-        } else {
-            self.words = prepareWords(words: words,
-                                      selectedOrder: selectedCardsOrder,
-                                      restrictBy: selectedNumberOfWords)
-        }
-        
+        self.words = prepareWords(words: words, selectedOrder: selectedCardsOrder, restrictBy: Int(selectedNumberOfWords))
     }
 
+    private func wordsHashableWrapper(word: WordsEntity ) -> HashableWordsEntity {
+        return HashableWordsEntity(wordEntity: word)
+    }
     ///Creating and return  new array after applying passed random value and restriction by passed number
-    private func prepareWords(words: [WordsEntity], selectedOrder: DictionariesSettings.CardOrder, restrictBy number: Int, selectedTime: Int? = nil) -> [WordsEntity]{
+    private func prepareWords(words: [WordsEntity],
+                              selectedOrder: DictionariesSettings.CardOrder,
+                              restrictBy number: Int) -> [WordsEntity]{
+        
         var wordsArray = words
         switch selectedOrder {
         case .normal:   wordsArray = words
         case .random:   wordsArray = words.shuffled()
         case .reverse:  wordsArray = words.reversed()
         }
-//        if selectedTime != nil {
-//            return wordsArray + wordsArray + wordsArray + wordsArray + wordsArray + wordsArray + wordsArray + wordsArray + wordsArray + wordsArray + wordsArray 
-//        } else {
-//            return Array(wordsArray.prefix(upTo: number))
-//        }
         return Array(wordsArray.prefix(upTo: number))
     }
     

@@ -7,7 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		081EB2342D47A9AA00D518C9 /* GameCollectionViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 081EB2332D47A9AA00D518C9 /* GameCollectionViewLayout.swift */; };
+		082495992D159A1D00435AE1 /* TableViewCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = 082495982D159A1D00435AE1 /* TableViewCells.swift */; };
+		0825FE8C2D536DC0000C2114 /* TypingEffectAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0825FE8B2D536DC0000C2114 /* TypingEffectAnimation.swift */; };
 		086854EB2CE5064900CBB618 /* AddWordsPartitialController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 086854EA2CE5064900CBB618 /* AddWordsPartitialController.swift */; };
+		0873A1C02CE62D730048D012 /* CountdownBarButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0873A1BF2CE62D730048D012 /* CountdownBarButton.swift */; };
+		0887CB492D3B962000BACA7C /* DataUpdateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0887CB482D3B962000BACA7C /* DataUpdateManager.swift */; };
+		08AD928B2D4BA5330077BAD9 /* SearchViewHeaderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08AD928A2D4BA5330077BAD9 /* SearchViewHeaderCell.swift */; };
 		08B80D102B924FC300768784 /* FontChangeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B80D0F2B924FC300768784 /* FontChangeManager.swift */; };
 		08C097F72CDD072A00ED875A /* TimedDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08C097F62CDD072A00ED875A /* TimedDetailView.swift */; };
 		08C665422C80D23100427BA5 /* DictionariesSettings+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08C6653A2C80D23000427BA5 /* DictionariesSettings+CoreDataClass.swift */; };
@@ -19,6 +25,10 @@
 		08C665482C80D23100427BA5 /* DictionariesEntity+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08C665402C80D23100427BA5 /* DictionariesEntity+CoreDataClass.swift */; };
 		08C665492C80D23100427BA5 /* DictionariesEntity+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08C665412C80D23100427BA5 /* DictionariesEntity+CoreDataProperties.swift */; };
 		08C6654B2C80D35400427BA5 /* CoreData_Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08C6654A2C80D35400427BA5 /* CoreData_Settings.swift */; };
+		08C7E7062D3536E2006E6C55 /* PopUpTimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08C7E7052D3536E2006E6C55 /* PopUpTimerView.swift */; };
+		08CEFF1F2D4E6AF300E6DF82 /* SearchCellDetailedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08CEFF1E2D4E6AF300E6DF82 /* SearchCellDetailedView.swift */; };
+		08DA98B12D00AEE8007A3C00 /* CustomTableViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08DA98B02D00AEE8007A3C00 /* CustomTableViewDelegate.swift */; };
+		08EA16F62CFB1E3A00E1CA56 /* StatisticViewSelectedCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08EA16F52CFB1E3A00E1CA56 /* StatisticViewSelectedCell.swift */; };
 		1567E4F8113AE56A0C77715E /* Pods_Learny.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0EA2F0AB3029B88D7E50A487 /* Pods_Learny.framework */; };
 		27C0BF9BE55BE402BB327A84 /* Pods_Learny_LanguageUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 65588950843395498C7458E3 /* Pods_Learny_LanguageUITests.framework */; };
 		7D3C3F9F2B1745A200025234 /* UIVC Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D3C3F9E2B1745A200025234 /* UIVC Extension.swift */; };
@@ -128,8 +138,15 @@
 
 /* Begin PBXFileReference section */
 		0711FB6F83B94DDABBAB795D /* Pods-Learny.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Learny.debug.xcconfig"; path = "Target Support Files/Pods-Learny/Pods-Learny.debug.xcconfig"; sourceTree = "<group>"; };
+		081EB2332D47A9AA00D518C9 /* GameCollectionViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameCollectionViewLayout.swift; sourceTree = "<group>"; };
+		082495982D159A1D00435AE1 /* TableViewCells.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableViewCells.swift; sourceTree = "<group>"; };
+		0825FE8B2D536DC0000C2114 /* TypingEffectAnimation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypingEffectAnimation.swift; sourceTree = "<group>"; };
 		08594B0B2B39A95A004A1398 /* Learny.workspace.xcworkspace */ = {isa = PBXFileReference; lastKnownFileType = wrapper.workspace; path = Learny.workspace.xcworkspace; sourceTree = "<group>"; };
 		086854EA2CE5064900CBB618 /* AddWordsPartitialController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddWordsPartitialController.swift; sourceTree = "<group>"; };
+		0873A1BF2CE62D730048D012 /* CountdownBarButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountdownBarButton.swift; sourceTree = "<group>"; };
+		0887CB482D3B962000BACA7C /* DataUpdateManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataUpdateManager.swift; sourceTree = "<group>"; };
+		089F83AB2D1C07F10093800B /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/Localizable.strings; sourceTree = "<group>"; };
+		08AD928A2D4BA5330077BAD9 /* SearchViewHeaderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewHeaderCell.swift; sourceTree = "<group>"; };
 		08B80D0F2B924FC300768784 /* FontChangeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontChangeManager.swift; sourceTree = "<group>"; };
 		08C097F62CDD072A00ED875A /* TimedDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimedDetailView.swift; sourceTree = "<group>"; };
 		08C6653A2C80D23000427BA5 /* DictionariesSettings+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DictionariesSettings+CoreDataClass.swift"; sourceTree = SOURCE_ROOT; };
@@ -141,6 +158,10 @@
 		08C665402C80D23100427BA5 /* DictionariesEntity+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DictionariesEntity+CoreDataClass.swift"; sourceTree = SOURCE_ROOT; };
 		08C665412C80D23100427BA5 /* DictionariesEntity+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DictionariesEntity+CoreDataProperties.swift"; sourceTree = SOURCE_ROOT; };
 		08C6654A2C80D35400427BA5 /* CoreData_Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreData_Settings.swift; sourceTree = "<group>"; };
+		08C7E7052D3536E2006E6C55 /* PopUpTimerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopUpTimerView.swift; sourceTree = "<group>"; };
+		08CEFF1E2D4E6AF300E6DF82 /* SearchCellDetailedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchCellDetailedView.swift; sourceTree = "<group>"; };
+		08DA98B02D00AEE8007A3C00 /* CustomTableViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTableViewDelegate.swift; sourceTree = "<group>"; };
+		08EA16F52CFB1E3A00E1CA56 /* StatisticViewSelectedCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticViewSelectedCell.swift; sourceTree = "<group>"; };
 		0EA2F0AB3029B88D7E50A487 /* Pods_Learny.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Learny.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4EF67BB85DE5E9D3190CB709 /* Pods-Learny-LanguageUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Learny-LanguageUITests.debug.xcconfig"; path = "Target Support Files/Pods-Learny-LanguageUITests/Pods-Learny-LanguageUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		549F8354F82A699C9E79DE75 /* Pods-Learny-LanguageUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Learny-LanguageUITests.release.xcconfig"; path = "Target Support Files/Pods-Learny-LanguageUITests/Pods-Learny-LanguageUITests.release.xcconfig"; sourceTree = "<group>"; };
@@ -157,7 +178,7 @@
 		9A0BD53929DC531F00845328 /* SettingsTextCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTextCell.swift; sourceTree = "<group>"; };
 		9A1F67C929DFFD39003993C5 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		9A1F67CC29E00253003993C5 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
-		9A1F67CD29E00262003993C5 /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = uk.lproj/Localizable.strings; sourceTree = "<group>"; };
+		9A1F67CD29E00262003993C5 /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = ua.lproj/Localizable.strings; sourceTree = "<group>"; };
 		9A1F67CE29E166C4003993C5 /* LanguageChangeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageChangeManager.swift; sourceTree = "<group>"; };
 		9A1F67D029E18BBE003993C5 /* SettingsImageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsImageCell.swift; sourceTree = "<group>"; };
 		9A1F67D329E3F69A003993C5 /* SettingsHeaderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsHeaderCell.swift; sourceTree = "<group>"; };
@@ -270,6 +291,34 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		089F83AA2D17048E0093800B /* Non-Used */ = {
+			isa = PBXGroup;
+			children = (
+				9A5641FB2A5D758A00027BCD /* AddWords */,
+				082495982D159A1D00435AE1 /* TableViewCells.swift */,
+				9A94B95A2A5ED84900DF6E4C /* MenuStatisticView.swift */,
+				9A883CED2A6EA0A6008682F3 /* StatisticCellViewModel.swift */,
+			);
+			path = "Non-Used";
+			sourceTree = "<group>";
+		};
+		089F83AC2D1C62EF0093800B /* DetailsSubviews */ = {
+			isa = PBXGroup;
+			children = (
+				08C097F62CDD072A00ED875A /* TimedDetailView.swift */,
+			);
+			path = DetailsSubviews;
+			sourceTree = "<group>";
+		};
+		08BCAF6C2D32A6300062F490 /* AddWords */ = {
+			isa = PBXGroup;
+			children = (
+				086854EA2CE5064900CBB618 /* AddWordsPartitialController.swift */,
+				9A5D51D22A67E05300F85720 /* AddWordsViewModel.swift */,
+			);
+			path = AddWords;
+			sourceTree = "<group>";
+		};
 		193AA18A94BF67BB62C02EA7 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -343,7 +392,6 @@
 			isa = PBXGroup;
 			children = (
 				9AAECFC129B50A5300439C0B /* AddWordsView.swift */,
-				9A5D51D22A67E05300F85720 /* AddWordsViewModel.swift */,
 			);
 			path = AddWords;
 			sourceTree = "<group>";
@@ -353,8 +401,8 @@
 			children = (
 				9AFFCE8029A4DFEE00C12B94 /* DetailsView.swift */,
 				9A5D51D42A6808CC00F85720 /* DetailsViewModel.swift */,
-				08C097F62CDD072A00ED875A /* TimedDetailView.swift */,
-				086854EA2CE5064900CBB618 /* AddWordsPartitialController.swift */,
+				08BCAF6C2D32A6300062F490 /* AddWords */,
+				089F83AC2D1C62EF0093800B /* DetailsSubviews */,
 			);
 			path = Details;
 			sourceTree = "<group>";
@@ -537,10 +585,12 @@
 		9A94B9572A5E178600DF6E4C /* Related */ = {
 			isa = PBXGroup;
 			children = (
+				089F83AA2D17048E0093800B /* Non-Used */,
 				9A7B91CE298D6D9900E60CDD /* Assets.xcassets */,
 				08594B0B2B39A95A004A1398 /* Learny.workspace.xcworkspace */,
 				9A9970FD29DB2D86007EE635 /* LaunchAnimation.swift */,
 				9A1F67CE29E166C4003993C5 /* LanguageChangeManager.swift */,
+				0887CB482D3B962000BACA7C /* DataUpdateManager.swift */,
 				08B80D0F2B924FC300768784 /* FontChangeManager.swift */,
 				9A883CE52A6C68E0008682F3 /* DictionariesLogsConverter.swift */,
 				9AF756872AAA514200CE3B25 /* StatisticLogsConverter.swift */,
@@ -549,6 +599,9 @@
 				7DB5A5AD2AF8D7FE003B0E0A /* HiglightLayoutManager.swift */,
 				9AD4E2462A963A89009090EA /* ViewModelFactory.swift */,
 				9A4D21192AB0B74400EA9196 /* CustomNavigationController.swift */,
+				0873A1BF2CE62D730048D012 /* CountdownBarButton.swift */,
+				08DA98B02D00AEE8007A3C00 /* CustomTableViewDelegate.swift */,
+				0825FE8B2D536DC0000C2114 /* TypingEffectAnimation.swift */,
 			);
 			path = Related;
 			sourceTree = "<group>";
@@ -558,6 +611,8 @@
 			children = (
 				9AA71C6729C9CE9B008A193B /* CollectionViewCell.swift */,
 				9AA71C6029C34EA8008A193B /* CollectionViewLastCell.swift */,
+				08C7E7052D3536E2006E6C55 /* PopUpTimerView.swift */,
+				081EB2332D47A9AA00D518C9 /* GameCollectionViewLayout.swift */,
 			);
 			path = GameSubviews;
 			sourceTree = "<group>";
@@ -589,7 +644,6 @@
 				9A5642072A5E15AB00027BCD /* Statistic */,
 				9A5641F92A5D750400027BCD /* Edit */,
 				9A5641FA2A5D756800027BCD /* AddDictionary */,
-				9A5641FB2A5D758A00027BCD /* AddWords */,
 				9A5641FC2A5D759E00027BCD /* Details */,
 				9A5642042A5E155000027BCD /* Search */,
 				9A5641FD2A5D75AD00027BCD /* Settings */,
@@ -602,7 +656,9 @@
 			isa = PBXGroup;
 			children = (
 				9AB43A1529F3E72D00984350 /* SearchViewCell.swift */,
+				08AD928A2D4BA5330077BAD9 /* SearchViewHeaderCell.swift */,
 				9AB039D52A9175A6003FE10C /* CustomSearchBar.swift */,
+				08CEFF1E2D4E6AF300E6DF82 /* SearchCellDetailedView.swift */,
 			);
 			path = SearchSubviews;
 			sourceTree = "<group>";
@@ -649,6 +705,7 @@
 				9A02AA5F2AA2040700644820 /* PickerCallView.swift */,
 				9A9077592A9CB83D00C88DD3 /* PieStatisticView.swift */,
 				9A02AA5B2AA0B47100644820 /* StatisticViewCell.swift */,
+				08EA16F52CFB1E3A00E1CA56 /* StatisticViewSelectedCell.swift */,
 			);
 			path = StatisticSubviews;
 			sourceTree = "<group>";
@@ -658,8 +715,6 @@
 			children = (
 				9AB40FF129CC6A9D00353FFC /* MenuDictionaryCell.swift */,
 				9AFFCE7A299D073D00C12B94 /* MenuAddDictionaryCell.swift */,
-				9A94B95A2A5ED84900DF6E4C /* MenuStatisticView.swift */,
-				9A883CED2A6EA0A6008682F3 /* StatisticCellViewModel.swift */,
 			);
 			path = MenuSubviews;
 			sourceTree = "<group>";
@@ -760,6 +815,8 @@
 				en,
 				ru,
 				uk,
+				tr,
+				ua,
 			);
 			mainGroup = 9A7B91B9298D6D9600E60CDD;
 			packageReferences = (
@@ -914,6 +971,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9A75413D2A70042D0064BE4E /* SearchViewModel.swift in Sources */,
+				082495992D159A1D00435AE1 /* TableViewCells.swift in Sources */,
 				08C665432C80D23100427BA5 /* DictionariesSettings+CoreDataProperties.swift in Sources */,
 				9A90775A2A9CB83D00C88DD3 /* PieStatisticView.swift in Sources */,
 				9AAC8A072A88E9E00068828C /* CustomUserDefaults.swift in Sources */,
@@ -925,7 +983,9 @@
 				9A1F67D129E18BBE003993C5 /* SettingsImageCell.swift in Sources */,
 				9AB43A1929F40EA000984350 /* LearnyLocal.xcdatamodeld in Sources */,
 				9ABC83A42A582C3F00E630F5 /* MenuView.swift in Sources */,
+				0887CB492D3B962000BACA7C /* DataUpdateManager.swift in Sources */,
 				08C665482C80D23100427BA5 /* DictionariesEntity+CoreDataClass.swift in Sources */,
+				08CEFF1F2D4E6AF300E6DF82 /* SearchCellDetailedView.swift in Sources */,
 				9AA71C5B29C20894008A193B /* MainGameVC.swift in Sources */,
 				9A77B0242AD58974006DA151 /* ExceptionsViewModel.swift in Sources */,
 				08C665462C80D23100427BA5 /* WordsEntity+CoreDataClass.swift in Sources */,
@@ -942,6 +1002,7 @@
 				9AB9A96129FD71F000694FE8 /* SeparatorsView.swift in Sources */,
 				9A9970FE29DB2D86007EE635 /* LaunchAnimation.swift in Sources */,
 				9AB43A3629F4695B00984350 /* CoreDataMethods.swift in Sources */,
+				081EB2342D47A9AA00D518C9 /* GameCollectionViewLayout.swift in Sources */,
 				9A1F67D429E3F69A003993C5 /* SettingsHeaderCell.swift in Sources */,
 				9A5D51D52A6808CC00F85720 /* DetailsViewModel.swift in Sources */,
 				9AA71C6829C9CE9B008A193B /* CollectionViewCell.swift in Sources */,
@@ -952,10 +1013,12 @@
 				9AE509352997C07700D86DD7 /* AddDictionaryView.swift in Sources */,
 				9A7E9F932AA5F06600C702B4 /* StatisticViewModel.swift in Sources */,
 				086854EB2CE5064900CBB618 /* AddWordsPartitialController.swift in Sources */,
+				08DA98B12D00AEE8007A3C00 /* CustomTableViewDelegate.swift in Sources */,
 				9AB039D62A9175A6003FE10C /* CustomSearchBar.swift in Sources */,
 				9A883CE82A6C6BC1008682F3 /* CoreData_Dictionary.swift in Sources */,
 				9A883CEA2A6D375C008682F3 /* CoreData_Words.swift in Sources */,
 				9A999CA72A7DA4050017C30C /* NotificationDayPicker.swift in Sources */,
+				08AD928B2D4BA5330077BAD9 /* SearchViewHeaderCell.swift in Sources */,
 				9AADA5162A8E298C0044708E /* SeparatorsExampleView.swift in Sources */,
 				9A5641FF2A5D779400027BCD /* EditViewModel.swift in Sources */,
 				08B80D102B924FC300768784 /* FontChangeManager.swift in Sources */,
@@ -987,6 +1050,7 @@
 				08C665452C80D23100427BA5 /* DictionariesAccessLog+CoreDataProperties.swift in Sources */,
 				9AFFCE7D299E747400C12B94 /* StatisticView.swift in Sources */,
 				7D3C3FA12B17462500025234 /* UIColor Extension.swift in Sources */,
+				0873A1C02CE62D730048D012 /* CountdownBarButton.swift in Sources */,
 				9A7B91C6298D6D9600E60CDD /* AppDelegate.swift in Sources */,
 				9AAECFC229B50A5300439C0B /* AddWordsView.swift in Sources */,
 				9AB40FF229CC6A9D00353FFC /* MenuDictionaryCell.swift in Sources */,
@@ -996,8 +1060,11 @@
 				9AFFCE8129A4DFEF00C12B94 /* DetailsView.swift in Sources */,
 				9AAECFBE29B5052F00439C0B /* SettingsVC.swift in Sources */,
 				08C665442C80D23100427BA5 /* DictionariesAccessLog+CoreDataClass.swift in Sources */,
+				08C7E7062D3536E2006E6C55 /* PopUpTimerView.swift in Sources */,
+				08EA16F62CFB1E3A00E1CA56 /* StatisticViewSelectedCell.swift in Sources */,
 				9A5D51D92A680F4E00F85720 /* CoreDataChangeTypes.swift in Sources */,
 				9AB9A95F29FD70A800694FE8 /* SeparatorsCell.swift in Sources */,
+				0825FE8C2D536DC0000C2114 /* TypingEffectAnimation.swift in Sources */,
 				9AD4E2452A960163009090EA /* InformationView.swift in Sources */,
 				9AF756882AAA514200CE3B25 /* StatisticLogsConverter.swift in Sources */,
 				9AABAEB22A88E5D40032C008 /* SettingsViewModel.swift in Sources */,
@@ -1043,6 +1110,7 @@
 				9A1F67C929DFFD39003993C5 /* en */,
 				9A1F67CC29E00253003993C5 /* ru */,
 				9A1F67CD29E00262003993C5 /* uk */,
+				089F83AB2D1C07F10093800B /* tr */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";

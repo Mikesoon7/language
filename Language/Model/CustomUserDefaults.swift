@@ -42,7 +42,6 @@ protocol UserSettingsStorageProtocol{
     var appSearchBarPosition: AppSearchBarPosition  { get set }
     var appSeparators: AppPairSeparators            { get set }
     var appExceptions: AppExceptions                { get set }
-//    var appDuplicates: AppDuplicates                { get set }
     
     init(manager: UserSettingsManagerProtocol, helper: UserSettingsUpdateHelper)
     
@@ -284,7 +283,7 @@ enum AppTheme: String, Codable, CaseIterable {
 }
 enum AppLanguage: String, Codable, CaseIterable{
     static let key = "AppLanguage"
-    case english, russian, ukrainian
+    case english, russian, ukrainian, turkish
     
     var title: String{
         return "settings.general.language".localized
@@ -294,13 +293,15 @@ enum AppLanguage: String, Codable, CaseIterable{
         case .english:      return "English"
         case .russian:      return "Русский"
         case .ukrainian:    return "Українська"
+        case .turkish:      return "Türkçe"
         }
     }
     var languageCode: String {
         switch self {
         case .english:      return "en"
         case .russian:      return "ru"
-        case .ukrainian:    return "uk"
+        case .ukrainian:    return "ua"
+        case .turkish:      return "tr"
         }
     }
 }
@@ -319,7 +320,7 @@ struct AppFont: Codable {
         return "settings.general.fonts".localized
     }
     var value: String {
-        return selectedFontName
+        return selectedFont.familyName
     }
 }
 

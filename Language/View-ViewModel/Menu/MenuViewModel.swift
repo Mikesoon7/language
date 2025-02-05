@@ -4,6 +4,7 @@
 //
 //  Created by Star Lord on 07/07/2023.
 //
+//  REFACTORING STATE: CHECKED
 
 import UIKit
 import CoreData
@@ -37,9 +38,9 @@ final class MenuViewModel{
         model.dictionaryDidChange
             .sink { [weak self] type in
                 switch type {
-                case .wasDeleted(let section):
+                case .wasDeleted(let item):
                     self?.fetch()
-                    self?.output.send(.needDelete(section))
+                    self?.output.send(.needDelete(item))
                 case .wasAdded:
                     self?.fetch()
                     self?.output.send(.needReload)
@@ -92,7 +93,7 @@ final class MenuViewModel{
     //MARK: Cell swipe actions related.
     //Delete dictioanary action was tapped.
     func deleteDictionary(at index: IndexPath) {
-        let dictionary = dictionaries[index.section]
+        let dictionary = dictionaries[index.item]
         do {
             try model.delete(dictionary: dictionary)
         } catch {
@@ -101,28 +102,43 @@ final class MenuViewModel{
     }
     //Edit dictionary action was tapped.
     func editDictionary(at index: IndexPath) {
-        let dictionary = dictionaries[index.section]
+        let dictionary = dictionaries[index.item]
         output.send(.shouldPresentEditView(dictionary))
     }
     
+    //TODO: - Finish share functionality implementation.
+    func shareCellsInformation(at index: IndexPath) -> String{
+        let dictionary = dictionaries[index.item]
+        var words = "This text represents dictionary information retrieved from Learny Cards"
+        do {
+            let pairs = try model.fetchWords(for: dictionary)
+            pairs.forEach({ word in
+                words.append("\n" + word.word + " - " + word.meaning)
+            })
+        } catch {
+            output.send(.error(error))
+        }
+        return words
+    }
+    
     //MARK: TableView Related
-    func dataForTableCellAt(section: Int) -> DictionariesEntity? {
-        guard section != dictionaries.count else {
+    func dataForTableCellAt(item: Int) -> DictionariesEntity? {
+        guard item != dictionaries.count else {
             return nil
         }
-        return dictionaries[section]
+        return dictionaries[item]
     }
     
     func numberOfSectionsInTableView() -> Int{
         return dictionaries.count + 1
     }
     
-    func didSelectTableRowAt(section: Int){
-        guard section != dictionaries.count else {
+    func didSelectTableRowAt(item: Int){
+        guard item != dictionaries.count else {
             output.send(.shouldPresentAddView)
             return
         }
-        let dictionary = dictionaries[section]
+        let dictionary = dictionaries[item]
         output.send(.shouldPresentDetailsView(dictionary))
     }
     

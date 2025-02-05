@@ -4,6 +4,7 @@
 //
 //  Created by Star Lord on 19/07/2023.
 //
+//  REFACTORING STATE: CHECKED
 
 import Foundation
 import Combine
@@ -16,18 +17,17 @@ class DetailsViewModel{
         case shouldUpdateLangauge
         case shouldUpdateFont
         case shouldUpdatePicker
-        case shouldPresentAddWordsView(DictionariesEntity)
-        case shouldPresentGameView(DictionariesEntity, Int)
     }
     
     private var model: DictionaryFullAccess
+    private var updateManager: DataUpdateManager
     var dictionary: DictionariesEntity
+    
     private var cancellable = Set<AnyCancellable>()
     
     private let cardsDivider: Int = 10
     private var numberOfCards: Int = 0
     
-    private lazy var selectedNumber: Int = min(numberOfCards, cardsDivider)
     
     private var selectedOrder: DictionariesSettings.CardOrder
     private var hideTransaltion: Bool
@@ -37,21 +37,24 @@ class DetailsViewModel{
     
     init(model: DictionaryFullAccess, dictionary: DictionariesEntity){
         self.model = model
+        self.updateManager = DataUpdateManager(dataModel: model)
         self.dictionary = dictionary
         self.numberOfCards = Int(dictionary.numberOfCards)
         
         let dictionaryDetails = model.fetchSettings(for: dictionary)
         self.selectedOrder = dictionaryDetails?.cardOrder ?? .normal
         self.hideTransaltion = dictionaryDetails?.isOneSideMode ?? false
-        self.selectedDisplayNumber = Int(dictionaryDetails?.selectedNumber ?? dictionary.numberOfCards)
-        
-        model.dictionaryDidChange
-            .sink { type in
-                switch type {
-                case .wasUpdated(_):
-                    self.updateDictionary()
-                default:
-                    break
+        self.selectedDisplayNumber = Int(dictionaryDetails?.selectedNumber ?? Int64(min(numberOfCards, cardsDivider)))
+
+        guard selectedDisplayNumber <= numberOfCards else {
+            selectedDisplayNumber = numberOfCards
+            return
+        }
+
+        model.settingsDidChange
+            .sink { [weak self] type in
+                if type {
+                    self?.updateDictionary()
                 }
             }
             .store(in: &cancellable)
@@ -67,35 +70,20 @@ class DetailsViewModel{
     }
     
     
-    
     func updateDictionary(){
-        if selectedNumber == numberOfCards {
-            selectedNumber = Int(dictionary.numberOfCards)
-            selectedDisplayNumber = Int(dictionary.numberOfCards)
+        guard let settings = model.fetchSettings(for: dictionary) else {
+            return
         }
-        self.numberOfCards = Int(dictionary.numberOfCards)
+        
+        selectedDisplayNumber =     Int(settings.selectedNumber)
+        selectedOrder =             settings.cardOrder
+        hideTransaltion =           settings.isOneSideMode
+        self.numberOfCards =        Int(dictionary.numberOfCards)
+
+
         output.send(.shouldUpdatePicker)
     }
     
-    func addWordsButtonTapped(){
-        output.send(.shouldPresentAddWordsView(dictionary))
-    }
-    
-    func startButtonTapped(){
-        self.incrementLogsCount(for: dictionary)
-        output.send(.shouldPresentGameView(dictionary, selectedNumber))
-    }
-    
-    
-    //MARK: Modify statistic related to the selected dictionary.
-    //Called when viewModel passing the values for GameVc initialization.
-    func incrementLogsCount(for dict: DictionariesEntity) {
-        do {
-            try model.accessLog(for: dict)
-        } catch {
-            output.send(.error(error))
-        }
-    }
     //MARK: Switch related
     func selectedCardsOrder() -> DictionariesSettings.CardOrder {
         return self.selectedOrder
@@ -106,33 +94,23 @@ class DetailsViewModel{
     func selectedNumberOfCards() -> Int {
         return selectedDisplayNumber
     }
+    
     //MARK: Modify details related to the dictionary.
     func saveDetails(orderSelection: DictionariesSettings.CardOrder, isOneSideMode: Bool) {
         do {
-            try model.accessSettings(for: dictionary, orderSelection: orderSelection, numberofCards: Int64(selectedDisplayNumber), oneSideMode: isOneSideMode)
+            try updateManager.settingsDidChangeFor(dictionary,
+                                                   isOneSideMode: isOneSideMode,
+                                                   cardsOrderSelection: orderSelection,
+                                                   selectedDisplayNumber: Int64(selectedDisplayNumber)
+            )
         } catch {
             output.send(.error(error))
         }
     }
 
-//    func saveDetailsTest(isRandom: Bool, isOneSideMode: Bool) {
-//        do {
-//            try model.accessSettings(for: dictionary, with: isRandom, numberofCards: Int64(selectedDisplayNumber), oneSideMode: isOneSideMode)
-//        } catch {
-//            output.send(.error(error))
-//        }
-//    }
-
-    func configureTextPlaceholder() -> String{
-        return "viewPlaceholderWord".localized + "  " + "viewPlaceholderMeaning".localized
-//        \(settingModel.appSeparators.value)
-    }
-
-    
     
     //MARK: Picker related.
     func selectedRowForPicker() -> Int {
-//        let number = numberOfRowsInComponent()
         let selectedRow = Int(selectedDisplayNumber / cardsDivider)
         switch selectedDisplayNumber % cardsDivider {
         case 0:
@@ -159,9 +137,14 @@ class DetailsViewModel{
         }
     }
     func didSelectPickerRow(row: Int){
-        selectedDisplayNumber = Int(titleForPickerAt(row: row)) ?? numberOfCards
+        do {
+            try updateManager.settingsDidChangeFor(dictionary, selectedDisplayNumber: Int64(titleForPickerAt(row: row)) ?? Int64(numberOfCards))
+        } catch {
+            output.send(.error(error))
+        }
     }
 
+    //MARK: Actions
     @objc func languageDidChange(sender: Any){
         output.send(.shouldUpdateLangauge)
     }

@@ -18,7 +18,7 @@ extension UIViewController{
         alertController.addAction(UIAlertAction(title: "system.agreeFormal".localized, style: .default))
         self.present(alertController, animated: true, completion: nil)
     }
-    func presentError(_ error: Error) {
+    func presentError(_ error: Error, sourceView: UIView?) {
         var title = String()
         var message = "unknownError.message".localized
         
@@ -73,7 +73,9 @@ extension UIViewController{
                 alertMessage: message,
                 alertStyle: .alert,
                 action1Title: "system.agreeFormal".localized,
-                action1Style: .cancel)
+                action1Style: .cancel,
+                sourceView: sourceView
+        )
         self.present(alert, animated: true, completion: nil)
     }
 }

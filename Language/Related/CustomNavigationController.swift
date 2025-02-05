@@ -55,6 +55,24 @@ class CustomNavigationController: UINavigationController {
             initialLaunch.toggle()
         }
     }
+    override func present(_ viewControllerToPresent: UIViewController, animated flag: Bool, completion: (() -> Void)? = nil) {
+        if viewControllerToPresent.modalPresentationStyle == .formSheet {
+            var multiplier: CGFloat
+            if traitCollection.horizontalSizeClass == .regular && (UIDevice.current.orientation == .landscapeLeft || UIDevice.current.orientation == .landscapeRight) {
+                multiplier = 0.6
+            } else {
+                multiplier = 0.9
+            }
+                
+            let screenWidth = UIScreen.main.bounds.width
+            
+            viewControllerToPresent.preferredContentSize = CGSize(width: screenWidth * multiplier,
+                                               height: screenWidth * multiplier)
+        }
+
+        super.present(viewControllerToPresent, animated: flag, completion: completion)
+    }
+
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)

@@ -4,6 +4,7 @@
 //
 //  Created by Star Lord on 22/04/2023.
 //
+//  REFACTORING STATE: CHECKED
 
 import UIKit
 
@@ -21,17 +22,10 @@ struct DataForSearchCell{
     }
 }
 
-class SearchViewCell: UITableViewCell {
+class SearchCell: UICollectionViewCell {
     
     static let identifier = "searchCell"
-
-    //Stores cells dimentions state.
-    var isExpanded: Bool = false {
-        didSet {
-            changeLabelsAppearence(expand: isExpanded)
-        }
-    }
-
+    
     //MARK: - Views
     let wordLabel: UILabel = {
         let label = UILabel()
@@ -54,19 +48,19 @@ class SearchViewCell: UITableViewCell {
     private var descriptionLabelConstraints: [NSLayoutConstraint] = []
     private var wordLabelConstraints: [NSLayoutConstraint] = []
     
-    private let inset = CGFloat(10)
-
     //MARK: - Inherited Methods
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
+    override init(frame: CGRect) {
+        super.init(frame: frame)
         configureContentView()
         configureCellSubviews()
     }
     required init?(coder: NSCoder) {
         fatalError("Unable to use Coder")
     }
+    
     override func prepareForReuse() {
-        super.prepareForReuse()
+        wordLabel.text = nil
+        descriptionLabel.text = nil
         wordLabel.numberOfLines = 1
         descriptionLabel.numberOfLines = 1
     }
@@ -91,7 +85,7 @@ class SearchViewCell: UITableViewCell {
     //MARK: Setting up cells properties
     func configureContentView(){
         contentView.backgroundColor = .secondarySystemBackground
-        contentView.layer.cornerRadius = 9
+        contentView.layer.cornerRadius = .cornerRadius
     }
 
     //MARK: - Cell SetUp
@@ -99,37 +93,31 @@ class SearchViewCell: UITableViewCell {
         contentView.addSubviews(wordLabel, descriptionLabel)
         
         wordLabelConstraints = [
-            wordLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: inset * 2 ),
-            wordLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: inset),
-            wordLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -inset),
-            wordLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -inset * 2)
+            wordLabel.topAnchor.constraint(equalTo: contentView.topAnchor,
+                                           constant: .nestedSpacer ),
+            wordLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, 
+                                               constant: .nestedSpacer),
+            wordLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor,
+                                                constant: -.nestedSpacer),
+
         ]
         
         descriptionLabelConstraints = [
-            wordLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: inset),
-            wordLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: inset),
-            wordLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -inset),
+            wordLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor,
+                                               constant: .nestedSpacer),
+            wordLabel.topAnchor.constraint(equalTo: contentView.topAnchor, 
+                                           constant: .nestedSpacer),
+            wordLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor,
+                                                constant: -.nestedSpacer),
             
-            descriptionLabel.topAnchor.constraint(equalTo: wordLabel.bottomAnchor, constant: inset),
-            descriptionLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: inset),
-            descriptionLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -inset),
-            descriptionLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -inset)
+            descriptionLabel.topAnchor.constraint(equalTo: wordLabel.bottomAnchor, 
+                                                  constant: .nestedSpacer),
+            descriptionLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor,
+                                                      constant: .nestedSpacer),
+            descriptionLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor,
+                                                     constant: -.nestedSpacer),
+            descriptionLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor,
+                                                       constant: -.nestedSpacer)
         ]
-
     }
-    //Smoothly changing lines number.
-    func changeLabelsAppearence(expand: Bool){
-        UIView.transition(with: wordLabel, duration: 0.5, options: [ .transitionCrossDissolve, .curveEaseOut] ) {
-            self.wordLabel.numberOfLines = expand ? 0: 1
-            self.setNeedsUpdateConstraints()
-            self.layoutIfNeeded()
-            
-        }
-        UIView.transition(with: self.descriptionLabel, duration: 0.5, options: [ .transitionCrossDissolve, .curveEaseOut], animations: {
-            self.descriptionLabel.numberOfLines = expand ? 0: 1
-            self.setNeedsUpdateConstraints()
-            self.layoutIfNeeded()
-        })
-    }
-
 }

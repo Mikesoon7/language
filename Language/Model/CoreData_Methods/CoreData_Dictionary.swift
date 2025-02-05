@@ -40,6 +40,7 @@ extension CoreDataHelper: DictionaryManaging{
             throw error
         }
         
+        dictionary.creationDate = Date().timeStripped
         dictionary.words = NSSet(array: words)
         dictionary.numberOfCards = Int64(words.count)
         dictionary.order = numberOfDictionaries

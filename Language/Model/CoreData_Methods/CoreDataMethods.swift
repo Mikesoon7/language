@@ -22,7 +22,9 @@ class CoreDataHelper {
     internal var numberOfDictionaries: Int64 = 0
     var settingModel: UserSettingsStorageProtocol
     internal var context: NSManagedObjectContext!
+    
     public var dictionaryDidChange = PassthroughSubject<DictionaryChangeType, Never>()
+    public var settingsDidChange = PassthroughSubject<Bool, Never>()
     
     init(settingsModel: UserSettingsStorageProtocol) {
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -48,6 +50,7 @@ class CoreDataHelper {
     internal func createNewDictionary(language: String) -> DictionariesEntity? {
         let newDictionary = DictionariesEntity(context: context)
         newDictionary.language = language
+        newDictionary.id = UUID()
         return newDictionary
     }
     // Save context shortcut
@@ -56,7 +59,7 @@ class CoreDataHelper {
             try context.save()
             print("Debug: Context saved.")
         } catch {
-            print("error in saving the context")
+            print("Debug: Context wasn't saved.")
             throw error
         }
     }

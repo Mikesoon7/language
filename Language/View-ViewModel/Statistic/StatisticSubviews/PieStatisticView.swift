@@ -4,6 +4,7 @@
 //
 //  Created by Star Lord on 28/08/2023.
 //
+//  REFACTORING STATE: CHECKED
 
 import UIKit
 import DGCharts
@@ -57,9 +58,9 @@ class PieStatisticView: UIView {
     func setUpChartData(_ chartData: PieChartData){
         if let totalNumber = chartData.dataSet?.label {
             let attributedText = NSMutableAttributedString.attributedMutableString(
-                string: "\("system.total".localized) \n\(totalNumber)",
+                string: "statistic.timeSpent".localized + "\n\(totalNumber)",
                 with: .helveticaNeueBold,
-                ofSize: 24,
+                ofSize: 22,
                 alignment: .center
             )
             self.chartView?.centerAttributedText = attributedText

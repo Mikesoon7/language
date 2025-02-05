@@ -4,6 +4,7 @@
 //
 //  Created by Star Lord on 05/08/2023.
 //
+//  REFACTORING STATE: NOT CHECKED
 
 //Custom view displaying 7 buttons. Each represents day.
 import UIKit
@@ -58,7 +59,7 @@ class NotificationDayPicker: UIView{
         self.backgroundColor = ((traitCollection.userInterfaceStyle == .dark)
                                 ? UIColor.systemGray5
                                 : UIColor.secondarySystemBackground)
-        self.addRightSideShadow()
+        self.addCenterShadows()
     }
     //MARK: - StackView SetUp and populating buttons
     private func configureStackView(){

@@ -4,21 +4,25 @@
 //
 //  Created by Star Lord on 07/07/2023.
 //
+//  REFACTORING STATE: CHECKED
 
 import UIKit
-import Charts
+//import Charts
 import CoreData
 import Combine
 
-protocol MenuCellDelegate: AnyObject{
-    func panningBegan(for cell: UITableViewCell)
+protocol MenuCellDelegate1: AnyObject{
+    func panningBegan(for cell: UICollectionViewCell)
 
     func panningEnded(active: Bool)
 
-    func deleteButtonDidTap(for cell: UITableViewCell)
+    func deleteButtonDidTap(for cell: UICollectionViewCell)
     
-    func editButtonDidTap(for cell: UITableViewCell)
+    func editButtonDidTap(for cell: UICollectionViewCell)
+    
+    func shareButtonDidTap(for cell: UICollectionViewCell)
 }
+
 
 class MenuView: UIViewController {
     private var viewModelFactory: ViewModelFactory
@@ -28,23 +32,28 @@ class MenuView: UIViewController {
     
     private var menuAccessedForCell: IndexPath?
     private var isUpdateNeeded: Bool = false
-        
-    //MARK: Views
-    var tableView: UITableView = {
-        var tableView = UITableView(frame: .zero, style: .insetGrouped)
-        tableView.register(MenuDictionaryCell.self, forCellReuseIdentifier: MenuDictionaryCell.identifier)
-        tableView.register(MenuAddDictionaryCell.self, forCellReuseIdentifier: MenuAddDictionaryCell.identifier)
-        tableView.rowHeight = 104
-        tableView.backgroundColor = .clear
     
-        tableView.translatesAutoresizingMaskIntoConstraints = false
+    lazy var collectionView: UICollectionView = {
+        let view = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        view.delegate = self
+        view.dataSource = self
+        view.contentInset = .init(top: .outerSpacer, left: .outerSpacer, bottom: .outerSpacer, right: .outerSpacer)
+        view.backgroundColor = .systemBackground
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.alwaysBounceVertical = true
         
-        tableView.subviews.forEach{ section in
-            section.addRightSideShadow()
-        }
-        return tableView
+        view.register(MenuDictionaryCVCell.self, forCellWithReuseIdentifier: MenuDictionaryCVCell.identifier)
+        view.register(MenuAddDictionaryCVCell.self, forCellWithReuseIdentifier: MenuAddDictionaryCVCell.identifier)
+        return view
     }()
-        
+    
+    lazy var layout: UICollectionViewFlowLayout = {
+        let layout = UICollectionViewFlowLayout()
+        layout.minimumLineSpacing = .innerSpacer
+        return layout
+    }()
+    
+    
     //MARK: Inherited
     required init(factory: ViewModelFactory){
         self.viewModelFactory = factory
@@ -61,14 +70,14 @@ class MenuView: UIViewController {
         super.viewDidLoad()
         bind()
         configureNavBar()
-        configureTableView()
+        setupCollectionView()
         configureLabels()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         if isUpdateNeeded {
-            self.tableView.reloadData()
+            self.collectionView.reloadData()
         }
     }
     override func viewDidAppear(_ animated: Bool) {
@@ -79,16 +88,19 @@ class MenuView: UIViewController {
     override var canBecomeFirstResponder: Bool {
         return true
     }
-
+    
     //MARK: - StyleChange Responding
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
         if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
-            tableView.subviews.forEach { section in
+            collectionView.subviews.forEach { section in
                 section.layer.shadowColor = (traitCollection.userInterfaceStyle == .dark
                                              ? shadowColorForDarkIdiom
                                              : shadowColorForLightIdiom)
             }
+        }
+        if previousTraitCollection?.horizontalSizeClass != traitCollection.horizontalSizeClass {
+            adjustLayoutForSizeClass()
         }
     }
     
@@ -99,9 +111,9 @@ class MenuView: UIViewController {
             .sink { [weak self] output in
                 switch output{
                 case .needReload:
-                    self?.tableView.reloadData()
-                case .needDelete(let section):
-                    self?.tableView.deleteSections([section], with: .left)
+                    self?.collectionView.reloadData()
+                case .needDelete(let item):
+                    self?.collectionView.deleteItems(at: [IndexPath(item: item, section: 0)])
                 case .needUpdate(_):
                     self?.isUpdateNeeded = true
                 case .shouldPresentAddView:
@@ -116,15 +128,15 @@ class MenuView: UIViewController {
                     self?.configureLabels()
                 case .shouldUpdateFont:
                     self?.configurefont()
-                    self?.tableView.reloadData()
+                    self?.collectionView.reloadData()
                 case .error(let error):
-                    self?.presentError(error)
+                    self?.presentError(error, sourceView: self?.view)
                 }
             }
             .store(in: &cancellables)
     }
     
-    //MARK: Dictionary restore
+    //Dictionary restores
     override func motionEnded(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
         if motion == .motionShake {
             if viewModel.canUndo() {
@@ -133,60 +145,53 @@ class MenuView: UIViewController {
         }
     }
     
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        adjustLayoutForSizeClass()
+    }
+
+    //Ensures that accessed menu will deactivate on transitions.
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
         
         guard self.menuAccessedForCell == nil else {
-            if let activeCell = tableView.cellForRow(at: menuAccessedForCell!) as? MenuDictionaryCell {
+            if let activeCell = collectionView.cellForItem(at: menuAccessedForCell!) as? MenuDictionaryCVCell {
                 coordinator.animate(alongsideTransition: { context in
                     activeCell.activate(false)
-
+                    
                 }, completion: { [weak self] _ in
                     self?.menuAccessedForCell = nil
                 })
             }
             return
         }
-
-
     }
     
-    private func undoActionWasDetected(){
-        let alertController = UIAlertController
-            .alertWithAction(alertTitle: "menu.undo.title".localized,
-                             action1Title: "system.cancel".localized,
-                             action1Style: .cancel
-            )
-        let restoreAction = UIAlertAction(title: "system.restore".localized,
-                                          style: .default) { _ in
-            self.undoLastDeletion()
-        }
-        restoreAction.setValue(UIColor.label, forKey: "titleTextColor")
-        alertController.addAction(restoreAction)
-        self.present(alertController, animated: true)
-    }
-
-
-    private func undoLastDeletion() {
-        viewModel.undoLastDeletion()
-    }
-
     
-    //MARK: Subviews setUp & Layout
-    private func configureTableView(){
-        tableView.delegate = self
-        tableView.dataSource = self
-        
-        view.addSubview(tableView)
+    //MARK: CollectionView setUp
+    private func setupCollectionView() {
+        view.addSubview(collectionView)
         
         NSLayoutConstraint.activate([
-            tableView.topAnchor.constraint(equalTo: view.topAnchor),
-            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            collectionView.topAnchor.constraint(equalTo: view.topAnchor),
+            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
     }
     
+    
+    private func adjustLayoutForSizeClass() {
+        let isCompact = traitCollection.horizontalSizeClass == .compact
+        let numberOfColumns: CGFloat = isCompact ? 1 : 2
+        
+        let itemWidth = ((self.view.bounds.width - (.outerSpacer * 2)) / numberOfColumns) - (isCompact ? 0 : 10)
+        
+        layout.itemSize = CGSize(width: itemWidth, height: 104)
+        layout.minimumLineSpacing = .outerSpacer
+        layout.invalidateLayout()
+    }
+        
     private func configureNavBar(){
         //Statisctic BarButton
         let rightButton = UIBarButtonItem(
@@ -208,8 +213,13 @@ class MenuView: UIViewController {
             target: self,
             action: #selector(statButtonDidTap(sender:)))
         self.navigationItem.setRightBarButton(rightButton, animated: true)
-
+        
     }
+    private func undoLastDeletion() {
+        viewModel.undoLastDeletion()
+    }
+    
+
     //MARK: Configuring and presenting VC's
     func pushAddDictionaryVC(){
         let vc = AddDictionaryView(factory: self.viewModelFactory)
@@ -234,74 +244,88 @@ class MenuView: UIViewController {
         self.present(vc, animated: false)
     }
     
+    
+    //MARK: - System
+    //If available, will suggest user to restore deleted entity.
+    private func undoActionWasDetected(){
+        let alertController = UIAlertController
+            .alertWithAction(alertTitle: "menu.undo.title".localized,
+                             action1Title: "system.cancel".localized,
+                             action1Style: .cancel,
+                             sourceView: self.view
+            )
+        let restoreAction = UIAlertAction(title: "system.restore".localized,
+                                          style: .default) { _ in
+            self.undoLastDeletion()
+        }
+        restoreAction.setValue(UIColor.label, forKey: "titleTextColor")
+        alertController.addAction(restoreAction)
+        self.present(alertController, animated: true)
+    }
+    
     //MARK: - Actions
     @objc func statButtonDidTap(sender: Any){
         let vm = viewModelFactory.configureStatisticViewModel()
         let vc = StatisticView(viewModel: vm)
-        self.present(vc, animated: true)
+        vc.modalPresentationStyle = .formSheet
+        guard let navigationController = navigationController as? CustomNavigationController else {
+            self.present(vc, animated: true)
+            return
+        }
+        navigationController.present(vc, animated: true)
     }
 }
-//MARK: - UITableView Delegate & DataSource
-extension MenuView: UITableViewDelegate, UITableViewDataSource{
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 1
+//MARK: - CollectionView Delegate & DataSource
+extension MenuView: UICollectionViewDataSource, UICollectionViewDelegate {
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        viewModel.didSelectTableRowAt(item: indexPath.item)
+    }
+        
+    func collectionView(_ collectionView: UICollectionView, didHighlightItemAt indexPath: IndexPath) {
+        if let cell = collectionView.cellForItem(at: indexPath) {
+            UIView.animate(withDuration: 0.1, delay: 0, options: .curveEaseIn, animations: {
+                cell.transform = CGAffineTransform(scaleX: 0.97, y: 0.97)
+            })
+        }
+    }
+    func collectionView(_ collectionView: UICollectionView, didUnhighlightItemAt indexPath: IndexPath) {
+        if let cell = collectionView.cellForItem(at: indexPath) {
+            UIView.animate(withDuration: 0.1, delay: 0, options: .curveEaseOut, animations: {
+                cell.transform = CGAffineTransform.identity
+            })
+        }
+    }
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        viewModel.numberOfSectionsInTableView()
     }
     
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return viewModel.numberOfSectionsInTableView()
-    }
-
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let data = viewModel.dataForTableCellAt(section: indexPath.section) else {
-            let cell = tableView.dequeueReusableCell(
-                withIdentifier: MenuAddDictionaryCell.identifier,
-                for: indexPath) as? MenuAddDictionaryCell
-            return cell ?? UITableViewCell()
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let data = viewModel.dataForTableCellAt(item: indexPath.item) else {
+            let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: MenuAddDictionaryCVCell.identifier,
+                for: indexPath) as? MenuAddDictionaryCVCell
+            cell?.addCenterShadows()
+            return cell ?? UICollectionViewCell()
         }
         
-        guard let cell = tableView.dequeueReusableCell(
-            withIdentifier: MenuDictionaryCell.identifier,
-            for: indexPath) as? MenuDictionaryCell else {
-            return UITableViewCell()
+        guard let cell = collectionView.dequeueReusableCell(
+            withReuseIdentifier: MenuDictionaryCVCell.identifier,
+            for: indexPath) as? MenuDictionaryCVCell else {
+            return UICollectionViewCell()
         }
         let viewModel = viewModelFactory.configureStatisticModel(dictionary: data)
         cell.configureCellWith(viewModel: viewModel, delegate: self)
+        cell.addCenterShadows()
         return cell
     }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        viewModel.didSelectTableRowAt(section: indexPath.section)
-    }
-        
-    func tableView(_ tableView: UITableView, didHighlightRowAt indexPath: IndexPath) {
-            if let cell = tableView.cellForRow(at: indexPath) {
-                UIView.animate(withDuration: 0.1, animations: {
-                    cell.transform = CGAffineTransform(scaleX: 0.97, y: 0.97)
-                })
-            }
-        }
-        
-        func tableView(_ tableView: UITableView, didUnhighlightRowAt indexPath: IndexPath) {
-            if let cell = tableView.cellForRow(at: indexPath) {
-                UIView.animate(withDuration: 0.1, animations: {
-                    cell.transform = CGAffineTransform.identity
-                })
-            }
-        }
 }
+
 //MARK: - Delegate for tutorial.
 extension MenuView: TutorialCellHintProtocol{
-    func stopShowingHint() {
-        if let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? MenuDictionaryCell{
-            cell.activate(false)
-        }
-    }
-    
-    func needToShowHint() {
-        if let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? MenuDictionaryCell{
-            UIView.animate(withDuration: 0.1, delay: 0.8) {
-                cell.activate(true)
-            }
+    func changeHintAppearence(activate: Bool){
+        if let cell = collectionView.cellForItem(at: IndexPath(item: 0, section: 0)) as? MenuDictionaryCVCell {
+            cell.activate(activate)
         }
     }
     func openAddDictionary() {
@@ -312,13 +336,14 @@ extension MenuView: TutorialCellHintProtocol{
         })
     }
 }
+
 //MARK: - Delegate for cells action.
-extension MenuView: MenuCellDelegate{
-    func panningBegan(for cell: UITableViewCell){
-        let index = tableView.indexPath(for: cell)
+extension MenuView: MenuCellDelegate1 {
+    func panningBegan(for cell: UICollectionViewCell){
+        let index = collectionView.indexPath(for: cell)
         //Dismiss another swiped cell.
         guard index == menuAccessedForCell || menuAccessedForCell == nil else {
-            if let cell = tableView.cellForRow(at: menuAccessedForCell!) as? MenuDictionaryCell{
+            if let cell = collectionView.cellForItem(at: menuAccessedForCell!) as? MenuDictionaryCVCell{
                 cell.activate(false)
                 menuAccessedForCell = index
             }
@@ -333,28 +358,25 @@ extension MenuView: MenuCellDelegate{
             return
         }
     }
-    func deleteButtonDidTap(for cell: UITableViewCell) {
+    func deleteButtonDidTap(for cell: UICollectionViewCell) {
         let completion = { [weak self] cell in
             self?.menuAccessedForCell = nil
-            guard let index = self?.tableView.indexPath(for: cell) else { return }
+            guard let index = self?.collectionView.indexPath(for: cell) else { return }
             self?.viewModel.deleteDictionary(at: index)
         }
-    
+        
         guard let sourceView = self.view,
               let cellFrame = cell.superview?.convert(cell.frame, to: self.view) else {
             return
         }
-
-        //Defining center of the selected cell.
-        let tapLocation = CGPoint(x: cellFrame.midX, y: cellFrame.midY)
-
+        
         let alertController = UIAlertController
             .alertWithAction(
                 alertTitle: "menu.deleteDictionary".localized,
                 action1Title: "system.cancel".localized,
                 action1Style: .cancel,
                 sourceView: sourceView,
-                locationOfTap: tapLocation
+                sourceRect: cellFrame
             )
         let delete = UIAlertAction(title: "system.delete".localized, style: .destructive) { _ in
             completion(cell)
@@ -363,9 +385,23 @@ extension MenuView: MenuCellDelegate{
         self.present(alertController, animated: true)
     }
     
-    func editButtonDidTap(for cell: UITableViewCell){
+    func editButtonDidTap(for cell: UICollectionViewCell){
         menuAccessedForCell = nil
-        guard let index = tableView.indexPath(for: cell) else { return }
+        guard let index = collectionView.indexPath(for: cell) else { return }
         viewModel.editDictionary(at: index)
+    }
+    
+    func shareButtonDidTap(for cell: UICollectionViewCell) {
+        guard let index = collectionView.indexPath(for: cell) else { return }
+        let text = viewModel.shareCellsInformation(at: index)
+        
+        let activityVC = UIActivityViewController(activityItems: [text], applicationActivities: nil)
+        activityVC.allowsProminentActivity = true
+        if let popoverController = activityVC.popoverPresentationController {
+            popoverController.sourceView = self.view
+            popoverController.sourceRect = CGRect(x: self.view.bounds.midX, y: self.view.bounds.midY, width: 0, height: 0)
+            popoverController.permittedArrowDirections = []
+        }
+        present(activityVC, animated: true, completion: nil)
     }
 }

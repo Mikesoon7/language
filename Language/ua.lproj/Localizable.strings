@@ -19,6 +19,17 @@
 "statistic.previousMonth" = "Попередній місяць";
 "statistic.allTime" = "За весь час";
 "statistic.custom" = "Обрати свій";
+//Cell Labels:
+"statistic.creationDate" = "Створено:";
+"statistic.accessNumber" = "Відкрито:";
+"statistic.cardsNumber" = "Містить:";
+"statistic.accessNumber.time" = "раз";
+"statistic.cardsNumber.card" = "карта";
+"statistic.accessNumber.times" = "разів";
+"statistic.cardsNumber.cards" = "карти";
+//Chart Labels:
+"statistic.timeSpent" = "Навчання:";
+"statistic.cardsLearned" = "Повторених карт";
 //MARK: - SettingsVC
 "settings.title" = "Налаштування";
 //Sections
@@ -44,7 +55,7 @@
 "settings.iCloud.sign" = "Підключити ваш Apple ID для передачі даних між пристроями та збереження у iCloud";
 //MARK: - AddDictionary or WordsVC
 "addDict.title" = "Створення";
-"addWord.title" = "Додавання";
+"addWord.title" = "Додавання нових слів";
 "viewPlaceholderWord" = "Слово ";
 "viewPlaceholderMeaning" = " опис";
 "fieldPlaceholder" = "Назва";
@@ -54,6 +65,10 @@
 "nameAlert" = "Вкажіть назву";
 "textInfo" = "Будь ласка, не залишайте поля з текстом порожнім.";
 "nameInfo" = "Майже закінчили. Залишилось задати назву.";
+"addWords.contentSaving.title" = "Вміст не було збережено";
+"addWords.contentSaving.text" = "Бажаєте зберегти нові слова?";
+"addWords.contentSaving.save" = "Зберегти";
+"addWords.contentSaving.clear" = "Очистити";
 
 //MARK: - System
 "system.cancel" = "Cкасувати";
@@ -68,12 +83,17 @@
 "system.yes" = "Так";
 "system.no" = "Ні";
 "system.settings" = "Налаштування";
-"system.newLine" = "З нового рядка";
+"system.newLine" = "З нового \n рядка";
 "system.next" = "Далі";
 "system.letsGo" = "Поіхали";
 "system.skip" = "Пропустити";
 "system.restore" = "Відновити";
 "system.total" = "Всього";
+"system.min.shortned" = "хв";
+"system.continue" = "Продовжити";
+"system.finish" = "Залишити";
+"system.checked" = "Перевірено";
+
 
 //MARK: - DetailsVC
 "details.title" = "Подробиці";
@@ -89,6 +109,18 @@
 
 //MARK: - GameVC
 "game.title" = "Картки";
+"game.lastCell.congratulations" = "Congratulations";
+"game.lastCell.checked" = "You've checked:";
+"game.lastCell.spending" = "Spending:";
+"game.lastCell.bestResult" = "Best result so far !";
+"game.lastCell.avarageResult.firstPart" = "You've done it ";
+"game.lastCell.avarageResult.secondPart" = " previous time";
+"game.lastCell.slower" = "slower than";
+"game.lastCell.faster" = "faster than";
+"game.lastCell.same" = "as fast as";
+"game.lastCell.cards" = "cards";
+"game.lastCell.min" = "min";
+
 //MARK: - GameDetailsVc
 "gameDetails.information" = "Торкніться будь-якого слова, щоб дізнатися його значення за допомогою вбудованого словника iOS. За потреби, ви також можете відредагувати або видалити свою картку.";
 "gameDetails.suggestion1Part" = "Якщо у вас виникнуть проблеми із доступом до словників, можливо, вам потрібно їх завантажити або оновити. Для цього перейдіть у";
@@ -119,6 +151,7 @@
 //MARK: - SearchVC
 "searchVCTitle" = "Пошук";
 "yourWord" = "Введіть текст";
+"copied" = "Cкопійованo";
 //MARK: - SeparatorsVC
 "separators.addChar" = "Додати символ";
 "separators.placeholder" = "Введіть текст";

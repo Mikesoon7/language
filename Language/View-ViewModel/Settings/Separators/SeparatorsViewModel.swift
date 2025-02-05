@@ -4,6 +4,7 @@
 //
 //  Created by Star Lord on 16/08/2023.
 //
+//  REFACTORING STATE: CHECKED
 
 import UIKit
 import Combine
@@ -19,8 +20,7 @@ class SeparatorsViewModel{
         case deleteSeparator(IndexPath)
         case addSeparator(String)
     }
-    
-    
+        
     private var settingsModel: UserSettingsStorageProtocol
     private var cancellable = Set<AnyCancellable>()
     

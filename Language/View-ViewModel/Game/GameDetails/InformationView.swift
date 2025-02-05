@@ -4,6 +4,7 @@
 //
 //  Created by Star Lord on 23/08/2023.
 //
+//  REFACTORING STATE: CHECKED
 
 import UIKit
 
@@ -28,7 +29,7 @@ class InformationView: UIViewController {
     }
     override func viewDidLayoutSubviews() {
         sheetPresentationController?.detents = [.custom(resolver: { context in
-            return self.informationLabel.bounds.height * 1.2
+            return self.informationLabel.bounds.height * 1.5
         })]
 
     }

@@ -1,5 +1,6 @@
 //In purpose of more controll over the presentaintion appearence, we are  working with container view, which relacing ViewControllers view.
 //It helps us to controll the visible part of view by changing bottom constrait of the container view.
+//  REFACTORING STATE: NOT CHECKED
 
 import UIKit
 import Combine
@@ -12,7 +13,7 @@ class NotificationView: UIViewController {
     //MARK: - Views
     private let containerView: UIView = {
         let view = UIView()
-        view.layer.cornerRadius = 9
+        view.layer.cornerRadius = .cornerRadius
         view.clipsToBounds = true
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
@@ -40,7 +41,7 @@ class NotificationView: UIViewController {
         view.automaticallyAdjustsScrollIndicatorInsets = false
         view.contentInset = .zero
         view.subviews.forEach { section in
-            view.addRightSideShadow()
+            view.addCenterShadows()
         }
         return view
     }()
@@ -64,8 +65,8 @@ class NotificationView: UIViewController {
     private lazy var dayPicker: NotificationDayPicker = NotificationDayPicker(viewModel: viewModel)
         
     //MARK: - Constraints
-    private var containerViewBottomAnchor: NSLayoutConstraint!
-    private var tableViewHeightAnchor: NSLayoutConstraint!
+    private var containerViewBottomAnchor: NSLayoutConstraint = .init()
+    private var tableViewHeightAnchor: NSLayoutConstraint = .init()
     
     //Dimenstions
     private lazy var firstStageContainerConstant = containerHeight - tableView.frame.height / 2
@@ -140,7 +141,7 @@ class NotificationView: UIViewController {
                 case .shouldUpdateTableRowAt(let index):
                     self.tableView.reloadRows(at: [index], with: .automatic)
                 case .error(let error):
-                    self.presentError(error)
+                    self.presentError(error, sourceView: view)
                 case .presentNotificationInformAlert:
                     self.presentNotificationAlert()
                                 }
@@ -172,7 +173,7 @@ class NotificationView: UIViewController {
         
         tableView.reloadData()
         tableView.layoutIfNeeded()
-        tableViewHeightAnchor?.constant = tableView.contentSize.height
+        tableViewHeightAnchor.constant = tableView.contentSize.height
     }
     
     //MARK: - Container SetUp
@@ -224,7 +225,7 @@ class NotificationView: UIViewController {
             dayPicker.heightAnchor.constraint(equalToConstant: 66),
             dayPicker.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
         ])
-        timePicker.addTarget(self, action: #selector(timePickerValueChanged(picker:)), for: .valueChanged)
+        timePicker.addTarget(self, action: #selector(timePickerValueChanged(timePicker:)), for: .valueChanged)
     }
     
     //MARK: - Gestures
@@ -247,7 +248,7 @@ class NotificationView: UIViewController {
             animateDayPicker(present: false )
         }
         UIView.animate(withDuration: 0.3) { [weak self] in
-            self?.containerViewBottomAnchor?.constant = newConstant
+            self?.containerViewBottomAnchor.constant = newConstant
             self?.currentConstant = newConstant
             self?.view.layoutIfNeeded()
         }
@@ -359,11 +360,11 @@ extension NotificationView{
         case .began, .changed:
             if currentConstant == firstStageContainerConstant {
                 if translation > -10 {
-                    containerViewBottomAnchor?.constant = newConstant
+                    containerViewBottomAnchor.constant = newConstant
                     view.layoutIfNeeded()
                 }
             } else if translation > -50 {
-                containerViewBottomAnchor?.constant = newConstant
+                containerViewBottomAnchor.constant = newConstant
                 view.layoutIfNeeded()
             }
         case .ended:
@@ -377,8 +378,8 @@ extension NotificationView{
             break
         }
     }
-    @objc func timePickerValueChanged(picker: UIDatePicker){
-        let date = picker.date
+    @objc func timePickerValueChanged(timePicker: UIDatePicker){
+        let date = timePicker.date
         viewModel?.updateNotificationTime(with: date)
     }
 }

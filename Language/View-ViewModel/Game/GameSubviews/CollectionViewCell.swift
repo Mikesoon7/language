@@ -4,6 +4,7 @@
 //
 //  Created by Star Lord on 21/03/2023.
 //
+//  REFACTORING STATE: CHECKED
 
 import UIKit
 
@@ -13,20 +14,50 @@ enum Section: CaseIterable{
 
 class CollectionViewCell: UICollectionViewCell {
     
-    //MARK: Properties
-    let initialShadowValue = CGSize(width: 2, height: 2)
-    var finalShadowValue = CGSize()
-    let shadowOpacity = Float(0.1)
-    
+    //MARK: Public properties.
     var isFlipped = false
     var isAccessable = false
     
     var isOneSideMode = false
-    
-    private let subviewsInsets: CGFloat = 10
-    private var staticCardSize = CGSize()
+    var shadowOpacity: Float = 0.1
     
     //MARK: Views
+    let cardView : UIView = {
+        let view = UIView()
+        view.backgroundColor = .systemBackground_Secondary
+        view.layer.cornerRadius = 13
+        view.layer.borderColor = UIColor.black.cgColor
+        view.layer.cornerCurve = .continuous
+        view.layer.borderWidth = 1
+        view.clipsToBounds = true
+        view.layer.shouldRasterize = false
+        
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    let cardShadowView : UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .clear
+        
+        view.layer.shadowRadius = 40.0
+        return view
+    }()
+    
+    private var stackView: UIStackView = {
+        let view = UIStackView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .clear
+        view.spacing = 10.0
+        view.distribution = .fill
+        
+        view.axis = .vertical
+        view.alignment = .fill
+        return view
+    }()
+
+
+    //MARK: Labels
     var word: UILabel = {
         let label = UILabel()
         label.font = .selectedFont.withSize(20)
@@ -59,7 +90,7 @@ class CollectionViewCell: UICollectionViewCell {
             label.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         return label
     }()
-    let translationTestLabel: UILabel = {
+    let translationBacksideLabel: UILabel = {
         let label = UILabel()
         label.font = .selectedFont.withSize(17)
         label.numberOfLines = 0
@@ -75,64 +106,11 @@ class CollectionViewCell: UICollectionViewCell {
         return label
     }()
 
-    let backView : UIView = {
-        let view = UIView()
-        view.backgroundColor = .clear
-        view.layer.cornerRadius = 13
-        view.layer.borderColor = UIColor.black.cgColor
-        view.layer.borderWidth = 1
-        view.clipsToBounds = true
-        
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
-    let cardView : UIView = {
-        let view = UIView()
-        view.backgroundColor = .systemBackground_Secondary
-        view.layer.cornerRadius = 13
-        view.layer.borderColor = UIColor.black.cgColor
-        view.layer.borderWidth = 1
-        view.clipsToBounds = true
-        view.layer.shouldRasterize = false
-        
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
-    let cardShadowViewTest : UIView = {
-        let view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .clear
-        
-        view.layer.shadowRadius = 40.0
-        return view
-    }()
-
-    let cardShadowView : UIView = {
-        let view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .clear
-    
-        view.layer.shadowRadius = 5.0
-        return view
-    }()
-    
-    private var stackView: UIStackView = {
-        let view = UIStackView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .clear
-        view.spacing = 10.0
-        view.distribution = .fill
-        
-        view.axis = .vertical
-        view.alignment = .fill
-        return view
-    }()
     
     //MARK: Inherited
     override init(frame: CGRect) {
         super.init(frame: frame)
         cardViewCustomiation()
-        staticCardSize = CGSize(width: UIWindow().frame.width * 0.64, height: UIWindow().frame.height * 0.48)
     }
     required init?(coder: NSCoder) {
         fatalError("Faild to present cells")
@@ -141,43 +119,49 @@ class CollectionViewCell: UICollectionViewCell {
         super.prepareForReuse()
         word.isHidden = true
         translation.isHidden = true
-        translationTestLabel.isHidden = true
+        translationBacksideLabel.isHidden = true
         self.gestureRecognizers = nil
     }
     
     
     //MARK: Configure subviews.
     ///Assigning passed values to labels and asks stackView to layout subviews.
-    func configure(with data: WordsEntity, oneSideMode: Bool){
+    func configure(with data: HashableWordsEntity, oneSideMode: Bool){
         self.isOneSideMode = oneSideMode
-        word.text = data.word
+        word.text = data.wordEntity.word
         word.isHidden = false
         word.font = .selectedFont.withSize(20)
         translation.font = .selectedFont.withSize(17)
         // Set the visibility based on whether there is a meaning to display
-        if !data.meaning.isEmpty {
-            translationTestLabel.text = data.meaning
-            translation.text = data.meaning
+        if !data.wordEntity.meaning.isEmpty {
+            translationBacksideLabel.text = data.wordEntity.meaning
+            translation.text = data.wordEntity.meaning
             isAccessable = true
             translation.isHidden = false
-            translationTestLabel.isHidden = false
+            translationBacksideLabel.isHidden = false
         } else {
             isAccessable = false
             translation.isHidden = true
-            translationTestLabel.isHidden = true
+            translationBacksideLabel.isHidden = true
         }
         configureTextDisplay()
     }
+    
+    
     private func configureTextDisplay(){
         if isOneSideMode {
             configureStackView()
         } else {
             cardView.addSubview(word)
             NSLayoutConstraint.activate([
-                        word.topAnchor.constraint(equalTo: cardView.topAnchor, constant: subviewsInsets),
-                        word.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: subviewsInsets),
-                        word.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -subviewsInsets),
-                        word.bottomAnchor.constraint(equalTo: cardView.bottomAnchor, constant: -subviewsInsets),
+                word.topAnchor.constraint(equalTo: cardView.topAnchor, 
+                                          constant: .innerSpacer),
+                word.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, 
+                                              constant: .innerSpacer),
+                word.trailingAnchor.constraint(equalTo: cardView.trailingAnchor,
+                                               constant: -.innerSpacer),
+                word.bottomAnchor.constraint(equalTo: cardView.bottomAnchor,
+                                             constant: -.innerSpacer),
             ])
         }
     }
@@ -185,108 +169,53 @@ class CollectionViewCell: UICollectionViewCell {
     private func configureStackView(){
         stackView.addArrangedSubviews(word, translation)
         cardView.addSubview(stackView)
-
         
         NSLayoutConstraint.activate([
             stackView.centerXAnchor.constraint(equalTo: cardView.centerXAnchor),
-            stackView.centerYAnchor.constraint(equalTo: cardView.centerYAnchor),
-//            stackView.widthAnchor.constraint(equalTo: cardView.widthAnchor, constant: -subviewsInsets * 2),
-//            stackView.heightAnchor.constraint(equalTo: cardView.heightAnchor, constant: -subviewsInsets * 2)
-
-            stackView.widthAnchor.constraint(lessThanOrEqualToConstant: contentView.bounds.width - subviewsInsets * 2 ),
-            stackView.heightAnchor.constraint(lessThanOrEqualToConstant: contentView.bounds.height - subviewsInsets * 2 )
             
-//            stackView.topAnchor.constraint(greaterThanOrEqualTo: cardView.topAnchor, constant: subviewsInsets ),
-////            equalTo: cardView.topAnchor, constant: subviewsInsets),
-//            stackView.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: subviewsInsets),
-//            stackView.bottomAnchor.constraint(lessThanOrEqualTo: cardView.bottomAnchor, constant: -subviewsInsets),
-//            stackView.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -subviewsInsets),
-
+            stackView.centerYAnchor.constraint(equalTo: cardView.centerYAnchor),
+            
+            stackView.widthAnchor.constraint(lessThanOrEqualToConstant:
+                                                contentView.bounds.width - .innerSpacer * 2 ),
+            stackView.heightAnchor.constraint(lessThanOrEqualToConstant:
+                                                contentView.bounds.height - .innerSpacer * 2 )
         ])
     }
     
-//    private func configureLabels(){
-//        cardView.addSubviews(word, translation)
-//        
-//        NSLayoutConstraint.activate([
-//            word.topAnchor.constraint(equalTo: cardView.topAnchor, constant: subviewsInsets),
-//            word.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: subviewsInsets),
-//            word.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -subviewsInsets),
-//            word.bottomAnchor.constraint(lessThanOrEqualTo: cardView.bottomAnchor, constant: -subviewsInsets),
-//            
-//            translation.topAnchor.constraint(lessThanOrEqualTo: word.bottomAnchor, constant: subviewsInsets),
-//            translation.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: subviewsInsets),
-//            translation.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -subviewsInsets),
-//            translation.bottomAnchor.constraint(equalTo: cardView.bottomAnchor, constant: -subviewsInsets),
-//        ])
-//    }
-
     private func cardViewCustomiation(){
-//        self.backView.addSubview(translationTestLabel)
-//        self.contentView.addSubview(cardShadowView)
-//        cardShadowView.layer.shadowOpacity = shadowOpacity
-//        cardShadowView.layer.shadowOffset = initialShadowValue
-//        cardShadowView.addSubview(cardView)
-//        cardView.addSubview(translationTestLabel)
-        self.contentView.addSubview(cardShadowViewTest)
-        cardShadowViewTest.layer.shadowOpacity = 0.1
-        cardShadowViewTest.addSubview(cardView)
-        cardView.addSubview(translationTestLabel)
+        self.contentView.addSubview(cardShadowView)
+        cardShadowView.layer.shadowOpacity = 0.1
+        cardShadowView.addSubview(cardView)
+        cardView.addSubview(translationBacksideLabel)
 
         contentView.backgroundColor = .systemBackground
         
         NSLayoutConstraint.activate([
-//            cardShadowView.topAnchor.constraint(equalTo: self.contentView.topAnchor),
-//            cardShadowView.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor),
-//            cardShadowView.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor),
-//            cardShadowView.trailingAnchor.constraint(equalTo: self.contentView.trailingAnchor),
+            cardShadowView.topAnchor.constraint(equalTo: self.contentView.topAnchor),
             
-            cardShadowViewTest.topAnchor.constraint(equalTo: self.contentView.topAnchor),
-            cardShadowViewTest.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor),
-            cardShadowViewTest.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor),
-            cardShadowViewTest.trailingAnchor.constraint(equalTo: self.contentView.trailingAnchor),
+            cardShadowView.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor),
+            
+            cardShadowView.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor),
+            
+            cardShadowView.trailingAnchor.constraint(equalTo: self.contentView.trailingAnchor),
+            
 
-//            backView.topAnchor.constraint(equalTo: self.contentView.topAnchor),
-//            backView.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor),
-//            backView.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor),
-//            backView.trailingAnchor.constraint(equalTo: self.contentView.trailingAnchor),
-            
-//            translationTestLabel.topAnchor.constraint(equalTo: self.contentView.topAnchor),
-//            translationTestLabel.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor),
-//            translationTestLabel.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor),
-//            translationTestLabel.trailingAnchor.constraint(equalTo: self.contentView.trailingAnchor),
-            
-            translationTestLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: subviewsInsets),
-            translationTestLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: subviewsInsets),
-            translationTestLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -subviewsInsets),
-            translationTestLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -subviewsInsets),
+            translationBacksideLabel.topAnchor.constraint(equalTo: contentView.topAnchor,
+                                                          constant: .innerSpacer),
+            translationBacksideLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, 
+                                                              constant: .innerSpacer),
+            translationBacksideLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, 
+                                                               constant: -.innerSpacer),
+            translationBacksideLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor,
+                                                             constant: -.innerSpacer),
 
             cardView.topAnchor.constraint(equalTo: self.contentView.topAnchor),
+            
             cardView.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor),
+            
             cardView.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor),
+            
             cardView.trailingAnchor.constraint(equalTo: self.contentView.trailingAnchor),
         ])
-//        configureTextDisplay()
     }
-    
-    //MARK: Other
-    ///Changing shadows appearence to reflect change in size and position of the cell. Dynamic Shadows.
-    override func apply(_ layoutAttributes: UICollectionViewLayoutAttributes) {
-        super.apply(layoutAttributes)
-        let size = CGSize(
-            width: max(((layoutAttributes.frame.width - staticCardSize.width) / 4) , initialShadowValue.width),
-            height: max(((layoutAttributes.frame.height - staticCardSize.height) / 3), initialShadowValue.height))
-        if cardShadowView.layer.shadowOffset == initialShadowValue {
-            UIView.animate(withDuration: 0.2, delay: 0) {
-                self.cardShadowView.layer.shadowOffset = size
-            }
-        } else {
-            cardShadowView.layer.shadowOffset = size
-
-        }
-        if finalShadowValue.width < size.width{
-            finalShadowValue = size
-        }
-    }
-        
 }

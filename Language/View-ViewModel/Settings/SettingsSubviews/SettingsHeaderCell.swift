@@ -4,6 +4,7 @@
 //
 //  Created by Star Lord on 10/04/2023.
 //
+//  REFACTORING STATE:  CHECKED
 
 import UIKit
 
@@ -13,6 +14,7 @@ struct DataForSettingsHeaderCell{
 }
 
 class SettingsHeaderCell: UITableViewCell {
+    
     static let identifier = "settingsHeaderCell"
     
     //MARK: Views
@@ -56,10 +58,10 @@ class SettingsHeaderCell: UITableViewCell {
         contentView.addSubview(label)
         
         NSLayoutConstraint.activate([
-
-            label.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 15),
-            label.centerYAnchor.constraint(equalTo: centerYAnchor),
-
+            label.leadingAnchor.constraint(
+                equalTo: leadingAnchor, constant: .outerSpacer),
+            label.centerYAnchor.constraint(
+                equalTo: centerYAnchor),
         ])
     }
 }

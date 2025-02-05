@@ -19,6 +19,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
     var settingsModel: UserSettingsStorageProtocol!
     var dataModel: DictionaryFullAccess!
+    var animationView: LaunchAnimation?
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions){
         //1. Initializing settings and data model for futhe dependence injection.
@@ -30,6 +31,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         self.window?.windowScene = window
         self.window?.makeKeyAndVisible()
         
+        
         //3. Applying theme and language settings for created window.
         self.validateInitialSettings(settings: settingsModel)
         
@@ -40,7 +42,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         self.validateFirstLaunch(settings: settingsModel, dataModel: dataModel)
 
         //6. Presenting view with launch aimation.
-        self.launchAnimation()
+        self.launchAnimation(for: window)
         //7.Creating observers on language change for tabBar.
         self.postLaunchSetUp()
     }
@@ -100,14 +102,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         self.observeLanguageChange()
         self.checkAppVersionAccessability()
     }
-    private func launchAnimation(){
-        var animationView: LaunchAnimation? = LaunchAnimation(bounds: UIWindow().bounds, interfaceStyle: settingsModel.appTheme.userInterfaceStyle)
+    private func launchAnimation(for window: UIWindowScene){
+        var animationView: LaunchAnimation? = LaunchAnimation(window: window.keyWindow , bounds: window.coordinateSpace.bounds, interfaceStyle: settingsModel.appTheme.userInterfaceStyle, delegate: self)
         animationView?.animate()
         animationView?.makeKeyView()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3.5) {
-            animationView?.animationView.removeFromSuperview()
-            animationView = nil
-        }
+        self.animationView = animationView
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+//            animationView?.animationView.removeFromSuperview()
+//            animationView = nil
+//        }
     }
 
     //MARK: Settings related customization
@@ -139,7 +142,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         guard languageCode == settings.appLanguage.languageCode else {
             switch languageCode {
-            case "uk": settings.reload(newValue: .language(.ukrainian))
+            case "tr": settings.reload(newValue: .language(.turkish))
+            case "ua": settings.reload(newValue: .language(.ukrainian))
             case "ru": settings.reload(newValue: .language(.russian))
             default: settings.reload(newValue: .language(.english))
             }
@@ -171,4 +175,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
     }
 }
+extension SceneDelegate: LaunchAnimationDelegate{
+    func animationDidFinish(animationView: UIView?) {
+        self.animationView?.animationView.removeFromSuperview()
+        self.animationView = nil
+    }
+}
+
 

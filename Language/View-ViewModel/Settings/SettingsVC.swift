@@ -4,6 +4,7 @@
 //
 //  Created by Star Lord on 05/03/2023.
 //
+//  REFACTORING STATE: CHECKED
 
 import UIKit
 import Combine
@@ -26,7 +27,7 @@ class SettingsVC: UIViewController {
     
         view.translatesAutoresizingMaskIntoConstraints = false
         view.subviews.forEach { sections in
-            sections.addRightSideShadow()
+            sections.addCenterShadows()
         }
         return view
     }()
@@ -94,9 +95,9 @@ class SettingsVC: UIViewController {
         tableView.dataSource = self
         
         NSLayoutConstraint.activate([
-            tableView.topAnchor.constraint(equalTo: view.topAnchor),
+            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
     }
@@ -147,18 +148,6 @@ class SettingsVC: UIViewController {
         self.present(alertMessage, animated: true)
     }
 
-//    private func presentAlertWith(action: [UIAlertAction]){
-//        let alertMessage = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-//        let cancelAction = UIAlertAction(title: "system.cancel".localized, style: .cancel)
-//        action.forEach({alertMessage.addAction($0)})
-//        alertMessage.addAction(cancelAction)
-////        if UIDevice.current.userInterfaceIdiom == .pad {
-////            let presentationController = UIPresentationController(presentedViewController: self, presenting: alertMessage)
-////            presentationController.
-////        }
-//        self.present(alertMessage, animated: true)
-//    }
-//    
     private func configureLabels(){
         navigationItem.title = "settings.title".localized
         
@@ -174,11 +163,11 @@ extension SettingsVC: UITableViewDelegate,  UITableViewDataSource{
         viewModel.numberOfSections()
     }
     
-        func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         viewModel.didSelectRowAt(indexPath: indexPath)
         tableView.deselectRow(at: indexPath, animated: true)
     }
-
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let defaultCell = UITableViewCell()
         let data = viewModel.dataForCellAt(indexPath: indexPath)

@@ -4,6 +4,7 @@
 //
 //  Created by Star Lord on 13/08/2023.
 //
+//  REFACTORING STATE: CHECKED
 
 import UIKit
 import Combine
@@ -39,7 +40,7 @@ class SettingsViewModel{
 
     }
     deinit {
-        NotificationCenter.default.removeObserver(self, name: .appLanguageDidChange, object: nil)
+        NotificationCenter.default.removeObserver(self)
     }
     
     //MARK: Configure or update structure of settings tableView.

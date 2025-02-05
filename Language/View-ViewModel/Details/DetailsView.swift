@@ -4,6 +4,7 @@
 //
 //  Created by Star Lord on 21/02/2023.
 //
+//  REFACTORING STATE: CHECKED
 
 
 import UIKit
@@ -35,33 +36,48 @@ class UICustomSegmentedControl: UISegmentedControl {
 class DetailsView: UIViewController {
     
     //MARK: - ViewModel related
+    private var dictionary: DictionariesEntity
     private var viewModel: DetailsViewModel?
+    private var addWordsViewModel: AddWordsViewModel?
     private var viewModelFactory: ViewModelFactory
     private var cancellable = Set<AnyCancellable>()
     
-    //MARK: - Views
-    //View fot changing cards order
-//    private let randomizeCardsView : UIView = {
-//        var view = UIView()
-//        view.setUpCustomView()
-//        return view
-//    }()
-//    
-//    private let randomizeLabel = {
-//        let label = UILabel()
-//        label.translatesAutoresizingMaskIntoConstraints = false
-//        label.font = .selectedFont.withSize(18)
-//        label.text = "details.randomize".localized
-//        return label
-//    }()
-//    
-//    private let randomizeSwitch : UISwitch = {
-//        let switcher = UISwitch()
-//        switcher.setUpCustomSwitch(isOn: false)
-//        return switcher
-//    }()
     
-    //View to define number of cards
+    //MARK: - Variables
+    private var randomIsOn: Bool = false
+    private var selectedCardsOrder: DictionariesSettings.CardOrder = .normal
+    private var hideTransaltionIsOn: Bool = false
+    
+    //MARK: - Subviews
+    //SHADOWS
+    private let settingsShadowView: UIView = {
+        let view = UIView()
+        view.setUpCustomView()
+        view.tag = 1
+        return view
+    }()
+    private let textViewShadowView: UIView = {
+        let view = UIView()
+        view.setUpCustomView()
+        view.tag = 2
+        return view
+    }()
+    private let goalShadowView: UIView = {
+        let view = UIView()
+        view.setUpCustomView()
+        view.tag = 3
+        return view
+    }()
+    
+    
+    //VIEWS
+    private let settingView = {
+        let view = UIView()
+        view.setUpCustomView()
+        view.layer.masksToBounds = true
+        return view
+    }()
+    
     private let goalView : UIView = {
         var view = UIView()
         view.setUpCustomView()
@@ -69,21 +85,18 @@ class DetailsView: UIViewController {
         return view
     }()
     
-    private let goalLabel : UILabel = {
-        let label = UILabel()
-        label.font = .selectedFont.withSize(18)
-        label.text = "details.goal".localized
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
-    
-    private let isOneSideModeView: UIView = {
-        let view = UIView()
-        view.setUpCustomView()
-        view.layer.masksToBounds = true
+    lazy var textInputView: TextInputView = {
+        let view = TextInputView(delegate: self)
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.textView.layer.borderColor = UIColor.clear.cgColor
+        view.layer.shadowOffset = .zero
+        view.layer.shadowColor = UIColor.clear.cgColor
+        view.layer.shadowOpacity = 0
         return view
     }()
     
+    
+    //SUBVIEWS
     private let isOneSideModeLabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -98,105 +111,94 @@ class DetailsView: UIViewController {
         return switcher
     }()
     
-    private let testSegwayView: UICustomSegmentedControl = {
+    
+    private let orderOptionsLabel: UILabel = {
+        var label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = .selectedFont.withSize(18)
+        label.text = "details.cardsOrder".localized
+        return label
+    }()
+    
+    private let orderOptionSegmentedControl: UICustomSegmentedControl = {
         var control = UICustomSegmentedControl(cornerRadius: 9)
         control.insertSegment(withTitle: "details.cardsOrder.noraml".localized, at: 0, animated: false)
         control.insertSegment(withTitle: "details.cardsOrder.random".localized, at: 1, animated: false)
         control.insertSegment(withTitle: "details.cardsOrder.reverse".localized, at: 2, animated: false)
         control.translatesAutoresizingMaskIntoConstraints = false
         control.selectedSegmentIndex = 1
-        
         return control
     }()
-    private let testSegwayLabel: UILabel = {
-        var label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
+    
+    
+    private let goalLabel : UILabel = {
+        let label = UILabel()
         label.font = .selectedFont.withSize(18)
-        label.text = "details.cardsOrder".localized
+        label.text = "details.goal".localized
+        label.translatesAutoresizingMaskIntoConstraints = false
         return label
-        
     }()
     
-    private lazy var saveButton: UIBarButtonItem = {
+    private let goalPicker = UIPickerView()
+    
+    
+    //MARK: NAV Buttons
+    lazy var addNewWordsButton = UIBarButtonItem(
+        image: UIImage(systemName: "plus"),
+        style: .plain,
+        target: self,
+        action: #selector(addNavButtonTap(sender:)))
+    
+    lazy var saveButton: UIBarButtonItem = {
         let button = UIBarButtonItem(
             title: "system.save".localized,
             style: .done,
             target: self,
-            action: #selector(rightBarButDidTap(sender:))
+            action: #selector(saveButtonDidTap(sender:))
         )
         return button
     }()
-
-    lazy var textView: TextInputView = {
-        let view = TextInputView(delegate: self)
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.textView.layer.borderColor = UIColor.clear.cgColor
-        return view
-    }()
-    
-
-    let settingView = {
-        let view = UIView()
-        view.setUpCustomView()
-        view.layer.masksToBounds = true
-        return view
-    }()
-
-    let testSettingsShadowView: UIView = {
-        let view = UIView()
-        view.setUpCustomView()
-        return view
-    }()
-    let testTextViewShadowView: UIView = {
-        let view = UIView()
-        view.setUpCustomView()
-        return view
-    }()
-    let testGoalShadowView: UIView = {
-        let view = UIView()
-        view.setUpCustomView()
-        return view
-    }()
-
-    private let addWordsBut : UIButton = {
-        var button = UIButton()
-        button.setUpCustomButton()
+    lazy var doneButton: UIBarButtonItem = {
+        let button = UIBarButtonItem(
+            title: "system.done".localized,
+            style: .done,
+            target: self,
+            action: #selector(doneButtonDidTap(sender:)))
         return button
     }()
     
-    private let beginBut : UIButton = {
+    //MARK: Buttons
+    lazy var timedButton: UIButton = {
+        let button = UIButton()
+        button.setUpCustomButton()
+        button.setImage(UIImage(systemName: "stopwatch",
+                                withConfiguration: UIImage.SymbolConfiguration(weight: .semibold)),
+                        for: .normal)
+        button.addTarget(self, action: #selector(clockedSession(sender:)), for: .touchUpInside)
+        return button
+    }()
+    lazy var beginBut : UIButton = {
         var button = UIButton()
         button.setUpCustomButton()
+        button.addTarget(self, action: #selector(startButtonTap(sender: )), for: .touchUpInside)
         return button
     }()
     
-    private let picker = UIPickerView()
     
-//    //MARK: Local variables.
-    private var randomIsOn: Bool = false
-    private var selectedCardsOrder: DictionariesSettings.CardOrder = .normal
-    private var hideTransaltionIsOn: Bool = false
+    //MARK: Constraints.
+    private var regularWidthClassConstraints: [NSLayoutConstraint] = []
+    private var compactWidthClassConstraints: [NSLayoutConstraint] = []
     
-
-    var portraitConstraints: [NSLayoutConstraint] = []
-    var landscapeConstraints: [NSLayoutConstraint] = []
+    private var regularWidthClassTextViewActiveConstraints: [NSLayoutConstraint] = []
+    private var regularWidthClassTextViewConstraints:       [NSLayoutConstraint] = []
     
-    var textViewActiveConstraints: [NSLayoutConstraint] = []
-    var textViewInactiveConstraints: [NSLayoutConstraint] = []
-    
-    var textViewActiveHorConstraints: [NSLayoutConstraint] = []
-    var textViewInactiveHorConstraints: [NSLayoutConstraint] = []
-
-
-//    var textViewHeightVert: NSLayoutConstraint!
-//    var textViewHeightHor: NSLayoutConstraint!
-//    var textViewWidthAnchor: NSLayoutConstraint!
-//    var textViewPortraitWidth: NSLayoutConstraint!
     
     //MARK: Inherited and initialization.
     required init(factory: ViewModelFactory, dictionary: DictionariesEntity){
         self.viewModelFactory = factory
+        self.dictionary = dictionary
         self.viewModel = factory.configureDetailsViewModel(dictionary: dictionary)
+        self.addWordsViewModel = factory.configureAddWordsViewModel(dictionary: dictionary)
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -207,107 +209,49 @@ class DetailsView: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         bind()
-        
-        //Version number one
-//        configureRandomizeView()
-//        configureGoalView()
-//        configureHideTransaltionView()
-//        configureController()
-        configureNavBar()
-        
-        if UIDevice.current.userInterfaceIdiom == .pad {
-            setUpCommonViews()
-            applyConstraints(for: traitCollection)
-        } else {
-            setUpIphoneViews()
-//            configureDetailsView()
-//            configureGoalViewTest()
-        }
-        configureSettingsView()
-        configureGoalView()
-
-        //Version number 2
-//        testRandomSetUp()
+        configureView()
+        configureShadowViews()
         configureStartButton()
-
         
-//        configureAddWordsButton()
+        applyConstraints(for: self.traitCollection)
+        
+        configureSettingsView()
+        configureTextView()
+        configureGoalView()
+        
         configureLabels()
         retrieveDetailsData()
     }
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        viewModel?.saveDetails(orderSelection: DictionariesSettings.CardOrder(rawValue: Int64(self.testSegwayView.selectedSegmentIndex)) ?? .normal  , isOneSideMode: isOneSideModeSwitch.isOn)
+        viewModel?.saveDetails(orderSelection: DictionariesSettings.CardOrder(
+            rawValue: Int64(self.orderOptionSegmentedControl.selectedSegmentIndex)) ?? .normal,
+                               isOneSideMode: isOneSideModeSwitch.isOn)
+        textInputView.textView.resignFirstResponder()
     }
     
     //MARK: - StyleChange Responding
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
+        if previousTraitCollection?.horizontalSizeClass != traitCollection.horizontalSizeClass {
+            applyConstraints(for: traitCollection)
+        }
+        
         if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
             if traitCollection.userInterfaceStyle == .dark {
                 view.subviews.forEach { view in
                     view.layer.shadowColor = shadowColorForDarkIdiom
                 }
+                textInputView.layer.shadowColor = shadowColorForDarkIdiom
             } else {
                 view.subviews.forEach { view in
                     view.layer.shadowColor = shadowColorForLightIdiom
                 }
+                textInputView.layer.shadowColor = shadowColorForLightIdiom
             }
         }
     }
     
-    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        super.viewWillTransition(to: size, with: coordinator)
-        if UIDevice.current.userInterfaceIdiom == .pad {
-            applyConstraints(for: traitCollection)
-        }
-    }
-
-    //MARK: Layout adjust methods.
-    ///Update textView layout.
-    private func updateTextViewConstraits(keyboardIsVisable: Bool){
-        let isLandscape = UIDevice.current.orientation == .landscapeLeft || UIDevice.current.orientation == .landscapeRight
-        UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseOut) { [weak self] in
-            guard let self = self else {return}
-            if keyboardIsVisable {
-                NSLayoutConstraint.deactivate(
-                    (isLandscape ? textViewInactiveHorConstraints : textViewInactiveConstraints)
-                )
-                NSLayoutConstraint.activate(
-                    (isLandscape ? textViewActiveHorConstraints : textViewActiveConstraints)
-                )
-            } else {
-                NSLayoutConstraint.deactivate(
-                    (isLandscape ? textViewActiveHorConstraints : textViewActiveConstraints)
-                    
-                )
-                NSLayoutConstraint.activate(
-                    (isLandscape ? textViewInactiveHorConstraints : textViewInactiveConstraints)
-                )
-            }
-            view.layoutIfNeeded()
-        }
-    }
-    ///Updating the constraints depending on the orientation and first responder status.
-    private func applyConstraints(for traitCollection: UITraitCollection) {
-        NSLayoutConstraint.deactivate(portraitConstraints)
-        NSLayoutConstraint.deactivate(landscapeConstraints)
-        
-        let isTextViewActive = textView.textView.isFirstResponder
-        if UIDevice.current.orientation == .landscapeLeft || UIDevice.current.orientation == .landscapeRight {
-            NSLayoutConstraint.deactivate(isTextViewActive ? textViewActiveConstraints : textViewInactiveConstraints)
-            NSLayoutConstraint.activate(isTextViewActive ? textViewActiveHorConstraints : textViewInactiveHorConstraints)
-            NSLayoutConstraint.activate(landscapeConstraints)
-        } else {
-            NSLayoutConstraint.deactivate(isTextViewActive ? textViewActiveHorConstraints : textViewInactiveHorConstraints)
-            NSLayoutConstraint.activate(isTextViewActive ? textViewActiveConstraints : textViewInactiveConstraints)
-            NSLayoutConstraint.activate(portraitConstraints)
-        }
-    }
-
-    
-        
-
     //MARK: - ViewModel bind
     func bind(){
         viewModel?.output
@@ -317,500 +261,474 @@ class DetailsView: UIViewController {
                 switch output{
                 case .shouldUpdateLangauge:
                     configureLabels()
+                    textInputView.updatePlaceholder()
                 case .shouldUpdateFont:
-                    updateFont()
+                    configureFont()
                 case .error(let error):
-                    presentError(error)
+                    presentError(error, sourceView: view)
                 case .shouldUpdatePicker:
-                    picker.reloadAllComponents()
-                case .shouldPresentAddWordsView(let dict):
-                    presentAddWordsViewWith(dictionary: dict)
-                case .shouldPresentGameView(let dict, let number):
-                    presentMainGameViewWith(dictionary: dict, selectedNumber: number)
+                    goalPicker.reloadAllComponents()
+                    goalPicker.selectRow(viewModel?.selectedRowForPicker() ?? 1, inComponent: 0, animated: true)
+                }
+            }
+            .store(in: &cancellable)
+        addWordsViewModel?.output
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] output in
+                switch output {
+                case .shouldPresentError(let error):
+                    self?.presentError(error, sourceView: self?.view)
+                case .shouldUpdatePlaceholder:
+                    self?.textInputView.updatePlaceholder()
+                case .shouldHighlightError(let word):
+                    self?.highlightErrorFor(word)
+                case .shouldPop:
+                    self?.textInputView.clearTextView()
                 }
             }
             .store(in: &cancellable)
     }
-    //MARK: - NavBar setUp
-    func configureNavBar() {
-        let addNewWordsButton = UIBarButtonItem(
-            image: UIImage(systemName: "plus"),
-            style: .plain,
-            target: self,
-            action: #selector(addNavButtonTap(sender:)))
-
-        let rightButton = UIBarButtonItem(
-            image: UIImage(systemName: "stopwatch"),
-            style: .plain,
-            target: self,
-            action: #selector(clockedSession(sender:)))
-        
-        if UIDevice.current.userInterfaceIdiom == .pad {
-            self.navigationItem.setRightBarButton(rightButton, animated: true)
-        } else {
-            self.navigationItem.setRightBarButtonItems([rightButton, addNewWordsButton], animated: true)
-        }
-        
+    
+    //MARK: - Subviews SetUp
+    private func configureView() {
+        self.view.backgroundColor = .systemBackground
     }
-    //MARK: - Views SetUp
+    
+    //MARK: Shadow view's setUp
+    // Shadow views takes a role of view holder, which helps to optimize the code.
+    private func configureShadowViews(){
+        view.addSubviews(textViewShadowView, settingsShadowView, goalShadowView)
+        
+        regularWidthClassTextViewConstraints.append(contentsOf:[
+            textViewShadowView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor,
+                                                    constant: .outerSpacer),
+            textViewShadowView.trailingAnchor.constraint(equalTo: view.trailingAnchor,
+                                                         constant: -.outerSpacer),
+            textViewShadowView.widthAnchor.constraint(equalTo: view.widthAnchor,
+                                                      multiplier: 0.5,
+                                                      constant: -.outerSpacer - .outerSpacer / 2),
+            textViewShadowView.heightAnchor.constraint(equalToConstant:
+                                                        150 + .innerSpacer + .genericButtonHeight),
+        ])
+        
+        
+        regularWidthClassTextViewActiveConstraints.append(contentsOf: [
+            textViewShadowView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            
+            textViewShadowView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            
+            textViewShadowView.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor),
+            
+            textViewShadowView.bottomAnchor.constraint(lessThanOrEqualTo: beginBut.topAnchor,
+                                                       constant: -.outerSpacer),
+            textViewShadowView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+        ])
+        
+        
+        regularWidthClassConstraints.append(contentsOf: [
+            settingsShadowView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor,
+                                                    constant: .outerSpacer),
+            settingsShadowView.trailingAnchor.constraint(equalTo: textViewShadowView.leadingAnchor,
+                                                         constant: -.innerSpacer),
+            settingsShadowView.heightAnchor.constraint(equalToConstant: 150),
+            
+            settingsShadowView.widthAnchor.constraint(equalTo: view.widthAnchor,
+                                                      multiplier: 0.5,
+                                                      constant: -.outerSpacer - .outerSpacer / 2),
+            
+            goalShadowView.topAnchor.constraint(equalTo: settingsShadowView.bottomAnchor,
+                                                constant: .innerSpacer),
+            goalShadowView.trailingAnchor.constraint(equalTo: settingsShadowView.trailingAnchor),
+            
+            goalShadowView.leadingAnchor.constraint(equalTo: settingsShadowView.leadingAnchor),
+            
+            goalShadowView.heightAnchor.constraint(equalToConstant: 60)
+        ])
+        
+        
+        compactWidthClassConstraints.append(contentsOf:[
+            settingsShadowView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor,
+                                                    constant: .outerSpacer),
+            settingsShadowView.trailingAnchor.constraint(equalTo: view.trailingAnchor,
+                                                         constant: -.outerSpacer),
+            settingsShadowView.leadingAnchor.constraint(equalTo: view.leadingAnchor,
+                                                        constant: .outerSpacer),
+            settingsShadowView.heightAnchor.constraint(equalToConstant: 150),
+            
+            
+            textViewShadowView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor,
+                                                    constant: .outerSpacer),
+            textViewShadowView.leadingAnchor.constraint(equalTo: view.trailingAnchor,
+                                                        constant: .outerSpacer),
+            textViewShadowView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.5,
+                                                      constant: -.outerSpacer - .outerSpacer / 2),
+            textViewShadowView.heightAnchor.constraint(equalToConstant: 150),
+            
+            
+            goalShadowView.topAnchor.constraint(equalTo: settingsShadowView.bottomAnchor,
+                                                constant: .innerSpacer),
+            goalShadowView.leadingAnchor.constraint(equalTo: view.leadingAnchor,
+                                                    constant: .outerSpacer),
+            goalShadowView.trailingAnchor.constraint(equalTo: view.trailingAnchor,
+                                                     constant: -.outerSpacer),
+            goalShadowView.heightAnchor.constraint(equalToConstant: 60)
+        ])
+    }
+    //MARK: - View's SetUp
+    private func configureTextView() {
+        textViewShadowView.addSubview(textInputView)
+        
+        NSLayoutConstraint.activate([
+            textInputView.topAnchor.constraint(equalTo: textViewShadowView.topAnchor) ,
+            textInputView.leadingAnchor.constraint(equalTo: textViewShadowView.leadingAnchor),
+            textInputView.bottomAnchor.constraint(equalTo: textViewShadowView.bottomAnchor),
+            textInputView.trailingAnchor.constraint(equalTo: textViewShadowView.trailingAnchor),
+        ])
+    }
+    
     private func configureSettingsView(){
         view.addSubviews(settingView)
-        settingView.addSubviews(testSegwayLabel, testSegwayView)
+        settingView.addSubviews(orderOptionsLabel, orderOptionSegmentedControl)
         settingView.addSubviews( isOneSideModeLabel, isOneSideModeSwitch)
         
         NSLayoutConstraint.activate([
+            settingView.topAnchor.constraint(equalTo: settingsShadowView.topAnchor),
             
-            settingView.topAnchor.constraint(equalTo: testSettingsShadowView.topAnchor) ,
-            settingView.leadingAnchor.constraint(equalTo: testSettingsShadowView.leadingAnchor),
-            settingView.bottomAnchor.constraint(equalTo: testSettingsShadowView.bottomAnchor),
-            settingView.trailingAnchor.constraint(equalTo: testSettingsShadowView.trailingAnchor),
+            settingView.leadingAnchor.constraint(equalTo: settingsShadowView.leadingAnchor),
             
-            isOneSideModeLabel.centerYAnchor.constraint(equalTo: settingView.centerYAnchor, constant: -45),
-            isOneSideModeLabel.leadingAnchor.constraint(equalTo: settingView.leadingAnchor, constant: 15),
+            settingView.bottomAnchor.constraint(equalTo: settingsShadowView.bottomAnchor),
             
+            settingView.trailingAnchor.constraint(equalTo: settingsShadowView.trailingAnchor),
+            
+            
+            isOneSideModeLabel.centerYAnchor.constraint(equalTo: settingView.centerYAnchor,
+                                                        constant: -45),
+            isOneSideModeLabel.leadingAnchor.constraint(equalTo: settingView.leadingAnchor,
+                                                        constant: 15),
+            
+            isOneSideModeSwitch.trailingAnchor.constraint(equalTo: settingView.trailingAnchor,
+                                                          constant: -25),
             isOneSideModeSwitch.centerYAnchor.constraint(equalTo: isOneSideModeLabel.centerYAnchor),
-            isOneSideModeSwitch.trailingAnchor.constraint(equalTo: settingView.trailingAnchor, constant: -25),
             
-            testSegwayLabel.topAnchor.constraint(equalTo: settingView.centerYAnchor),
-            testSegwayLabel.leadingAnchor.constraint(equalTo: settingView.leadingAnchor, constant: 15),
-
-            testSegwayView.widthAnchor.constraint(equalTo: settingView.widthAnchor, constant: -15),
-            testSegwayView.bottomAnchor.constraint(equalTo: settingView.bottomAnchor, constant: -10),
-            testSegwayView.centerXAnchor.constraint(equalTo: settingView.centerXAnchor)
-
+            
+            orderOptionsLabel.leadingAnchor.constraint(equalTo: settingView.leadingAnchor,
+                                                       constant: 15),
+            orderOptionsLabel.topAnchor.constraint(equalTo: settingView.centerYAnchor),
+            
+            
+            orderOptionSegmentedControl.widthAnchor.constraint(equalTo: settingView.widthAnchor,
+                                                               constant: -15),
+            orderOptionSegmentedControl.bottomAnchor.constraint(equalTo: settingView.bottomAnchor,
+                                                                constant: -10),
+            orderOptionSegmentedControl.centerXAnchor.constraint(equalTo: settingView.centerXAnchor)
+            
         ])
-//        randomizeSwitch.addTarget(self, action: #selector(randomSwitchToggle(sender:)), for: .valueChanged)
-        testSegwayView.addTarget(self, action: #selector(orderSegwayToggle(sender: )), for: .valueChanged)
+        orderOptionSegmentedControl.addTarget(self, action: #selector(orderSegwayToggle(sender: )), for: .valueChanged)
         isOneSideModeSwitch.addTarget(self, action: #selector(hideTransaltionSwitchToggle(sender:)), for: .valueChanged)
-
     }
-
+    
     private func configureGoalView(){
         view.addSubviews(goalView)
         
-        picker.dataSource = self
-        picker.delegate = self
+        goalPicker.dataSource = self
+        goalPicker.delegate = self
         
-        picker.translatesAutoresizingMaskIntoConstraints = false
-        goalView.addSubviews(goalLabel, picker)
+        goalPicker.translatesAutoresizingMaskIntoConstraints = false
+        goalView.addSubviews(goalLabel, goalPicker)
         
         NSLayoutConstraint.activate([
-            goalView.topAnchor.constraint(equalTo: testGoalShadowView.topAnchor) ,
-            goalView.leadingAnchor.constraint(equalTo: testGoalShadowView.leadingAnchor),
-            goalView.bottomAnchor.constraint(equalTo: testGoalShadowView.bottomAnchor),
-            goalView.trailingAnchor.constraint(equalTo: testGoalShadowView.trailingAnchor),
+            goalView.topAnchor.constraint(equalTo: goalShadowView.topAnchor) ,
+            goalView.leadingAnchor.constraint(equalTo: goalShadowView.leadingAnchor),
+            goalView.bottomAnchor.constraint(equalTo: goalShadowView.bottomAnchor),
+            goalView.trailingAnchor.constraint(equalTo: goalShadowView.trailingAnchor),
             
             goalLabel.leadingAnchor.constraint(equalTo: goalView.leadingAnchor, constant: 15),
             goalLabel.centerYAnchor.constraint(equalTo: goalView.centerYAnchor),
             
-            picker.trailingAnchor.constraint(equalTo: goalView.trailingAnchor),
-            picker.centerYAnchor.constraint(equalTo: goalView.centerYAnchor),
-            picker.widthAnchor.constraint(equalTo: goalView.widthAnchor, multiplier: 0.3)
+            goalPicker.trailingAnchor.constraint(equalTo: goalView.trailingAnchor),
+            goalPicker.centerYAnchor.constraint(equalTo: goalView.centerYAnchor),
+            goalPicker.widthAnchor.constraint(equalTo: goalView.widthAnchor, multiplier: 0.3)
         ])
-    }
-        // MARK: - View's containers SetUp
-        /// Configures and adds views to the hierarchy.
-    private func setUpIphoneViews() {
-        view.addSubviews(testSettingsShadowView, testGoalShadowView)
-        
-        NSLayoutConstraint.activate([
-            //Settings
-            testSettingsShadowView.topAnchor.constraint(
-                equalTo: view.safeAreaLayoutGuide.topAnchor,
-                constant: 35),
-            testSettingsShadowView.centerXAnchor.constraint(
-                equalTo: view.centerXAnchor),
-            testSettingsShadowView.heightAnchor.constraint(
-                equalToConstant: 150),
-            testSettingsShadowView.widthAnchor.constraint(
-                equalTo: view.widthAnchor, multiplier: .widthMultiplerFor(type: .forViews)),
-
-            //Goal
-            testGoalShadowView.topAnchor.constraint(
-                equalTo: testSettingsShadowView.bottomAnchor,
-                constant: 23),
-            testGoalShadowView.centerXAnchor.constraint(
-                equalTo: view.centerXAnchor ),
-            testGoalShadowView.widthAnchor.constraint(
-                equalTo: view.widthAnchor,
-                multiplier: .widthMultiplerFor(type: .forViews)),
-            testGoalShadowView.heightAnchor.constraint(
-                equalToConstant: 60),
-
-        ])
-    }
-    private func setUpCommonViews() {
-        view.addSubviews(testSettingsShadowView, testTextViewShadowView, testGoalShadowView)
-        
-        testTextViewShadowView.addSubview(textView)
-        
-        NSLayoutConstraint.activate([
-            textView.topAnchor.constraint(equalTo: testTextViewShadowView.topAnchor) ,
-            textView.leadingAnchor.constraint(equalTo: testTextViewShadowView.leadingAnchor),
-            textView.bottomAnchor.constraint(equalTo: testTextViewShadowView.bottomAnchor),
-            textView.trailingAnchor.constraint(equalTo: testTextViewShadowView.trailingAnchor),
-        ])
-        
-        let height = max(view.bounds.height, view.bounds.width)
-        let width = min(view.bounds.height, view.bounds.width)
-        
-        let insetSpaceVertical = (width - ( width * .widthMultiplerFor(type: .forViews))) / 2
-        let insetSpaceHorizontal = (height - ( height * .widthMultiplerFor(type: .forViews))) / 2
-        
-        //IPad textView constraints for portrait mode with text view being the first responder.
-        textViewActiveConstraints = [
-            testTextViewShadowView.topAnchor.constraint(
-                equalTo: view.safeAreaLayoutGuide.topAnchor,
-                constant: insetSpaceVertical),
-            testTextViewShadowView.trailingAnchor.constraint(
-                equalTo: view.trailingAnchor,
-                constant: -insetSpaceVertical),
-            testTextViewShadowView.heightAnchor.constraint(equalToConstant: 300),
-            testTextViewShadowView.widthAnchor.constraint(
-                equalTo: view.widthAnchor,
-                multiplier: .widthMultiplerFor(type: .forViews)),
-        ]
-        
-        //IPad textView constraints for portrait mode.
-        textViewInactiveConstraints = [
-            testTextViewShadowView.topAnchor.constraint(
-                equalTo: view.safeAreaLayoutGuide.topAnchor,
-                constant: insetSpaceVertical),
-            testTextViewShadowView.trailingAnchor.constraint(
-                equalTo: view.trailingAnchor,
-                constant: -insetSpaceVertical),
-            testTextViewShadowView.heightAnchor.constraint(
-                equalToConstant: 150),
-            testTextViewShadowView.widthAnchor.constraint(
-                equalTo: view.widthAnchor,
-                multiplier: .widthMultiplerFor(type: .forViews) / 2,
-                constant: -insetSpaceVertical / 4 ),
-        ]
-        
-        //IPad textView constraints for landscape mode with text view being the first responder.
-        //Using vertical inset to archive more visibility with the text view.
-        textViewActiveHorConstraints = [
-            testTextViewShadowView.topAnchor.constraint(
-                equalTo: view.safeAreaLayoutGuide.topAnchor,
-                constant: insetSpaceVertical / 2),
-            testTextViewShadowView.trailingAnchor.constraint(
-                equalTo: view.trailingAnchor,
-                constant: -insetSpaceVertical / 2),
-            testTextViewShadowView.heightAnchor.constraint(
-                equalTo: testSettingsShadowView.heightAnchor),
-            testTextViewShadowView.widthAnchor.constraint(
-                equalTo: view.widthAnchor,
-                constant: -insetSpaceVertical ),
-            
-        ]
-        
-        //IPad textView constraints for lanscape mode.
-        textViewInactiveHorConstraints = [
-            testTextViewShadowView.topAnchor.constraint(
-                equalTo: view.safeAreaLayoutGuide.topAnchor,
-                constant: insetSpaceHorizontal),
-            testTextViewShadowView.trailingAnchor.constraint(
-                equalTo: view.trailingAnchor,
-                constant: -insetSpaceHorizontal),
-            testTextViewShadowView.heightAnchor.constraint(
-                equalToConstant: 150 + insetSpaceHorizontal / 2 + 60),
-            testTextViewShadowView.widthAnchor.constraint(
-                equalTo: view.widthAnchor,
-                multiplier: .widthMultiplerFor(type: .forViews) / 2,
-                constant: -insetSpaceHorizontal / 4 ),
-        ]
-        
-        
-        //Ipad Contraints for portrait mode. TextView's constraits activates first.
-        portraitConstraints = [
-            //Settings
-            testSettingsShadowView.topAnchor.constraint(
-                equalTo: testTextViewShadowView.topAnchor),
-            testSettingsShadowView.trailingAnchor.constraint(
-                equalTo: testTextViewShadowView.leadingAnchor,
-                constant: -insetSpaceVertical / 2),
-            testSettingsShadowView.heightAnchor.constraint(
-                equalToConstant: 150),
-            testSettingsShadowView.widthAnchor.constraint(
-                equalTo: view.widthAnchor,
-                multiplier: .widthMultiplerFor(type: .forViews) / 2,
-                constant: -insetSpaceVertical / 4),
-            
-            //Goal
-            testGoalShadowView.topAnchor.constraint(
-                equalTo: testTextViewShadowView.bottomAnchor,
-                constant: insetSpaceVertical / 2),
-            testGoalShadowView.centerXAnchor.constraint(
-                equalTo: view.centerXAnchor ),
-            testGoalShadowView.widthAnchor.constraint(
-                equalTo: view.widthAnchor,
-                multiplier: .widthMultiplerFor(type: .forViews)),
-            testGoalShadowView.heightAnchor.constraint(
-                equalToConstant: 60),
-        ]
-        
-        //Ipad Contraints for landscape mode.
-        landscapeConstraints = [
-            //Settings
-            testSettingsShadowView.topAnchor.constraint(
-                equalTo: testTextViewShadowView.topAnchor),
-            testSettingsShadowView.trailingAnchor.constraint(
-                equalTo: testTextViewShadowView.leadingAnchor,
-                constant: -insetSpaceHorizontal / 2),
-            testSettingsShadowView.heightAnchor.constraint(
-                equalToConstant: 150),
-            testSettingsShadowView.widthAnchor.constraint(
-                equalTo: view.widthAnchor,
-                multiplier: .widthMultiplerFor(type: .forViews) / 2,
-                constant: -insetSpaceHorizontal / 4 ),
-            
-            //Goal
-            testGoalShadowView.topAnchor.constraint(
-                equalTo: testTextViewShadowView.bottomAnchor,
-                constant: -60),
-            testGoalShadowView.leadingAnchor.constraint(
-                equalTo: testSettingsShadowView.leadingAnchor),
-            testGoalShadowView.widthAnchor.constraint(
-                equalTo: testSettingsShadowView.widthAnchor),
-            testGoalShadowView.heightAnchor.constraint(
-                equalToConstant: 60),
-        ]
     }
     
-    //MARK: - AddNewWord SetUp
-    func configureAddWordsButton(){
-        view.addSubview(addWordsBut)
+    //MARK:  StartBut SetUp
+    private func configureStartButton(){
+        view.addSubviews(timedButton, beginBut)
         
-        NSLayoutConstraint.activate([
-            addWordsBut.bottomAnchor.constraint(equalTo: self.beginBut.topAnchor, constant: -23),
-            addWordsBut.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            addWordsBut.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.91),
-            addWordsBut.heightAnchor.constraint(equalToConstant: 55)
+        regularWidthClassConstraints.append(contentsOf: [
+            timedButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor,
+                                                constant: -.outerSpacer),
+            timedButton.trailingAnchor.constraint(equalTo: view.trailingAnchor,
+                                                  constant: -.outerSpacer),
+            timedButton.widthAnchor.constraint(equalTo: view.widthAnchor,
+                                               multiplier: 0.2),
+            timedButton.heightAnchor.constraint(equalToConstant: .genericButtonHeight),
+            
+            
+            beginBut.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor,
+                                             constant: -.outerSpacer),
+            beginBut.leadingAnchor.constraint(equalTo: view.leadingAnchor,
+                                              constant: .outerSpacer),
+            beginBut.trailingAnchor.constraint(equalTo: timedButton.leadingAnchor,
+                                               constant: -.innerSpacer),
+            beginBut.heightAnchor.constraint(equalToConstant: .genericButtonHeight)
         ])
-        addWordsBut.addTargetTouchBegin()
-        addWordsBut.addTargetOutsideTouchStop()
-        addWordsBut.addTargetInsideTouchStop()
-        addWordsBut.addTarget(self, action: #selector(addWordsButtonTap(sender:)), for: .touchUpInside)
-        addWordsBut.isHidden = true
-    }
-    //MARK: - StartBut SetUp
-    func configureStartButton(){
-        view.addSubview(beginBut)
         
-        NSLayoutConstraint.activate([
-            beginBut.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -23),
-            beginBut.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            beginBut.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.91),
-            beginBut.heightAnchor.constraint(equalToConstant: 55)
+        compactWidthClassConstraints.append(contentsOf: [
+            timedButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor,
+                                                constant: -.outerSpacer),
+            timedButton.trailingAnchor.constraint(equalTo: view.trailingAnchor,
+                                                  constant: -.outerSpacer),
+            timedButton.widthAnchor.constraint(equalToConstant: .genericButtonHeight),
+            
+            timedButton.heightAnchor.constraint(equalToConstant: .genericButtonHeight),
+            
+            
+            beginBut.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor,
+                                             constant: -.outerSpacer),
+            beginBut.leadingAnchor.constraint(equalTo: view.leadingAnchor,
+                                              constant: .outerSpacer),
+            beginBut.trailingAnchor.constraint(equalTo: timedButton.leadingAnchor,
+                                               constant: -.innerSpacer),
+            beginBut.heightAnchor.constraint(equalToConstant: .genericButtonHeight)
         ])
-        beginBut.addTarget(self, action: #selector(startButtonTap(sender: )), for: .touchUpInside)
-        beginBut.addTargetTouchBegin()
-        beginBut.addTargetOutsideTouchStop()
-        beginBut.addTargetInsideTouchStop()
     }
-
-
-//    //MARK: - RandomCardView SetUp
-//    func configureRandomizeView(){
-//        view.addSubview(randomizeCardsView)
-//        
-//        randomizeSwitch.translatesAutoresizingMaskIntoConstraints = false
-//        randomizeCardsView.addSubviews(randomizeLabel, randomizeSwitch)
-//        
-//        NSLayoutConstraint.activate([
-//            randomizeCardsView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 35),
-//            randomizeCardsView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-//            randomizeCardsView.widthAnchor.constraint(equalTo: view.widthAnchor,
-//                                                      multiplier: CGFloat.widthMultiplerFor(type: .forViews)),
-//            randomizeCardsView.heightAnchor.constraint(lessThanOrEqualToConstant: 60),
-//            
-//            randomizeLabel.centerYAnchor.constraint(equalTo: randomizeCardsView.centerYAnchor),
-//            randomizeLabel.leadingAnchor.constraint(equalTo: randomizeCardsView.leadingAnchor, constant: 15),
-//            
-//            randomizeSwitch.centerYAnchor.constraint(equalTo: randomizeCardsView.centerYAnchor),
-//            randomizeSwitch.trailingAnchor.constraint(equalTo: randomizeCardsView.trailingAnchor, constant: -25)
-//        ])
-//        randomizeSwitch.addTarget(self, action: #selector(randomSwitchToggle(sender:)), for: .valueChanged)
-//    }
-//    
-//    //MARK: - HideTranslationView SetUp
-//    func configureHideTransaltionView(){
-//        
-//        let shadowView = UIView()
-//        shadowView.setUpCustomView()
-//        
-//        view.addSubviews(shadowView)
-//        shadowView.addSubview(isOneSideModeView)
-//
-//        isOneSideModeSwitch.translatesAutoresizingMaskIntoConstraints = false
-//        
-//        isOneSideModeView.addSubviews(isOneSideModeLabel, isOneSideModeSwitch)
-//        
-//        NSLayoutConstraint.activate([
-//            shadowView.topAnchor.constraint(equalTo: self.goalView.bottomAnchor, constant: 23),
-//            shadowView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-//            shadowView.widthAnchor.constraint(equalTo: view.widthAnchor,
-//                                              multiplier: CGFloat.widthMultiplerFor(type: .forViews)),
-//            shadowView.heightAnchor.constraint(equalToConstant: 60),
-//
-//            isOneSideModeView.topAnchor.constraint(equalTo: shadowView.topAnchor),
-//            isOneSideModeView.centerXAnchor.constraint(equalTo: shadowView.centerXAnchor),
-//            isOneSideModeView.widthAnchor.constraint(equalTo: shadowView.widthAnchor),
-//            isOneSideModeView.heightAnchor.constraint(equalTo: shadowView.heightAnchor),
-//            
-//            isOneSideModeLabel.centerYAnchor.constraint(equalTo: isOneSideModeView.centerYAnchor),
-//            isOneSideModeLabel.leadingAnchor.constraint(equalTo: isOneSideModeView.leadingAnchor, constant: 15),
-//            
-//            isOneSideModeSwitch.centerYAnchor.constraint(equalTo: isOneSideModeView.centerYAnchor),
-//            isOneSideModeSwitch.trailingAnchor.constraint(equalTo: isOneSideModeView.trailingAnchor, constant: -25)
-//        ])
-//        isOneSideModeSwitch.addTarget(self, action: #selector(hideTransaltionSwitchToggle(sender:)), for: .valueChanged)
-//    }
-//
-//    //MARK: - SetTheGoal SetUp
-//    func configureGoalViewa(){
-//        //Cause of picker to archive desirable appearence, we need to set bounds masking, blocking shadow view. So we need to add custom one.
-//        let shadowView = UIView()
-//        shadowView.setUpCustomView()
-//        
-//        view.addSubviews(shadowView, goalView)
-//        
-//        picker.dataSource = self
-//        picker.delegate = self
-//        
-//        picker.translatesAutoresizingMaskIntoConstraints = false
-//        
-//        goalView.addSubviews(goalLabel, picker)
-//        
-//        NSLayoutConstraint.activate([
-//            shadowView.topAnchor.constraint(equalTo: self.randomizeCardsView.bottomAnchor, constant: 23),
-//            shadowView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-//            shadowView.widthAnchor.constraint(equalTo: view.widthAnchor,
-//                                              multiplier: CGFloat.widthMultiplerFor(type: .forViews)),
-//            shadowView.heightAnchor.constraint(equalToConstant: 60),
-//            
-//            goalView.topAnchor.constraint(equalTo: shadowView.topAnchor) ,
-//            goalView.leadingAnchor.constraint(equalTo: shadowView.leadingAnchor),
-//            goalView.bottomAnchor.constraint(equalTo: shadowView.bottomAnchor),
-//            goalView.trailingAnchor.constraint(equalTo: shadowView.trailingAnchor),
-//            
-//            goalLabel.leadingAnchor.constraint(equalTo: goalView.leadingAnchor, constant: 15),
-//            goalLabel.centerYAnchor.constraint(equalTo: goalView.centerYAnchor),
-//            
-//            picker.trailingAnchor.constraint(equalTo: goalView.trailingAnchor),
-//            picker.centerYAnchor.constraint(equalTo: goalView.centerYAnchor),
-//            picker.widthAnchor.constraint(equalTo: goalView.widthAnchor, multiplier: 0.3)
-//        ])
-//    }
-
     
-    //MARK: - Test
-    func retrieveDetailsData(){
+    
+    
+    //MARK: - Load details data.
+    private func retrieveDetailsData(){
         self.selectedCardsOrder = viewModel?.selectedCardsOrder() ?? .normal
-        self.testSegwayView.selectedSegmentIndex = Int(selectedCardsOrder.rawValue)
+        self.orderOptionSegmentedControl.selectedSegmentIndex = Int(selectedCardsOrder.rawValue)
         self.isOneSideModeSwitch.isOn = viewModel?.isHideTranslationOn() ?? false
-    
-        picker.selectRow(viewModel?.selectedRowForPicker() ?? 1, inComponent: 0, animated: true)
+        
+        goalPicker.selectRow(viewModel?.selectedRowForPicker() ?? 1, inComponent: 0, animated: true)
     }
     
-//    func testRandomSetUp(){
-//        view.addSubviews(randomizeLabel, randomizeSwitch)
-//        
-//        NSLayoutConstraint.activate([
-//            randomizeLabel.centerYAnchor.constraint(equalTo: settingView.centerYAnchor, constant: 30),
-//            randomizeLabel.leadingAnchor.constraint(equalTo: settingView.leadingAnchor, constant: 15),
-//            
-//            randomizeSwitch.centerYAnchor.constraint(equalTo: settingView.centerYAnchor, constant: 30),
-//            randomizeSwitch.trailingAnchor.constraint(equalTo: settingView.trailingAnchor, constant: -25),
-//        ])
+    //MARK: Layout adjust methods.
+    ///Update textView layout and handles save button display
+    private func updateTextViewConstraits(keyboardIsVisable: Bool){
+        let isRegularWidth = self.traitCollection.horizontalSizeClass == .regular
+        
+        UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseOut) { [weak self] in
+            guard let self = self else {return}
+            if isRegularWidth {
+                NSLayoutConstraint.deactivate(keyboardIsVisable
+                                              ? regularWidthClassTextViewConstraints
+                                              : regularWidthClassTextViewActiveConstraints)
+                
+                NSLayoutConstraint.activate(keyboardIsVisable
+                                            ? regularWidthClassTextViewActiveConstraints
+                                            : regularWidthClassTextViewConstraints)
+            }
+            textInputView.layer.cornerRadius = keyboardIsVisable ? 0 : 9
+            textInputView.backgroundColor = keyboardIsVisable ? .systemBackground : .secondarySystemBackground
+            textViewShadowView.layer.shadowOpacity = keyboardIsVisable ? 0 : 0.8
+            
+            view.layoutIfNeeded()
+        }
+    }
+    
+    ///Updating the constraints depending on the orientation and first responder status.
+    private func applyConstraints(for traitCollection: UITraitCollection) {
+        NSLayoutConstraint.deactivate(regularWidthClassConstraints)
+        NSLayoutConstraint.deactivate(compactWidthClassConstraints)
+        
+        let isTextViewActive = textInputView.textView.isFirstResponder
+        let text = textInputView.textView.text
+        
+        if isTextViewActive || text?.isEmpty != true {
+            textInputView.clearTextView()
+            changeSaveButtonState(active: false)
+            let vc = AddWordsPartitialController(factory: self.viewModelFactory,
+                                                 dictionary: viewModel?.dictionary ?? dictionary,
+                                                 text: text
+            )
+            present(vc, animated: true)
+        }
+        
+        if traitCollection.horizontalSizeClass == .regular {
+            navigationItem.rightBarButtonItems?.removeAll(where: { button in
+                button == self.addNewWordsButton
+            })
+            
+            NSLayoutConstraint.activate(regularWidthClassTextViewConstraints)
+            NSLayoutConstraint.activate(regularWidthClassConstraints)
+        } else {
+            if navigationItem.rightBarButtonItems == nil {
+                navigationItem.setRightBarButton(self.addNewWordsButton, animated: true)
+            } else {
+                navigationItem.rightBarButtonItems?.append(self.addNewWordsButton)
+            }
+            
+            NSLayoutConstraint.deactivate(isTextViewActive
+                                          ? regularWidthClassTextViewActiveConstraints
+                                          : regularWidthClassTextViewConstraints)
+            NSLayoutConstraint.activate(compactWidthClassConstraints)
+        }
+        view.layoutIfNeeded()
+    }
+    
+    //MARK: - System
+    ///Adding save button to navigation bar.
+    private func changeSaveButtonState(active: Bool){
+        guard UIDevice.isIPadDevice else { return }
+        if active {
+            if let text = textInputView.textView.text, text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                navigationItem.rightBarButtonItems?.removeAll(where: { button in
+                    button == self.saveButton
+                })
+                guard let bar = navigationItem.rightBarButtonItems, !bar.contains(where: {$0 == doneButton}) else {
+                    navigationItem.setRightBarButton(self.doneButton, animated: true)
+                    return
+                }
+                navigationItem.rightBarButtonItems?.append(self.doneButton)
+            } else {
+                navigationItem.rightBarButtonItems?.removeAll(where: { button in
+                    button == self.doneButton
+                })
+                guard let bar = navigationItem.rightBarButtonItems, !bar.contains(where: {$0 == saveButton}) else {
+                    navigationItem.setRightBarButton(self.saveButton, animated: true)
+                    return
+                }
+                navigationItem.rightBarButtonItems?.append(self.saveButton)
+            }
+        } else {
+            if textInputView.textView.text.isEmpty {
+                navigationItem.rightBarButtonItems?.removeAll(where: { button in
+                    button == self.saveButton || button == self.doneButton
+                })
+            }
+        }
+    }
+    
+    private func highlightErrorFor(_ word: String){
+        guard let text = self.textInputView.textView.text, let range = text.range(of: word, options: .caseInsensitive, range: word.startIndex..<text.endIndex) else {
+            return
+        }
+        
+        let NSRAnge = NSRange(range, in: text)
+        self.textInputView.highlightError(NSRAnge)
+    }
+    
+//    private func validateText() -> String?{
+//        guard let text = textInputView.textView.text,
+//                !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+//            let emptyTextAlert = UIAlertController.alertWithAction(alertTitle: "textAlert".localized,
+//                                                                   alertMessage: "textInfo".localized,
+//                                                                   alertStyle: .actionSheet,
+//                                                                   action1Title: "system.agreeInformal".localized,
+//                                                                   action1Handler: {_ in self.textInputView.textView.becomeFirstResponder()},
+//                                                                   action1Style: .cancel)
+//            self.present(emptyTextAlert, animated: true)
+//            return nil
+//        }
+//        return text
 //    }
-
+    
     //Assigning text on initializing and if language changes
-    func configureLabels(){
+    private func configureLabels(){
         self.navigationItem.title = "details.title".localized
-        self.testSegwayLabel.text = "details.cardsOrder".localized
+        self.isOneSideModeLabel.text = "details.showTranslation".localized
+        self.orderOptionsLabel.text = "details.cardsOrder".localized
         self.goalLabel.text = "details.goal".localized
+        
+        self.orderOptionSegmentedControl.setTitle("details.cardsOrder.noraml".localized,
+                                                  forSegmentAt: 0)
+        self.orderOptionSegmentedControl.setTitle("details.cardsOrder.random".localized,
+                                                  forSegmentAt: 1)
+        self.orderOptionSegmentedControl.setTitle("details.cardsOrder.reverse".localized,
+                                                  forSegmentAt: 2)
+        
         configureButtons()
     }
-    func updateFont(){
-        testSegwayLabel.font = .selectedFont.withSize(18)
+    
+    private func configureFont(){
+        isOneSideModeLabel.font = .selectedFont.withSize(18)
+        orderOptionsLabel.font = .selectedFont.withSize(18)
         goalLabel.font = .selectedFont.withSize(18)
+        textInputView.textView.font = .selectedFont.withSize(17)
+        
         configureButtons()
     }
+    
     //Easiest way to update button's title or font is to set new attributes.This function called in case of langauge or font chagne.
     private func configureButtons(){
-        addWordsBut.setAttributedTitle(
-            .attributedString(
-                string: "details.addWords".localized,
-                with: .selectedFont,
-                ofSize: 20), for: .normal
-        )
-                    
         beginBut.setAttributedTitle(
             .attributedString(
                 string: "details.start".localized,
                 with: .selectedFont,
                 ofSize: 20), for: .normal
         )
+        saveButton.title = "system.save".localized
     }
-
-    
-    //MARK: Configure and present child ViewControllers
-    //Called after recieving the event with passed dictionary
-    func presentAddWordsViewWith(dictionary: DictionariesEntity){
-        let vc = AddWordsView(factory: viewModelFactory, dictionary: dictionary)
-        self.navigationController?.pushViewController(vc, animated: true)
-    }
-    //Initializing
-    func presentMainGameViewWith(dictionary: DictionariesEntity, selectedNumber: Int){
-//        let selectedOrder = viewModel?.selectedCardsOrder()
-        let number = viewModel?.selectedNumberOfCards()
-//        let hide = viewModel?.isHideTranslationOn()
-        let vc = MainGameVC(viewModelFactory: viewModelFactory, dictionary: dictionary, selectedOrder: selectedCardsOrder, hideTransaltion: /*hide ??*/ self.isOneSideModeSwitch.isOn, selectedNumber: number ?? selectedNumber)
-        self.navigationController?.pushViewController(vc, animated: true)
-    }
-    
 }
 //MARK: - Actions
 extension DetailsView{
+    //MARK: PRESENT ADD WORDS
     @objc func addNavButtonTap(sender: UIBarButtonItem){
-        let vc = AddWordsPartitialController(factory: self.viewModelFactory, dictionary: viewModel?.dictionary ?? DictionariesEntity())
-        present(vc, animated: true)
+        let vc = AddWordsPartitialController(factory:       self.viewModelFactory,
+                                             dictionary:    viewModel?.dictionary ?? dictionary,
+                                             text:          textInputView.textView.text
+        )
+        vc.modalPresentationStyle = .pageSheet
+        vc.sheetPresentationController?.detents = [.large()]
+
+        self.navigationController?.present(vc, animated: true)
     }
 
+    //MARK: PRESENT TIME DETAILS
     @objc func clockedSession(sender: UIBarButtonItem){
-        let vc = TimedDetailView(viewModelFactory: self.viewModelFactory, viewModel: self.viewModel, delegate: self)
-        self.present(vc, animated: true)
+        let vc = TimedDetailView(viewModelFactory:  self.viewModelFactory,
+                                 viewModel:         self.viewModel,
+                                 delegate:          self,
+                                 timeIntervalUpTo:  60
+        )
+        vc.modalPresentationStyle = .formSheet
+        if let sheet = vc.sheetPresentationController {
+            if self.traitCollection.horizontalSizeClass == .regular {
+                    sheet.detents = [.large()]
+                } else {
+                    sheet.detents = [.medium()]
+                }
+            }
+        self.navigationController?.present(vc, animated: true)
     }
     
+    //MARK: PRESENT GAME
+    @objc func startButtonTap(sender: UIButton){
+        guard let selectedNumber = viewModel?.selectedNumberOfCards() else {
+            return
+        }
+        
+        let vc = MainGameVC(viewModelFactory:   viewModelFactory,
+                            dictionary:         viewModel?.dictionary ?? dictionary,
+                            selectedOrder:      selectedCardsOrder,
+                            hideTransaltion:    self.isOneSideModeSwitch.isOn,
+                            selectedNumber:     selectedNumber)
+        
+        self.navigationController?.pushViewController(vc, animated: true)
+
+    }
+
     @objc func orderSegwayToggle(sender: UISegmentedControl){
         selectedCardsOrder = DictionariesSettings.CardOrder(rawValue: Int64(sender.selectedSegmentIndex)) ?? .normal
     }
-
-    @objc func randomSwitchToggle(sender: UISwitch){
-        randomIsOn = sender.isOn
-    }
     
+    @objc func doneButtonDidTap(sender: Any){
+        textInputView.textView.resignFirstResponder()
+    }
+
+    @objc func saveButtonDidTap(sender: Any){
+        guard let text = textInputView.validateText() else { return }
+        addWordsViewModel?.getNewWordsFrom(text)
+    }
+
     @objc func hideTransaltionSwitchToggle(sender: UISwitch){
         hideTransaltionIsOn = sender.isOn
     }
 
-    @objc func startButtonTap(sender: UIButton){
-        viewModel?.startButtonTapped()
     }
-
-    @objc func addWordsButtonTap(sender: UIButton){
-        viewModel?.addWordsButtonTapped()
-    }
-    
-    @objc func rightBarButDidTap(sender: Any){
-        navigationItem.rightBarButtonItems?.removeAll(where: { button in
-            button == saveButton
-        })
-        textView.textView.resignFirstResponder()
-    }
-
-}
 
 //MARK: - UPPicker delegate & dataSource
 extension DetailsView: UIPickerViewDelegate, UIPickerViewDataSource{
@@ -830,27 +748,36 @@ extension DetailsView: UIPickerViewDelegate, UIPickerViewDataSource{
         viewModel?.titleForPickerAt(row: row) ?? ""
      }
 }
-extension DetailsView: PlaceholderTextViewDelegate{
-    func textViewDidBeginEditing() {
-        if UIDevice.current.userInterfaceIdiom == .pad {
-            updateTextViewConstraits(keyboardIsVisable: true)
-        }
-        navigationItem.rightBarButtonItems?.append(saveButton)
-    }
-    func textViewDidEndEditing() {
-        if UIDevice.current.userInterfaceIdiom == .pad {
-            updateTextViewConstraits(keyboardIsVisable: false)
-        }
 
-        navigationItem.rightBarButtonItems?.removeAll(where: { button in
-            button == saveButton
-        })
+//MARK: - TextView Placeholder Delegate
+extension DetailsView: PlaceholderTextViewDelegate{
+    func textViewDidBeginEditing()  {     
+        updateTextViewConstraits(keyboardIsVisable: true)
+        changeSaveButtonState(active: true)
+    }
+    
+    func textViewDidEndEditing()    {
+        updateTextViewConstraits(keyboardIsVisable: false)
+        changeSaveButtonState(active: false)
+    }
+    func presentErrorAlert(alert: UIAlertController) {
+        self.presentErrorAlert(alert: alert)
+    }
+    
+    func textViewDidChange()        {
+        changeSaveButtonState(active: true)
     }
     
     func configurePlaceholderText() -> String? {
-        viewModel?.configureTextPlaceholder()
+        addWordsViewModel?.configureTextPlaceholder()
+    }
+    
+    func currentSeparatorSymbol() -> String? {
+        addWordsViewModel?.textSeparator()
     }
 }
+
+//MARK: - Presenter Delegate
 extension DetailsView: Presenter {
     func startTheGame(vc: UIViewController) {
         self.navigationController?.pushViewController(vc, animated: true)

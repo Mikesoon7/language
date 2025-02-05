@@ -71,7 +71,7 @@ extension UIView {
     //MARK: - Method to add rounded corners and gray colour.
     func setUpCustomView(){
         self.layer.cornerRadius = 9
-        self.addRightSideShadow()
+        self.addCenterShadows()
         self.backgroundColor = .secondarySystemBackground
         self.translatesAutoresizingMaskIntoConstraints = false
     }
@@ -150,11 +150,12 @@ extension UIView {
     //MARK: - Creates shadow for a view with 0 side ofset
     func addCenterShadows(){
         self.layer.masksToBounds = false
-        self.layer.shadowOffset = CGSize(width: 0, height: 5)
         self.layer.shadowColor = ((traitCollection.userInterfaceStyle == .dark)
                                   ? shadowColorForDarkIdiom
                                   : shadowColorForLightIdiom)
-        self.layer.shadowOpacity = 0.8
+        self.layer.shadowOpacity = 0.7
+        self.layer.shadowOffset = CGSize(width: 2, height: 3)
+        self.layer.shadowRadius = 5.0
     }
 
     //MARK: - Creates shadow for a view with slight side offset.
@@ -166,7 +167,14 @@ extension UIView {
                                   : shadowColorForLightIdiom)
         self.layer.shadowOpacity =  0.8
     }
-
+    static func screenSizeView() -> UIView {
+        let screenBounds = UIApplication.shared
+            .connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .first?
+            .screen.bounds ?? .zero
+        return UIView(frame: screenBounds)
+    }
 }
 
 extension UIStackView{

@@ -1,0 +1,220 @@
+//MARK: - TabBarController
+"tabBar.dictionaries" = "Sözlükler";
+"tabBar.search" = "Ara";
+"tabBar.settings" = "Ayarlar";
+//MARK: - MainVC
+"menu.title" = "Sözlükler";
+"menu.deleteDictionary" = "Sözlüğü sil?";
+"menu.cell.name" = "Ad";
+"menu.cell.number" = "Toplam kart";
+"menu.cell.import" = "Sözlük ekle";
+"menu.undo.title" = "Az önce sildiğiniz sözlüğü geri yüklemek ister misiniz?";
+//MARK: - StatisticView
+"statistic.title" = "İstatistik";
+"statistic.beginDate" = "Başlangıç tarihi:";
+"statistic.endDate" = "Bitiş tarihi:";
+//Custom options
+"statistic.currentWeek" = "Bu hafta";
+"statistic.currentMonth" = "Bu ay";
+"statistic.previousMonth" = "Geçen ay";
+"statistic.allTime" = "Tüm zamanlar";
+"statistic.custom" = "Özel";
+//Cell Labels:
+"statistic.creationDate" = "Oluşturuldu:";
+"statistic.accessNumber" = "Açıldı:";
+"statistic.cardsNumber" = "İçerik:";
+"statistic.accessNumber.time" = "kez";
+"statistic.cardsNumber.card" = "kart";
+"statistic.accessNumber.times" = "kez";
+"statistic.cardsNumber.cards" = "kartlar";
+//Chart Labels:
+"statistic.timeSpent" = "Çalışma süresi:";
+"statistic.cardsLearned" = "Hatırlanan kartlar:";
+//MARK: - SettingsVC
+"settings.title" = "Ayarlar";
+//Sections
+"settings.sections.general" = "Genel";
+"settings.sections.search" = "Ara";
+"settings.sections.dictionaries" = "Sözlükler";
+//Items for General
+"settings.general.language" = "Dil";
+"settings.general.theme" = "Tema";
+    //Choose options
+"settings.general.theme.dark" = "Koyu";
+"settings.general.theme.light" = "Açık";
+"settings.general.theme.system" = "Sistem";
+
+"settings.general.notification" = "Bildirimler";
+"settings.general.fonts" = "Yazı tipi";
+//Items for Search
+"settings.search.barPosition" = "Arama çubuğu konumu";
+//Items for Dictionaries
+"settings.dictionaries.separator" = "Ayırıcı semboller";
+"settings.dictionaries.exception" = "Hariç tutulan semboller";
+//Items for SignHeader
+"settings.iCloud.sign" = "Verilerinizi cihazlar arasında aktarmak ve iCloud'da saklamak için Apple Kimliğinizi bağlayın.";
+//MARK: - AddDictionary or WordsVC
+"addDict.title" = "Oluşturma";
+"addWord.title" = "Yeni kelimeler \n ekleme";
+"viewPlaceholderWord" = "Kelime ";
+"viewPlaceholderMeaning" = " açıklama";
+"fieldPlaceholder" = "Ad";
+"dictionaryName" = "Sözlük adı";
+//Alerts
+"textAlert" = "Metni girin";
+"nameAlert" = "Adı girin";
+"textInfo" = "Lütfen en az 1 kelime çifti girin.";
+"nameInfo" = "Neredeyse hazır. Lütfen sözlüğünüze bir ad verin.";
+"addWords.contentSaving.title" = "İçerik kaydedilmedi";
+"addWords.contentSaving.text" = "Yeni kelimelerinizi kaydetmek ister misiniz?";
+"addWords.contentSaving.save" = "Kaydet";
+"addWords.contentSaving.clear" = "Temizle";
+
+//MARK: - System
+"system.cancel" = "İptal";
+"system.agreeFormal" = "Anladım";
+"system.agreeInformal" = "Tamam";
+"system.save" = "Kaydet";
+"system.create" = "Oluştur";
+"system.great" = "Harika";
+"system.edit" = "Düzenle";
+"system.delete" = "Sil";
+"system.done" = "Bitti";
+"system.yes" = "Evet";
+"system.no" = "Hayır";
+"system.settings" = "Ayarlar";
+"system.newLine" = "Yeni satır";
+"system.next" = "İleri";
+"system.letsGo" = "Hadi başlayalım";
+"system.skip" = "Atla";
+"system.restore" = "Geri yükle";
+"system.total" = "Toplam";
+"system.min.shortned" = "dk";
+"system.continue" = "Devam et";
+"system.finish" = "Ayrıl";
+"system.checked" = "Kontrol edildi";
+
+//MARK: - DetailsVC
+"details.title" = "Detaylar";
+"details.randomize" = "Kartları karıştır";
+"details.goal" = "Hedef belirle";
+"details.showTranslation" = "Çeviriyi göster";
+"details.cardsOrder" = "Kart sırası:";
+"details.cardsOrder.noraml" = "Normal";
+"details.cardsOrder.random" = "Rastgele";
+"details.cardsOrder.reverse" = "Ters";
+"details.addWords" = "Yeni kelimeler ekle";
+"details.start" = "Başla";
+
+//MARK: - GameVC
+"game.title" = "Kartlar";
+"game.lastCell.congratulations" = "Congratulations";
+"game.lastCell.checked" = "You've checked:";
+"game.lastCell.spending" = "Spending:";
+"game.lastCell.bestResult" = "Best result so far !";
+"game.lastCell.avarageResult.firstPart" = "You've done it ";
+"game.lastCell.avarageResult.secondPart" = " previous time";
+"game.lastCell.slower" = "slower than";
+"game.lastCell.faster" = "faster than";
+"game.lastCell.same" = "as fast as";
+"game.lastCell.cards" = "cards";
+"game.lastCell.min" = "min";
+
+//MARK: - GameDetailsVC
+"gameDetails.information" = "Bir kelimenin anlamını ortaya çıkarmak için üzerine dokunun ve iOS'un yerleşik sözlüğünü kullanın. Gerekirse kartınızı düzenleyebilir veya silebilirsiniz.";
+"gameDetails.suggestion1Part" = "Sözlüklere erişimde sorun yaşıyorsanız, indirmeniz veya güncellemeniz gerekebilir. Şu yolu izleyin:";
+"gameDetails.suggestion2Part" = "cihazınızda ve gerekli sözlüklerin yüklü olduğundan emin olun.";
+"gameDetails.settingsPath" = " Ayarlar -> Genel -> Sözlükler ";
+"gameDetails.deleteAlert.title" = "Geçerli kartı sil";
+"gameDetails.deleteAlert.message" = "Bu çifti silmek istediğinizden emin misiniz?";
+"gameDetails.deleteAlert.message.warning" = "\n Bu son karttır; silinmesi sözlüğünüzü de kaldıracaktır.";
+"gameDetails.emptyTextAlert.title" = "Metin boş olamaz.";
+"gameDetails.emptyTextAlert.message" = "Boş değerler kaydedilirse mevcut kart silinir.";
+
+//MARK: - Notification
+"notification.allowNotification" = "Bildirimlere izin ver";
+"frequency" = "Sıklık";
+"chooseTime" = "Saat seçin";
+//Frequency Option
+"everyDay" = "Her gün";
+"onceAWeek" = "Haftada bir kez";
+"onWeekdays" = "Hafta içi";
+"onTheWeekend" = "Hafta sonu";
+"custom" = "Özel";
+//Notification message
+"notification.notificationTitle" = "Hafıza Kontrol Zamanı";
+"notification.notificationMessage" = "Günde sadece 10 dakika, ayda 5 saat aktif çalışma sağlar!";
+//Notification Denied Alert
+"notification.alertTitle" = "Bağlı kalmak için Bildirimleri Etkinleştirin";
+"notification.alertMessage" = "Endişelerinizi anlıyoruz ve sizi bildirimlerle bunaltmayacağız. Sadece sizi güncel tutmak ve bize hatırlatmak için günde bir mesaj göndereceğiz. Tercihlerinizi her zaman ayarlarda değiştirebilirsiniz.";
+
+//MARK: - SearchVC
+"searchVCTitle" = "Arama";
+"yourWord" = "Metninizi girin";
+"copied" = "Kopya";
+//MARK: - SeparatorsVC
+"separators.addChar" = "Karakter Ekle";
+"separators.placeholder" = "Metin Girin";
+"separators.alertErrorTitle" = "Geçersiz Giriş";
+"separators.alertTitle" = "1 ile 3 karakter girin";
+"separators.alertDuplicateMessage" = "Yinelenenlere izin verilmez";
+"separators.alertSpaceMessage" = "Sadece boşluklara izin verilmez";
+"separators.title" = "Metin Bölme ve Ayırıcılar";
+"separators.infoFirstPart" = "Başlangıçta metin, yeni satırlara göre bloklara ayrılır. Mevcut bloğu bölmeden yeni bir satıra geçmek için klavyenin üstündeki 'Yeni satır' düğmesini kullanın.";
+"separators.infoSecondPart" = "Bu bloklar göz önüne alındığında, uygulama her bloğun içinde çiftler oluşturmak için belirlenen ayırıcı sembolünü kullanır.";
+"separators.infoFinalPart" = "Yeni bir ayırıcı eklemek, mevcut sözlükleri değiştirmez. Eğer bir blokta birden fazla özel sembol varsa, yalnızca ilki ayırıcı olarak kabul edilir.";
+
+//MARK: - SystemErrors
+//Dictionary
+"coreDataError.dictionary.creation" = "Oluşturulamıyor";
+"coreDataError.dictionary.deletion" = "Silinemiyor";
+"coreDataError.dictionary.fetch" = "Kaydedilmiş sözlükler yüklenemedi.";
+"coreDataError.dictionary.update" = "Güncellenemiyor";
+"coreDataError.dictionary.addition" = "Genişletilemiyor";
+"coreDataError.dictionary.orderUpdate" = "Sözlük sırası güncellenemiyor.";
+//Words.Title
+"coreDataError.words.deletion" = "Çift silinemiyor";
+"coreDataError.words.fetch" = "İçerik yüklenemedi:";
+"coreDataError.words.emptyWord" = "Çift oluşturulamıyor veya güncellenemiyor";
+//Words.Message
+"coreDataError.words.emptyWord.message" = "Belirtilen dışlama sembolleri metni kesmiş olabilir.";
+//Logs
+"coreDataError.logs.creation" = "İstatistiksel bilgi oluşturulamıyor:";
+"coreDataError.logs.update" = "İstatistiksel bilgi güncellenemiyor:";
+"coreDataError.logs.fetch" = "Sözlükler için istatistikler getirilemedi.";
+//Unknown
+"unknownError.save.title" = "Değişiklikler kaydedilemiyor.";
+"unknownError.save.message" = "Lütfen destek ekibiyle iletişime geçerek sorunu açıklayın ve çözmemize yardımcı olun.";
+"unknownError.title" = "Beklenmedik bir hata oluştu.";
+"unknownError.message" = "Lütfen tekrar deneyin veya sorun devam ederse destekle iletişime geçin.";
+"unknownGameError.title" = "Beklenmedik bir sorun tespit edildi.";
+"unknownGameError.message" = "Değişiklikleriniz kaydedildi ancak yalnızca yeni bir oyun oturumunda görünecektir.";
+
+//MARK: - EditVC
+"edit.searchPlaceholder" = "Metniniz...";
+"edit.emptyField.title" = "Ad boş";
+"edit.emptyField.message" = "Lütfen sözlük adı için en az bir karakter girin.";
+"edit.emptyText.title" = "Düzenleme metni boş";
+"edit.emptyText.message" = "Sözlük bu durumda kaydedilirse silinir. \nEmin misiniz?";
+
+//MARK: - Tutorial
+"tutorial.firstViewLabel.title" = "Merhaba! \n Learny'ye Hoş Geldiniz.";
+"tutorial.firstViewLabel" = "Learny, çalışmalarınızı kolayca sindirilebilir parçalara ayırır. Uygulama, metninizi bölmek ve her blok için kartlar oluşturmak için birkaç kural kullanır. \n\n Kısa bir genel bakışla başlayalım!";
+"tutorial.secondViewLabel" = "Ana ekranda, sözlüklere erişmek için dokunun ve sözlüklerinizi yönetmek veya istatistiklerinizi görüntülemek için kaydırın.";
+"tutorial.thirdViewLabel" = "Daha fazlasına hazır mısınız? İçeriği ve adını yazarak yeni sözlükler ekleyin. \n \n İlk sözlüğünüzü oluşturun!";
+"tutorial.fourthViewLabel" = "Neredeyse bitti! Unutmayın, yeni satırlar metin bloklarının nerede bölüneceğini belirler. Dizilerinizi korumak için klavyenin üstündeki 'Yeni satır' düğmesini kullanın.";
+"tutorial.fifthViewLabel" = "Terimler ve tanımlar gibi belirli eşleştirmeler için ayırıcı sembolüne güvenin. Ayarlardan özelleştirebilir ve düzenleme sırasında bir ipucu olarak görüntüleyebilirsiniz.";
+"tutorial.sixthViewLabel" = "Her şey hazır! Öğrenme yolculuğunuzun bir parçası olmaktan onur duyuyoruz. İşte keyifli ve etkili çalışma seanslarına. \n \n Bol şans!";
+"tutorial.card.name" = "Merhaba";
+"tutorial.card.title" = "Öğrenme yolculuğunuzun bir parçası olmaktan mutluluk duyuyoruz!";
+"tutorial.card.message" = " \r\rP.S. Her zaman \rgelişmek için çabalıyoruz. \rEğer Learny'yi beğendiyseniz, \rApp Store'da bize puan verin. \r\rÇalışmalarınızda bol şans!";
+
+//MARK: - Exceptions
+"exception.title" = "Hariç Tutulacak Semboller";
+"exception.firstPart" = "Burada, her metin bloğunun başından ve sonundan kaldırılacak sembolleri belirtebilirsiniz.";
+"exception.secondPart" = "Örneğin, numaralandırılmış bir metni kopyalayıp sayıları kaldırmak istiyorsanız, bu sembolleri hariç tutma sembolleri olarak eklemeniz yeterlidir. Bu, öğrenme materyalinizi temiz ve odaklanmış tutmanıza yardımcı olur.";
+"exception.infoPart" = "Not: Hariç tutulan semboller, harfler eklemediğiniz sürece metninizi değiştirmez. Diğer karakterlerin arasında bulunan ve hariç tutulması gereken semboller değiştirilmeden kalacaktır.";
+"exception.placeholder" = "Sembolleri Girin";
+"exception.alertTitle" = "Hariç tutmak istediğiniz herhangi bir sembolü yazın.";
+"exception.alertErrorTitle" = "Geçersiz Giriş";
+"exception.alertSpaceMessage" = "Lütfen yalnızca boşluk karakteri kullanmaktan kaçının.";

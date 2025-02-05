@@ -4,15 +4,21 @@
 //
 //  Created by Star Lord on 31/08/2023.
 //
+//  REFACTORING STATE: CHECKED
 
 import UIKit
 
 
 struct StatisticCellData{
-    var colour: UIColor
-    var title: String
-    var value: Int
-    var percents: String
+    var entityColour: UIColor
+    var entityName: String
+    var entityAccessTime: String
+    var entityAccessTimeRatio: String
+    var entityCreationDate: String
+    var entityCardsNumber: Int
+    var entityAccessNumber: Int
+    
+    var isSelected: Bool
 }
 
 final class StatisticViewCell: UITableViewCell {
@@ -27,7 +33,7 @@ final class StatisticViewCell: UITableViewCell {
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
-    private let titleLabel: UILabel = {
+    private let nameLabel: UILabel = {
         let label = UILabel()
         label.font = .helveticaNeueMedium.withSize(18)
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -35,7 +41,7 @@ final class StatisticViewCell: UITableViewCell {
         label.textAlignment = .left
         return label
     }()
-    private let valueLabel: UILabel = {
+    private let accessTimeLabel: UILabel = {
         let label = UILabel()
         label.font = .helveticaNeueMedium.withSize(14)
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -43,7 +49,7 @@ final class StatisticViewCell: UITableViewCell {
         label.textAlignment = .right
         return label
     }()
-    private let percentsLabel: UILabel = {
+    private let accessTimeRationLabel: UILabel = {
         let label = UILabel()
         label.font = .helveticaNeue.withSize(10)
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -52,7 +58,7 @@ final class StatisticViewCell: UITableViewCell {
         return label
     }()
 
-
+    
     //MARK: Inherited and initializers.
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -62,22 +68,25 @@ final class StatisticViewCell: UITableViewCell {
     required init?(coder: NSCoder) {
         fatalError("coder wasn't imported")
     }
+
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
     
-    func configureCellWith(_ data: StatisticCellData){
-        self.colourView.backgroundColor = data.colour
-        self.titleLabel.text = data.title
-        self.valueLabel.text = String(data.value)
-        self.percentsLabel.text = data.percents
+    func configureCellWith(_ data: StatisticCellData, isExpanded: Bool){
+        self.colourView.backgroundColor = data.entityColour
+        self.nameLabel.text = data.entityName
+        self.accessTimeLabel.text = data.entityAccessTime
+        self.accessTimeRationLabel.text = data.entityAccessTimeRatio
     }
+    
     func configureView(){
         contentView.backgroundColor = .clear
+        selectionStyle = .none
     }
 
     func configureSubviews(){
-        contentView.addSubviews(colourView, titleLabel, valueLabel, percentsLabel)
+        contentView.addSubviews(colourView, nameLabel, accessTimeLabel, accessTimeRationLabel)
         
         NSLayoutConstraint.activate([
             colourView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
@@ -85,14 +94,14 @@ final class StatisticViewCell: UITableViewCell {
             colourView.heightAnchor.constraint(equalTo: contentView.heightAnchor, multiplier: 0.7),
             colourView.widthAnchor.constraint(equalTo: colourView.heightAnchor),
             
-            titleLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            titleLabel.leadingAnchor.constraint(equalTo: colourView.trailingAnchor, constant: subviewsInsets),
+            nameLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            nameLabel.leadingAnchor.constraint(equalTo: colourView.trailingAnchor, constant: subviewsInsets),
             
-            valueLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -subviewsInsets * 2 ),
-            valueLabel.bottomAnchor.constraint(equalTo: contentView.centerYAnchor, constant: -subviewsInsets / 3),
+            accessTimeLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -subviewsInsets * 2 ),
+            accessTimeLabel.bottomAnchor.constraint(equalTo: contentView.centerYAnchor, constant: -subviewsInsets / 3),
             
-            percentsLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -subviewsInsets * 2 ),
-            percentsLabel.topAnchor.constraint(equalTo: contentView.centerYAnchor, constant: subviewsInsets / 3),
+            accessTimeRationLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -subviewsInsets * 2 ),
+            accessTimeRationLabel.topAnchor.constraint(equalTo: contentView.centerYAnchor, constant: subviewsInsets / 3),
         ])
     }
 }

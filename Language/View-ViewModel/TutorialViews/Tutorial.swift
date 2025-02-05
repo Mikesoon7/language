@@ -4,14 +4,14 @@
 //
 //  Created by Star Lord on 20/09/2023.
 //
+//  REFACTORING STATE: NOT CHECKED
 
 import Foundation
 import UIKit
 
 //MARK: Protocol for Binding with MainView
 protocol TutorialCellHintProtocol: AnyObject{
-    func needToShowHint()
-    func stopShowingHint()
+    func changeHintAppearence(activate: Bool)
     func openAddDictionary()
 }
 
@@ -228,9 +228,9 @@ extension TutorialVC: AccessViewDelegate {
         currentViewIndex += 1
         switch currentViewIndex {
         case 1:
-            delegate?.needToShowHint()
+            delegate?.changeHintAppearence(activate: true)
             accessView.updateButtonsAppearence()
-        case 2: delegate?.stopShowingHint()
+        case 2: delegate?.changeHintAppearence(activate: false)
         default:
             delegate?.openAddDictionary()
             animateViewDismiss()

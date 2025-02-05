@@ -4,6 +4,7 @@
 //
 //  Created by Star Lord on 14/07/2023.
 //
+//  REFACTORING STATE: CHECKED
 
 import Foundation
 import UIKit
@@ -42,6 +43,9 @@ class AddDictionaryViewModel {
     }
     func configureTextPlaceholder() -> String{
         return "viewPlaceholderWord".localized + " \(settingsmodel.appSeparators.value) " + "viewPlaceholderMeaning".localized
+    }
+    func textSeparator() -> String{
+        settingsmodel.appSeparators.value
     }
     
     func createDictionary(name: String, text: String){
