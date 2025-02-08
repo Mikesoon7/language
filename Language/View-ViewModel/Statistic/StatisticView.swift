@@ -8,8 +8,6 @@
 
 import UIKit
 import Combine
-import SwiftUI
-import DGCharts
 
 
 private enum ActivePicker{
@@ -216,6 +214,7 @@ class StatisticView: UIViewController {
         if previousTraitCollection?.horizontalSizeClass != traitCollection.horizontalSizeClass {
             applyConstraints(for: traitCollection)
         }
+
         
         if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection){
             leftPickerView.layer.borderColor = UIColor.label.cgColor
@@ -224,10 +223,14 @@ class StatisticView: UIViewController {
     }
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
-        if self.activePicker != nil{
-            coordinator.animate { _ in
+        //Reload the chart view and interval picker.
+        coordinator.animate { _ in
+            if self.activePicker != nil{
                 self.updateDisplayedPicker(for: self.activePicker!)
             }
+        } completion: { _ in
+            self.pieChartView?.chartView?.layoutSubviews()
+            self.pieChartView?.chartView?.sizeHasChanged()
         }
     }
 
@@ -363,14 +366,14 @@ class StatisticView: UIViewController {
             leftDatePicker.trailingAnchor.constraint(
                 equalTo: contentView.trailingAnchor, constant: -ViewInsets.subviewsInset / 2 ),
             leftDatePicker.widthAnchor.constraint(
-                equalTo: contentView.widthAnchor, multiplier: 0.4,  constant: -ViewInsets.subviewsInset),
+                equalTo: contentView.widthAnchor, multiplier: 0.45,  constant: -ViewInsets.subviewsInset),
             
             rightDatePicker.topAnchor.constraint(
                 equalTo: contentView.topAnchor, constant: ViewInsets.subviewsInset),
             rightDatePicker.trailingAnchor.constraint(
                 equalTo: contentView.trailingAnchor, constant: -ViewInsets.subviewsInset / 2),
             rightDatePicker.widthAnchor.constraint(
-                equalTo: contentView.widthAnchor, multiplier: 0.4,  constant: -ViewInsets.subviewsInset)
+                equalTo: contentView.widthAnchor, multiplier: 0.45,  constant: -ViewInsets.subviewsInset)
         ])
 
         widthCompactSizeConstraints.append(contentsOf: [
@@ -397,7 +400,7 @@ class StatisticView: UIViewController {
             customRangePicker.trailingAnchor.constraint(
                 equalTo: contentView.trailingAnchor, constant: -ViewInsets.subviewsInset / 2 ),
             customRangePicker.widthAnchor.constraint(
-                equalTo: contentView.widthAnchor, multiplier: 0.4, constant: -ViewInsets.subviewsInset)
+                equalTo: contentView.widthAnchor, multiplier: 0.45, constant: -ViewInsets.subviewsInset)
 
         ])
 
@@ -421,19 +424,27 @@ class StatisticView: UIViewController {
         pieViewTopAnchorToPicker = verticalEmbededStackView.topAnchor.constraint(equalTo: leftDatePicker.bottomAnchor, constant: ViewInsets.subviewsInset)
 
         widthRegularSizeConstraints.append(contentsOf: [
-            verticalEmbededStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: ViewInsets.subviewsInset),
+            verticalEmbededStackView.topAnchor.constraint(
+                equalTo: contentView.topAnchor, constant: ViewInsets.subviewsInset),
             
-            verticalEmbededStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            verticalEmbededStackView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.6),
-            verticalEmbededStackView.heightAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.6),
-            verticalEmbededStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
+            verticalEmbededStackView.leadingAnchor.constraint(
+                equalTo: contentView.leadingAnchor, constant: ViewInsets.subviewsInset),
+            verticalEmbededStackView.trailingAnchor.constraint(
+                equalTo: customRangePicker.leadingAnchor, constant: -ViewInsets.subviewsInset),
+            verticalEmbededStackView.heightAnchor.constraint(
+                equalTo: contentView.widthAnchor, multiplier: 0.65),
+            verticalEmbededStackView.bottomAnchor.constraint(
+                equalTo: contentView.bottomAnchor)
         ])
 
         widthCompactSizeConstraints.append(contentsOf: [
             pieViewTopAnchorToButton,
-            verticalEmbededStackView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            verticalEmbededStackView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.8),
-            verticalEmbededStackView.heightAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.8),
+            verticalEmbededStackView.centerXAnchor.constraint(
+                equalTo: contentView.centerXAnchor),
+            verticalEmbededStackView.widthAnchor.constraint(
+                equalTo: contentView.widthAnchor, multiplier: 0.8),
+            verticalEmbededStackView.heightAnchor.constraint(
+                equalTo: contentView.widthAnchor, multiplier: 0.8),
         ])
 
         contentView.addSubview(verticalEmbededStackView)
@@ -452,20 +463,27 @@ class StatisticView: UIViewController {
             equalToConstant: CGFloat(legendTableView.numberOfRows(inSection: 0)) * ViewInsets.tableCellHeight + CGFloat(legendTableView.numberOfRows(inSection: 1)) * ViewInsets.tableSelectedCellHeight)
 
 
-
         widthRegularSizeConstraints.append(contentsOf: [
             tableViewTopAnchorToButton,
-            legendTableView.widthAnchor.constraint(equalTo: leftDatePicker.widthAnchor),
-            legendTableView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -ViewInsets.subviewsInset),
-            legendTableView.heightAnchor.constraint(equalTo: verticalEmbededStackView.heightAnchor),
+            legendTableView.widthAnchor.constraint(
+                equalTo: leftDatePicker.widthAnchor),
+            legendTableView.trailingAnchor.constraint(
+                equalTo: contentView.trailingAnchor, constant: -ViewInsets.subviewsInset),
+            legendTableView.heightAnchor.constraint(
+                equalTo: verticalEmbededStackView.heightAnchor),
 
         ])
 
         widthCompactSizeConstraints.append(contentsOf: [
-            legendTableView.topAnchor.constraint(equalTo: pieChartView?.bottomAnchor ?? leftPickerView.bottomAnchor, constant: ViewInsets.subviewsInset),
-            legendTableView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            legendTableView.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor),
-            legendTableView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            legendTableView.topAnchor.constraint(
+                equalTo: pieChartView?.bottomAnchor ?? leftPickerView.bottomAnchor,
+                constant: ViewInsets.subviewsInset),
+            legendTableView.leadingAnchor.constraint(
+                equalTo: contentView.leadingAnchor),
+            legendTableView.bottomAnchor.constraint(
+                lessThanOrEqualTo: contentView.bottomAnchor),
+            legendTableView.trailingAnchor.constraint(
+                equalTo: contentView.trailingAnchor),
             
             tableViewHeightAnchor
         ])
@@ -715,10 +733,10 @@ extension StatisticView: UIPickerViewDelegate, UIPickerViewDataSource {
     }
 }
 
-extension StatisticView: ChartViewDelegate{
-    func chartValueSelected(_ chartView: ChartViewBase, entry: ChartDataEntry, highlight: Highlight) {
-        chartView.highlightValue(nil)
-        guard let pieEntry = entry as? PieChartDataEntry else { return }
-        input?.send(.selectedChartEntryUpdated(pieEntry))
+extension StatisticView: PieChartViewDelegate {
+    func chartValueSelected(entry: ChartEntityData?){
+        input?.send(.selectedChartEntryUpdated(entry))
     }
+    
 }
+

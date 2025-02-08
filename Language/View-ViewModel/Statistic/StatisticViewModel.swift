@@ -7,7 +7,6 @@
 //  REFACTORING STATE: CHECKED
 
 import Foundation
-import DGCharts
 import Combine
 import UIKit
 
@@ -37,7 +36,7 @@ class StatisticViewModel{
     }
 
     enum Output{
-        case shouldUpdatePieChartWith(PieChartData)
+        case shouldUpdatePieChartWith(ChartEntityDataSet)
         case shouldUpdateSelectedTableCell
         case shouldUpdateSelectedInterval(DateInterval)
         case shouldUpdateCustomInterval
@@ -47,7 +46,7 @@ class StatisticViewModel{
     enum Input{
         case viewDidLoad
         case selectedIntervalUpdated(DateInterval)
-        case selectedChartEntryUpdated(PieChartDataEntry?)
+        case selectedChartEntryUpdated(ChartEntityData?)
     }
     
     //MARK: Properties
@@ -61,9 +60,9 @@ class StatisticViewModel{
     private var tableViewFilteredData: [StatisticCellData] = []
     private var tableViewSelectedEntry: StatisticCellData?
     
-    private var pieChartData: PieChartData = .init()
+    private var pieChartData: ChartEntityDataSet?
     private var pieChartColours: [UIColor] = []
-    private var pieChartSelectedEntry: PieChartDataEntry?
+    private var pieChartSelectedEntry: ChartEntityData?
     
     private var selectedCustomOption: CustomOptions = .currentMonth
     
@@ -158,7 +157,7 @@ class StatisticViewModel{
     private func prepareDataForDisplay(_ data: [DictionaryByLogs]){
         var dictionariesByTimeSpent: [DictionaryFullLogs] = []
         
-        var pieChartDataEntries: [PieChartDataEntry] = []
+        var pieChartDataEntries: [ChartEntityData] = []
         var tableViewData: [StatisticCellData] = []
         
         pieChartColours = UIColor.getColoursArray(data.count)
@@ -175,13 +174,6 @@ class StatisticViewModel{
             }
             let creationDate = dict.dictionary.creationDate
         
-//            dictionariesByTimeSpent.append(
-//                DictionaryByAccessCount(
-//                    dictionary: dict.dictionary,
-//                    accessTime: accessTime,
-//                    cardsChecked: accessCards
-//                )
-//            )
             dictionariesByTimeSpent.append(
                 DictionaryFullLogs(
                     dictionary: dict.dictionary,
@@ -208,11 +200,11 @@ class StatisticViewModel{
             let percentsString = String(format: "%.1f", percents.isNaN ? 0 : percents) + "%"
             
             pieChartDataEntries.append(
-                PieChartDataEntry(
+                ChartEntityData(
                     value: Double(dict.accessTime),
                     label: percentsString,
-                    data: dict.dictionary.language
-                )
+                    colour: pieChartColours[index],
+                    assosiatedData: dict.dictionary.language)
             )
             tableViewData.append(
                 StatisticCellData(
@@ -231,54 +223,48 @@ class StatisticViewModel{
         self.tableViewFilteredData = tableViewData
         
         
-        let dataForPieChartInSet = PieChartDataSet(entries: pieChartDataEntries)
-        dataForPieChartInSet.colors = pieChartColours
-        dataForPieChartInSet.label = localizedFormatTimeInterval(totalAccessTime, locale: self.currentLocale())
-        
-        let pieChartData = PieChartData(dataSet: dataForPieChartInSet)
-        pieChartData.setValueFont(.helveticaNeueMedium.withSize(15))
-        pieChartData.setValueTextColor(.white)
-        
-        pieChartData.dataSet?.drawValuesEnabled = false
+        let dataForPieChartInSet = ChartEntityDataSet(
+            chartTitle: localizedFormatTimeInterval(totalAccessTime, locale: self.currentLocale()),
+            chartData: pieChartDataEntries
+        )
 
-        self.pieChartData = pieChartData
+        self.pieChartData = dataForPieChartInSet
         self.pieChartSelectedEntry = nil
         
         output.send(.shouldUpdateSelectedTableCell)
-        output.send(.shouldUpdatePieChartWith(pieChartData))
+        output.send(.shouldUpdatePieChartWith(dataForPieChartInSet))
     }
     
     ///Creating new DataSet for passed entry and sending set back to view.
-    private func updateSelectedDictionary(entry: PieChartDataEntry? = nil, item: Int? = nil){
-        let mainDataSet = pieChartData.dataSet
-        var selectedEntry: PieChartDataEntry
+    private func updateSelectedDictionary(entry: ChartEntityData? = nil, item: Int? = nil){
+        let mainDataSet = pieChartData
         var selectedItem: Int
         
         if entry != nil {
-            guard pieChartSelectedEntry != entry, let entryIndex = mainDataSet?.entryIndex(entry: entry!) else {
+            guard pieChartSelectedEntry != entry, let entryIndex = mainDataSet?.chartData.firstIndex(of: entry!) else {
                 pieChartSelectedEntry = nil
                 tableViewFilteredData = tableViewData
-                output.send(.shouldUpdatePieChartWith(pieChartData))
+                output.send(.shouldUpdatePieChartWith(pieChartData!))
                 output.send(.shouldUpdateSelectedTableCell)
                 return
             }
-            selectedEntry = entry!
             selectedItem = entryIndex
         } else if item != nil {
-            guard let entry = mainDataSet?.entryForIndex(item!) as? PieChartDataEntry, tableViewFilteredData[item!].isSelected != true  else {
+            guard let entry = mainDataSet?.chartData[item!] as? ChartEntityData, tableViewFilteredData[item!].isSelected != true  else {
                 pieChartSelectedEntry = nil
                 tableViewFilteredData = tableViewData
-                output.send(.shouldUpdatePieChartWith(pieChartData))
+                output.send(.shouldUpdatePieChartWith(pieChartData!))
                 output.send(.shouldUpdateSelectedTableCell)
                 return
             }
-            selectedEntry = entry
             selectedItem = item!
-        } else {
+        } else if pieChartSelectedEntry != nil {
             pieChartSelectedEntry = nil
             tableViewFilteredData = tableViewData
-            output.send(.shouldUpdatePieChartWith(pieChartData))
+            output.send(.shouldUpdatePieChartWith(pieChartData!))
             output.send(.shouldUpdateSelectedTableCell)
+            return
+        } else {
             return
         }
         
@@ -289,22 +275,17 @@ class StatisticViewModel{
         
         tableViewFilteredData = [selectedTableEntry]
                 
-        let entryToPresent = PieChartDataEntry(value: Double(selectedEntryFullLog.cardsChecked),
-                                               label: "statistic.cardsLearned".localized)
+        let entryToPresent = ChartEntityData(value: Double(selectedEntryFullLog.cardsChecked),
+                                             label: "statistic.cardsLearned".localized,
+                                             colour: pieChartColours[selectedItem],
+                                             assosiatedData: "\(selectedEntryFullLog.cardsChecked)")
+
         pieChartSelectedEntry = entryToPresent
         
-        let filteredDataSet = PieChartDataSet(entries: [entryToPresent])
-        
-        filteredDataSet.label = localizedFormatTimeInterval(selectedEntryFullLog.accessTime, locale: self.currentLocale())
-        filteredDataSet.colors = [pieChartColours[selectedItem]]
-
-        let pieChartData = PieChartData(dataSet: filteredDataSet)
-        pieChartData.setValueFont(.helveticaNeueMedium.withSize(15))
-        
-        print(tableViewFilteredData)
-        
+        let filteredDataSet = ChartEntityDataSet(chartTitle:  localizedFormatTimeInterval(selectedEntryFullLog.accessTime, locale: self.currentLocale()), chartData: [entryToPresent])
+                    
         output.send(.shouldUpdateSelectedTableCell)
-        output.send(.shouldUpdatePieChartWith(pieChartData))
+        output.send(.shouldUpdatePieChartWith(filteredDataSet))
     }
     
     func currentLocale() -> Locale {
@@ -333,37 +314,12 @@ class StatisticViewModel{
             formatter.allowedUnits = [.hour, .minute]
         }
         formatter.unitsStyle = .short
-        formatter.zeroFormattingBehavior = .pad // Ensures two-digit formatting (e.g., "00:59")
+        formatter.zeroFormattingBehavior = .pad
         formatter.calendar = Calendar.current
         formatter.calendar?.locale = locale
 
         return formatter.string(from: interval) ?? ""
     }
-
-//    func formatTime(seconds: Int, oneLine: Bool = true) -> String {
-////        let interval = TimeInterval(Double(seconds))
-//        if seconds < 60 {
-//            // Format for seconds (e.g., "45 sec")
-//            return "\(seconds) sec"
-//        } else if seconds < 3600 {
-//            // Format for minutes (e.g., "9.5 min")
-//            let minutes = seconds / 60
-//            let remainingSeconds = seconds % 60
-//            return "\(minutes).\(String(format: "%02d", remainingSeconds)) min"
-//        } else {
-//            // Format for hours (e.g., "2.5.45 hours")
-//            let hours = seconds / 3600
-//            let minutes = (seconds % 3600) / 60
-//            let remainingSeconds = seconds % 60
-//            
-//            if oneLine {
-//                return "\(hours) hours, \(minutes).\(String(format: "%02d", remainingSeconds)) min"
-//            } else {
-//                return "\(hours) hours \n \(minutes).\(String(format: "%02d", remainingSeconds)) min"
-//            }
-//        }
-//            }
-//
 
     //MARK: TableView Related
     func numberOfRowsInSection(section: Int) -> Int {
@@ -373,13 +329,8 @@ class StatisticViewModel{
         case 0: return isSelected ? 0 : tableViewFilteredData.count
         default: return isSelected ? 1 : 0
         }
-//        if pieChartSelectedEntry != nil && section == 0 {
-//            return 0
-//        } else if pieChartSelectedEntry != nil && section == 1 {
-//            return tableViewFilteredData.count
-//        }
-//        self.tableViewFilteredData.count
     }
+    
     func dataForTableViewCell(at indexPath: IndexPath) -> StatisticCellData{
         self.tableViewFilteredData[indexPath.row]
     }
