@@ -8,7 +8,6 @@
 
 import Foundation
 import Combine
-import Differ
 import UIKit
 
 class EditViewModel {
@@ -98,18 +97,19 @@ class EditViewModel {
         self.dictionaryName = name
         let lines = text.split(separator: "\n", omittingEmptySubsequences: true)
         let newCollection = lines.map({ String($0)})
-        let patch = patch(from: oldCollection, to: newCollection)
-        
+        let difference = newCollection.difference(from: oldCollection)
+
         var errorAppeared = false
-        for i in patch{
+        for i in difference {
             if errorAppeared {
                 break
             }
             switch i {
-            case .deletion(index: let index):
+            case .remove(offset: let index, element: let text, associatedWith: _):
                 words.remove(at: index)
                 oldTextByLines.remove(at: index)
-            case .insertion(index: let index, element: let text):
+                print("deleted", index)
+            case .insert(offset: let index, element: let text, associatedWith: _):
                 do {
                     words.insert( try model.createWordFromLine(for: dictionary, text: text, index: index, id: UUID()), at: index)
                     oldTextByLines.insert(text, at: index)

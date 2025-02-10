@@ -44,7 +44,6 @@
 		9A1F67CF29E166C4003993C5 /* LanguageChangeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A1F67CE29E166C4003993C5 /* LanguageChangeManager.swift */; };
 		9A1F67D129E18BBE003993C5 /* SettingsImageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A1F67D029E18BBE003993C5 /* SettingsImageCell.swift */; };
 		9A1F67D429E3F69A003993C5 /* SettingsHeaderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A1F67D329E3F69A003993C5 /* SettingsHeaderCell.swift */; };
-		9A2092E32A3DF37000184124 /* Differ in Frameworks */ = {isa = PBXBuildFile; productRef = 9A2092E22A3DF37000184124 /* Differ */; };
 		9A3825EC2ABB284E00113AAD /* Tutorial.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A3825EB2ABB284E00113AAD /* Tutorial.swift */; };
 		9A3B83442AAE24850093060E /* GameDetailsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A3B83432AAE24850093060E /* GameDetailsViewModel.swift */; };
 		9A4D211A2AB0B74400EA9196 /* CustomNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A4D21192AB0B74400EA9196 /* CustomNavigationController.swift */; };
@@ -111,7 +110,6 @@
 		9AD4E2472A963A89009090EA /* ViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AD4E2462A963A89009090EA /* ViewModelFactory.swift */; };
 		9AE34A782A115DD300F8BB65 /* GameDetailsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AE34A772A115DD300F8BB65 /* GameDetailsVC.swift */; };
 		9AE509352997C07700D86DD7 /* AddDictionaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AE509342997C07700D86DD7 /* AddDictionaryView.swift */; };
-		9AF756852AA74FB700CE3B25 /* DGCharts in Frameworks */ = {isa = PBXBuildFile; productRef = 9AF756842AA74FB700CE3B25 /* DGCharts */; };
 		9AF756882AAA514200CE3B25 /* StatisticLogsConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AF756872AAA514200CE3B25 /* StatisticLogsConverter.swift */; };
 		9AFFCE7B299D073D00C12B94 /* MenuAddDictionaryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AFFCE7A299D073D00C12B94 /* MenuAddDictionaryCell.swift */; };
 		9AFFCE7D299E747400C12B94 /* StatisticView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AFFCE7C299E747400C12B94 /* StatisticView.swift */; };
@@ -266,8 +264,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9A2092E32A3DF37000184124 /* Differ in Frameworks */,
-				9AF756852AA74FB700CE3B25 /* DGCharts in Frameworks */,
 				1567E4F8113AE56A0C77715E /* Pods_Learny.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -738,8 +734,6 @@
 			);
 			name = Learny;
 			packageProductDependencies = (
-				9A2092E22A3DF37000184124 /* Differ */,
-				9AF756842AA74FB700CE3B25 /* DGCharts */,
 			);
 			productName = Language;
 			productReference = 9A7B91C2298D6D9600E60CDD /* Learny.app */;
@@ -820,8 +814,6 @@
 			);
 			mainGroup = 9A7B91B9298D6D9600E60CDD;
 			packageReferences = (
-				9A2092E12A3DF37000184124 /* XCRemoteSwiftPackageReference "Differ" */,
-				9AF756832AA74FB700CE3B25 /* XCRemoteSwiftPackageReference "Charts" */,
 			);
 			productRefGroup = 9A7B91C3298D6D9600E60CDD /* Products */;
 			projectDirPath = "";
@@ -1422,38 +1414,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		9A2092E12A3DF37000184124 /* XCRemoteSwiftPackageReference "Differ" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/tonyarnold/Differ";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.4.3;
-			};
-		};
-		9AF756832AA74FB700CE3B25 /* XCRemoteSwiftPackageReference "Charts" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/danielgindi/Charts.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 5.0.0;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		9A2092E22A3DF37000184124 /* Differ */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 9A2092E12A3DF37000184124 /* XCRemoteSwiftPackageReference "Differ" */;
-			productName = Differ;
-		};
-		9AF756842AA74FB700CE3B25 /* DGCharts */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 9AF756832AA74FB700CE3B25 /* XCRemoteSwiftPackageReference "Charts" */;
-			productName = DGCharts;
-		};
-/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
 		9AB43A1729F40EA000984350 /* LearnyLocal.xcdatamodeld */ = {
