@@ -301,12 +301,12 @@ class DetailsView: UIViewController {
         
         regularWidthClassTextViewConstraints.append(contentsOf:[
             textViewShadowView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor,
-                                                    constant: .outerSpacer),
+                                                    constant: .longOuterSpacer),
             textViewShadowView.trailingAnchor.constraint(equalTo: view.trailingAnchor,
-                                                         constant: -.outerSpacer),
+                                                         constant: -.longInnerSpacer),
             textViewShadowView.widthAnchor.constraint(equalTo: view.widthAnchor,
                                                       multiplier: 0.5,
-                                                      constant: -.outerSpacer - .outerSpacer / 2),
+                                                      constant: -.longInnerSpacer - .longInnerSpacer / 2),
             textViewShadowView.heightAnchor.constraint(equalToConstant:
                                                         150 + .innerSpacer + .genericButtonHeight),
         ])
@@ -320,24 +320,24 @@ class DetailsView: UIViewController {
             textViewShadowView.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor),
             
             textViewShadowView.bottomAnchor.constraint(lessThanOrEqualTo: beginBut.topAnchor,
-                                                       constant: -.outerSpacer),
+                                                       constant: -.longInnerSpacer),
             textViewShadowView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
         ])
         
         
         regularWidthClassConstraints.append(contentsOf: [
             settingsShadowView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor,
-                                                    constant: .outerSpacer),
+                                                    constant: .longOuterSpacer),
             settingsShadowView.trailingAnchor.constraint(equalTo: textViewShadowView.leadingAnchor,
                                                          constant: -.innerSpacer),
             settingsShadowView.heightAnchor.constraint(equalToConstant: 150),
             
             settingsShadowView.widthAnchor.constraint(equalTo: view.widthAnchor,
                                                       multiplier: 0.5,
-                                                      constant: -.outerSpacer - .outerSpacer / 2),
+                                                      constant: -.longInnerSpacer - .longInnerSpacer / 2),
             
             goalShadowView.topAnchor.constraint(equalTo: settingsShadowView.bottomAnchor,
-                                                constant: .innerSpacer),
+                                                constant: .longInnerSpacer),
             goalShadowView.trailingAnchor.constraint(equalTo: settingsShadowView.trailingAnchor),
             
             goalShadowView.leadingAnchor.constraint(equalTo: settingsShadowView.leadingAnchor),
@@ -348,30 +348,30 @@ class DetailsView: UIViewController {
         
         compactWidthClassConstraints.append(contentsOf:[
             settingsShadowView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor,
-                                                    constant: .outerSpacer),
+                                                    constant: .longOuterSpacer),
             settingsShadowView.trailingAnchor.constraint(equalTo: view.trailingAnchor,
-                                                         constant: -.outerSpacer),
+                                                         constant: -.longInnerSpacer),
             settingsShadowView.leadingAnchor.constraint(equalTo: view.leadingAnchor,
-                                                        constant: .outerSpacer),
+                                                        constant: .longInnerSpacer),
             settingsShadowView.heightAnchor.constraint(equalToConstant: 150),
             
             
             textViewShadowView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor,
-                                                    constant: .outerSpacer),
+                                                    constant: .longOuterSpacer),
             textViewShadowView.leadingAnchor.constraint(equalTo: view.trailingAnchor,
-                                                        constant: .outerSpacer),
+                                                        constant: .longInnerSpacer),
             textViewShadowView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.5,
-                                                      constant: -.outerSpacer - .outerSpacer / 2),
+                                                      constant: -.longInnerSpacer - .longInnerSpacer / 2),
             textViewShadowView.heightAnchor.constraint(equalToConstant: 150),
             
             
             goalShadowView.topAnchor.constraint(equalTo: settingsShadowView.bottomAnchor,
-                                                constant: .innerSpacer),
+                                                constant: .longInnerSpacer),
             goalShadowView.leadingAnchor.constraint(equalTo: view.leadingAnchor,
-                                                    constant: .outerSpacer),
+                                                    constant: .longInnerSpacer),
             goalShadowView.trailingAnchor.constraint(equalTo: view.trailingAnchor,
-                                                     constant: -.outerSpacer),
-            goalShadowView.heightAnchor.constraint(equalToConstant: 60)
+                                                     constant: -.longInnerSpacer),
+            goalShadowView.heightAnchor.constraint(equalToConstant: .genericButtonHeight)
         ])
     }
     //MARK: - View's SetUp
@@ -457,18 +457,18 @@ class DetailsView: UIViewController {
         
         regularWidthClassConstraints.append(contentsOf: [
             timedButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor,
-                                                constant: -.outerSpacer),
+                                                constant: -.longInnerSpacer),
             timedButton.trailingAnchor.constraint(equalTo: view.trailingAnchor,
-                                                  constant: -.outerSpacer),
+                                                  constant: -.longInnerSpacer),
             timedButton.widthAnchor.constraint(equalTo: view.widthAnchor,
                                                multiplier: 0.2),
             timedButton.heightAnchor.constraint(equalToConstant: .genericButtonHeight),
             
             
             beginBut.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor,
-                                             constant: -.outerSpacer),
+                                             constant: -.longInnerSpacer),
             beginBut.leadingAnchor.constraint(equalTo: view.leadingAnchor,
-                                              constant: .outerSpacer),
+                                              constant: .longInnerSpacer),
             beginBut.trailingAnchor.constraint(equalTo: timedButton.leadingAnchor,
                                                constant: -.innerSpacer),
             beginBut.heightAnchor.constraint(equalToConstant: .genericButtonHeight)
@@ -476,18 +476,18 @@ class DetailsView: UIViewController {
         
         compactWidthClassConstraints.append(contentsOf: [
             timedButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor,
-                                                constant: -.outerSpacer),
+                                                constant: -.longInnerSpacer),
             timedButton.trailingAnchor.constraint(equalTo: view.trailingAnchor,
-                                                  constant: -.outerSpacer),
+                                                  constant: -.longInnerSpacer),
             timedButton.widthAnchor.constraint(equalToConstant: .genericButtonHeight),
             
             timedButton.heightAnchor.constraint(equalToConstant: .genericButtonHeight),
             
             
             beginBut.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor,
-                                             constant: -.outerSpacer),
+                                             constant: -.longInnerSpacer),
             beginBut.leadingAnchor.constraint(equalTo: view.leadingAnchor,
-                                              constant: .outerSpacer),
+                                              constant: .longInnerSpacer),
             beginBut.trailingAnchor.constraint(equalTo: timedButton.leadingAnchor,
                                                constant: -.innerSpacer),
             beginBut.heightAnchor.constraint(equalToConstant: .genericButtonHeight)

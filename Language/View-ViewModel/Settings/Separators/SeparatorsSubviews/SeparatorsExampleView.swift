@@ -121,14 +121,14 @@ class SeparatorsExampleView: UIView {
         secondLineStackView.addArrangedSubviews(secondLineLeadingLabel, secondLineSeparatorLabel, secondLineTrailingStackView)
 
         firstLineStackViewTopAnchor = firstLineStackView.topAnchor.constraint(
-            equalTo: topAnchor, constant: .outerSpacer)
+            equalTo: topAnchor, constant: .longInnerSpacer)
         secondLineStackViewBottomAnchor = secondLineStackView.bottomAnchor.constraint(
-            equalTo: bottomAnchor, constant: -.outerSpacer)
+            equalTo: bottomAnchor, constant: -.longInnerSpacer)
         
         firstLineBoldLabelTopAnchor = firstLineBoldLeadingLabel.topAnchor.constraint(
-            equalTo: topAnchor, constant: .outerSpacer)
+            equalTo: topAnchor, constant: .longInnerSpacer)
         secondLineBoldLabelBottomAnchor = secondLineBoldLeadingLabel.bottomAnchor.constraint(
-            equalTo: bottomAnchor, constant: -.outerSpacer)
+            equalTo: bottomAnchor, constant: -.longInnerSpacer)
 
         
         NSLayoutConstraint.activate([

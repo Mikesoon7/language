@@ -141,7 +141,7 @@ class TimedDetailView: UIViewController {
 
             
             preselectTimeStackView.topAnchor.constraint(equalTo: timePicker.bottomAnchor,
-                                                        constant: .outerSpacer),
+                                                        constant: .longInnerSpacer),
             preselectTimeStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor,
                                                         constant: .longOuterSpacer),
             preselectTimeStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor,

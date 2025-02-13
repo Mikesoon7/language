@@ -59,7 +59,7 @@ class SettingsHeaderCell: UITableViewCell {
         
         NSLayoutConstraint.activate([
             label.leadingAnchor.constraint(
-                equalTo: leadingAnchor, constant: .outerSpacer),
+                equalTo: leadingAnchor, constant: .longInnerSpacer),
             label.centerYAnchor.constraint(
                 equalTo: centerYAnchor),
         ])

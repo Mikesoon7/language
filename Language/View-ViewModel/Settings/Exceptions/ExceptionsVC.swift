@@ -97,7 +97,6 @@ class ExceptionsVC: UIViewController {
     
     //MARK: Constraints and related
     private let heightForExampleViews: CGFloat = 130
-    private let insetForSubviews: CGFloat = 20
     
     private var tableViewHeightAnchor : NSLayoutConstraint = .init()
     private var lastInfoLabelTopAnchor: NSLayoutConstraint = .init()
@@ -189,12 +188,12 @@ class ExceptionsVC: UIViewController {
             headerInfoLabel.widthAnchor.constraint(
                 equalTo: contentView.widthAnchor, multiplier: 0.9),
             headerInfoLabel.topAnchor.constraint(
-                equalTo: contentView.topAnchor, constant: insetForSubviews),
+                equalTo: contentView.topAnchor, constant: .outerSpacer),
             headerInfoLabel.centerXAnchor.constraint(
                 equalTo: contentView.centerXAnchor),
 
             firstInfoLabel.topAnchor.constraint(
-                equalTo: headerInfoLabel.bottomAnchor, constant: insetForSubviews),
+                equalTo: headerInfoLabel.bottomAnchor, constant: .outerSpacer),
             firstInfoLabel.widthAnchor.constraint(
                 equalTo: contentView.widthAnchor, 
                 multiplier: .widthMultiplerFor(type: .forViews)),
@@ -203,7 +202,7 @@ class ExceptionsVC: UIViewController {
 
             
             exampleView.topAnchor.constraint(
-                equalTo: firstInfoLabel.bottomAnchor, constant: insetForSubviews),
+                equalTo: firstInfoLabel.bottomAnchor, constant: .outerSpacer),
             exampleView.centerXAnchor.constraint(
                 equalTo: contentView.centerXAnchor),
             exampleView.widthAnchor.constraint(
@@ -213,7 +212,7 @@ class ExceptionsVC: UIViewController {
                 equalToConstant: heightForExampleViews),
 
             secondInfoLabel.topAnchor.constraint(
-                equalTo: exampleView.bottomAnchor, constant: insetForSubviews),
+                equalTo: exampleView.bottomAnchor, constant: .outerSpacer),
             secondInfoLabel.widthAnchor.constraint(
                 equalTo: contentView.widthAnchor,
                 multiplier: .widthMultiplerFor(type: .forViews)),
@@ -231,11 +230,11 @@ class ExceptionsVC: UIViewController {
             lastInfoLabel.topAnchor.constraint(
                 equalTo: tableView.bottomAnchor),
             lastInfoLabel.leadingAnchor.constraint(
-                equalTo: contentView.leadingAnchor, constant: insetForSubviews),
+                equalTo: contentView.leadingAnchor, constant: .outerSpacer),
             lastInfoLabel.trailingAnchor.constraint(
-                equalTo: contentView.trailingAnchor, constant: -insetForSubviews),
+                equalTo: contentView.trailingAnchor, constant: -.outerSpacer),
             lastInfoLabel.bottomAnchor.constraint(
-                equalTo: contentView.bottomAnchor, constant: -insetForSubviews)
+                equalTo: contentView.bottomAnchor, constant: -.outerSpacer)
         ])
     }
 

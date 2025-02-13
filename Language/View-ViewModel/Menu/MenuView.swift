@@ -11,7 +11,7 @@ import UIKit
 import CoreData
 import Combine
 
-protocol MenuCellDelegate1: AnyObject{
+protocol MenuCellDelegate: AnyObject{
     func panningBegan(for cell: UICollectionViewCell)
 
     func panningEnded(active: Bool)
@@ -37,7 +37,7 @@ class MenuView: UIViewController {
         let view = UICollectionView(frame: .zero, collectionViewLayout: layout)
         view.delegate = self
         view.dataSource = self
-        view.contentInset = .init(top: .outerSpacer, left: .outerSpacer, bottom: .outerSpacer, right: .outerSpacer)
+        view.contentInset = .init(top: .longOuterSpacer, left: .outerSpacer, bottom: .outerSpacer, right: .outerSpacer)
         view.backgroundColor = .systemBackground
         view.translatesAutoresizingMaskIntoConstraints = false
         view.alwaysBounceVertical = true
@@ -80,11 +80,7 @@ class MenuView: UIViewController {
             self.collectionView.reloadData()
         }
     }
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        //TODO: Dont forget to change on release method.
-        viewModel.validateLaunchStatus()
-    }
+    
     override var canBecomeFirstResponder: Bool {
         return true
     }
@@ -236,15 +232,11 @@ class MenuView: UIViewController {
         self.navigationController?.pushViewController(vc, animated: true)
     }
     func pushTutorialVC(){
-        let vc = TutorialVC(
-            delegate: self,
-            topInset: view.safeAreaInsets.top,
-            bottomInset: navigationController?.tabBarController?.tabBar.bounds.height ?? 0)
-        vc.modalPresentationStyle = .overFullScreen
-        self.present(vc, animated: false)
+        let vc = TutorialVCTest()
+        
+        self.navigationController?.present(vc, animated: true)
     }
-    
-    
+        
     //MARK: - System
     //If available, will suggest user to restore deleted entity.
     private func undoActionWasDetected(){
@@ -314,31 +306,31 @@ extension MenuView: UICollectionViewDataSource, UICollectionViewDelegate {
             for: indexPath) as? MenuDictionaryCVCell else {
             return UICollectionViewCell()
         }
-        let viewModel = viewModelFactory.configureStatisticModel(dictionary: data)
-        cell.configureCellWith(viewModel: viewModel, delegate: self)
+        
+        cell.configureCellWith(data: data, delegate: self)
         cell.addCenterShadows()
         return cell
     }
 }
 
 //MARK: - Delegate for tutorial.
-extension MenuView: TutorialCellHintProtocol{
-    func changeHintAppearence(activate: Bool){
-        if let cell = collectionView.cellForItem(at: IndexPath(item: 0, section: 0)) as? MenuDictionaryCVCell {
-            cell.activate(activate)
-        }
-    }
-    func openAddDictionary() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3, execute: {
-            let vc = AddDictionaryView(factory: self.viewModelFactory)
-            vc.isFirstLaunch = true
-            self.navigationController?.pushViewController(vc, animated: true)
-        })
-    }
-}
+//extension MenuView: TutorialCellHintProtocol{
+//    func changeHintAppearence(activate: Bool){
+//        if let cell = collectionView.cellForItem(at: IndexPath(item: 0, section: 0)) as? MenuDictionaryCVCell {
+//            cell.activate(activate)
+//        }
+//    }
+//    func openAddDictionary() {
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3, execute: {
+//            let vc = AddDictionaryView(factory: self.viewModelFactory)
+//            vc.isFirstLaunch = true
+//            self.navigationController?.pushViewController(vc, animated: true)
+//        })
+//    }
+//}
 
 //MARK: - Delegate for cells action.
-extension MenuView: MenuCellDelegate1 {
+extension MenuView: MenuCellDelegate {
     func panningBegan(for cell: UICollectionViewCell){
         let index = collectionView.indexPath(for: cell)
         //Dismiss another swiped cell.

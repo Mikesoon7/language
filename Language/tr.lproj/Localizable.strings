@@ -198,13 +198,22 @@
 "edit.emptyText.message" = "Sözlük bu durumda kaydedilirse silinir. \nEmin misiniz?";
 
 //MARK: - Tutorial
+"tutorial" = "Eğitim";
+//First view
 "tutorial.firstViewLabel.title" = "Merhaba! \n Learny'ye Hoş Geldiniz.";
-"tutorial.firstViewLabel" = "Learny, çalışmalarınızı kolayca sindirilebilir parçalara ayırır. Uygulama, metninizi bölmek ve her blok için kartlar oluşturmak için birkaç kural kullanır. \n\n Kısa bir genel bakışla başlayalım!";
-"tutorial.secondViewLabel" = "Ana ekranda, sözlüklere erişmek için dokunun ve sözlüklerinizi yönetmek veya istatistiklerinizi görüntülemek için kaydırın.";
-"tutorial.thirdViewLabel" = "Daha fazlasına hazır mısınız? İçeriği ve adını yazarak yeni sözlükler ekleyin. \n \n İlk sözlüğünüzü oluşturun!";
-"tutorial.fourthViewLabel" = "Neredeyse bitti! Unutmayın, yeni satırlar metin bloklarının nerede bölüneceğini belirler. Dizilerinizi korumak için klavyenin üstündeki 'Yeni satır' düğmesini kullanın.";
-"tutorial.fifthViewLabel" = "Terimler ve tanımlar gibi belirli eşleştirmeler için ayırıcı sembolüne güvenin. Ayarlardan özelleştirebilir ve düzenleme sırasında bir ipucu olarak görüntüleyebilirsiniz.";
-"tutorial.sixthViewLabel" = "Her şey hazır! Öğrenme yolculuğunuzun bir parçası olmaktan onur duyuyoruz. İşte keyifli ve etkili çalışma seanslarına. \n \n Bol şans!";
+"tutorial.firstViewLabel" = "Learny, çalışmalarınızı kolayca öğrenilebilir parçalara ayırır. Uygulama, metninizi bölmek ve kartlar oluşturmak için birkaç basit kural kullanır. \n\n Uygulamaya kısa bir bakışla başlayalım!";
+//Second View
+"tutorial.secondViewLabel" = "Ana ekranda, sözlüklere erişmek için dokunun. Sözlüklerinizi yönetmek, paylaşmak veya istatistiklerinizi görüntülemek için sola kaydırın.";
+//Third view
+"tutorial.thirdViewLabel" = "Daha fazlasına hazır mısınız? Sözlüğün içeriğini ve adını yazarak yeni sözlükler ekleyin. \n \n İlk sözlüğünüzü oluşturun!";
+//Fourth view
+"tutorial.fourthViewLabel" = "Neredeyse bitti! Unutmayın, yeni kart yeni bir satır ile başlar. Eğer aynı kartta yeni bir paragraf oluşturmak isterseniz, klavyenizin üzerindeki yeni satır butonuna basın. ";
+//Fifth View
+"tutorial.fifthViewLabel" = "Terim ve terimin tanımı gibi belirli eşleştirmeler için ayırıcı sembolü kullanın. Ayarlardan özelleştirebilir ve düzenleme sırasında görüntüleyebilirsiniz.";
+//TranslationView
+"tutorial.translation" = "On text selection you can choose to translate text using built in dictionary. You can relly on it since once you have downloaded dictionary it will stay on your device offline.";
+//Sixth View
+"tutorial.sixthViewLabel" = "Her şey hazır! Öğrenme yolculuğunuzun bir parçası olmaktan onur duyuyoruz. İşte keyifli ve etkili bir çalışma şansı. \n \n Bol şans!";
 "tutorial.card.name" = "Merhaba";
 "tutorial.card.title" = "Öğrenme yolculuğunuzun bir parçası olmaktan mutluluk duyuyoruz!";
 "tutorial.card.message" = " \r\rP.S. Her zaman \rgelişmek için çabalıyoruz. \rEğer Learny'yi beğendiyseniz, \rApp Store'da bize puan verin. \r\rÇalışmalarınızda bol şans!";
@@ -218,3 +227,4 @@
 "exception.alertTitle" = "Hariç tutmak istediğiniz herhangi bir sembolü yazın.";
 "exception.alertErrorTitle" = "Geçersiz Giriş";
 "exception.alertSpaceMessage" = "Lütfen yalnızca boşluk karakteri kullanmaktan kaçının.";
+

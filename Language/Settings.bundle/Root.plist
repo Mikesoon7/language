@@ -8,14 +8,6 @@
 	<array>
 		<dict>
 			<key>Type</key>
-			<string>PSChildPaneSpecifier</string>
-			<key>Title</key>
-			<string>about.licence</string>
-			<key>File</key>
-			<string>Acknowledgments</string>
-		</dict>
-		<dict>
-			<key>Type</key>
 			<string>PSTitleValueSpecifier</string>
 			<key>Title</key>
 			<string>about.version</string>

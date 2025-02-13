@@ -35,11 +35,12 @@ extension CGFloat{
     static func widthMultiplerFor(type: Multipliers) -> CGFloat{
         return type.multiplier
     }
-    static var outerSpacer = 15.0
+    static var longInnerSpacer = 15.0
     static var innerSpacer = 12.0
     static var nestedSpacer = 10.0
     static var cornerRadius = 9.0
-    static var longOuterSpacer = outerSpacer * 2
+    static var outerSpacer = 20.0
+    static var longOuterSpacer = 30.0
     static var genericButtonHeight = 60.0
     static var systemButtonSize = 20.0
     static var keyboardInputAccessoryViewInset = (UIDevice.current.userInterfaceIdiom == .pad ? -44.0 : 0)
@@ -156,6 +157,7 @@ extension Notification.Name{
     static let appNotificationSettingsDidChange = Notification.Name("appNotificationSettingsDidChange")
     static let appDataDidChange = Notification.Name("appDataDidChange")
     static let appSeparatorDidChange = Notification.Name("separatorDidChange")
+    static let appDidFinishLaunchAnimation = Notification.Name("animationDidFinish")
 }
 
 extension String{
@@ -212,16 +214,7 @@ extension UIAlertController {
                                                           width: 0,
                                                           height: 0)
                 } else {
-//                    let view = UIApplication.shared.connectedScenes
-//                                                        .compactMap { $0 as? UIWindowScene }
-//                                                        .flatMap { $0.windows }
-//                                                        .first { $0.isKeyWindow }?.rootViewController?.view
                     let view = UIView.screenSizeView()
-//                    popoverController.popoverLayoutMargins = .init(top: view.frame.midY - 100,
-//                                                                   left: view.frame.midX - 100,
-//                                                                   bottom: view.frame.midY - 100,
-//                                                                   right: view.frame.midX - 100)
-                    sourceView
                     popoverController.sourceView = view
                     popoverController.sourceRect = CGRect(x: view.bounds.midX,
                                                           y: view.bounds.midY,

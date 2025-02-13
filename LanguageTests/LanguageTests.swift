@@ -6,7 +6,7 @@
 //
 
 import XCTest
-@testable import Language
+@testable import Learny
 
 final class LanguageTests: XCTestCase {
 

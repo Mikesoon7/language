@@ -77,14 +77,14 @@ class SettingsTextCell: UITableViewCell {
         
         NSLayoutConstraint.activate([
             titleLabel.leadingAnchor.constraint(
-                equalTo: leadingAnchor, constant: .outerSpacer),
+                equalTo: leadingAnchor, constant: .longInnerSpacer),
             titleLabel.centerYAnchor.constraint(
                 equalTo: centerYAnchor),
             
             chevronImage.centerYAnchor.constraint(
                 equalTo: centerYAnchor),
             chevronImage.trailingAnchor.constraint(
-                equalTo: trailingAnchor, constant: -.outerSpacer),
+                equalTo: trailingAnchor, constant: -.longInnerSpacer),
             
             valueLabel.trailingAnchor.constraint(
                 equalTo: chevronImage.leadingAnchor, constant: -.nestedSpacer),

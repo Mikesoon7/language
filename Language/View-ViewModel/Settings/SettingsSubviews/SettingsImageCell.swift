@@ -91,9 +91,9 @@ class SettingsImageCell: UITableViewCell {
         
         NSLayoutConstraint.activate([
             titleLabel.topAnchor.constraint(
-                equalTo: topAnchor, constant: .outerSpacer),
+                equalTo: topAnchor, constant: .longInnerSpacer),
             titleLabel.leadingAnchor.constraint(
-                equalTo: leadingAnchor, constant: .outerSpacer),
+                equalTo: leadingAnchor, constant: .longInnerSpacer),
             titleLabel.heightAnchor.constraint(
                 equalToConstant: 20),
 

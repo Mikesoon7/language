@@ -115,17 +115,17 @@ class PopUpTimerView: UIView {
     func configureSubviews(){
         if traitCollection.isRegularWidth  {
             popover.frame = CGRect(x: sourceViewRect.width / 2 + .innerSpacer ,
-                                   y: sourceSafeArea.top + .outerSpacer,
+                                   y: sourceSafeArea.top + .longInnerSpacer,
                                    width:   (sourceViewRect.width / 2) - (.innerSpacer * 2),
                                    height:  ((sourceViewRect.width / 2) - (.innerSpacer * 2)) * 0.66 )
         } else {
             popover.frame = CGRect(x: .innerSpacer,
-                                   y: sourceSafeArea.top + .outerSpacer,
+                                   y: sourceSafeArea.top + .longInnerSpacer,
                                    width:  (sourceViewRect.width - (.innerSpacer * 2)),
                                    height: (sourceViewRect.width - (.innerSpacer * 2)) * 0.66 )
         }
         popover.center = CGPoint(x: sourceViewRect.width - .innerSpacer,
-                                 y: sourceSafeArea.top + .outerSpacer)
+                                 y: sourceSafeArea.top + .longInnerSpacer)
         popover.anchorPoint = CGPoint(x: 1, y: 0)
         popover.transform = .init(scaleX: 0.2, y: 0.2).concatenating(.init(translationX: -30, y: -10))
         
@@ -137,28 +137,28 @@ class PopUpTimerView: UIView {
         
         NSLayoutConstraint.activate([
             partitialResultLabel.topAnchor.constraint(
-                equalTo: popover.topAnchor, constant: .outerSpacer),
+                equalTo: popover.topAnchor, constant: .longInnerSpacer),
             partitialResultLabel.leadingAnchor.constraint(
-                equalTo: popover.leadingAnchor, constant: .outerSpacer),
+                equalTo: popover.leadingAnchor, constant: .longInnerSpacer),
             
             partitialResultNumber.trailingAnchor.constraint(
-                equalTo: popover.trailingAnchor, constant: -.outerSpacer),
+                equalTo: popover.trailingAnchor, constant: -.longInnerSpacer),
             partitialResultNumber.centerYAnchor.constraint(
                 equalTo: partitialResultLabel.centerYAnchor),
             
             continueButton.bottomAnchor.constraint(
-                equalTo: popover.bottomAnchor, constant: -.outerSpacer),
+                equalTo: popover.bottomAnchor, constant: -.longInnerSpacer),
             continueButton.leadingAnchor.constraint(
-                equalTo: popover.leadingAnchor, constant: .outerSpacer),
+                equalTo: popover.leadingAnchor, constant: .longInnerSpacer),
             continueButton.widthAnchor.constraint(
                 equalTo: popover.widthAnchor, multiplier: 0.5, constant: -30),
             continueButton.heightAnchor.constraint(
                 equalToConstant: .genericButtonHeight),
             
             finishButton.bottomAnchor.constraint(
-                equalTo: popover.bottomAnchor, constant: -.outerSpacer),
+                equalTo: popover.bottomAnchor, constant: -.longInnerSpacer),
             finishButton.trailingAnchor.constraint(
-                equalTo: popover.trailingAnchor, constant: -.outerSpacer),
+                equalTo: popover.trailingAnchor, constant: -.longInnerSpacer),
             finishButton.widthAnchor.constraint(
                 equalTo: popover.widthAnchor, multiplier: 0.5, constant: -30),
             finishButton.heightAnchor.constraint(

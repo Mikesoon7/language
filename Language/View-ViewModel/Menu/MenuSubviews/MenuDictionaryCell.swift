@@ -14,6 +14,11 @@ private enum Direction1{
     case left
     case right
 }
+
+struct DataForMenuCell {
+    var name: String
+    var numberOfCards: Int64
+}
 private enum ViewConstants {
     static let overlayPoints: CGFloat = 2
     static let actionViewMultiplier: CGFloat = 0.2
@@ -33,7 +38,7 @@ class MenuDictionaryCVCell: UICollectionViewCell {
     private var isActionLooped: Bool = false
     private var isStatActive: Bool = false
 
-    private weak var delegate: MenuCellDelegate1?
+    private weak var delegate: MenuCellDelegate?
     
     //MARK: - Views
     //Delete view
@@ -181,9 +186,9 @@ class MenuDictionaryCVCell: UICollectionViewCell {
 
     
     //MARK: - Cell SetUp
-    func configureCellWith(viewModel: StatisticCellViewModel, delegate: MenuCellDelegate1) {
-        self.languageResultLabel.text = viewModel.dictionary.language
-        self.cardsResultLabel.text = String(viewModel.dictionary.numberOfCards)
+    func configureCellWith(data: DataForMenuCell, delegate: MenuCellDelegate) {
+        self.languageResultLabel.text = data.name
+        self.cardsResultLabel.text = String(data.numberOfCards)
         self.delegate = delegate
         self.configureFonts()
     }
@@ -265,30 +270,30 @@ class MenuDictionaryCVCell: UICollectionViewCell {
         
         NSLayoutConstraint.activate([
             languageLabel.topAnchor.constraint(
-                equalTo: mainView.topAnchor, constant: .outerSpacer),
+                equalTo: mainView.topAnchor, constant: .longInnerSpacer),
             languageLabel.leadingAnchor.constraint(
-                equalTo: mainView.leadingAnchor, constant: .outerSpacer),
+                equalTo: mainView.leadingAnchor, constant: .longInnerSpacer),
             languageLabel.heightAnchor.constraint(
                 equalToConstant: 25),
             
             cardsLabel.bottomAnchor.constraint(
-                equalTo: mainView.bottomAnchor, constant: -.outerSpacer),
+                equalTo: mainView.bottomAnchor, constant: -.longInnerSpacer),
             cardsLabel.leadingAnchor.constraint(
-                equalTo: mainView.leadingAnchor, constant: .outerSpacer),
+                equalTo: mainView.leadingAnchor, constant: .longInnerSpacer),
             cardsLabel.heightAnchor.constraint(
                 equalToConstant: 25),
 
             languageResultLabel.centerYAnchor.constraint(
                 equalTo: languageLabel.centerYAnchor),
             languageResultLabel.trailingAnchor.constraint(
-                equalTo: mainView.trailingAnchor, constant: -.outerSpacer),
+                equalTo: mainView.trailingAnchor, constant: -.longInnerSpacer),
             languageResultLabel.heightAnchor.constraint(
                 equalToConstant: 25),
             
             cardsResultLabel.centerYAnchor.constraint(
                 equalTo: cardsLabel.centerYAnchor),
             cardsResultLabel.trailingAnchor.constraint(
-                equalTo: mainView.trailingAnchor, constant: -.outerSpacer),
+                equalTo: mainView.trailingAnchor, constant: -.longInnerSpacer),
             cardsResultLabel.heightAnchor.constraint(
                 equalToConstant: 25)
         ])

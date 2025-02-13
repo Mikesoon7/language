@@ -9,7 +9,7 @@
 import UIKit
 
 protocol AccessViewDelegate: AnyObject{
-    func didTapNextButton(with pointerOn: Int)
+    func didChangeCurrentPage(manually: Bool, with pointerOn: Int)
     func didTapSkipButton()
 }
 protocol AccessViewFinishDelegate: AnyObject{
@@ -20,15 +20,13 @@ class TutorialAccessView: UIView {
     //MARK: Properties
     private weak var delegate: AccessViewDelegate?
 
-    private let subviewsInset = CGFloat(15)
-    private var currentPointer: Int
     private let numberOfViews: Int
 
     //MARK: Views
-    private lazy var pageControll: UIPageControl = {
+    lazy var pageControll: UIPageControl = {
         let controll = UIPageControl()
         controll.numberOfPages = numberOfViews
-        controll.currentPage = currentPointer
+        controll.currentPage = 0
         controll.backgroundColor = .clear
         controll.translatesAutoresizingMaskIntoConstraints = false
         controll.currentPageIndicatorTintColor = .label
@@ -38,6 +36,7 @@ class TutorialAccessView: UIView {
         return controll
     }()
 
+    //MARK: Buttons
     private lazy var nextButton: UIButton = {
         let button = UIButton(configuration: .gray())
         button.setAttributedTitle(
@@ -61,7 +60,6 @@ class TutorialAccessView: UIView {
     required init(pagesNumber: Int, currentPage: Int, delegate: AccessViewDelegate? ){
         self.numberOfViews = pagesNumber
         self.delegate = delegate
-        self.currentPointer = currentPage
         super.init(frame: .zero)
         configureView()
         configureSubviews()
@@ -80,37 +78,54 @@ class TutorialAccessView: UIView {
     private func configureSubviews(){
         self.addSubviews(skipButton, nextButton, pageControll)
         NSLayoutConstraint.activate([
-            skipButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: subviewsInset),
-            skipButton.heightAnchor.constraint(equalTo: heightAnchor),
-            skipButton.bottomAnchor.constraint(equalTo: bottomAnchor),
+            skipButton.leadingAnchor.constraint(
+                equalTo: leadingAnchor, constant: .longInnerSpacer),
+            skipButton.heightAnchor.constraint(
+                equalTo: heightAnchor),
+            skipButton.bottomAnchor.constraint(
+                equalTo: bottomAnchor),
             
-            nextButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -subviewsInset),
-            nextButton.heightAnchor.constraint(equalTo: heightAnchor),
-            nextButton.bottomAnchor.constraint(equalTo: bottomAnchor),
+            nextButton.trailingAnchor.constraint(
+                equalTo: trailingAnchor, constant: -.longInnerSpacer),
+            nextButton.heightAnchor.constraint(
+                equalTo: heightAnchor),
+            nextButton.bottomAnchor.constraint(
+                equalTo: bottomAnchor),
             
-            pageControll.centerXAnchor.constraint(equalTo: centerXAnchor),
-            pageControll.heightAnchor.constraint(equalTo: heightAnchor),
-            pageControll.bottomAnchor.constraint(equalTo: bottomAnchor)
+            pageControll.centerXAnchor.constraint(
+                equalTo: centerXAnchor),
+            pageControll.heightAnchor.constraint(
+                equalTo: heightAnchor),
+            pageControll.bottomAnchor.constraint(
+                equalTo: bottomAnchor)
         ])
-        if currentPointer != 0 {
-            updateButtonsAppearence()
-        }
     }
     
-    ///Changes next button title and removing skip button
-    func updateButtonsAppearence(){
-        nextButton.setAttributedTitle(
-            .attributedString(string: "system.next".localized, with: .helveticaNeueBold, ofSize: 16), for: .normal)
-        skipButton.alpha = 0
+    ///Changes next button title
+    private func updateButtonsAppearence(){
+        let lastPageIndex = numberOfViews - 1
+        if pageControll.currentPage == lastPageIndex{
+            nextButton.setAttributedTitle(
+                .attributedString(string: "system.finish".localized, with: .helveticaNeueBold, ofSize: 16), for: .normal)
+        } else {
+            nextButton.setAttributedTitle(
+                .attributedString(string: "system.next".localized, with: .helveticaNeueBold, ofSize: 16), for: .normal)
+        }
+    }
+    func pageDidChange(updatedIndex: Int){
+        pageControll.currentPage = updatedIndex
+        delegate?.didChangeCurrentPage(manually: false, with: pageControll.currentPage)
+        updateButtonsAppearence()
     }
     
     //MARK: Actions
-    @objc func nextButtonDidTap(sender: UIButton){
+    @objc private func nextButtonDidTap(sender: UIButton){
         pageControll.currentPage += 1
-        delegate?.didTapNextButton(with: pageControll.currentPage)
+        delegate?.didChangeCurrentPage(manually: true, with: pageControll.currentPage)
+        updateButtonsAppearence()
     }
     ///Dismissing tutorial view on tap.
-    @objc func skipButtonDidTap(sender: UIButton){
+    @objc private func skipButtonDidTap(sender: UIButton){
         delegate?.didTapSkipButton()
     }
 

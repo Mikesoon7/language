@@ -165,7 +165,7 @@ class SearchCellExpandedView: UIViewController {
         self.width  = cellView.widthAnchor.constraint(equalToConstant: sourceViewFrame.width )
         self.centerY = cellView.centerYAnchor.constraint(equalTo: view.topAnchor, constant: sourceViewFrame.midY)
         
-        self.cellEditStateBottomAnchor = cellView.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor, constant: -(.outerSpacer + 50))
+        self.cellEditStateBottomAnchor = cellView.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor, constant: -(.longInnerSpacer + 50))
         
         UIKit.NSLayoutConstraint.activate([
             centerY,
@@ -221,7 +221,7 @@ class SearchCellExpandedView: UIViewController {
             copyButton.bottomAnchor.constraint(
                 equalTo: cellView.bottomAnchor, constant: -.nestedSpacer),
             copyButton.leadingAnchor.constraint(
-                equalTo: cellView.leadingAnchor, constant: .outerSpacer),
+                equalTo: cellView.leadingAnchor, constant: .longInnerSpacer),
             copyButton.heightAnchor.constraint(
                 equalToConstant: .systemButtonSize),
             copyButton.widthAnchor.constraint(
@@ -249,7 +249,7 @@ class SearchCellExpandedView: UIViewController {
             deleteButton.bottomAnchor.constraint(
                 equalTo: cellView.bottomAnchor, constant: -.nestedSpacer),
             deleteButton.trailingAnchor.constraint(
-                equalTo: cellView.trailingAnchor, constant: -.outerSpacer),
+                equalTo: cellView.trailingAnchor, constant: -.longInnerSpacer),
             deleteButton.heightAnchor.constraint(
                 equalToConstant: .systemButtonSize),
             deleteButton.widthAnchor.constraint(
@@ -259,7 +259,7 @@ class SearchCellExpandedView: UIViewController {
             saveButton.bottomAnchor.constraint(
                 equalTo: cellView.bottomAnchor, constant: -.nestedSpacer),
             saveButton.trailingAnchor.constraint(
-                equalTo: cellView.trailingAnchor, constant: -.outerSpacer),
+                equalTo: cellView.trailingAnchor, constant: -.longInnerSpacer),
             saveButton.heightAnchor.constraint(
                 equalToConstant: .systemButtonSize),
             saveButton.widthAnchor.constraint(
@@ -315,9 +315,9 @@ class SearchCellExpandedView: UIViewController {
                 self.textLeadingAnchor.constant += .nestedSpacer
                 self.textTrailingAnchor.constant -= .nestedSpacer
                 
-                self.centerY.constant += .outerSpacer
-                self.width.constant += self.sourceViewFrame.width + .outerSpacer
-                self.height.constant += self.sourceViewFrame.height + .outerSpacer
+                self.centerY.constant += .longInnerSpacer
+                self.width.constant += self.sourceViewFrame.width + .longInnerSpacer
+                self.height.constant += self.sourceViewFrame.height + .longInnerSpacer
                 
                 self.textBottomAnchor.isActive = false
                 self.textBottomToButton.isActive = true
@@ -327,7 +327,7 @@ class SearchCellExpandedView: UIViewController {
                 self.textLeadingAnchor.constant -= .nestedSpacer
                 self.textTrailingAnchor.constant += .nestedSpacer
                 
-                self.centerY.constant -= .outerSpacer
+                self.centerY.constant -= .longInnerSpacer
                 self.width.constant = self.sourceViewFrame.width
                 self.height.constant = self.sourceViewFrame.height
                 

@@ -195,6 +195,7 @@
 "edit.emptyText.title" = "The edit text is empty";
 "edit.emptyText.message" = "Saving dictionary in this state will cause it's deletion. \nAre you sure?";
 //MARK: - Tutorial
+"tutorial" = "Освіта";
 //FirstView
 "tutorial.firstViewLabel.title" = "Вітаємо! \n Ласково просимо до Learny!";
 "tutorial.firstViewLabel" = "Learny перетворює ваш текст на зручні для повторення блоки. За допомогою декількох простих правил, програма поділяє ваш матеріал на картки. \n\n  Декілька слів про функціонал, і ви готові до роботи!";
@@ -206,6 +207,8 @@
 "tutorial.fourthViewLabel" = "Майже готово! Пам'ятайте, що нові рядки служать для поділу тексту на блоки. Щоб зберегти текст в одному блоку, використовуйте кнопку 'З нового рядка' у верхній частині клавіатури.";
 //FifthView
 "tutorial.fifthViewLabel" = "Для конкретних комбінацій, наприклад, терміну та його визначення, використовуйте роздільник. Його можна змінити в налаштуваннях, і він буде відображатися під час редагування.";
+//TranslationView
+"tutorial.translation" = "On text selection you can choose to translate text using built in dictionary. You can relly on it since once you have downloaded dictionary it will stay on your device offline.";
 //SixthView
 "tutorial.sixthViewLabel" = "Отже, все готово! Ми раді бути частиною вашого навчального шляху. \n \n Бажаємо успіху та приємного користування!";
 "tutorial.card.name" = "Вітаємо";

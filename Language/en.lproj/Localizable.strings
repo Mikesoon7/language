@@ -195,16 +195,20 @@
 "edit.emptyText.title" = "The edit text is empty";
 "edit.emptyText.message" = "Saving dictionary in this state will cause it's deletion. \nAre you sure?";
 //MARK: - Tutorial
+"tutorial" = "Tutorial";
+//FirstView
 "tutorial.firstViewLabel.title" = "Hello! \n Welcome to Learny.";
-"tutorial.firstViewLabel" = "Learny organizes your studies into easy-to-digest chunks. The app uses a few rules to split your text and create cards for each block. \n\n Let's get you started with a brief overview!";
+"tutorial.firstViewLabel" = "Learny organizes your studies into easy-to-digest chunks. The app uses a few rules to split your text into cards. \n You can create any number of cards per time, which maked Learny more suitable for any kind of information to store. \n\n Let's get you started with a brief overview!";
 //SecondView
-"tutorial.secondViewLabel" = "On the main screen, tap to access, and swipe to manage dictionaries or view your stats.";
+"tutorial.secondViewLabel" = "On the main screen, tap to access, and swipe to manage dictionaries or share it with others.";
 //ThirdView
 "tutorial.thirdViewLabel" = "Ready for more? Add new dictionaries by typing it's content and a name. \n \n Dive in and craft your first dictionary!";
 //FourthView
-"tutorial.fourthViewLabel" = "Almost there! Remember, new lines determine where text chunks split. To keep sequences intact, use the 'New line' button atop the keyboard.";
+"tutorial.fourthViewLabel" = "Remember, new card starts from the new line. If you want to start with the new paragraph in the same card - press new line button on top of your keyboard.";
 //FifthView
-"tutorial.fifthViewLabel" = "For specific pairings, like terms and definitions, rely on the separator symbol. You can customize it in settings, and it'll be displayed as a hint during editing.";
+"tutorial.fifthViewLabel" = "Almost there! \n \n For specific pairings, like a term and it's definition rely on the separator symbol. You can customize it in settings, and it'll be displayed as a hint during editing.";
+//TranslationView
+"tutorial.translation" = "On a word selection you can choose to translate it using built in dictionary. You can relly on it anytime, since once you have downloaded dictionary it will stay on your device offline.";
 //SixthView
 "tutorial.sixthViewLabel" = "All set! We're honored to be part of your learning journey. Here's to enjoyable and effective study sessions. \n \n Best of luck!";
 "tutorial.card.name" = "Hello";

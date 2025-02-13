@@ -138,18 +138,18 @@ class AddWordsPartitialController: UIViewController {
             equalTo: ( UIDevice.isIPadDevice 
                        ? view.keyboardLayoutGuide.topAnchor
                        : saveButton.topAnchor ),
-            constant: -.outerSpacer)
+            constant: -.longInnerSpacer)
 
         subviewsInactiveConstraints.append(textViewHeightInactive)
         subviewsActiveConstraints.append(textViewHeightActive)
 
         NSLayoutConstraint.activate([
             textInputView.topAnchor.constraint(
-                equalTo: addNewWordsLabel.bottomAnchor, constant: .outerSpacer),
+                equalTo: addNewWordsLabel.bottomAnchor, constant: .longInnerSpacer),
             textInputView.leadingAnchor.constraint(
-                equalTo: view.leadingAnchor, constant: .outerSpacer),
+                equalTo: view.leadingAnchor, constant: .longInnerSpacer),
             textInputView.trailingAnchor.constraint(
-                equalTo: view.trailingAnchor, constant: -.outerSpacer),
+                equalTo: view.trailingAnchor, constant: -.longInnerSpacer),
             textViewHeightInactive
         ])
     }
@@ -157,9 +157,9 @@ class AddWordsPartitialController: UIViewController {
     private func configureDoneButton(){
         view.addSubviews( addNewWordsLabel, doneButton )
         let doneButtonTrailingInactive = doneButton.leadingAnchor.constraint(
-            equalTo: view.trailingAnchor, constant: .outerSpacer)
+            equalTo: view.trailingAnchor, constant: .longInnerSpacer)
         let doneButtonTrailingActive = doneButton.trailingAnchor.constraint(
-            equalTo: view.trailingAnchor,  constant: -.outerSpacer)
+            equalTo: view.trailingAnchor,  constant: -.longInnerSpacer)
         
         subviewsInactiveConstraints.append(doneButtonTrailingInactive)
         subviewsActiveConstraints.append(doneButtonTrailingActive)
@@ -167,9 +167,9 @@ class AddWordsPartitialController: UIViewController {
         NSLayoutConstraint.activate([
             
             addNewWordsLabel.topAnchor.constraint(
-                equalTo: view.safeAreaLayoutGuide.topAnchor, constant: .outerSpacer),
+                equalTo: view.safeAreaLayoutGuide.topAnchor, constant: .longInnerSpacer),
             addNewWordsLabel.leadingAnchor.constraint(
-                equalTo: view.leadingAnchor, constant: .outerSpacer + 10),
+                equalTo: view.leadingAnchor, constant: .longInnerSpacer + 10),
             addNewWordsLabel.heightAnchor.constraint(
                 equalToConstant: addNewWordsLabel.font.lineHeight),
         
@@ -187,9 +187,9 @@ class AddWordsPartitialController: UIViewController {
         view.addSubview(saveButton)
         
         let saveButtonBottomInactive = saveButton.bottomAnchor.constraint(
-            equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -.outerSpacer)
+            equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -.longInnerSpacer)
         let saveButtonBottomActive = saveButton.bottomAnchor.constraint(
-            equalTo: view.keyboardLayoutGuide.topAnchor, constant: -.outerSpacer)
+            equalTo: view.keyboardLayoutGuide.topAnchor, constant: -.longInnerSpacer)
 
         if !UIDevice.isIPadDevice {
             subviewsInactiveConstraints.append(saveButtonBottomInactive)
@@ -198,9 +198,9 @@ class AddWordsPartitialController: UIViewController {
         
         NSLayoutConstraint.activate([
             saveButton.leadingAnchor.constraint(
-                equalTo: view.leadingAnchor, constant: .outerSpacer),
+                equalTo: view.leadingAnchor, constant: .longInnerSpacer),
             saveButton.trailingAnchor.constraint(
-                equalTo: view.trailingAnchor, constant: -.outerSpacer),
+                equalTo: view.trailingAnchor, constant: -.longInnerSpacer),
             saveButton.heightAnchor.constraint(
                 equalToConstant: .genericButtonHeight),
             saveButtonBottomInactive

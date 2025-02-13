@@ -229,7 +229,7 @@ class MainGameVC: UIViewController{
             ], toSection: .cards)
         }
         dataSource.apply(snapshot, animatingDifferences: true)
-        scrolledCards.insert(snapshot.itemIdentifiers.first)
+        let _ = scrolledCards.insert(snapshot.itemIdentifiers.first)
         return dataSource
     }
     
@@ -735,7 +735,7 @@ extension MainGameVC: UIScrollViewDelegate{
         
         if let index = collectionView.indexPathForItem(at: center){
             guard dataSource.itemIdentifier(for: index) as? HashableWordsEntity != nil else { return }
-            self.scrolledCards.insert(dataSource.itemIdentifier(for: index))
+            let _ = self.scrolledCards.insert(dataSource.itemIdentifier(for: index))
         }
             
         

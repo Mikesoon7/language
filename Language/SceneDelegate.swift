@@ -103,7 +103,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         self.checkAppVersionAccessability()
     }
     private func launchAnimation(for window: UIWindowScene){
-        var animationView: LaunchAnimation? = LaunchAnimation(window: window.keyWindow , bounds: window.coordinateSpace.bounds, interfaceStyle: settingsModel.appTheme.userInterfaceStyle, delegate: self)
+        let animationView: LaunchAnimation? = LaunchAnimation(window: window.keyWindow , bounds: window.coordinateSpace.bounds, interfaceStyle: settingsModel.appTheme.userInterfaceStyle, delegate: self)
         animationView?.animate()
         animationView?.makeKeyView()
         self.animationView = animationView
@@ -179,6 +179,7 @@ extension SceneDelegate: LaunchAnimationDelegate{
     func animationDidFinish(animationView: UIView?) {
         self.animationView?.animationView.removeFromSuperview()
         self.animationView = nil
+        NotificationCenter.default.post(name: .appDidFinishLaunchAnimation, object: nil)
     }
 }
 

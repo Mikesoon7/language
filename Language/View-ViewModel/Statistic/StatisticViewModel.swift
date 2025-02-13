@@ -190,9 +190,9 @@ class StatisticViewModel{
         let totalAccessTime = dictionariesByTimeSpent.reduce(0) { partialResult, dictionary in
             return partialResult + dictionary.accessTime
         }
-        let totalCardsAccesed = dictionariesByTimeSpent.reduce(0) { partialResult, dictionary in
-            return partialResult + dictionary.cardsChecked
-        }
+//        let totalCardsAccesed = dictionariesByTimeSpent.reduce(0) { partialResult, dictionary in
+//            return partialResult + dictionary.cardsChecked
+//        }
         
         for (index, dict) in fullData.sorted(by: {$0.accessTime > $1.accessTime}).enumerated() {
             
@@ -250,7 +250,7 @@ class StatisticViewModel{
             }
             selectedItem = entryIndex
         } else if item != nil {
-            guard let entry = mainDataSet?.chartData[item!] as? ChartEntityData, tableViewFilteredData[item!].isSelected != true  else {
+            guard let _ = mainDataSet?.chartData[item!] as? ChartEntityData, tableViewFilteredData[item!].isSelected != true  else {
                 pieChartSelectedEntry = nil
                 tableViewFilteredData = tableViewData
                 output.send(.shouldUpdatePieChartWith(pieChartData!))

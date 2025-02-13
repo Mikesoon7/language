@@ -83,6 +83,8 @@ class SettingsVC: UIViewController {
                     self?.presentSeparatorVC()
                 case .needPresentExceptionsView:
                     self?.presentExceptionVC()
+                case .needPresentTutorialView:
+                    self?.presentTutorialVC()
                 }
             }
             .store(in: &cancellable)
@@ -122,6 +124,10 @@ class SettingsVC: UIViewController {
     private func presentExceptionVC(){
         let vc = ExceptionsVC(factory: viewModelFactory)
         self.present(vc, animated: true)
+    }
+    private func presentTutorialVC(){
+        let vc = TutorialVCTest()
+        self.navigationController?.present(vc, animated: true)
     }
     //Attaching cancel action to passed action.
     private func presentAlertWith(action: [UIAlertAction], indexPath: IndexPath) {

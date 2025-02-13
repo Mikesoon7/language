@@ -37,7 +37,7 @@ extension CoreDataHelper: WordsManaging{
                 let newWord = try createWordFromLine(for: dictionary, text: String(line), index:  index + currentNumberOfCards)
                 results.append(newWord)
             } catch {
-                if let wordError = error as? WordsErrorType {
+                if let _ = error as? WordsErrorType {
                     continue
                 } else {
                     context.rollback()

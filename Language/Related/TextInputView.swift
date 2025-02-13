@@ -80,7 +80,7 @@ final class TextInputView: UIView {
         button.setUpAccessoryViewButton(image: .init(systemName: "character.phonetic"))
         button.layer.cornerRadius = 3
         button.layer.masksToBounds = true
-        button.backgroundColor = .systemGray2
+//        button.backgroundColor = .systemGray2
         button.translatesAutoresizingMaskIntoConstraints = true
         button.frame.size = CGSize(width: 40, height: 40)
         return button
@@ -182,7 +182,8 @@ final class TextInputView: UIView {
     
     private func configureAccessoryView(){
         newLineButton.addTarget(self, action: #selector(softReturnDidPress), for: .touchUpInside)
-        scanButton.addAction(UIAction.captureTextFromCamera(responder: textView, identifier: .paste), for: .touchUpInside)
+//        scanButton.addAction(UIAction.captureTextFromCamera(responder: textView, identifier: .paste), for: .touchUpInside)
+        scanButton.addTarget(self, action: #selector(appScanDidTap), for: .touchUpInside)
         translateButton.addTarget(self, action: #selector(translationButtonDidPress), for: .touchUpInside)
         pasteButton.addTarget(self, action: #selector(pasteButtonDidPress), for: .touchUpInside)
         separatorButton.addTarget(self, action: #selector(separatorButtonDidPress), for: .touchUpInside)
@@ -291,34 +292,48 @@ final class TextInputView: UIView {
     }
     
     //Buttons
+    func buttonTouchResponse() {
+        let impactGenerator = UIImpactFeedbackGenerator(style: .medium)
+        impactGenerator.prepare()
+        impactGenerator.impactOccurred()
+
+    }
+    @objc func appScanDidTap(sender: Any){
+        buttonTouchResponse()
+        UIAction.captureTextFromCamera(responder: textView, identifier: .paste)
+    }
+
     @objc private func softReturnDidPress() {
         if let selectedRange = textView.selectedTextRange {
             textView.replace(selectedRange, withText: "\r") // Insert soft return
         }
+        buttonTouchResponse()
     }
     
     @objc private func pasteButtonDidPress(){
-            guard let pasteboardText = UIPasteboard.general.string else { return }
-
-            let attributes = textView.typingAttributes
-            let selectedRange = textView.selectedRange
-            let attributedString = NSAttributedString(string: pasteboardText, attributes: attributes)
-
-            textView.textStorage.beginEditing()
-
-            if selectedRange.length > 0 {
-                textView.textStorage.replaceCharacters(in: selectedRange, with: attributedString)
-            } else {
-                textView.textStorage.insert(attributedString, at: selectedRange.location)
-            }
-
-            let newCursorPosition = selectedRange.location + attributedString.length
-            textView.selectedRange = NSRange(location: newCursorPosition, length: 0)
-
+        guard let pasteboardText = UIPasteboard.general.string else { return }
         
-            textView.textStorage.endEditing()
-            textView.delegate?.textViewDidChange?(textView)
-
+        let attributes = textView.typingAttributes
+        let selectedRange = textView.selectedRange
+        let attributedString = NSAttributedString(string: pasteboardText, attributes: attributes)
+        
+        textView.textStorage.beginEditing()
+        
+        if selectedRange.length > 0 {
+            textView.textStorage.replaceCharacters(in: selectedRange, with: attributedString)
+        } else {
+            textView.textStorage.insert(attributedString, at: selectedRange.location)
+        }
+        
+        let newCursorPosition = selectedRange.location + attributedString.length
+        textView.selectedRange = NSRange(location: newCursorPosition, length: 0)
+        
+        
+        textView.textStorage.endEditing()
+        textView.delegate?.textViewDidChange?(textView)
+        
+        buttonTouchResponse()
+        
     }
     @objc private func separatorButtonDidPress(){
         guard let separator = delegate?.currentSeparatorSymbol() else { return }
@@ -335,9 +350,13 @@ final class TextInputView: UIView {
 
         textView.selectedRange = NSRange(location: selectedRange.location + separator.count + 2, length: 0)
         textView.delegate?.textViewDidChange?(textView)
+        
+        buttonTouchResponse()
     }
     
     @objc private func translationButtonDidPress(){
+        buttonTouchResponse()
+        
         let wordRange: UITextRange? = textView.selectedTextRange
         
         let errorAnimation: CAKeyframeAnimation = .shakingAnimation()
@@ -381,7 +400,7 @@ extension TextInputView: UITextViewDelegate{
     func textViewDidChangeSelection(_ textView: UITextView) {
         let selectedRange = textView.selectedRange
         
-        if let text = textView.text, selectedRange.length > 0 {
+        if let _ = textView.text, selectedRange.length > 0 {
             dispalayTranslationButton()
         } else {
             removeTranslationButton()

@@ -105,7 +105,7 @@ class EditViewModel {
                 break
             }
             switch i {
-            case .remove(offset: let index, element: let text, associatedWith: _):
+            case .remove(offset: let index, element: _ , associatedWith: _):
                 words.remove(at: index)
                 oldTextByLines.remove(at: index)
                 print("deleted", index)

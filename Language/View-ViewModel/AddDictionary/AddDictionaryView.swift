@@ -17,9 +17,9 @@ class AddDictionaryView: UIViewController {
     private var viewModelFactory: ViewModelFactory
     private var cancellabel = Set<AnyCancellable>()
     
-    var isFirstLaunch = false
+//    var isFirstLaunch = false
     
-    private var tutorialVC: TutorialSecondPart!
+//    private var tutorialVC: TutorialSecondPart!
     //MARK: Views
     private lazy var textInputView: TextInputView = TextInputView(delegate: self)
     
@@ -85,11 +85,11 @@ class AddDictionaryView: UIViewController {
         configureText()
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        if isFirstLaunch {
-            animateTutorialView()
-        }
-    }
+//    override func viewDidAppear(_ animated: Bool) {
+//        if isFirstLaunch {
+//            animateTutorialView()
+//        }
+//    }
         
     //MARK: - StyleChange Responding
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -146,11 +146,11 @@ class AddDictionaryView: UIViewController {
 
         NSLayoutConstraint.activate([
             textInputView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor,
-                                               constant: .outerSpacer),
+                                               constant: .longInnerSpacer),
             textInputView.leadingAnchor.constraint(equalTo: view.leadingAnchor,
-                                                   constant: .outerSpacer),
+                                                   constant: .longInnerSpacer),
             textInputView.trailingAnchor.constraint(equalTo: view.trailingAnchor,
-                                                    constant: -.outerSpacer),
+                                                    constant: -.longInnerSpacer),
             textInputView.heightAnchor.constraint(lessThanOrEqualTo: textInputView.widthAnchor),
             
             textInputViewHeightAnchor
@@ -168,9 +168,9 @@ class AddDictionaryView: UIViewController {
             nameView.topAnchor.constraint(equalTo: self.textInputView.bottomAnchor, 
                                           constant: .innerSpacer),
             nameView.leadingAnchor.constraint(equalTo: view.leadingAnchor,
-                                              constant: .outerSpacer),
+                                              constant: .longInnerSpacer),
             nameView.trailingAnchor.constraint(equalTo: view.trailingAnchor,
-                                               constant: -.outerSpacer),
+                                               constant: -.longInnerSpacer),
             nameView.heightAnchor.constraint(equalToConstant: .genericButtonHeight),
             
             
@@ -200,9 +200,9 @@ class AddDictionaryView: UIViewController {
                                                : view.keyboardLayoutGuide.topAnchor ,
                                                constant: -.innerSpacer),
             saveButton.leadingAnchor.constraint(equalTo: view.leadingAnchor,
-                                                constant: .outerSpacer),
+                                                constant: .longInnerSpacer),
             saveButton.trailingAnchor.constraint(equalTo: view.trailingAnchor,
-                                                 constant: -.outerSpacer),
+                                                 constant: -.longInnerSpacer),
             saveButton.topAnchor.constraint(greaterThanOrEqualTo: nameView.bottomAnchor,
                                             constant: .innerSpacer),
             saveButton.heightAnchor.constraint(equalToConstant: .genericButtonHeight),
@@ -211,12 +211,12 @@ class AddDictionaryView: UIViewController {
         //Action
         saveButton.addTarget(self, action: #selector(saveButtonDidTap(sender:)), for: .touchUpInside)
     }
-    func animateTutorialView(){
-        self.tutorialVC = TutorialSecondPart(delegate: self, textViewBottom: self.nameView.frame.maxY)
-        self.tutorialVC.modalPresentationStyle = .overFullScreen
-        self.present(self.tutorialVC, animated: false)
-
-    }
+//    func animateTutorialView(){
+//        self.tutorialVC = TutorialSecondPart(delegate: self, textViewBottom: self.nameView.frame.maxY)
+//        self.tutorialVC.modalPresentationStyle = .overFullScreen
+//        self.present(self.tutorialVC, animated: false)
+//
+//    }
     //MARK: System
     /// Congifure all text properties of the view.
     private func configureText(){
@@ -271,13 +271,13 @@ class AddDictionaryView: UIViewController {
 }
 //MARK: - Actions
 
-extension AddDictionaryView: TutorialSecondPartDelegate{
-    func activateKeyboard() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4, execute: {
-            self.textInputView.textView.becomeFirstResponder()
-        })        
-    }
-}
+//extension AddDictionaryView: TutorialSecondPartDelegate{
+//    func activateKeyboard() {
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4, execute: {
+//            self.textInputView.textView.becomeFirstResponder()
+//        })        
+//    }
+//}
 extension AddDictionaryView {
     @objc func saveButtonDidTap(sender: Any){
         guard let name = validateName(), let text = textInputView.validateText() else { return }

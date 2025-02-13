@@ -51,20 +51,19 @@ final class MenuViewModel{
             }
             .store(in: &cancellables)
         fetch()
-        NotificationCenter.default.addObserver(self, selector: #selector(languageDidChange(sender:)), name: .appLanguageDidChange, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(fontDidChange(sender:)), name: .appFontDidChange, object: nil)
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(languageDidChange(sender:)),
+            name: .appLanguageDidChange, object: nil)
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(fontDidChange(sender:)),
+            name: .appFontDidChange, object: nil)
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(validateLaunchStatus(sender: )),
+            name: .appDidFinishLaunchAnimation, object: nil)
     }
     
     deinit {
         NotificationCenter.default.removeObserver(self)
-    }
-    //MARK: System
-    func validateLaunchStatus(){
-        let isFirst = settingsModel.appLaunchStatus.isFirstLaunch
-        if isFirst {
-            settingsModel.reload(newValue: .lauchStatus(.isNotFirst))
-            output.send(.shouldPresentTutorialView)
-        }
     }
 
     //MARK: Fetch and update local dictionary variable.
@@ -122,11 +121,12 @@ final class MenuViewModel{
     }
     
     //MARK: TableView Related
-    func dataForTableCellAt(item: Int) -> DictionariesEntity? {
+    func dataForTableCellAt(item: Int) -> DataForMenuCell? {
         guard item != dictionaries.count else {
             return nil
         }
-        return dictionaries[item]
+        let dictionary = dictionaries[item]
+        return DataForMenuCell(name: dictionary.language, numberOfCards: dictionary.numberOfCards)
     }
     
     func numberOfSectionsInTableView() -> Int{
@@ -147,6 +147,13 @@ final class MenuViewModel{
     }
     @objc func fontDidChange(sender: Any){
         output.send(.shouldUpdateFont)
+    }
+    @objc func validateLaunchStatus(sender: Notification){
+        let isFirst = settingsModel.appLaunchStatus.isFirstLaunch
+        if isFirst {
+            settingsModel.reload(newValue: .lauchStatus(.isNotFirst))
+            output.send(.shouldPresentTutorialView)
+        }
     }
 }
 

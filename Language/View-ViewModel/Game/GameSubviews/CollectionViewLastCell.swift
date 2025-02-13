@@ -232,25 +232,25 @@ class CollectionViewLastCell: UICollectionViewCell {
             complimentLabel.centerXAnchor.constraint(
                 equalTo: self.contentView.centerXAnchor),
             complimentLabel.topAnchor.constraint(
-                equalTo: self.contentView.topAnchor, constant: .outerSpacer),
+                equalTo: self.contentView.topAnchor, constant: .longInnerSpacer),
             
             learnedResultsLabel.leadingAnchor.constraint(
-                equalTo: self.contentView.leadingAnchor, constant: .outerSpacer),
+                equalTo: self.contentView.leadingAnchor, constant: .longInnerSpacer),
             learnedResultsLabel.topAnchor.constraint(
                 equalTo: self.complimentLabel.bottomAnchor, constant: .longOuterSpacer),
             
             learnedLabel.trailingAnchor.constraint(
-                equalTo: self.contentView.trailingAnchor, constant: -.outerSpacer),
+                equalTo: self.contentView.trailingAnchor, constant: -.longInnerSpacer),
             learnedLabel.centerYAnchor.constraint(
                 equalTo: self.learnedResultsLabel.centerYAnchor ),
 
             timeSpentResultLabel.leadingAnchor.constraint(
-                equalTo: self.contentView.leadingAnchor, constant: .outerSpacer),
+                equalTo: self.contentView.leadingAnchor, constant: .longInnerSpacer),
             timeSpentResultLabel.topAnchor.constraint(
                 equalTo: self.learnedLabel.bottomAnchor, constant: .longOuterSpacer),
             
             timeSpentLabel.trailingAnchor.constraint(
-                equalTo: self.contentView.trailingAnchor, constant: -.outerSpacer),
+                equalTo: self.contentView.trailingAnchor, constant: -.longInnerSpacer),
             timeSpentLabel.centerYAnchor.constraint(
                 equalTo: self.timeSpentResultLabel.centerYAnchor ),
 

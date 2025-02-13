@@ -31,7 +31,7 @@ class SearchView: UIViewController {
         let view = UICollectionView(frame: .zero, collectionViewLayout: layout)
         view.delegate = self
         view.dataSource = self
-        view.contentInset = .init(top: .outerSpacer, left: .innerSpacer, bottom: .outerSpacer, right: .innerSpacer)
+        view.contentInset = .init(top: .longInnerSpacer, left: .innerSpacer, bottom: .longInnerSpacer, right: .innerSpacer)
         view.backgroundColor = .systemBackground
         view.translatesAutoresizingMaskIntoConstraints = false
         view.alwaysBounceVertical = true
@@ -185,12 +185,12 @@ class SearchView: UIViewController {
     private func adjustLayoutForSizeClass() {
         let collectionWidth = collectionView.bounds.width
         let itemWidth: CGFloat = (traitCollection.isRegularWidth
-                                  ? (collectionWidth - (.innerSpacer * 2 + .outerSpacer * 2)) / 3
-                                  : (collectionWidth - (.innerSpacer * 2 + .outerSpacer)) / 2
+                                  ? (collectionWidth - (.innerSpacer * 2 + .longInnerSpacer * 2)) / 3
+                                  : (collectionWidth - (.innerSpacer * 2 + .longInnerSpacer)) / 2
         )
         
         layout.itemSize = CGSize(width: itemWidth, height: 60)
-        layout.minimumLineSpacing = .outerSpacer
+        layout.minimumLineSpacing = .longInnerSpacer
         layout.sectionInset = UIEdgeInsets(top: .zero, left: .zero, bottom: .longOuterSpacer, right: .zero)
         layout.headerReferenceSize = CGSize(width: collectionView.bounds.width, height: 40) // Header height
         
@@ -306,7 +306,7 @@ class SearchView: UIViewController {
         bottomSearchView.animateTransitionTo(isActivated: true, time: animationDuration)
         
         let keyboardHeight = keyboardFrame.height
-        collectionView.contentInset = UIEdgeInsets(top: .outerSpacer, left: .innerSpacer,
+        collectionView.contentInset = UIEdgeInsets(top: .longInnerSpacer, left: .innerSpacer,
                                                    bottom: keyboardHeight, right: .innerSpacer)
         collectionView.scrollIndicatorInsets = collectionView.contentInset
         
@@ -319,8 +319,8 @@ class SearchView: UIViewController {
               let animationDuration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval
         else { return }
         
-        collectionView.contentInset = UIEdgeInsets(top: .outerSpacer, left: .innerSpacer,
-                                                   bottom: -.outerSpacer, right: .innerSpacer)
+        collectionView.contentInset = UIEdgeInsets(top: .longInnerSpacer, left: .innerSpacer,
+                                                   bottom: -.longInnerSpacer, right: .innerSpacer)
         
         collectionView.scrollIndicatorInsets =   collectionView.contentInset
         //Here we checking if searchBar contain text. If contains, that means search button was tapped.
@@ -433,7 +433,7 @@ extension SearchView: UICollectionViewDataSource, UICollectionViewDelegate {
         
         let data = viewModel.dataForCellFor(indexPath: indexPath)
         
-        var cellPosition: Position = {
+        let cellPosition: Position = {
             let part = collectionView.bounds.width / CGFloat(numberOfColumns)
             
             if cellFrameInWindow.midX < part {

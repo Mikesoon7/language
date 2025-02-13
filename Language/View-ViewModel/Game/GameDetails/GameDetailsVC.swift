@@ -178,7 +178,7 @@ class GameDetailsVC: UIViewController {
             
             
             animationView.topAnchor.constraint(equalTo: containerView.topAnchor,
-                                               constant: .outerSpacer),
+                                               constant: .longInnerSpacer),
             animationView.centerXAnchor.constraint(equalTo: containerView.centerXAnchor,
                                                    constant: -animationView.frame.width / 2),
             animationView.heightAnchor.constraint(equalToConstant: animationView.frame.height)
@@ -197,7 +197,7 @@ class GameDetailsVC: UIViewController {
         
         NSLayoutConstraint.activate([
             textInputView.topAnchor.constraint(equalTo: animationView.bottomAnchor,
-                                               constant: .outerSpacer),
+                                               constant: .longInnerSpacer),
             textInputView.widthAnchor.constraint(equalTo: containerView.widthAnchor,
                                                  multiplier: 0.91),
             textInputView.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
@@ -215,7 +215,7 @@ class GameDetailsVC: UIViewController {
         
         
         doneButtonTrailingAnchor = doneButton.leadingAnchor.constraint(equalTo: view.trailingAnchor,
-                                                                       constant: .outerSpacer)
+                                                                       constant: .longInnerSpacer)
         doneButtonActiveTrailingAnchor = doneButton.trailingAnchor.constraint(equalTo: view.trailingAnchor,
                                                                               constant: -.innerSpacer)
         
@@ -224,14 +224,14 @@ class GameDetailsVC: UIViewController {
         
         NSLayoutConstraint.activate([
             deleteButton.leadingAnchor.constraint(equalTo: view.leadingAnchor,
-                                                  constant: .outerSpacer),
+                                                  constant: .longInnerSpacer),
             deleteButton.widthAnchor.constraint(equalTo: view.widthAnchor,
                                                 multiplier: 0.3),
             deleteBottomToContainer,
             
             
             editButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, 
-                                                 constant: -.outerSpacer),
+                                                 constant: -.longInnerSpacer),
             editButton.widthAnchor.constraint(equalTo: view.widthAnchor,
                                               multiplier: 0.3),
             editBottomToContainer,
@@ -243,7 +243,7 @@ class GameDetailsVC: UIViewController {
             
             
             informationButton.trailingAnchor.constraint(equalTo: containerView.trailingAnchor,
-                                                        constant: -.outerSpacer),
+                                                        constant: -.longInnerSpacer),
             informationButton.centerYAnchor.constraint(equalTo: animationView.centerYAnchor)
         ])
         editButton.addTarget(self, action: #selector(editButtonDidTap(sender:)), for: .touchUpInside)
@@ -600,7 +600,7 @@ class GameDetailsIPadVC: UIViewController {
         view.addSubview(animationView)
         
         NSLayoutConstraint.activate([
-            animationView.topAnchor.constraint(equalTo: view.topAnchor, constant: .outerSpacer),
+            animationView.topAnchor.constraint(equalTo: view.topAnchor, constant: .longInnerSpacer),
             animationView.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: -animationView.frame.width / 2),
             animationView.heightAnchor.constraint(equalToConstant: animationView.frame.height)
             
@@ -614,11 +614,11 @@ class GameDetailsIPadVC: UIViewController {
         
         textInputView.updatePlaceholderVisability()
 
-        textViewBottomToContainer = textInputView.bottomAnchor.constraint(equalTo: editButton.topAnchor, constant: -.outerSpacer)
+        textViewBottomToContainer = textInputView.bottomAnchor.constraint(equalTo: editButton.topAnchor, constant: -.longInnerSpacer)
         textViewBottomToKeyboardConstraint = textInputView.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor)
         
         NSLayoutConstraint.activate([
-            textInputView.topAnchor.constraint(equalTo: animationView.bottomAnchor, constant: .outerSpacer),
+            textInputView.topAnchor.constraint(equalTo: animationView.bottomAnchor, constant: .longInnerSpacer),
             textInputView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.91),
             textInputView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             textViewBottomToContainer
@@ -631,25 +631,25 @@ class GameDetailsIPadVC: UIViewController {
         view.addSubviews(deleteButton, editButton, doneButton, informationButton)
         
         doneButtonTrailingAnchor = doneButton.leadingAnchor.constraint(equalTo: view.trailingAnchor,
-                                                                       constant: .outerSpacer)
+                                                                       constant: .longInnerSpacer)
 
         doneButtonActiveTrailingAnchor = doneButton.trailingAnchor.constraint(equalTo: view.trailingAnchor,
                                                                               constant: -.innerSpacer)
 
         NSLayoutConstraint.activate([
-            deleteButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: .outerSpacer),
+            deleteButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: .longInnerSpacer),
             
             deleteButton.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.3),
             
             deleteButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor,
-                                                 constant: -.outerSpacer ),
+                                                 constant: -.longInnerSpacer ),
 
-            editButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -.outerSpacer),
+            editButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -.longInnerSpacer),
             
             editButton.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.3),
             
             editButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor,
-                                               constant: -.outerSpacer),
+                                               constant: -.longInnerSpacer),
             
             doneButton.centerYAnchor.constraint(equalTo: animationView.centerYAnchor),
             
@@ -658,7 +658,7 @@ class GameDetailsIPadVC: UIViewController {
             
             informationButton.centerYAnchor.constraint(equalTo: animationView.centerYAnchor),
             
-            informationButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -.outerSpacer)
+            informationButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -.longInnerSpacer)
         ])
         editButton.addTarget(self, action: #selector(editButtonDidTap(sender:)), for: .touchUpInside)
         deleteButton.addTarget(self , action: #selector(deleteButtonDidTap(sender:)), for: .touchUpInside)

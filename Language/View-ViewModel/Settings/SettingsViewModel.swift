@@ -19,6 +19,7 @@ class SettingsViewModel{
         case needUpdateRowAt(IndexPath)
         case needPresentNotificationView
         case needPresentExceptionsView
+        case needPresentTutorialView
     }
     
     struct SettingsSection{
@@ -63,7 +64,8 @@ class SettingsViewModel{
                             items: [
                                 SettingsOptions.sectionHeader("settings.sections.dictionaries"),
                                 SettingsOptions.separators(settingsModel.appSeparators),
-                                SettingsOptions.exceptions(settingsModel.appExceptions)
+                                SettingsOptions.exceptions(settingsModel.appExceptions),
+                                SettingsOptions.lauchStatus(settingsModel.appLaunchStatus)
                             ])
         ]
     }
@@ -79,6 +81,7 @@ class SettingsViewModel{
         case .searchBarPosition(_): return IndexPath(row: 1 , section: 1)
         case .separators(_): return IndexPath(row: 1 , section: 2)
         case .exceptions(_): return IndexPath(row: 2, section: 2)
+        case .lauchStatus(_): return IndexPath(row: 3, section: 2)
 //        case .duplicates(_): return IndexPath(row: 2 , section: 2)
         default: return IndexPath()
         }
@@ -123,7 +126,7 @@ class SettingsViewModel{
         case .exceptions(let exception):
             return DataForSettingsTextCell(title: exception.title, value: nil)
         case .lauchStatus(_):
-            return DataForSettingsTextCell(title: "", value: "")
+            return DataForSettingsTextCell(title: "Tutorial", value: nil)
         }
     }
     func didSelectRowAt(indexPath: IndexPath){
@@ -152,6 +155,8 @@ class SettingsViewModel{
             output.send(.needPresentNotificationView)
         case .separators(_):
             output.send(.needPresentSeparatorsView)
+        case .lauchStatus(_):
+            output.send(.needPresentTutorialView)
         default:
             break
         }

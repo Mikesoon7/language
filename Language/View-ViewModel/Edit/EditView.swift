@@ -230,7 +230,7 @@ class EditView: UIViewController {
         if activate {
             self.navigationItem.rightBarButtonItems = [searchButton, doneButton]
 
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1, qos: .background, execute: {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3, qos: .background, execute: {
                 self.customSearchToolBar.beginSearchSession()
             })
         } else {

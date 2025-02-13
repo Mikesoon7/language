@@ -45,7 +45,7 @@ class DictionaryHeaderView: UICollectionReusableView {
         self.addSubview(label)
         
         NSLayoutConstraint.activate([
-            label.leadingAnchor.constraint(equalTo: leadingAnchor, constant: .outerSpacer),
+            label.leadingAnchor.constraint(equalTo: leadingAnchor, constant: .longInnerSpacer),
             label.heightAnchor.constraint(equalToConstant: .genericButtonHeight),
             label.centerYAnchor.constraint(equalTo: centerYAnchor),
         ])

@@ -4,18 +4,15 @@
 //
 //  Created by Star Lord on 29/09/2023.
 //
-//  REFACTORING STATE: NOT CHECKED
+//  REFACTORING STATE: CHECKED
 
 import UIKit
 
 class TutorialInformationView: UIView {
-
-    private let subviewsVerticalInset = CGFloat(20)
-    private let subviewsHorisontalInset = CGFloat(30)
-    private var subviewsInset = CGFloat(50)
     
     private let titleText: String?
     private let mainText: String?
+    
     //MARK: Views
     // Charter
     private let topLabel: UILabel = {
@@ -73,10 +70,14 @@ class TutorialInformationView: UIView {
         self.addSubviews(textStack)
 
         NSLayoutConstraint.activate([
-            textStack.topAnchor.constraint(equalTo: topAnchor, constant: subviewsVerticalInset),
-            textStack.leadingAnchor.constraint(equalTo: leadingAnchor, constant: subviewsHorisontalInset),
-            textStack.bottomAnchor.constraint(lessThanOrEqualTo: bottomAnchor, constant: -subviewsVerticalInset),
-            textStack.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -subviewsHorisontalInset)
+            textStack.topAnchor.constraint(
+                equalTo: topAnchor, constant: .outerSpacer),
+            textStack.leadingAnchor.constraint(
+                equalTo: leadingAnchor, constant: .longOuterSpacer),
+            textStack.bottomAnchor.constraint(
+                lessThanOrEqualTo: bottomAnchor, constant: -.outerSpacer),
+            textStack.trailingAnchor.constraint(
+                equalTo: trailingAnchor, constant: -.longOuterSpacer)
         ])
     }
     
@@ -93,5 +94,4 @@ class TutorialInformationView: UIView {
         self.topLabel.text = title.localized
         textStack.addArrangedSubviews(topLabel, middleLabel)
     }
-
 }

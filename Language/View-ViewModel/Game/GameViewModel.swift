@@ -77,7 +77,7 @@ class GameViewModel{
     }
     
     func dataForDiffableDataSource() -> [HashableWordsEntity]{
-        var words = words.map { HashableWordsEntity(wordEntity: $0) }
+        let words = words.map { HashableWordsEntity(wordEntity: $0) }
         return words
     }
     
