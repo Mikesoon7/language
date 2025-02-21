@@ -70,8 +70,8 @@ class SearchCell: UICollectionViewCell {
         wordLabel.text = data.word
         descriptionLabel.text = data.description
     
-        wordLabel.font = .selectedFont.withSize(14)
-        descriptionLabel.font = .selectedFont.withSize(11)
+        wordLabel.font = .selectedFont.withSize(.assosiatedTextSize)
+        descriptionLabel.font = .selectedFont.withSize(.captionTextSize)
 
         //If cell have onlu word, we use first first set og constraits.
         if !data.description.isEmpty {

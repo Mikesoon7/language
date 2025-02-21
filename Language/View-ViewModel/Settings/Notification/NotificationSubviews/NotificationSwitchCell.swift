@@ -19,7 +19,7 @@ class NotificationSwitchCell: UITableViewCell {
     weak var delegate: NotificationsStateDelegate?
     
     //MARK: Views
-    private let label : UILabel = {
+    private let titleLabel : UILabel = {
         let label = UILabel()
         label.text = "notification.allowNotification".localized
         label.textColor = .label
@@ -60,14 +60,18 @@ class NotificationSwitchCell: UITableViewCell {
     
     //MARK: Layout Subviews.
     private func configureCellSubviews(){
-        contentView.addSubviews(label, control)
+        contentView.addSubviews(titleLabel, control)
         
         NSLayoutConstraint.activate([
-            label.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 15),
-            label.centerYAnchor.constraint(equalTo: centerYAnchor),
+            titleLabel.leadingAnchor.constraint(
+                equalTo: leadingAnchor, constant: .longInnerSpacer),
+            titleLabel.centerYAnchor.constraint(
+                equalTo: centerYAnchor),
             
-            control.centerYAnchor.constraint(equalTo: centerYAnchor),
-            control.centerXAnchor.constraint(equalTo: trailingAnchor, constant: -40)
+            control.centerYAnchor.constraint(
+                equalTo: centerYAnchor),
+            control.trailingAnchor.constraint(
+                equalTo: trailingAnchor, constant: -.outerSpacer)
         ])
         control.addTarget(self, action: #selector(switchDidToggle(sender: )), for: .valueChanged)
     }

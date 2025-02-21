@@ -31,7 +31,7 @@ class GameDetailsVC: UIViewController {
 
     lazy var containerView: UIView = {
         let view = UIView()
-        view.layer.cornerRadius = 13
+        view.layer.cornerRadius = .outerCornerRadius
         view.clipsToBounds = true
         view.backgroundColor = .systemBackground_Secondary
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -46,7 +46,7 @@ class GameDetailsVC: UIViewController {
         view.layer.shadowColor = UIColor.clear.cgColor
         view.layer.shadowOpacity = 0
         view.backgroundColor = .clear
-        view.textView.font = .helveticaNeueMedium.withSize(18)
+        view.textView.font = .helveticaNeueMedium.withSize(.subBodyTextSize)
 
         view.textView.isEditable = false
         view.textView.isSelectable = false
@@ -58,7 +58,7 @@ class GameDetailsVC: UIViewController {
         button.tintColor = .label
         button.setImage(
             UIImage(systemName: "info.circle",
-                    withConfiguration: UIImage.SymbolConfiguration(pointSize: 20, weight: .semibold, scale: .medium)),
+                    withConfiguration: UIImage.SymbolConfiguration(pointSize: .titleSize, weight: .semibold, scale: .medium)),
             for: .normal
         )
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -262,7 +262,7 @@ class GameDetailsVC: UIViewController {
     private func configureButtonWith(title: String) -> UIButton{
         let button = UIButton()
         button.configuration = .plain()
-        button.setAttributedTitle(.attributedString(string: title, with: .systemBold, ofSize: 15), for: .normal)
+        button.setAttributedTitle(.attributedString(string: title, with: .systemBold, ofSize: .assosiatedTextSize), for: .normal)
         button.configuration?.baseForegroundColor = .label
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
@@ -520,7 +520,7 @@ class GameDetailsIPadVC: UIViewController {
         button.tintColor = .label
         button.setImage(
             UIImage(systemName: "info.circle",
-                    withConfiguration: UIImage.SymbolConfiguration(pointSize: 20, weight: .semibold, scale: .large)),
+                    withConfiguration: UIImage.SymbolConfiguration(pointSize: .titleSize, weight: .semibold, scale: .large)),
             for: .normal
         )
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -676,7 +676,7 @@ class GameDetailsIPadVC: UIViewController {
     private func configureButtonWith(title: String) -> UIButton{
         let button = UIButton()
         button.configuration = .plain()
-        button.setAttributedTitle(.attributedString(string: title, with: .systemBold, ofSize: 15), for: .normal)
+        button.setAttributedTitle(.attributedString(string: title, with: .systemBold, ofSize: .assosiatedTextSize), for: .normal)
         button.configuration?.baseForegroundColor = .label
         button.translatesAutoresizingMaskIntoConstraints = false
         return button

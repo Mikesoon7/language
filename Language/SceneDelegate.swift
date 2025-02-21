@@ -107,10 +107,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         animationView?.animate()
         animationView?.makeKeyView()
         self.animationView = animationView
-//        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-//            animationView?.animationView.removeFromSuperview()
-//            animationView = nil
-//        }
     }
 
     //MARK: Settings related customization

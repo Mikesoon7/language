@@ -15,9 +15,9 @@ class DataUpdateManager{
     }
     
     func settingsDidChangeFor(_ dictionary: DictionariesEntity?,
-                              isOneSideMode: Bool? = false,
-                              cardsOrderSelection: DictionariesSettings.CardOrder? = .normal,
-                              selectedDisplayNumber: Int64? = 0) throws {
+                              isOneSideMode: Bool? = nil,
+                              cardsOrderSelection: DictionariesSettings.CardOrder? = nil,
+                              selectedDisplayNumber: Int64? = nil) throws {
         guard let dictionary = dictionary else { return }
         let currentSettings = dataModel.fetchSettings(for: dictionary)
         do {
@@ -79,4 +79,20 @@ class DataUpdateManager{
         }
     }
     
+    func updateExistingDictionary(dictionary: DictionariesEntity, with words: [WordsEntity], name: String?) throws {
+        let currentSettings = dataModel.fetchSettings(for: dictionary)
+        let currentNumberOfCards = dictionary.numberOfCards
+        let currentSelectedNumber = currentSettings?.selectedNumber
+        print(currentSelectedNumber, "before")
+
+        do {
+            try dataModel.update(dictionary: dictionary, words: words, name: name)
+            if currentSettings == nil || currentNumberOfCards == currentSelectedNumber || words.count < currentSelectedNumber!{
+                try settingsDidChangeFor(dictionary, selectedDisplayNumber: Int64(words.count))
+                print(words.count, "updated")
+            }
+        } catch {
+            throw error
+        }
+    }
 }

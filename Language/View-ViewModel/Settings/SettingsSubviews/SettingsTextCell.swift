@@ -68,7 +68,7 @@ class SettingsTextCell: UITableViewCell {
     func configureCellWithData(_ data: DataForSettingsTextCell){
         self.titleLabel.text = data.title
         self.valueLabel.text = data.value ?? ""
-        titleLabel.font = .selectedFont.withSize(17)
+        titleLabel.font = .selectedFont.withSize(.bodyTextSize)
     }
     
     //MARK: Configure subviews layout.

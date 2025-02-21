@@ -30,7 +30,7 @@ class AddDictionaryView: UIViewController {
     }()
     private let nameLabel: UILabel = {
         let label = UILabel()
-        label.font = .selectedFont.withSize(18)
+        label.font = .selectedFont.withSize(.bodyTextSize)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -38,7 +38,7 @@ class AddDictionaryView: UIViewController {
         let field = UITextField()
         field.textColor = .label
         field.textAlignment = .right
-        field.font = .selectedFont.withSize(15)
+        field.font = .selectedFont.withSize(.assosiatedTextSize)
         field.translatesAutoresizingMaskIntoConstraints = false
         return field
     }()
@@ -142,15 +142,15 @@ class AddDictionaryView: UIViewController {
         view.addSubview(textInputView)
         
             
-        textInputViewHeightAnchor = textInputView.heightAnchor.constraint(equalToConstant: 150)
+        textInputViewHeightAnchor = textInputView.heightAnchor.constraint(equalToConstant: .textViewGenericSize)
 
         NSLayoutConstraint.activate([
             textInputView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor,
-                                               constant: .longInnerSpacer),
+                                               constant: .longOuterSpacer),
             textInputView.leadingAnchor.constraint(equalTo: view.leadingAnchor,
-                                                   constant: .longInnerSpacer),
+                                                   constant: .outerSpacer),
             textInputView.trailingAnchor.constraint(equalTo: view.trailingAnchor,
-                                                    constant: -.longInnerSpacer),
+                                                    constant: -.outerSpacer),
             textInputView.heightAnchor.constraint(lessThanOrEqualTo: textInputView.widthAnchor),
             
             textInputViewHeightAnchor
@@ -168,9 +168,9 @@ class AddDictionaryView: UIViewController {
             nameView.topAnchor.constraint(equalTo: self.textInputView.bottomAnchor, 
                                           constant: .innerSpacer),
             nameView.leadingAnchor.constraint(equalTo: view.leadingAnchor,
-                                              constant: .longInnerSpacer),
+                                              constant: .outerSpacer),
             nameView.trailingAnchor.constraint(equalTo: view.trailingAnchor,
-                                               constant: -.longInnerSpacer),
+                                               constant: -.outerSpacer),
             nameView.heightAnchor.constraint(equalToConstant: .genericButtonHeight),
             
             
@@ -200,9 +200,9 @@ class AddDictionaryView: UIViewController {
                                                : view.keyboardLayoutGuide.topAnchor ,
                                                constant: -.innerSpacer),
             saveButton.leadingAnchor.constraint(equalTo: view.leadingAnchor,
-                                                constant: .longInnerSpacer),
+                                                constant: .outerSpacer),
             saveButton.trailingAnchor.constraint(equalTo: view.trailingAnchor,
-                                                 constant: -.longInnerSpacer),
+                                                 constant: -.outerSpacer),
             saveButton.topAnchor.constraint(greaterThanOrEqualTo: nameView.bottomAnchor,
                                             constant: .innerSpacer),
             saveButton.heightAnchor.constraint(equalToConstant: .genericButtonHeight),
@@ -211,12 +211,6 @@ class AddDictionaryView: UIViewController {
         //Action
         saveButton.addTarget(self, action: #selector(saveButtonDidTap(sender:)), for: .touchUpInside)
     }
-//    func animateTutorialView(){
-//        self.tutorialVC = TutorialSecondPart(delegate: self, textViewBottom: self.nameView.frame.maxY)
-//        self.tutorialVC.modalPresentationStyle = .overFullScreen
-//        self.present(self.tutorialVC, animated: false)
-//
-//    }
     //MARK: System
     /// Congifure all text properties of the view.
     private func configureText(){
@@ -225,7 +219,7 @@ class AddDictionaryView: UIViewController {
         saveButton.setAttributedTitle(
             .attributedString(string: "system.save".localized,
                               with: .selectedFont,
-                              ofSize: 18), for: .normal)
+                              ofSize: .bodyTextSize), for: .normal)
         
         self.navigationItem.title = "addDict.title".localized
         nameInputField.placeholder = "fieldPlaceholder".localized
@@ -233,12 +227,12 @@ class AddDictionaryView: UIViewController {
         textInputView.updatePlaceholder()
     }
     private func configureFont(){
-        nameLabel.font = .selectedFont.withSize(17)
+        nameLabel.font = .selectedFont.withSize(.bodyTextSize)
         saveButton.setAttributedTitle(
             .attributedString(string: "system.save".localized,
                               with: .selectedFont,
-                              ofSize: 18), for: .normal)
-        nameInputField.font = .selectedFont.withSize(15)
+                              ofSize: .bodyTextSize), for: .normal)
+        nameInputField.font = .selectedFont.withSize(.assosiatedTextSize)
     }
     
     ///Returns textFiled value. If value equals nil, return nil and present an error.

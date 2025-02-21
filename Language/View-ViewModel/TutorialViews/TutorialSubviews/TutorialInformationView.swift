@@ -17,7 +17,7 @@ class TutorialInformationView: UIView {
     // Charter
     private let topLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: "Charter-Bold", size: 25)
+        label.font = UIFont(name: "Charter-Bold", size: .titleSize)
         label.tintColor = .label
         label.translatesAutoresizingMaskIntoConstraints = false
         label.numberOfLines = 0
@@ -27,7 +27,7 @@ class TutorialInformationView: UIView {
     
     private let middleLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: "Charter-Roman", size: 21)
+        label.font = UIFont(name: "Charter-Roman", size: .subtitleSize)
         label.translatesAutoresizingMaskIntoConstraints = false
         label.tintColor = .label
         label.textAlignment = .center
@@ -40,7 +40,7 @@ class TutorialInformationView: UIView {
         stackView.axis = .vertical
         stackView.distribution = .fillProportionally
         stackView.alignment = .fill
-        stackView.spacing = 25
+        stackView.spacing = .longInnerSpacer
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.backgroundColor = .clear
         return stackView
@@ -71,13 +71,13 @@ class TutorialInformationView: UIView {
 
         NSLayoutConstraint.activate([
             textStack.topAnchor.constraint(
-                equalTo: topAnchor, constant: .outerSpacer),
+                equalTo: topAnchor, constant: .innerSpacer),
             textStack.leadingAnchor.constraint(
-                equalTo: leadingAnchor, constant: .longOuterSpacer),
+                equalTo: leadingAnchor, constant: .outerSpacer),
             textStack.bottomAnchor.constraint(
-                lessThanOrEqualTo: bottomAnchor, constant: -.outerSpacer),
+                lessThanOrEqualTo: bottomAnchor, constant: -.innerSpacer),
             textStack.trailingAnchor.constraint(
-                equalTo: trailingAnchor, constant: -.longOuterSpacer)
+                equalTo: trailingAnchor, constant: -.outerSpacer)
         ])
     }
     

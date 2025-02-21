@@ -77,7 +77,7 @@ class CustomSearchBar: UIView {
         self.addSubviews(searchBar, cancelButton)
         
         cancelButtonLeadingAnchor = cancelButton.leadingAnchor.constraint(equalTo: trailingAnchor, constant: 0)
-        cancelButtonTrailingAnchor = cancelButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20)
+        cancelButtonTrailingAnchor = cancelButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -.outerSpacer)
 
         NSLayoutConstraint.activate([
             cancelButton.topAnchor.constraint(equalTo: topAnchor),
@@ -100,8 +100,8 @@ class CustomSearchBar: UIView {
         self.searchBar.placeholder = "yourWord".localized
         cancelButton.setAttributedTitle( .attributedString(
                 string: "system.cancel".localized,
-                with: .systemFont(ofSize: 18),
-                ofSize: 18), for: .normal)
+                with: .systemFont(ofSize: .subBodyTextSize),
+                ofSize: .subBodyTextSize), for: .normal)
     }
     
     func animateTransitionTo(isActivated: Bool, time: TimeInterval){

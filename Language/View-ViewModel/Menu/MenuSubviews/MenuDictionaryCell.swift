@@ -273,39 +273,31 @@ class MenuDictionaryCVCell: UICollectionViewCell {
                 equalTo: mainView.topAnchor, constant: .longInnerSpacer),
             languageLabel.leadingAnchor.constraint(
                 equalTo: mainView.leadingAnchor, constant: .longInnerSpacer),
-            languageLabel.heightAnchor.constraint(
-                equalToConstant: 25),
             
             cardsLabel.bottomAnchor.constraint(
                 equalTo: mainView.bottomAnchor, constant: -.longInnerSpacer),
             cardsLabel.leadingAnchor.constraint(
                 equalTo: mainView.leadingAnchor, constant: .longInnerSpacer),
-            cardsLabel.heightAnchor.constraint(
-                equalToConstant: 25),
 
             languageResultLabel.centerYAnchor.constraint(
                 equalTo: languageLabel.centerYAnchor),
             languageResultLabel.trailingAnchor.constraint(
                 equalTo: mainView.trailingAnchor, constant: -.longInnerSpacer),
-            languageResultLabel.heightAnchor.constraint(
-                equalToConstant: 25),
             
             cardsResultLabel.centerYAnchor.constraint(
                 equalTo: cardsLabel.centerYAnchor),
             cardsResultLabel.trailingAnchor.constraint(
                 equalTo: mainView.trailingAnchor, constant: -.longInnerSpacer),
-            cardsResultLabel.heightAnchor.constraint(
-                equalToConstant: 25)
         ])
 
     }
     
     private func configureFonts(){
-        self.cardsLabel.font = .selectedFont.withSize(20)
-        self.cardsResultLabel.font = .selectedFont.withSize(15)
+        self.cardsLabel.font = .selectedFont.withSize(.subtitleSize)
+        self.cardsResultLabel.font = .selectedFont.withSize(.assosiatedTextSize)
         
-        self.languageLabel.font = .selectedFont.withSize(20)
-        self.languageResultLabel.font = .selectedFont.withSize(15)
+        self.languageLabel.font = .selectedFont.withSize(.subtitleSize)
+        self.languageResultLabel.font = .selectedFont.withSize(.assosiatedTextSize)
 
     }
     
@@ -342,7 +334,7 @@ class MenuDictionaryCVCell: UICollectionViewCell {
     func configureTapGesture(){
         let editTap = UITapGestureRecognizer(target: self, action: #selector(editViewDidTap(sender: )))
         let deleteTap = UITapGestureRecognizer(target: self, action: #selector(deleteViewDidTap(sender: )))
-        let statTap = UITapGestureRecognizer(target: self, action: #selector(statViewDidTap(sender: )))
+        let statTap = UITapGestureRecognizer(target: self, action: #selector(shareViewDidTap(sender: )))
         
         editView.addGestureRecognizer(editTap)
         deleteView.addGestureRecognizer(deleteTap)
@@ -401,7 +393,6 @@ class MenuDictionaryCVCell: UICollectionViewCell {
     //MARK: - Actions
     //Panning
     @objc func viewDidPan(sender: UIPanGestureRecognizer){
-//        deactivateConstraints()
         let translation = sender.translation(in: mainView).x
         let velocity = sender.velocity(in: mainView).x
             
@@ -459,7 +450,7 @@ class MenuDictionaryCVCell: UICollectionViewCell {
         activate(false)
     }
     
-    @objc func statViewDidTap(sender: UITapGestureRecognizer){
+    @objc func shareViewDidTap(sender: UITapGestureRecognizer){
         
         let point = sender.location(in: shareView)
         guard shareView.maskedViewContaintPoint(point) else {

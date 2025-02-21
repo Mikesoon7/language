@@ -11,6 +11,8 @@
 		082495992D159A1D00435AE1 /* TableViewCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = 082495982D159A1D00435AE1 /* TableViewCells.swift */; };
 		0825FE8C2D536DC0000C2114 /* TypingEffectAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0825FE8B2D536DC0000C2114 /* TypingEffectAnimation.swift */; };
 		0836F0662D5B4D8300B78F88 /* TutorialVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0836F0652D5B4D8300B78F88 /* TutorialVC.swift */; };
+		0836F0682D5E1EFD00B78F88 /* CGFloat Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0836F0672D5E1EFD00B78F88 /* CGFloat Extension.swift */; };
+		0836F06A2D5E3C6900B78F88 /* SettingsTableLinkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0836F0692D5E3C6900B78F88 /* SettingsTableLinkView.swift */; };
 		086854EB2CE5064900CBB618 /* AddWordsPartitialController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 086854EA2CE5064900CBB618 /* AddWordsPartitialController.swift */; };
 		0873A1C02CE62D730048D012 /* CountdownBarButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0873A1BF2CE62D730048D012 /* CountdownBarButton.swift */; };
 		0887CB492D3B962000BACA7C /* DataUpdateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0887CB482D3B962000BACA7C /* DataUpdateManager.swift */; };
@@ -28,6 +30,7 @@
 		08C6654B2C80D35400427BA5 /* CoreData_Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08C6654A2C80D35400427BA5 /* CoreData_Settings.swift */; };
 		08C7E7062D3536E2006E6C55 /* PopUpTimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08C7E7052D3536E2006E6C55 /* PopUpTimerView.swift */; };
 		08CEFF1F2D4E6AF300E6DF82 /* SearchCellDetailedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08CEFF1E2D4E6AF300E6DF82 /* SearchCellDetailedView.swift */; };
+		08D01AAA2D5F70FC00A25E31 /* AppProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08D01AA92D5F70FC00A25E31 /* AppProperties.swift */; };
 		08DA98B12D00AEE8007A3C00 /* CustomTableViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08DA98B02D00AEE8007A3C00 /* CustomTableViewDelegate.swift */; };
 		08EA16F62CFB1E3A00E1CA56 /* StatisticViewSelectedCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08EA16F52CFB1E3A00E1CA56 /* StatisticViewSelectedCell.swift */; };
 		7D3C3F9F2B1745A200025234 /* UIVC Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D3C3F9E2B1745A200025234 /* UIVC Extension.swift */; };
@@ -137,6 +140,8 @@
 		082495982D159A1D00435AE1 /* TableViewCells.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableViewCells.swift; sourceTree = "<group>"; };
 		0825FE8B2D536DC0000C2114 /* TypingEffectAnimation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypingEffectAnimation.swift; sourceTree = "<group>"; };
 		0836F0652D5B4D8300B78F88 /* TutorialVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TutorialVC.swift; sourceTree = "<group>"; };
+		0836F0672D5E1EFD00B78F88 /* CGFloat Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGFloat Extension.swift"; sourceTree = "<group>"; };
+		0836F0692D5E3C6900B78F88 /* SettingsTableLinkView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTableLinkView.swift; sourceTree = "<group>"; };
 		08594B0B2B39A95A004A1398 /* Learny.workspace.xcworkspace */ = {isa = PBXFileReference; lastKnownFileType = wrapper.workspace; path = Learny.workspace.xcworkspace; sourceTree = "<group>"; };
 		086854EA2CE5064900CBB618 /* AddWordsPartitialController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddWordsPartitialController.swift; sourceTree = "<group>"; };
 		0873A1BF2CE62D730048D012 /* CountdownBarButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountdownBarButton.swift; sourceTree = "<group>"; };
@@ -156,6 +161,8 @@
 		08C6654A2C80D35400427BA5 /* CoreData_Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreData_Settings.swift; sourceTree = "<group>"; };
 		08C7E7052D3536E2006E6C55 /* PopUpTimerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopUpTimerView.swift; sourceTree = "<group>"; };
 		08CEFF1E2D4E6AF300E6DF82 /* SearchCellDetailedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchCellDetailedView.swift; sourceTree = "<group>"; };
+		08D01AA92D5F70FC00A25E31 /* AppProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppProperties.swift; sourceTree = "<group>"; };
+		08D01AAD2D5F7D1800A25E31 /* Acknowledgments.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Acknowledgments.plist; sourceTree = "<group>"; };
 		08DA98B02D00AEE8007A3C00 /* CustomTableViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTableViewDelegate.swift; sourceTree = "<group>"; };
 		08EA16F52CFB1E3A00E1CA56 /* StatisticViewSelectedCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticViewSelectedCell.swift; sourceTree = "<group>"; };
 		7D3C3F9E2B1745A200025234 /* UIVC Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIVC Extension.swift"; sourceTree = "<group>"; };
@@ -540,6 +547,7 @@
 			isa = PBXGroup;
 			children = (
 				9AA7AB5329AE3CF400CCC9F4 /* Extensions.swift */,
+				0836F0672D5E1EFD00B78F88 /* CGFloat Extension.swift */,
 				9AABAEAB2A8527060032C008 /* UIFont Extensions.swift */,
 				9A883CE22A6C65D7008682F3 /* UIView Extensions.swift */,
 				7D3C3F9E2B1745A200025234 /* UIVC Extension.swift */,
@@ -554,6 +562,7 @@
 			children = (
 				089F83AA2D17048E0093800B /* Non-Used */,
 				9A7B91CE298D6D9900E60CDD /* Assets.xcassets */,
+				08D01AAD2D5F7D1800A25E31 /* Acknowledgments.plist */,
 				08594B0B2B39A95A004A1398 /* Learny.workspace.xcworkspace */,
 				9A9970FD29DB2D86007EE635 /* LaunchAnimation.swift */,
 				9A1F67CE29E166C4003993C5 /* LanguageChangeManager.swift */,
@@ -569,6 +578,7 @@
 				0873A1BF2CE62D730048D012 /* CountdownBarButton.swift */,
 				08DA98B02D00AEE8007A3C00 /* CustomTableViewDelegate.swift */,
 				0825FE8B2D536DC0000C2114 /* TypingEffectAnimation.swift */,
+				08D01AA92D5F70FC00A25E31 /* AppProperties.swift */,
 			);
 			path = Related;
 			sourceTree = "<group>";
@@ -590,6 +600,7 @@
 				9A1F67D329E3F69A003993C5 /* SettingsHeaderCell.swift */,
 				9A0BD53929DC531F00845328 /* SettingsTextCell.swift */,
 				9A1F67D029E18BBE003993C5 /* SettingsImageCell.swift */,
+				0836F0692D5E3C6900B78F88 /* SettingsTableLinkView.swift */,
 			);
 			path = SettingsSubviews;
 			sourceTree = "<group>";
@@ -821,6 +832,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				08D01AAA2D5F70FC00A25E31 /* AppProperties.swift in Sources */,
 				9A75413D2A70042D0064BE4E /* SearchViewModel.swift in Sources */,
 				082495992D159A1D00435AE1 /* TableViewCells.swift in Sources */,
 				08C665432C80D23100427BA5 /* DictionariesSettings+CoreDataProperties.swift in Sources */,
@@ -848,6 +860,7 @@
 				9AFFCE7B299D073D00C12B94 /* MenuAddDictionaryCell.swift in Sources */,
 				9AE34A782A115DD300F8BB65 /* GameDetailsVC.swift in Sources */,
 				08C665492C80D23100427BA5 /* DictionariesEntity+CoreDataProperties.swift in Sources */,
+				0836F06A2D5E3C6900B78F88 /* SettingsTableLinkView.swift in Sources */,
 				9A77B0222AD58960006DA151 /* ExceptionsVC.swift in Sources */,
 				7D3C3FA32B17467B00025234 /* UIButton Extension.swift in Sources */,
 				9AB9A96129FD71F000694FE8 /* SeparatorsView.swift in Sources */,
@@ -904,6 +917,7 @@
 				0873A1C02CE62D730048D012 /* CountdownBarButton.swift in Sources */,
 				9A7B91C6298D6D9600E60CDD /* AppDelegate.swift in Sources */,
 				9AAECFC229B50A5300439C0B /* AddWordsView.swift in Sources */,
+				0836F0682D5E1EFD00B78F88 /* CGFloat Extension.swift in Sources */,
 				9AB40FF229CC6A9D00353FFC /* MenuDictionaryCell.swift in Sources */,
 				9AABAEB02A87D3E00032C008 /* TextInputView.swift in Sources */,
 				9AA6C4E52AB621AA0094F8D5 /* SearchToolBarView.swift in Sources */,
@@ -1021,6 +1035,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -1076,6 +1091,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;

@@ -50,7 +50,7 @@ class SettingsHeaderCell: UITableViewCell {
     //Called after dequing in table view delegate.
     func configureCellWithData(_ data: DataForSettingsHeaderCell){
         label.text = data.title
-        label.font = .selectedFont.withSize(19)
+        label.font = .selectedFont.withSize(.subtitleSize)
     }
     
     //MARK: Configure subviews layout.

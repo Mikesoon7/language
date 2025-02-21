@@ -79,7 +79,7 @@ class SettingsImageCell: UITableViewCell {
     //Called after dequing in table view delegate.
     func configureCellWithData(_ data: DataForSettingsImageCell){
         self.titleLabel.text = data.title
-        titleLabel.font = .selectedFont.withSize(17)
+        titleLabel.font = .selectedFont.withSize(.bodyTextSize)
         topImageView.tintColor = data.isBarOnTop ? .label : .systemGray3
         bottomImageView.tintColor = data.isBarOnTop ? .systemGray3 : .label
         selectedImage = data.valueChangeHandler
@@ -95,7 +95,7 @@ class SettingsImageCell: UITableViewCell {
             titleLabel.leadingAnchor.constraint(
                 equalTo: leadingAnchor, constant: .longInnerSpacer),
             titleLabel.heightAnchor.constraint(
-                equalToConstant: 20),
+                equalToConstant: .outerSpacer),
 
             imageStackView.topAnchor.constraint(
                 equalTo: titleLabel.bottomAnchor),

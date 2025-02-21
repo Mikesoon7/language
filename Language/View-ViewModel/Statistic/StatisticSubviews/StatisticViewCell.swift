@@ -35,7 +35,7 @@ final class StatisticViewCell: UITableViewCell {
     }()
     private let nameLabel: UILabel = {
         let label = UILabel()
-        label.font = .helveticaNeueMedium.withSize(18)
+        label.font = .helveticaNeueMedium.withSize(.bodyTextSize)
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textColor = .label
         label.textAlignment = .left
@@ -43,7 +43,7 @@ final class StatisticViewCell: UITableViewCell {
     }()
     private let accessTimeLabel: UILabel = {
         let label = UILabel()
-        label.font = .helveticaNeueMedium.withSize(14)
+        label.font = .helveticaNeueMedium.withSize(.assosiatedTextSize)
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textColor = .label
         label.textAlignment = .right
@@ -51,7 +51,7 @@ final class StatisticViewCell: UITableViewCell {
     }()
     private let accessTimeRationLabel: UILabel = {
         let label = UILabel()
-        label.font = .helveticaNeue.withSize(10)
+        label.font = .helveticaNeue.withSize(.captionTextSize)
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textColor = .label
         label.textAlignment = .right

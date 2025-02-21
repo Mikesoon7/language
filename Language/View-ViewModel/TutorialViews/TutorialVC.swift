@@ -4,6 +4,7 @@
 //
 //  Created by Star Lord on 11/02/2025.
 //
+//REFACTORING STATE: CHECKED
 
 import UIKit
 
@@ -13,10 +14,13 @@ protocol TutorialModifier: AnyObject {
 
 class TutorialVCTest: UIViewController {
     
+    private weak var delegate: TutorialModifier?
+    private var isTutorialAnimated: Bool = false
+    
     //MARK: Base view's
     let tutorialLabel: UILabel = {
         let label = UILabel()
-        label.font = .helveticaNeueMedium.withSize(25)
+        label.font = .selectedFont.withSize(.subtitleSize)
         label.text = "tutorial".localized
         label.numberOfLines = 0
         label.textAlignment = .left
@@ -46,12 +50,6 @@ class TutorialVCTest: UIViewController {
     }()
     
     //MARK: Overlay View's
-    //    private var numberOfViews = 6
-    private var currentViewIndex: Int = 0
-    
-    private weak var delegate: TutorialModifier?
-    
-    //MARK: Views
     //View for background dimming.
     private let dimView: UIView = {
         let view = UIView()
@@ -64,7 +62,7 @@ class TutorialVCTest: UIViewController {
     //View, which holds replace main view of the controller for custom appearence animation.
     private let containerView: UIView = {
         let view = UIView()
-        view.layer.cornerRadius = 13
+        view.layer.cornerRadius = .outerCornerRadius
         view.clipsToBounds = true
         view.backgroundColor = .systemBackground
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -96,7 +94,7 @@ class TutorialVCTest: UIViewController {
     private var cardView: UIView = {
         let view = UIView()
         view.backgroundColor = .systemBackground_Secondary
-        view.layer.cornerRadius = 13
+        view.layer.cornerRadius = .outerCornerRadius
         view.layer.borderColor = UIColor.black.cgColor
         view.layer.cornerCurve = .continuous
         view.layer.borderWidth = 1
@@ -114,7 +112,6 @@ class TutorialVCTest: UIViewController {
         view.isSelectable = false
         view.textContainerInset = UIEdgeInsets(top: 10, left: 5, bottom: 4, right: 5 )
         view.textAlignment = .center
-        view.text
         view.clipsToBounds = true
         view.backgroundColor = .clear
         view.attributedText = attributedText(stage: 1)
@@ -196,7 +193,7 @@ class TutorialVCTest: UIViewController {
     //View with buttons and pageController.
     private lazy var accessView = TutorialAccessView(
         pagesNumber: tutorialPageViews.count,
-        currentPage: currentViewIndex,
+        currentPage: 0,
         delegate: self
     )
     
@@ -232,14 +229,18 @@ class TutorialVCTest: UIViewController {
         delegate = self
         self.view.backgroundColor = .systemBackground
     }
+    
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
         adjustLayoutForSizeClass()
     }
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
-        presentViewController()
+        if !isTutorialAnimated {
+            isTutorialAnimated = true
+            self.presentViewController()
+        }
     }
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
@@ -302,9 +303,9 @@ class TutorialVCTest: UIViewController {
         containerActiveTopAnchor = containerView.topAnchor.constraint(
             equalTo: tutorialLabel.bottomAnchor, constant: .outerSpacer)
         containerActiveSecondStage = containerView.topAnchor.constraint(
-            equalTo: tutorialLabel.bottomAnchor, constant: .outerSpacer * 2 + 104 )
+            equalTo: tutorialLabel.bottomAnchor, constant: .outerSpacer * 2 + .largeButtonHeight )
         containerActiveThirdStage = containerView.topAnchor.constraint(
-            equalTo: tutorialLabel.bottomAnchor, constant: .outerSpacer * 3 + 104 * 2)
+            equalTo: tutorialLabel.bottomAnchor, constant: .outerSpacer * 3 + .largeButtonHeight * 2)
         
         
         NSLayoutConstraint.activate([
@@ -359,6 +360,7 @@ class TutorialVCTest: UIViewController {
             
             cardView.heightAnchor.constraint(
                 equalTo: containerView.heightAnchor, multiplier: 0.4),
+        
             cardView.widthAnchor.constraint(
                 equalTo: cardView.heightAnchor, multiplier: 0.66),
             cardView.centerXAnchor.constraint(
@@ -427,11 +429,9 @@ class TutorialVCTest: UIViewController {
     }
     
     private func adjustLayoutForSizeClass() {
-        let numberOfColumns: CGFloat = 1
+        let itemWidth = ((self.view.bounds.width - (.outerSpacer * 2)))
         
-        let itemWidth = ((self.view.bounds.width - (.outerSpacer * 2)) / numberOfColumns)
-        
-        layout.itemSize = CGSize(width: itemWidth, height: 104)
+        layout.itemSize = CGSize(width: itemWidth, height: .largeButtonHeight)
         layout.minimumLineSpacing = .outerSpacer
         layout.invalidateLayout()
     }
@@ -443,17 +443,18 @@ class TutorialVCTest: UIViewController {
         
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.alignment = .center
-        
-        
+                
         switch stage {
         case 1:
             let normalAttributes: [NSAttributedString.Key: Any] = [
-                .font: UIFont.systemFont(ofSize: 17),
-                .paragraphStyle: paragraphStyle
+                .font: UIFont.systemFont(ofSize: .bodyTextSize),
+                .paragraphStyle: paragraphStyle,
+                .foregroundColor: UIColor.label
             ]
             let boldAttributes: [NSAttributedString.Key: Any] = [
-                .font: UIFont.boldSystemFont(ofSize: 17),
-                .paragraphStyle: paragraphStyle
+                .font: UIFont.boldSystemFont(ofSize: .bodyTextSize),
+                .paragraphStyle: paragraphStyle,
+                .foregroundColor: UIColor.label
             ]
             
             let attributedString = NSMutableAttributedString(string: word, attributes: normalAttributes)
@@ -463,26 +464,32 @@ class TutorialVCTest: UIViewController {
             return attributedString
         case 2:
             let boldLargeAttributes: [NSAttributedString.Key: Any] = [
-                .font: UIFont.boldSystemFont(ofSize: 18),
-                .paragraphStyle: paragraphStyle
+                .font: UIFont.boldSystemFont(ofSize: .bodyTextSize),
+                .paragraphStyle: paragraphStyle,
+                .foregroundColor: UIColor.label
             ]
             let normalAttributes: [NSAttributedString.Key: Any] = [
-                .font: UIFont.systemFont(ofSize: 15),
-                .paragraphStyle: paragraphStyle
+                .font: UIFont.systemFont(ofSize: .subBodyTextSize),
+                .paragraphStyle: paragraphStyle,
+                .foregroundColor: UIColor.label
             ]
             
-            let secondAttributedString = NSMutableAttributedString(string: word, attributes: boldLargeAttributes)
-            secondAttributedString.append(NSAttributedString(string: "\n\n" + definition + "\n" + secondDefinition, attributes: normalAttributes))
+            let secondAttributedString = NSMutableAttributedString(
+                string: word, attributes: boldLargeAttributes)
+            secondAttributedString.append(NSAttributedString(
+                string: "\n\n" + definition + "\n" + secondDefinition, attributes: normalAttributes))
             return secondAttributedString
         default:
             let highlightedBoldAttributes: [NSAttributedString.Key: Any] = [
-                .font: UIFont.boldSystemFont(ofSize: 18),
+                .font: UIFont.boldSystemFont(ofSize: .bodyTextSize),
                 .backgroundColor: UIColor.systemBlue.withAlphaComponent(0.5),
-                .paragraphStyle: paragraphStyle
+                .paragraphStyle: paragraphStyle,
+                .foregroundColor: UIColor.label
             ]
             let normalAttributes: [NSAttributedString.Key: Any] = [
-                .font: UIFont.systemFont(ofSize: 15),
-                .paragraphStyle: paragraphStyle
+                .font: UIFont.systemFont(ofSize: .subBodyTextSize),
+                .paragraphStyle: paragraphStyle,
+                .foregroundColor: UIColor.label
             ]
             
             let thirdAttributedString = NSMutableAttributedString(string: word, attributes: highlightedBoldAttributes)
@@ -661,7 +668,7 @@ extension TutorialVCTest: AccessViewDelegate {
         }
     }
     ///Dismiss tutorial view with animation.
-    func didTapSkipButton() {
+    func shouldFinish() {
         self.dismiss(animated: true)
     }
 }

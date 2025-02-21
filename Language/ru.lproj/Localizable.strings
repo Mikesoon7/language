@@ -29,7 +29,7 @@
 "statistic.cardsNumber.cards" = "карты";
 //Chart Labels:
 "statistic.timeSpent" = "Обучение:";
-"statistic.cardsLearned" = "Повторенных карт";
+"statistic.cardsLearned" = "Изученных карт";
 //MARK: - SettingsVC
 "settings.title" = "Настройки";
 //Sections
@@ -53,6 +53,10 @@
 "settings.dictionaries.exception" = "Символы-исключения";
 //Items for SignHeader
 "settings.iCloud.sign" = "Подключить ваш Apple ID для передачи данных между устройствами и сохранения в iCloud";
+//Accessabe buttons.
+"settings.footer.policy" = "Политика конфиденциальности";
+"settings.footer.support" = "Связаться с поддержкой";
+"settings.footer.buyCoffee" = "Угостить кофе";
 //MARK: - AddDictionary or WordsVC
 "addDict.title" = "Создание";
 "addWord.title" = "Добавление новых слов";
@@ -85,18 +89,18 @@
 "system.settings" = "Настройки";
 "system.newLine" = "С новой \n строки";
 "system.next" = "Дальше";
-"system.letsGo" = "Поехали";
+"system.letsGo" = "Начать";
 "system.skip" = "Пропустить";
 "system.restore" = "Восстановить";
 "system.total" = "Всего";
 "system.min.shortned" = "мин";
 "system.continue" = "Продолжить";
-"system.finish" = "Выйти";
+"system.finish" = "Завершить";
 "system.checked" = "Проверено";
 
 //MARK: - DetailsVC
 "details.title" = "Подробности";
-"details.randomize" = "В перемешку";
+"details.randomize" = "Перемешать";
 "details.goal" = "Установить цель";
 "details.showTranslation" = "Отображать перевод";
 "details.cardsOrder" = "Порядок карточек:";
@@ -108,21 +112,21 @@
 
 //MARK: - GameVC
 "game.title" = "Карточки";
-"game.lastCell.congratulations" = "Congratulations";
-"game.lastCell.checked" = "You've checked:";
-"game.lastCell.spending" = "Spending:";
-"game.lastCell.bestResult" = "Best result so far !";
-"game.lastCell.avarageResult.firstPart" = "You've done it ";
-"game.lastCell.avarageResult.secondPart" = " previous time";
-"game.lastCell.slower" = "slower than";
-"game.lastCell.faster" = "faster than";
-"game.lastCell.same" = "as fast as";
-"game.lastCell.cards" = "cards";
-"game.lastCell.min" = "min";
+"game.lastCell.congratulations" = "Поздравляем";
+"game.lastCell.checked" = "Вы проверили:";
+"game.lastCell.spending" = "Проведя:";
+"game.lastCell.bestResult" = "Лучший результат!";
+"game.lastCell.avarageResult.firstPart" = "Вы справились ";
+"game.lastCell.avarageResult.secondPart" = " в прошлый раз";
+"game.lastCell.slower" = "медленнее, чем";
+"game.lastCell.faster" = "быстрее, чем";
+"game.lastCell.same" = "так же быстро, как";
+"game.lastCell.cards" = "карточек";
+"game.lastCell.min" = "мин";
 
 //MARK: - GameDetailsVc
 "gameDetails.information" = "Коснитесь любого слова, чтобы узнать его значение с помощью встроенного словаря iOS. Вы также можете отредактировать или удалить свою карточку при необходимости.";
-"gameDetails.suggestion1Part" = "Если у вас возникли проблемы с доступом к словарям, возможно, потребуется их скачать или обновить. Для этого перейдите в";
+"gameDetails.suggestion1Part" = "Если у вас возникли проблемы с доступом к словарям, возможно, их нужно скачать или обновить. Для этого перейдите в";
 "gameDetails.suggestion2Part" = "на вашем устройстве и убедитесь, что необходимые словари установлены.";
 "gameDetails.settingsPath" = " Настройки -> Основные -> Словари ";
 "gameDetails.deleteAlert.title" = "Удалить текущую карточку";
@@ -193,27 +197,27 @@
 "edit.emptyField.title" = "Отсутствует имя";
 "edit.emptyField.message" = "Пожалуйста, введите от 1 до 15 символов в качестве названия для словаря";
 "edit.emptyText.title" = "Отредактированный текст не содержит символов";
-"edit.emptyText.message" = "Сохранение словаря в таком состоянии приведет к его удалению";
+"edit.emptyText.message" = "Если сохранить словарь пустым, он будет удален";
 //MARK: - Tutorial
 "tutorial" = "Обучение";
 //FirstView
 "tutorial.firstViewLabel.title" = "Привет! \n Добро пожаловать в Learny!";
-"tutorial.firstViewLabel" = "Learny превращает ваш текст в удобные для повторения блоки. С помощью нескольких простых правил, приложение разбивает ваш материал на карточки. \n\n Немного о функционале, и вы готовы к работе!";
+"tutorial.firstViewLabel" = "Learny организует ваш текст в удобные для повторения блоки информации. С помощью нескольких простых правил, приложение разбивает ваш материал на карточки. \n За раз вы можете создать любое количество карт, упрощая повторение и хранение фактически любого типа информации. \n\n Немного о функционале, и вы готовы к работе!";
 //SecondView
-"tutorial.secondViewLabel" = "На главном экране нажмите, чтобы получить доступ, и свайпите для управления словарями и просмотра статистики.";
+"tutorial.secondViewLabel" = "На главном экране нажмите, чтобы открыть словарь, или смахните его влево, чтобы редактировать или поделиться.";
 //ThirdView
-"tutorial.thirdViewLabel" = "Добавьте текст и название, чтобы создать ваш первый словарь! \n \n Приступим!";
+"tutorial.thirdViewLabel" = "Добавьте текст и название, чтобы создать ваш первый словарь! \n \n Всего несколько простых правил — и можно начинать!";
 //FourthView
-"tutorial.fourthViewLabel" = "Почти готово! Помните, что новые строки служат для разделения текста на блоки. Чтобы сохранить текст в одном блоке, используйте кнопку 'С новой строки' в верхней части клавиатуры.";
+"tutorial.fourthViewLabel" = "Каждая карточка начинается с новой строки. Чтобы начать новый абзац в той же карточке, используйте кнопку 'С новой строки' в верхней части клавиатуры";
 //FifthView
-"tutorial.fifthViewLabel" = "Для конкретных сочетаний, например, термина и его определения, используйте разделитель. Его можно изменить в настройках, и он будет отображаться во время редактирования.";
+"tutorial.fifthViewLabel" = "Для большей детализации, например, при изучении языков, используйте символ-разделитель. Его можно изменить в настройках, и он будет отображаться во время редактирования.";
 //TranslationView
-"tutorial.translation" = "On text selection you can choose to translate text using built in dictionary. You can relly on it since once you have downloaded dictionary it will stay on your device offline.";
+"tutorial.translation" = "При выделении слова вы можете перевести его с помощью втроенных в устройство словарей.";
 //SixthView
 "tutorial.sixthViewLabel" = "Ну вот и все! Мы рады быть частью вашего пути обучения. \n \n Желаем удачи и приятного использования.";
 "tutorial.card.name" = "Привет";
 "tutorial.card.title" = "Мы рады быть частью вашего образовательного пути! ";
-"tutorial.card.message" = " P.S. Мы всегда стремимся к совершенству. \rЕсли вам нравится Learny, оцените нас в App Store. \r\r Удачи вам в учебе!";
+"tutorial.card.message" = " P.S. Мы всегда стараемся становиться лучше. Если вам нравится Learny, пожалуйста, оцените нас в App Store. \r\r Удачи вам в учебе!";
 //MARK: Exceptions
 "exception.title" = "Символы для исключения";
 "exception.firstPart" = "Укажите символы, которые следует игнорировать в начале и в конце текстовых блоков.";

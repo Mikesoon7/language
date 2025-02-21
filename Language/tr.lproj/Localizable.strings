@@ -22,7 +22,7 @@
 //Cell Labels:
 "statistic.creationDate" = "Oluşturuldu:";
 "statistic.accessNumber" = "Açıldı:";
-"statistic.cardsNumber" = "İçerik:";
+"statistic.cardsNumber" = "İçerir:";
 "statistic.accessNumber.time" = "kez";
 "statistic.cardsNumber.card" = "kart";
 "statistic.accessNumber.times" = "kez";
@@ -53,6 +53,10 @@
 "settings.dictionaries.exception" = "Hariç tutulan semboller";
 //Items for SignHeader
 "settings.iCloud.sign" = "Verilerinizi cihazlar arasında aktarmak ve iCloud'da saklamak için Apple Kimliğinizi bağlayın.";
+//Accessabe buttons.
+"settings.footer.policy" = "Gizlilik politikası";
+"settings.footer.support" = "Destek ile iletişime geç";
+"settings.footer.buyCoffee" = "Bana bir kahve ısmarla";
 //MARK: - AddDictionary or WordsVC
 "addDict.title" = "Oluşturma";
 "addWord.title" = "Yeni kelimeler \n ekleme";
@@ -108,17 +112,17 @@
 
 //MARK: - GameVC
 "game.title" = "Kartlar";
-"game.lastCell.congratulations" = "Congratulations";
-"game.lastCell.checked" = "You've checked:";
-"game.lastCell.spending" = "Spending:";
-"game.lastCell.bestResult" = "Best result so far !";
-"game.lastCell.avarageResult.firstPart" = "You've done it ";
-"game.lastCell.avarageResult.secondPart" = " previous time";
-"game.lastCell.slower" = "slower than";
-"game.lastCell.faster" = "faster than";
-"game.lastCell.same" = "as fast as";
-"game.lastCell.cards" = "cards";
-"game.lastCell.min" = "min";
+"game.lastCell.congratulations" = "Tebrikler!";
+"game.lastCell.checked" = "Kontrol ettiniz:";
+"game.lastCell.spending" = "Harcanan süre:";
+"game.lastCell.bestResult" = "Şimdiye kadarki en iyi sonuç!";
+"game.lastCell.averageResult.firstPart" = "Bunu ";
+"game.lastCell.averageResult.secondPart" = " önce yaptınız";
+"game.lastCell.slower" = "daha yavaş";
+"game.lastCell.faster" = "daha hızlı";
+"game.lastCell.same" = "aynı hızda";
+"game.lastCell.cards" = "kartlar";
+"game.lastCell.min" = "dk";
 
 //MARK: - GameDetailsVC
 "gameDetails.information" = "Bir kelimenin anlamını ortaya çıkarmak için üzerine dokunun ve iOS'un yerleşik sözlüğünü kullanın. Gerekirse kartınızı düzenleyebilir veya silebilirsiniz.";
@@ -147,7 +151,6 @@
 //Notification Denied Alert
 "notification.alertTitle" = "Bağlı kalmak için Bildirimleri Etkinleştirin";
 "notification.alertMessage" = "Endişelerinizi anlıyoruz ve sizi bildirimlerle bunaltmayacağız. Sadece sizi güncel tutmak ve bize hatırlatmak için günde bir mesaj göndereceğiz. Tercihlerinizi her zaman ayarlarda değiştirebilirsiniz.";
-
 //MARK: - SearchVC
 "searchVCTitle" = "Arama";
 "yourWord" = "Metninizi girin";
@@ -159,11 +162,11 @@
 "separators.alertTitle" = "1 ile 3 karakter girin";
 "separators.alertDuplicateMessage" = "Yinelenenlere izin verilmez";
 "separators.alertSpaceMessage" = "Sadece boşluklara izin verilmez";
+
 "separators.title" = "Metin Bölme ve Ayırıcılar";
 "separators.infoFirstPart" = "Başlangıçta metin, yeni satırlara göre bloklara ayrılır. Mevcut bloğu bölmeden yeni bir satıra geçmek için klavyenin üstündeki 'Yeni satır' düğmesini kullanın.";
 "separators.infoSecondPart" = "Bu bloklar göz önüne alındığında, uygulama her bloğun içinde çiftler oluşturmak için belirlenen ayırıcı sembolünü kullanır.";
 "separators.infoFinalPart" = "Yeni bir ayırıcı eklemek, mevcut sözlükleri değiştirmez. Eğer bir blokta birden fazla özel sembol varsa, yalnızca ilki ayırıcı olarak kabul edilir.";
-
 //MARK: - SystemErrors
 //Dictionary
 "coreDataError.dictionary.creation" = "Oluşturulamıyor";
@@ -188,15 +191,13 @@
 "unknownError.title" = "Beklenmedik bir hata oluştu.";
 "unknownError.message" = "Lütfen tekrar deneyin veya sorun devam ederse destekle iletişime geçin.";
 "unknownGameError.title" = "Beklenmedik bir sorun tespit edildi.";
-"unknownGameError.message" = "Değişiklikleriniz kaydedildi ancak yalnızca yeni bir oyun oturumunda görünecektir.";
-
+"unknownGameError.message" = "Değişiklikleriniz kaydedildi ancak yalnızca yeni bir öğrenme oturumunda görünecektir.";
 //MARK: - EditVC
 "edit.searchPlaceholder" = "Metniniz...";
 "edit.emptyField.title" = "Ad boş";
 "edit.emptyField.message" = "Lütfen sözlük adı için en az bir karakter girin.";
 "edit.emptyText.title" = "Düzenleme metni boş";
 "edit.emptyText.message" = "Sözlük bu durumda kaydedilirse silinir. \nEmin misiniz?";
-
 //MARK: - Tutorial
 "tutorial" = "Eğitim";
 //First view
@@ -211,7 +212,7 @@
 //Fifth View
 "tutorial.fifthViewLabel" = "Terim ve terimin tanımı gibi belirli eşleştirmeler için ayırıcı sembolü kullanın. Ayarlardan özelleştirebilir ve düzenleme sırasında görüntüleyebilirsiniz.";
 //TranslationView
-"tutorial.translation" = "On text selection you can choose to translate text using built in dictionary. You can relly on it since once you have downloaded dictionary it will stay on your device offline.";
+"tutorial.translation" = "Bir kelimeyi seçerken, yerleşik sözlüğü kullanarak kelimeyi tercüme edebilirsiniz. İndirilmiş sözlükler çevrimdışı olarak kullanılabildiğinden, bu özelliğe her zaman güvenebilirsiniz.";
 //Sixth View
 "tutorial.sixthViewLabel" = "Her şey hazır! Öğrenme yolculuğunuzun bir parçası olmaktan onur duyuyoruz. İşte keyifli ve etkili bir çalışma şansı. \n \n Bol şans!";
 "tutorial.card.name" = "Merhaba";

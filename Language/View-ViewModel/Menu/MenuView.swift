@@ -7,7 +7,6 @@
 //  REFACTORING STATE: CHECKED
 
 import UIKit
-//import Charts
 import CoreData
 import Combine
 
@@ -72,6 +71,7 @@ class MenuView: UIViewController {
         configureNavBar()
         setupCollectionView()
         configureLabels()
+        print(max(UIScreen.main.bounds.width, UIScreen.main.bounds.height))
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -183,7 +183,7 @@ class MenuView: UIViewController {
         
         let itemWidth = ((self.view.bounds.width - (.outerSpacer * 2)) / numberOfColumns) - (isCompact ? 0 : 10)
         
-        layout.itemSize = CGSize(width: itemWidth, height: 104)
+        layout.itemSize = CGSize(width: itemWidth, height: .largeButtonHeight)
         layout.minimumLineSpacing = .outerSpacer
         layout.invalidateLayout()
     }
@@ -313,22 +313,6 @@ extension MenuView: UICollectionViewDataSource, UICollectionViewDelegate {
     }
 }
 
-//MARK: - Delegate for tutorial.
-//extension MenuView: TutorialCellHintProtocol{
-//    func changeHintAppearence(activate: Bool){
-//        if let cell = collectionView.cellForItem(at: IndexPath(item: 0, section: 0)) as? MenuDictionaryCVCell {
-//            cell.activate(activate)
-//        }
-//    }
-//    func openAddDictionary() {
-//        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3, execute: {
-//            let vc = AddDictionaryView(factory: self.viewModelFactory)
-//            vc.isFirstLaunch = true
-//            self.navigationController?.pushViewController(vc, animated: true)
-//        })
-//    }
-//}
-
 //MARK: - Delegate for cells action.
 extension MenuView: MenuCellDelegate {
     func panningBegan(for cell: UICollectionViewCell){
@@ -386,8 +370,8 @@ extension MenuView: MenuCellDelegate {
     func shareButtonDidTap(for cell: UICollectionViewCell) {
         guard let index = collectionView.indexPath(for: cell) else { return }
         let text = viewModel.shareCellsInformation(at: index)
-        
-        let activityVC = UIActivityViewController(activityItems: [text], applicationActivities: nil)
+        let inviteLink = AppLinks.websiteLink
+        let activityVC = UIActivityViewController(activityItems: [inviteLink, text], applicationActivities: nil)
         activityVC.allowsProminentActivity = true
         if let popoverController = activityVC.popoverPresentationController {
             popoverController.sourceView = self.view

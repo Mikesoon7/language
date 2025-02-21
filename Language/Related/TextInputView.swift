@@ -25,7 +25,7 @@ final class TextInputView: UIView {
     private var textContainer   = NSTextContainer()
     private let textStorage     = NSTextStorage()
 
-     lazy var layoutManager = HighlightLayoutManager(textInsets: self.textContainerInsets)
+    lazy var layoutManager = HighlightLayoutManager(textInsets: self.textContainerInsets)
     private weak var delegate: PlaceholderTextViewDelegate?
     
     private var shouldBecomeActive = false
@@ -34,7 +34,7 @@ final class TextInputView: UIView {
     private let placeholderLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .timesNewRoman.withSize(17)
+        label.font = .timesNewRoman.withSize(.assosiatedTextSize)
         label.textColor = .lightGray
         label.numberOfLines = 0
         return label
@@ -51,15 +51,14 @@ final class TextInputView: UIView {
         textView.textContainerInset = textContainerInsets
         textView.allowsEditingTextAttributes = false
         textView.tintColor = .label
-        textView.font = .selectedFont.withSize(17)
+        textView.font = .selectedFont.withSize(.subBodyTextSize)
         return textView
     }()
     
     
     //MARK: AccessoryView
     var customAccessoryView : UIView = UIView()
-    private let customAccessoryViewHeight : CGFloat = 50
-
+    private let customAccessoryViewHeight : CGFloat = .accessoryViewHeight
 
     private let newLineButton: UIButton = {
         let button = UIButton()
@@ -123,6 +122,8 @@ final class TextInputView: UIView {
         configureAccessoryView()
         updatePlaceholder()
         
+        layoutManager.clearContentHiglight()
+        
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(appDidEnterBackground(sender: )),
@@ -140,7 +141,6 @@ final class TextInputView: UIView {
     
     required init?(coder: NSCoder) {
         fatalError("Coder wasn's imported")
-//        super.init(coder: coder)
     }
     
     deinit {
@@ -150,7 +150,7 @@ final class TextInputView: UIView {
     
     //MARK: View SetUp
     private func configureView(){
-        self.layer.cornerRadius = 9
+        self.layer.cornerRadius = .cornerRadius
 
         self.addCenterShadows()
         self.backgroundColor = .secondarySystemBackground
@@ -173,17 +173,17 @@ final class TextInputView: UIView {
             textView.bottomAnchor.constraint(equalTo: bottomAnchor ),
             textView.trailingAnchor.constraint(equalTo: trailingAnchor),
             
-            placeholderLabel.topAnchor.constraint(equalTo: textView.topAnchor, 
-                                                  constant: textView.textContainerInset.top ),
-            placeholderLabel.leadingAnchor.constraint(equalTo: textView.leadingAnchor,
-                                                      constant: textView.textContainerInset.left * 2),
+            placeholderLabel.topAnchor.constraint(
+                equalTo: textView.topAnchor, constant: textView.textContainerInset.top ),
+            placeholderLabel.leadingAnchor.constraint(
+                equalTo: textView.leadingAnchor, constant: textView.textContainerInset.left * 2),
         ])
     }
     
     private func configureAccessoryView(){
         newLineButton.addTarget(self, action: #selector(softReturnDidPress), for: .touchUpInside)
-//        scanButton.addAction(UIAction.captureTextFromCamera(responder: textView, identifier: .paste), for: .touchUpInside)
-        scanButton.addTarget(self, action: #selector(appScanDidTap), for: .touchUpInside)
+        scanButton.addAction(UIAction.captureTextFromCamera(responder: textView, identifier: .paste), for: .touchUpInside)
+//        scanButton.addTarget(self, action: #selector(appScanDidTap), for: .touchUpInside)
         translateButton.addTarget(self, action: #selector(translationButtonDidPress), for: .touchUpInside)
         pasteButton.addTarget(self, action: #selector(pasteButtonDidPress), for: .touchUpInside)
         separatorButton.addTarget(self, action: #selector(separatorButtonDidPress), for: .touchUpInside)
@@ -223,9 +223,9 @@ final class TextInputView: UIView {
     
     ///Changes placeholder text with provided by the delegate.
     func updatePlaceholder(){
-        textView.font = .selectedFont.withSize(17)
+        textView.font = .selectedFont.withSize(.subBodyTextSize)
         placeholderLabel.text = delegate?.configurePlaceholderText() ?? ""
-        placeholderLabel.font = .selectedFont.withSize(17)
+        placeholderLabel.font = .selectedFont.withSize(.assosiatedTextSize)
         newLineButton.setTitle("system.newLine".localized, for: .normal)
         placeholderLabel.sizeToFit()
     }

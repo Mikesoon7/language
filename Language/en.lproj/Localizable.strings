@@ -53,6 +53,10 @@
 "settings.dictionaries.exception" = "Exception symbols";
 //Items for SignHeader
 "settings.iCloud.sign" = "Connect your Apple ID to pass your data beteen devices and store it in the iCloud";
+//Accessabe buttons.
+"settings.footer.policy" = "Privacy policy";
+"settings.footer.support" = "Contact support";
+"settings.footer.buyCoffee" = "Buy a coffee";
 //MARK: - AddDictionary or WordsVC
 "addDict.title" = "Creation";
 "addWord.title" = "Adding new words";
@@ -187,7 +191,7 @@
 "unknownError.title" = "Unexpected error occurred.";
 "unknownError.message" = "Please retry or contact support if this persists.";
 "unknownGameError.title" = "Unexpected issue detected.";
-"unknownGameError.message" = "Your changes are saved but will only display in a new game session.";
+"unknownGameError.message" = "Your changes are saved but will only display in a new learning session.";
 //MARK: - EditVC
 "edit.searchPlaceholder" = "You text...";
 "edit.emptyField.title" = "The name is empty";
@@ -200,15 +204,15 @@
 "tutorial.firstViewLabel.title" = "Hello! \n Welcome to Learny.";
 "tutorial.firstViewLabel" = "Learny organizes your studies into easy-to-digest chunks. The app uses a few rules to split your text into cards. \n You can create any number of cards per time, which maked Learny more suitable for any kind of information to store. \n\n Let's get you started with a brief overview!";
 //SecondView
-"tutorial.secondViewLabel" = "On the main screen, tap to access, and swipe to manage dictionaries or share it with others.";
+"tutorial.secondViewLabel" = "On the main screen, tap to access and swipe to manage dictionaries or share it with others.";
 //ThirdView
-"tutorial.thirdViewLabel" = "Ready for more? Add new dictionaries by typing it's content and a name. \n \n Dive in and craft your first dictionary!";
+"tutorial.thirdViewLabel" = "Ready for more? Add new dictionaries by typing their content and a name. \n \n Dive in and craft your first dictionary!";
 //FourthView
-"tutorial.fourthViewLabel" = "Remember, new card starts from the new line. If you want to start with the new paragraph in the same card - press new line button on top of your keyboard.";
+"tutorial.fourthViewLabel" ="Remember, a new card starts on a new line. If you want to start a new paragraph within the same card, press the 'New Line' button at the top of your keyboard.";
 //FifthView
 "tutorial.fifthViewLabel" = "Almost there! \n \n For specific pairings, like a term and it's definition rely on the separator symbol. You can customize it in settings, and it'll be displayed as a hint during editing.";
 //TranslationView
-"tutorial.translation" = "On a word selection you can choose to translate it using built in dictionary. You can relly on it anytime, since once you have downloaded dictionary it will stay on your device offline.";
+"tutorial.translation" = "When selecting a word, you can choose to translate it using the built-in dictionary. You can rely on it anytime, as downloaded dictionaries remain available offline.";
 //SixthView
 "tutorial.sixthViewLabel" = "All set! We're honored to be part of your learning journey. Here's to enjoyable and effective study sessions. \n \n Best of luck!";
 "tutorial.card.name" = "Hello";

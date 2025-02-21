@@ -35,7 +35,7 @@ class CustomNavigationController: UINavigationController {
                 return stroke.name == "Stroke"
             })
         } else {
-            if let sublayers = self.tabBarController?.tabBar.layer.sublayers,  !sublayers.contains(where: { stroke in
+            if let sublayers = self.tabBarController?.tabBar.layer.sublayers, !sublayers.contains(where: { stroke in
                 return stroke.name == "Stroke"
             }){
                 self.setUpBottomStroke()
@@ -79,6 +79,7 @@ class CustomNavigationController: UINavigationController {
         self.topStroke.strokeColor = UIColor.label.cgColor
         self.bottomStroke.strokeColor = UIColor.label.cgColor
     }
+    
     override func pushViewController(_ viewController: UIViewController, animated: Bool) {
         viewController.navigationItem.backButtonDisplayMode = .minimal
         viewController.view.backgroundColor = .systemBackground

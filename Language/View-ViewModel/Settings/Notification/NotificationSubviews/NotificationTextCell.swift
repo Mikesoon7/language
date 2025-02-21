@@ -22,7 +22,7 @@ class NotificationTextCell: UITableViewCell {
     static let identifier = "notificationTextCell"
     
     //MARK: Views
-    private let label : UILabel = {
+    private let titleLabel : UILabel = {
         let label = UILabel()
         label.textColor = .label
         label.textAlignment = .left
@@ -37,7 +37,7 @@ class NotificationTextCell: UITableViewCell {
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
-    private let image : UIImageView = {
+    private let chevronImage : UIImageView = {
         let view = UIImageView()
         view.image = UIImage(systemName: "chevron.right")
         view.tintColor = .label
@@ -56,9 +56,9 @@ class NotificationTextCell: UITableViewCell {
     }
     override func prepareForReuse() {
         super.prepareForReuse()
-        label.text = nil
+        titleLabel.text = nil
         value.text = nil
-        image.image = UIImage(systemName: "chevron.right")
+        chevronImage.image = UIImage(systemName: "chevron.right")
     }
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
@@ -77,23 +77,29 @@ class NotificationTextCell: UITableViewCell {
     
     //MARK: Configure cell with passed data.
     func configureCellWithData(_ data: DataForNotificationTextCell){
-        self.label.text = data.label
+        self.titleLabel.text = data.label
         self.value.text = data.value
     }
     
     //MARK: Configure layout
     private func configureCellSubviews(){
-        contentView.addSubviews(label, value,image)
+        contentView.addSubviews(titleLabel, value,chevronImage)
         
         NSLayoutConstraint.activate([
-            label.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 15),
-            label.centerYAnchor.constraint(equalTo: centerYAnchor),
+            titleLabel.leadingAnchor.constraint(
+                equalTo: leadingAnchor, constant: .longInnerSpacer),
+            titleLabel.centerYAnchor.constraint(
+                equalTo: centerYAnchor),
             
-            image.centerYAnchor.constraint(equalTo: centerYAnchor),
-            image.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -15),
+            chevronImage.centerYAnchor.constraint(
+                equalTo: centerYAnchor),
+            chevronImage.trailingAnchor.constraint(
+                equalTo: trailingAnchor, constant: -.longInnerSpacer),
             
-            value.trailingAnchor.constraint(equalTo: image.leadingAnchor, constant: -5),
-            value.centerYAnchor.constraint(equalTo: centerYAnchor)
+            value.trailingAnchor.constraint(
+                equalTo: chevronImage.leadingAnchor, constant: -.nestedSpacer),
+            value.centerYAnchor.constraint(
+                equalTo: centerYAnchor)
         ])
     }
 }

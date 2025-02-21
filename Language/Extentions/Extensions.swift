@@ -20,34 +20,6 @@ extension UISwitch {
     }
 }
 //MARK: - CGFloat
-extension CGFloat{
-    enum Multipliers {
-        case forViews
-        case forPickers
-    
-        var multiplier: CGFloat{
-            switch self{
-            case .forPickers: return 0.95
-            case .forViews  : return 0.91
-            }
-        }
-    }
-    static func widthMultiplerFor(type: Multipliers) -> CGFloat{
-        return type.multiplier
-    }
-    static var longInnerSpacer = 15.0
-    static var innerSpacer = 12.0
-    static var nestedSpacer = 10.0
-    static var cornerRadius = 9.0
-    static var outerSpacer = 20.0
-    static var longOuterSpacer = 30.0
-    static var genericButtonHeight = 60.0
-    static var systemButtonSize = 20.0
-    static var keyboardInputAccessoryViewInset = (UIDevice.current.userInterfaceIdiom == .pad ? -44.0 : 0)
-    
-    static var fontTitleSize = 23.0
-    static var fontContentSize = 18
-}
 extension UIBlurEffect {
     static func addBlurBackground(to view: UIView, style: UIBlurEffect.Style = .light) {
         let blurEffect = UIBlurEffect(style: style)
@@ -94,11 +66,11 @@ extension NSAttributedString{
         return attributes
     }
     
-    static func textAttributesForNavTitle() -> [NSAttributedString.Key : Any] {
-        [NSAttributedString.Key.font:            UIFont.georgianBoldItalic.withSize(23),
-         NSAttributedString.Key.foregroundColor: UIColor.label,
-         NSAttributedString.Key.backgroundColor: UIColor.clear]
-    }
+//    static func textAttributesForNavTitle() -> [NSAttributedString.Key : Any] {
+//        [NSAttributedString.Key.font:            UIFont.selectedFont.withSize(.titleSize),
+//         NSAttributedString.Key.foregroundColor: UIColor.label,
+//         NSAttributedString.Key.backgroundColor: UIColor.clear]
+//    }
     
 }
 extension NSMutableAttributedString{
@@ -255,6 +227,8 @@ extension UITextView {
 }
 extension UIDevice {
     static var isIPadDevice: Bool = UIDevice.current.userInterfaceIdiom == .pad
+    static var isDeviceCompact: Bool = CGFloat.deviceWidth < 380
+    static var isDeviceLarge: Bool = max(UIScreen.main.bounds.width, UIScreen.main.bounds.height) > 1350
 }
 
 extension UITraitCollection {

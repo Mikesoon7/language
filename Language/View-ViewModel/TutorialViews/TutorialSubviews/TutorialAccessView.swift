@@ -10,7 +10,7 @@ import UIKit
 
 protocol AccessViewDelegate: AnyObject{
     func didChangeCurrentPage(manually: Bool, with pointerOn: Int)
-    func didTapSkipButton()
+    func shouldFinish()
 }
 protocol AccessViewFinishDelegate: AnyObject{
     func didEndTutorial()
@@ -40,7 +40,7 @@ class TutorialAccessView: UIView {
     private lazy var nextButton: UIButton = {
         let button = UIButton(configuration: .gray())
         button.setAttributedTitle(
-            .attributedString(string: "system.letsGo".localized, with: .helveticaNeueBold, ofSize: 16), for: .normal)
+            .attributedString(string: "system.letsGo".localized, with: .helveticaNeueBold, ofSize: .assosiatedTextSize), for: .normal)
         button.addTarget(self, action: #selector(nextButtonDidTap(sender:)), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
@@ -49,7 +49,7 @@ class TutorialAccessView: UIView {
     private lazy var skipButton: UIButton = {
         let button = UIButton(configuration: .plain())
         button.setAttributedTitle(
-            .attributedString(string: "system.skip".localized, with: .helveticaNeueMedium, ofSize: 14, foregroundColour: .placeholderText), for: .normal)
+            .attributedString(string: "system.skip".localized, with: .helveticaNeueMedium, ofSize: .assosiatedTextSize, foregroundColour: .placeholderText), for: .normal)
         button.addTarget(self, action: #selector(skipButtonDidTap(sender:)), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
@@ -106,10 +106,10 @@ class TutorialAccessView: UIView {
         let lastPageIndex = numberOfViews - 1
         if pageControll.currentPage == lastPageIndex{
             nextButton.setAttributedTitle(
-                .attributedString(string: "system.finish".localized, with: .helveticaNeueBold, ofSize: 16), for: .normal)
+                .attributedString(string: "system.finish".localized, with: .helveticaNeueBold, ofSize: .assosiatedTextSize), for: .normal)
         } else {
             nextButton.setAttributedTitle(
-                .attributedString(string: "system.next".localized, with: .helveticaNeueBold, ofSize: 16), for: .normal)
+                .attributedString(string: "system.next".localized, with: .helveticaNeueBold, ofSize: .assosiatedTextSize), for: .normal)
         }
     }
     func pageDidChange(updatedIndex: Int){
@@ -120,13 +120,17 @@ class TutorialAccessView: UIView {
     
     //MARK: Actions
     @objc private func nextButtonDidTap(sender: UIButton){
+        guard pageControll.currentPage != numberOfViews - 1 else {
+            delegate?.shouldFinish()
+            return
+        }
         pageControll.currentPage += 1
         delegate?.didChangeCurrentPage(manually: true, with: pageControll.currentPage)
         updateButtonsAppearence()
     }
     ///Dismissing tutorial view on tap.
     @objc private func skipButtonDidTap(sender: UIButton){
-        delegate?.didTapSkipButton()
+        delegate?.shouldFinish()
     }
 
 }

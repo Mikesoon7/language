@@ -32,11 +32,10 @@ class EditView: UIViewController {
         let view = TextInputView(frame: .zero,
                                  delegate: self,
                                  textContainerInsets: textInsets )
-//        view.textView.textContainerInset = textInsets
         view.textView.allowsEditingTextAttributes = true
         view.textView.textColor = .label
         view.textView.backgroundColor = .systemBackground
-        view.textView.font = .selectedFont.withSize(20)
+        view.textView.font = .selectedFont.withSize(.subtitleSize)
         view.layer.cornerRadius = 0
         view.textView.alwaysBounceVertical = true
         view.textView.textContainer.lineBreakMode = .byWordWrapping
@@ -51,7 +50,7 @@ class EditView: UIViewController {
         field.textColor = .label
         
         field.delegate = self
-        field.font = .selectedFont.withSize(23)
+        field.font = .selectedFont.withSize(.titleSize)
         field.adjustsFontSizeToFitWidth = true
         
         field.textAlignment = .center
@@ -64,7 +63,7 @@ class EditView: UIViewController {
     private var searchButton = UIBarButtonItem()
     
     //Dimensions
-    private let textInsets = UIEdgeInsets(top: 20, left: 20, bottom: 10, right: 20)
+    private let textInsets = UIEdgeInsets(top: .outerSpacer, left: .outerSpacer, bottom: .nestedSpacer, right: .outerSpacer)
     
     //MARK: - Inherited methods
     required init(dictionary: DictionariesEntity, factory: ViewModelFactory){
@@ -213,8 +212,8 @@ class EditView: UIViewController {
         customSearchToolBar.configureLabels()
     }
     private func updateFont(){
-        textField.font = .selectedFont.withSize(23)
-        textInputView.textView.font = .selectedFont.withSize(20)
+        textField.font = .selectedFont.withSize(.titleSize)
+        textInputView.textView.font = .selectedFont.withSize(.subtitleSize)
     }
     
     //MARK: Activate search fucntionality

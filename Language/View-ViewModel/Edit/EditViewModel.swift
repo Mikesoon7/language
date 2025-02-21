@@ -26,9 +26,10 @@ class EditViewModel {
     }
 
     //MARK: - Properties
-    private let model: Dictionary_WordsManager 
+    private let model: DictionaryFullAccess
     private let dictionary: DictionariesEntity
     private let settingsmodel: UserSettingsStorageProtocol
+    private lazy var updateManager = DataUpdateManager(dataModel: model)
     
     private var dictionaryName: String = .init()
     private var words: [WordsEntity] = []
@@ -39,7 +40,7 @@ class EditViewModel {
     var output = PassthroughSubject<Output, Never>()
 
     //MARK: Inhereted and initialization
-    init(dataModel: Dictionary_WordsManager, settingsModel: UserSettingsStorageProtocol, dictionary: DictionariesEntity){
+    init(dataModel: DictionaryFullAccess, settingsModel: UserSettingsStorageProtocol, dictionary: DictionariesEntity){
         self.model = dataModel
         self.settingsmodel = settingsModel
         self.dictionary = dictionary
@@ -108,7 +109,6 @@ class EditViewModel {
             case .remove(offset: let index, element: _ , associatedWith: _):
                 words.remove(at: index)
                 oldTextByLines.remove(at: index)
-                print("deleted", index)
             case .insert(offset: let index, element: let text, associatedWith: _):
                 do {
                     words.insert( try model.createWordFromLine(for: dictionary, text: text, index: index, id: UUID()), at: index)
@@ -155,7 +155,7 @@ class EditViewModel {
     ///Update current dictionary with existing local properties.
     private func updateDictionary(){
         do {
-            try model.update(dictionary: dictionary, words: words, name: dictionaryName)
+            try updateManager.updateExistingDictionary(dictionary: dictionary, with: words, name: dictionaryName)
             output.send(.editSucceed)
         } catch {
             output.send(.shouldPresentError(error))

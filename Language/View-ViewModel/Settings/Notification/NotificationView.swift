@@ -72,7 +72,7 @@ class NotificationView: UIViewController {
     private lazy var firstStageContainerConstant = containerHeight - tableView.frame.height / 2
     private lazy var secondStageContainerConstant = containerHeight - (timePicker.frame.minY + view.safeAreaInsets.bottom)
     private lazy var thirdStageContainerConstant = containerHeight - dayPicker.frame.minY
-    private lazy var finalStageContainerConstant = containerHeight - (dayPicker.frame.maxY + view.safeAreaInsets.bottom + 20)
+    private lazy var finalStageContainerConstant = containerHeight - (dayPicker.frame.maxY + view.safeAreaInsets.bottom + .longOuterSpacer)
 
     //We are using computed properties.
     private lazy var containerHeight = view.frame.height

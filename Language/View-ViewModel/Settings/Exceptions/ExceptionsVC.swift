@@ -37,7 +37,7 @@ class ExceptionsVC: UIViewController {
     
     private let headerInfoLabel: UILabel = {
         let label = UILabel()
-        label.font = .helveticaNeueMedium.withSize(25)
+        label.font = .helveticaNeueMedium.withSize(.subtitleSize)
         label.text = "exception.title".localized
         label.numberOfLines = 0
         label.textAlignment = .left
@@ -65,7 +65,7 @@ class ExceptionsVC: UIViewController {
     private let firstInfoLabel: UILabel = {
         let label = UILabel()
         label.numberOfLines = 0
-        label.font = .helveticaNeue.withSize(16)
+        label.font = .helveticaNeue.withSize(.subBodyTextSize)
         label.text = "exception.firstPart".localized
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -74,7 +74,7 @@ class ExceptionsVC: UIViewController {
     private let secondInfoLabel: UILabel = {
         let label = UILabel()
         label.numberOfLines = 0
-        label.font = .helveticaNeue.withSize(16)
+        label.font = .helveticaNeue.withSize(.subBodyTextSize)
         label.text = "exception.secondPart".localized
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -83,7 +83,7 @@ class ExceptionsVC: UIViewController {
     private let lastInfoLabel: UILabel = {
         let label = UILabel()
         label.numberOfLines = 0
-        label.font = .helveticaNeue.withSize(14)
+        label.font = .helveticaNeue.withSize(.assosiatedTextSize)
         label.text = "exception.infoPart".localized
         label.translatesAutoresizingMaskIntoConstraints = false
         return label

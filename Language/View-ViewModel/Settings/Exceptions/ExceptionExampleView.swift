@@ -28,7 +28,7 @@ class ExceptionExampleView: UIView {
         let label = UILabel()
         label.numberOfLines = 2
         label.text = ""
-        label.font = .helveticaNeue.withSize(15)
+        label.font = .helveticaNeue.withSize(.subBodyTextSize)
         label.translatesAutoresizingMaskIntoConstraints = false
 
         return label
@@ -37,15 +37,11 @@ class ExceptionExampleView: UIView {
         let label = UILabel()
         label.numberOfLines = 2
         label.text = ""
-        label.font = .helveticaNeue.withSize(15)
+        label.font = .helveticaNeue.withSize(.subBodyTextSize)
         label.translatesAutoresizingMaskIntoConstraints = false
 
         return label
     }()
-
-    
-    //MARK: Constaints and related
-    private let contentInset: CGFloat = 10
     
     //MARK: - Inherited
     init(exception: String, separator: String){

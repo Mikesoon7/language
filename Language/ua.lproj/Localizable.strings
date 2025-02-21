@@ -1,13 +1,13 @@
 //MARK: - TabBarController
 "tabBar.dictionaries" = "Словники";
 "tabBar.search" = "Пошук";
-"tabBar.settings" = "Параметри";
+"tabBar.settings" = "Налаштування";
 //MARK: - MainVC
 "menu.title" = "Словники";
 "menu.deleteDictionary" = "Видалити словник?";
-"menu.cell.name" = "Імʼя";
+"menu.cell.name" = "Назва";
 "menu.cell.number" = "Всього карток";
-"menu.cell.import" = "Додади словник";
+"menu.cell.import" = "Додати словник";
 "menu.undo.title" = "Ви хочете відновити щойно видалений словник?";
 //MARK: - StatisticView
 "statistic.title" = "Статистика";
@@ -53,6 +53,10 @@
 "settings.dictionaries.exception" = "Символи винятку";
 //Items for SignHeader
 "settings.iCloud.sign" = "Підключити ваш Apple ID для передачі даних між пристроями та збереження у iCloud";
+//Accessabe buttons.
+"settings.footer.policy" = "Політика конфіденційності";
+"settings.footer.support" = "Зв’язатися з підтримкою";
+"settings.footer.buyCoffee" = "Пригостити кавою";
 //MARK: - AddDictionary or WordsVC
 "addDict.title" = "Створення";
 "addWord.title" = "Додавання нових слів";
@@ -85,7 +89,7 @@
 "system.settings" = "Налаштування";
 "system.newLine" = "З нового \n рядка";
 "system.next" = "Далі";
-"system.letsGo" = "Поіхали";
+"system.letsGo" = "Поїхали";
 "system.skip" = "Пропустити";
 "system.restore" = "Відновити";
 "system.total" = "Всього";
@@ -99,7 +103,7 @@
 "details.title" = "Подробиці";
 "details.randomize" = "У перемішку";
 "details.goal" = "Встановити ціль";
-"details.showTranslation" = "Відображати переклад";
+"details.showTranslation" = "Показувати переклад";
 "details.cardsOrder" = "Порядок карток:";
 "details.cardsOrder.noraml" = "Звичайний";
 "details.cardsOrder.random" = "Випадковий";
@@ -109,17 +113,17 @@
 
 //MARK: - GameVC
 "game.title" = "Картки";
-"game.lastCell.congratulations" = "Congratulations";
-"game.lastCell.checked" = "You've checked:";
-"game.lastCell.spending" = "Spending:";
-"game.lastCell.bestResult" = "Best result so far !";
-"game.lastCell.avarageResult.firstPart" = "You've done it ";
-"game.lastCell.avarageResult.secondPart" = " previous time";
-"game.lastCell.slower" = "slower than";
-"game.lastCell.faster" = "faster than";
-"game.lastCell.same" = "as fast as";
-"game.lastCell.cards" = "cards";
-"game.lastCell.min" = "min";
+"game.lastCell.congratulations" = "Вітаємо";
+"game.lastCell.checked" = "Перевірено:";
+"game.lastCell.spending" = "Витрачено часу:";
+"game.lastCell.bestResult" = "Найкращий результат!";
+"game.lastCell.avarageResult.firstPart" = "Ви виконали це ";
+"game.lastCell.avarageResult.secondPart" = " минулого разу";
+"game.lastCell.slower" = "повільніше ніж";
+"game.lastCell.faster" = "швидше ніж";
+"game.lastCell.same" = "так само швидко, як";
+"game.lastCell.cards" = "картки";
+"game.lastCell.min" = "хв";
 
 //MARK: - GameDetailsVc
 "gameDetails.information" = "Торкніться будь-якого слова, щоб дізнатися його значення за допомогою вбудованого словника iOS. За потреби, ви також можете відредагувати або видалити свою картку.";
@@ -130,10 +134,10 @@
 "gameDetails.deleteAlert.message" = "Ви впевнені, що хочете видалити цю пару?";
 "gameDetails.deleteAlert.message.warning" = "\n Це остання картка, тому ваш словник також буде видалено.";
 "gameDetails.emptyTextAlert.title" = "Текст не може бути порожнім.";
-"gameDetails.emptyTextAlert.message" = "Збереження порожнього значення призведе до видалення поточної картки.";
+"gameDetails.emptyTextAlert.message" = "Якщо зберегти картку порожньою, вона буде видалена.";
 
 //MARK: - Notification
-"notification.allowNotification" = "Дозволити повідомлення";
+"notification.allowNotification" = "Увімкнути сповіщення";
 "frequency" = "Нагадувати";
 "chooseTime" = "Час";
 //Frequency Option
@@ -157,7 +161,7 @@
 "separators.placeholder" = "Введіть текст";
 "separators.alertErrorTitle" = "Неприпустимий ввід";
 "separators.alertTitle" = "Введіть від 1 до 3 символів";
-"separators.alertDuplicateMessage" = "Будь ласка, не використовуйте дублікати";
+"separators.alertDuplicateMessage" = "Не додавайте повторювані символи";
 "separators.alertSpaceMessage" = "Будь ласка, не вводьте лише пробіли";
 "separators.title" = "Спеціальні символи та розподіл тексту";
 "separators.infoFirstPart" = "Спочатку текст розподіляється на блоки, використовуючи новий рядок як маркер. Щоб не переривати поточний блок, скористайтеся кнопкою 'З нового рядка' у верхній частині клавіатури.";
@@ -176,7 +180,7 @@
 "coreDataError.words.fetch" = "Не вдалося завантажити дані для";
 "coreDataError.words.emptyWord" = "Не вдалося створити чи оновити пару";
 //Words.Message
-"coreDataError.words.emptyWord.message" = "Схоже, використані символи-виключення обрізали текст.";
+"coreDataError.words.emptyWord.message" = "Схоже, використані символи-винятки обрізали текст.";
 //Logs
 "coreDataError.logs.creation" = "Не вдалося створити інформацію про статистику для";
 "coreDataError.logs.update" = "Не вдалося оновити дані статистики для";
@@ -190,32 +194,32 @@
 "unknownGameError.message" = "Зміни були збережені, але вони будуть видимі лише під час наступної сесії";
 //MARK: - EditVC
 "edit.searchPlaceholder" = "Ваш текст...";
-"edit.emptyField.title" = "The name is empty";
-"edit.emptyField.message" = "Please, provide at least one charachter for a dictionary name";
-"edit.emptyText.title" = "The edit text is empty";
-"edit.emptyText.message" = "Saving dictionary in this state will cause it's deletion. \nAre you sure?";
+"edit.emptyField.title" = "Назва відсутня";
+"edit.emptyField.message" = "Будь ласка, введіть хоча б один символ для назви словника";
+"edit.emptyText.title" = "Редагований текст порожній";
+"edit.emptyText.message" = "Якщо зберегти словник у такому стані, його буде видалено. \nВи впевнені?";
 //MARK: - Tutorial
-"tutorial" = "Освіта";
+"tutorial" = "Навчання";
 //FirstView
 "tutorial.firstViewLabel.title" = "Вітаємо! \n Ласково просимо до Learny!";
-"tutorial.firstViewLabel" = "Learny перетворює ваш текст на зручні для повторення блоки. За допомогою декількох простих правил, програма поділяє ваш матеріал на картки. \n\n  Декілька слів про функціонал, і ви готові до роботи!";
+"tutorial.firstViewLabel" = "Learny впорядковує ваші матеріали у зручні для засвоєння блоки. Додаток використовує кілька простих правил, щоб розбивати ваш текст на картки. Ви можете створювати будь-яку кількість карток одночасно, що робить Learny зручним для зберігання будь-якої інформації. \n\n  Декілька слів про функціонал, і ви готові до роботи!";
 //SecondView
-"tutorial.secondViewLabel" = "На головному екрані натисніть, щоб отримати доступ, та свайпіть для керування словниками та перегляду статистики.";
+"tutorial.secondViewLabel" = "На головному екрані натисніть, щоб відкрити словник, та свайпніть вліво для редагування або спільного доступу.";
 //ThirdView
 "tutorial.thirdViewLabel" = "Додайте текст та назву, щоб створити ваш перший словник! \n \n Починаємо!";
 //FourthView
-"tutorial.fourthViewLabel" = "Майже готово! Пам'ятайте, що нові рядки служать для поділу тексту на блоки. Щоб зберегти текст в одному блоку, використовуйте кнопку 'З нового рядка' у верхній частині клавіатури.";
+"tutorial.fourthViewLabel" = "Кожна картка починається з нового рядка. Щоб почати новий абзац у межах однієї картки, використовуйте кнопку 'З нового рядка' у верхній частині клавіатури.";
 //FifthView
-"tutorial.fifthViewLabel" = "Для конкретних комбінацій, наприклад, терміну та його визначення, використовуйте роздільник. Його можна змінити в налаштуваннях, і він буде відображатися під час редагування.";
+"tutorial.fifthViewLabel" = "Для детальнішого поділу, наприклад, терміну та його визначення, використовуйте роздільник. Його можна змінити в налаштуваннях, і він буде відображатися під час редагування.";
 //TranslationView
-"tutorial.translation" = "On text selection you can choose to translate text using built in dictionary. You can relly on it since once you have downloaded dictionary it will stay on your device offline.";
+"tutorial.translation" = "При виділенні слова ви можете перекласти його за допомогою вбудованих словників iOS. Завантажені словники працюють офлайн, тож ви можете користуватися ними будь-коли.";
 //SixthView
 "tutorial.sixthViewLabel" = "Отже, все готово! Ми раді бути частиною вашого навчального шляху. \n \n Бажаємо успіху та приємного користування!";
 "tutorial.card.name" = "Вітаємо";
 "tutorial.card.title" = "Ми раді бути частиною вашого освітнього шляху! ";
 "tutorial.card.message" = " P.S. Ми завжди прагнемо до вдосконалення. \r Якщо вам подобається Learny, оцініть нас у App Store. \r\r Бажаємо успіхів у навчанні!";
 //MARK: Exceptions
-"exception.title" = "Символи для виключення";
+"exception.title" = "Символи - винятки";
 "exception.firstPart" = "Вкажіть символи, які потрібно ігнорувати на початку та в кінці ваших текстових блоків.";
 "exception.secondPart" = "Наприклад, якщо у тексті є номери, яких ви хочете позбутися – додайте їх сюди.";
 "exception.infoPart" = "Увага: символи-виключення можуть впливати на текст, якщо серед них будуть літери. Символи, що знаходяться між іншими, залишаться без змін.";

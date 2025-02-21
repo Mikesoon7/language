@@ -32,7 +32,7 @@ class CountdownTimerLabel: UILabel {
 
     func configureTimer() {
         self.text = String.timeString(from: remainingTimerTime)
-        self.font = UIFont.systemFont(ofSize: 17, weight: .bold)
+        self.font = UIFont.systemFont(ofSize: .subBodyTextSize, weight: .bold)
         self.textColor = .label
         self.textAlignment = .center
         self.translatesAutoresizingMaskIntoConstraints = false

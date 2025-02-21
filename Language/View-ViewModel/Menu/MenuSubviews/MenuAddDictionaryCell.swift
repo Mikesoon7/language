@@ -8,9 +8,13 @@
 
 import UIKit
 
-
+//MARK: For future import support
+protocol MenuAddCellDelegate: AnyObject {
+    func importButtonDidTap()
+}
 class MenuAddDictionaryCVCell: UICollectionViewCell {
     
+    private weak var delegate: MenuAddCellDelegate?
     static let identifier = "addCell"
     
     //MARK: Views
@@ -22,12 +26,13 @@ class MenuAddDictionaryCVCell: UICollectionViewCell {
     //TODO: - Add import information functionality.
     private let addButton : UIButton = {
         var button = UIButton()
+        button.setUpCustomButton()
         button.backgroundColor = .systemGray5
         button.setImage(UIImage(systemName: "square.and.arrow.down", withConfiguration: UIImage.SymbolConfiguration(weight: UIFont.selectedFont.fontWeight.symbolWeight())), for: .normal)
         button.imageView?.center = button.center
         button.tintColor = .label
         
-        button.layer.cornerRadius = 9
+        button.layer.cornerRadius = .cornerRadius
         button.clipsToBounds = true
         
         button.isUserInteractionEnabled = false
@@ -59,6 +64,10 @@ class MenuAddDictionaryCVCell: UICollectionViewCell {
         NotificationCenter.default.addObserver(self, selector: #selector(fontDidChange(sender:)), name: .appFontDidChange, object: nil)
     }
     
+    func configureCellWith(delegate: MenuAddCellDelegate) {
+        self.delegate = delegate
+    }
+
     //MARK: Configuring and laying out subviews.
     func configureSubviews(){
         self.addSubviews(importLabel, addButton)
@@ -66,14 +75,13 @@ class MenuAddDictionaryCVCell: UICollectionViewCell {
         addButton.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            importLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 15),
+            importLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: .longInnerSpacer),
             importLabel.centerYAnchor.constraint(equalTo: self.centerYAnchor),
-            importLabel.heightAnchor.constraint(equalToConstant: 25),
             
-            addButton.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -15),
+            addButton.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -.longInnerSpacer),
             addButton.centerYAnchor.constraint(equalTo: self.centerYAnchor),
-            addButton.widthAnchor.constraint(equalToConstant: 50),
-            addButton.heightAnchor.constraint(equalToConstant: 50)
+            addButton.widthAnchor.constraint(equalToConstant: .genericButtonHeight),
+            addButton.heightAnchor.constraint(equalToConstant: .genericButtonHeight)
         ])
     }
     //MARK: Configuring views labels.
@@ -82,14 +90,14 @@ class MenuAddDictionaryCVCell: UICollectionViewCell {
             .attributedString(
                 string: "menu.cell.import".localized,
                 with: FontChangeManager.shared.currentFont(),
-                ofSize: 20)
+                ofSize: .subtitleSize)
     }
     
     @objc func languageDidChange(sender: Any){
         configureLabels()
     }
     @objc func fontDidChange(sender: Any){
-        importLabel.font = .selectedFont.withSize(20)
+        importLabel.font = .selectedFont.withSize(.subtitleSize)
         addButton.setImage(UIImage(systemName: "square.and.arrow.down", withConfiguration: UIImage.SymbolConfiguration(weight: UIFont.selectedFont.fontWeight.symbolWeight())), for: .normal)
     }
 }

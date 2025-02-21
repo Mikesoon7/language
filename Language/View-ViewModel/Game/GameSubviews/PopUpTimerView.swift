@@ -37,7 +37,7 @@ class PopUpTimerView: UIView {
     //MARK: Lablels
     let partitialResultLabel: UILabel = {
         let label = UILabel()
-        label.font = .selectedFont.withSize(18)
+        label.font = .selectedFont.withSize(.bodyTextSize)
         label.textColor = .label
         label.text = "system.checked".localized + ":"
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -45,7 +45,7 @@ class PopUpTimerView: UIView {
     }()
     lazy var partitialResultNumber: UILabel = {
         let label = UILabel()
-        label.font = .selectedFont.withSize(16)
+        label.font = .selectedFont.withSize(.assosiatedTextSize)
         label.textColor = .label
         label.text = "\(learnedNumber)"
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -62,7 +62,7 @@ class PopUpTimerView: UIView {
             .attributedString(
                 string: "system.continue".localized,
                 with: .selectedFont,
-                ofSize: 17), for: .normal
+                ofSize: .subBodyTextSize), for: .normal
         )
         button.addTarget(self, action: #selector(continueButDidTap) , for: .touchUpInside)
         return button
@@ -77,7 +77,7 @@ class PopUpTimerView: UIView {
             .attributedString(
                 string: "system.finish".localized,
                 with: .selectedFont,
-                ofSize: 17), for: .normal
+                ofSize: .subBodyTextSize), for: .normal
         )
         button.addTarget(self, action: #selector(finishButDidTap) , for: .touchUpInside)
         return button

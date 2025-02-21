@@ -138,7 +138,6 @@ class SearchView: UIViewController {
                     self.collectionView.reloadData()
                 case .error(let error):
                     self.navigationController?.presentError(error, sourceView: self.view)
-//                    self.presentError(error, sourceView: self.view)
                 case .shouldReloadView:
                     self.refreshSearchBars()
                 case .shouldUpdateLabels:
@@ -189,10 +188,10 @@ class SearchView: UIViewController {
                                   : (collectionWidth - (.innerSpacer * 2 + .longInnerSpacer)) / 2
         )
         
-        layout.itemSize = CGSize(width: itemWidth, height: 60)
+        layout.itemSize = CGSize(width: itemWidth, height: .genericButtonHeight)
         layout.minimumLineSpacing = .longInnerSpacer
         layout.sectionInset = UIEdgeInsets(top: .zero, left: .zero, bottom: .longOuterSpacer, right: .zero)
-        layout.headerReferenceSize = CGSize(width: collectionView.bounds.width, height: 40) // Header height
+        layout.headerReferenceSize = CGSize(width: collectionView.bounds.width, height: .genericButtonHeight) // Header height
         
         layout.invalidateLayout()
     }

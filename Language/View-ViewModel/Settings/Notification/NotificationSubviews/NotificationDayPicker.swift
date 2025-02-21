@@ -54,7 +54,7 @@ class NotificationDayPicker: UIView{
     //MARK: - View SetUp
     private func configureView(){
         self.translatesAutoresizingMaskIntoConstraints = false
-        self.layer.cornerRadius = 9
+        self.layer.cornerRadius = .cornerRadius
         self.alpha = 0
         self.backgroundColor = ((traitCollection.userInterfaceStyle == .dark)
                                 ? UIColor.systemGray5

@@ -10,9 +10,7 @@ import UIKit
 
 final class StatisticViewSelectedCell: UITableViewCell {
     static let id = "StatisticViewSelectedCell"
-    
-    private let subviewsInsets: CGFloat = 10
-    
+        
     private let colourView: UIView = {
         let view = UIView()
         view.clipsToBounds = true
@@ -22,7 +20,7 @@ final class StatisticViewSelectedCell: UITableViewCell {
     }()
     private let nameLabel: UILabel = {
         let label = UILabel()
-        label.font = .helveticaNeueMedium.withSize(18)
+        label.font = .helveticaNeueMedium.withSize(.bodyTextSize)
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textColor = .label
         label.textAlignment = .left
@@ -32,7 +30,7 @@ final class StatisticViewSelectedCell: UITableViewCell {
     let creationDateLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .helveticaNeueMedium.withSize(14)
+        label.font = .helveticaNeueMedium.withSize(.assosiatedTextSize)
         label.textColor = .label.withAlphaComponent(0.9)
         label.text = "statistic.creationDate".localized
         label.isHidden = false
@@ -41,7 +39,7 @@ final class StatisticViewSelectedCell: UITableViewCell {
     let creationDateResultLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .helveticaNeue.withSize(12)
+        label.font = .helveticaNeue.withSize(.captionTextSize)
         label.textColor = .label.withAlphaComponent(0.9)
         label.isHidden = false
         label.textAlignment  = .right
@@ -51,7 +49,7 @@ final class StatisticViewSelectedCell: UITableViewCell {
     let accessNumberLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .helveticaNeueMedium.withSize(14)
+        label.font = .helveticaNeueMedium.withSize(.assosiatedTextSize)
         label.textColor = .label.withAlphaComponent(0.9)
         label.text = "statistic.accessNumber".localized
         label.isHidden = false
@@ -60,7 +58,7 @@ final class StatisticViewSelectedCell: UITableViewCell {
     let accessNumberResultLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .helveticaNeue.withSize(12)
+        label.font = .helveticaNeue.withSize(.captionTextSize)
         label.textColor = .label.withAlphaComponent(0.9)
         label.isHidden = false
         label.textAlignment  = .right
@@ -70,7 +68,7 @@ final class StatisticViewSelectedCell: UITableViewCell {
     let cardsNumberLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .helveticaNeueMedium.withSize(14)
+        label.font = .helveticaNeueMedium.withSize(.assosiatedTextSize)
         
         label.textColor = .label.withAlphaComponent(0.9)
         label.text = "statistic.cardsNumber".localized
@@ -80,7 +78,7 @@ final class StatisticViewSelectedCell: UITableViewCell {
     let cardsNumberResultLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .helveticaNeue.withSize(12)
+        label.font = .helveticaNeue.withSize(.captionTextSize)
         label.textColor = .label.withAlphaComponent(0.9)
         label.isHidden = false
         label.textAlignment  = .right
@@ -121,36 +119,36 @@ final class StatisticViewSelectedCell: UITableViewCell {
         
         NSLayoutConstraint.activate([
             colourView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 7),
-            colourView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: subviewsInsets * 2 ),
+            colourView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: .nestedSpacer * 2 ),
             colourView.heightAnchor.constraint(equalToConstant: 50 * 0.7),
             colourView.widthAnchor.constraint(equalTo: colourView.heightAnchor),
             
             nameLabel.centerYAnchor.constraint(equalTo: colourView.centerYAnchor),
-            nameLabel.leadingAnchor.constraint(equalTo: colourView.trailingAnchor, constant: subviewsInsets),
+            nameLabel.leadingAnchor.constraint(equalTo: colourView.trailingAnchor, constant: .nestedSpacer),
             
-            creationDateLabel.topAnchor.constraint(equalTo: colourView.bottomAnchor, constant: 20),
+            creationDateLabel.topAnchor.constraint(equalTo: colourView.bottomAnchor, constant: .outerSpacer),
             creationDateLabel.leadingAnchor.constraint(equalTo: nameLabel.leadingAnchor),
-            creationDateLabel.heightAnchor.constraint(equalToConstant: 20),
+            creationDateLabel.heightAnchor.constraint(equalToConstant: .outerSpacer),
             
-            creationDateResultLabel.topAnchor.constraint(equalTo: colourView.bottomAnchor, constant: 20),
-            creationDateResultLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -subviewsInsets * 2),
-            creationDateResultLabel.heightAnchor.constraint(equalToConstant: 20),
+            creationDateResultLabel.topAnchor.constraint(equalTo: colourView.bottomAnchor, constant: .outerSpacer),
+            creationDateResultLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -.nestedSpacer * 2),
+            creationDateResultLabel.heightAnchor.constraint(equalToConstant: .outerSpacer),
             
-            accessNumberLabel.topAnchor.constraint(equalTo: creationDateLabel.bottomAnchor, constant: 20),
+            accessNumberLabel.topAnchor.constraint(equalTo: creationDateLabel.bottomAnchor, constant: .outerSpacer),
             accessNumberLabel.leadingAnchor.constraint(equalTo: nameLabel.leadingAnchor),
-            accessNumberLabel.heightAnchor.constraint(equalToConstant: 20),
+            accessNumberLabel.heightAnchor.constraint(equalToConstant: .outerSpacer),
             
-            accessNumberResultLabel.topAnchor.constraint(equalTo: creationDateLabel.bottomAnchor, constant: 20),
-            accessNumberResultLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -subviewsInsets * 2),
-            accessNumberResultLabel.heightAnchor.constraint(equalToConstant: 20),
+            accessNumberResultLabel.topAnchor.constraint(equalTo: creationDateLabel.bottomAnchor, constant: .outerSpacer),
+            accessNumberResultLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -.nestedSpacer * 2),
+            accessNumberResultLabel.heightAnchor.constraint(equalToConstant: .outerSpacer),
             
-            cardsNumberLabel.topAnchor.constraint(equalTo: accessNumberLabel.bottomAnchor, constant: 20),
+            cardsNumberLabel.topAnchor.constraint(equalTo: accessNumberLabel.bottomAnchor, constant: .outerSpacer),
             cardsNumberLabel.leadingAnchor.constraint(equalTo: nameLabel.leadingAnchor),
-            cardsNumberLabel.heightAnchor.constraint(equalToConstant: 20),
+            cardsNumberLabel.heightAnchor.constraint(equalToConstant: .outerSpacer),
             
-            cardsNumberResultLabel.topAnchor.constraint(equalTo: accessNumberLabel.bottomAnchor, constant: 20),
-            cardsNumberResultLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -subviewsInsets * 2),
-            cardsNumberResultLabel.heightAnchor.constraint(equalToConstant: 20),
+            cardsNumberResultLabel.topAnchor.constraint(equalTo: accessNumberLabel.bottomAnchor, constant: .outerSpacer),
+            cardsNumberResultLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -.nestedSpacer * 2),
+            cardsNumberResultLabel.heightAnchor.constraint(equalToConstant: .outerSpacer),
         ])
     }
 }

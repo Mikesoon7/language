@@ -24,7 +24,6 @@ class SettingsVC: UIViewController {
         
         view.backgroundColor = .clear
         view.separatorStyle = .none
-    
         view.translatesAutoresizingMaskIntoConstraints = false
         view.subviews.forEach { sections in
             sections.addCenterShadows()
@@ -46,6 +45,8 @@ class SettingsVC: UIViewController {
         bind()
         configureTableView()
         configureLabels()
+        
+        setupTableFooter()
     }
         
     //MARK: - StyleChange Responding
@@ -97,12 +98,24 @@ class SettingsVC: UIViewController {
         tableView.dataSource = self
         
         NSLayoutConstraint.activate([
-            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+            tableView.topAnchor.constraint(
+                equalTo: view.safeAreaLayoutGuide.topAnchor),
+            tableView.leadingAnchor.constraint(
+                equalTo: view.leadingAnchor),
+            tableView.bottomAnchor.constraint(
+                equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            tableView.trailingAnchor.constraint(
+                equalTo: view.trailingAnchor)
         ])
     }
+    func setupTableFooter() {
+        let footerView = SettingsTableLinkView(frame: CGRect(
+            origin: .zero, size: CGSize(width: tableView.bounds.width, height: SettingsTableLinkView.footerHeight)))
+        footerView.backgroundColor = .clear
+        
+        tableView.tableFooterView = footerView
+    }
+
 
     //MARK: System
     private func presentNotificationVC(){
@@ -156,7 +169,7 @@ class SettingsVC: UIViewController {
 
     private func configureLabels(){
         navigationItem.title = "settings.title".localized
-        
+        setupTableFooter()
     }
 }
 
@@ -199,10 +212,7 @@ extension SettingsVC: UITableViewDelegate,  UITableViewDataSource{
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        if section == 0 {
-            return 80
-        }
-        return UITableView.automaticDimension
+        return .longOuterSpacer
     }
 }
 

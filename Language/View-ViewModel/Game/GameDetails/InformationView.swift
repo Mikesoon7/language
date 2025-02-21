@@ -46,26 +46,26 @@ class InformationView: UIViewController {
             .attributedMutableString(
                 string: "gameDetails.information".localized,
                 with: .helveticaNeueMedium,
-                ofSize: 18,
+                ofSize: .bodyTextSize,
                 foregroundColour: .label
             )
         mutableText.append(
             .attributedString(
                 string: "\n \n \n" + "gameDetails.suggestion1Part".localized,
                 with: .helveticaNeueMedium,
-                ofSize: 16,
+                ofSize: .subBodyTextSize,
                 foregroundColour: .systemGray
             )
         )
         mutableText.append(
             .attributedString(
                 string: "\n \n " + "gameDetails.settingsPath".localized,
-                with: .helveticaNeueBold, ofSize: 18)
+                with: .helveticaNeueBold, ofSize: .bodyTextSize)
         )
         mutableText.append(
             .attributedString(
                 string: "\n \n" + "gameDetails.suggestion2Part".localized,
-                with: .helveticaNeueMedium, ofSize: 16,
+                with: .helveticaNeueMedium, ofSize: .subBodyTextSize,
                 foregroundColour: .systemGray
             )
         )

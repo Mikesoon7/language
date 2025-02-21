@@ -42,7 +42,7 @@ class TimedDetailView: UIViewController {
         button.setTitleColor(.label, for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.layer.masksToBounds = true
-        button.layer.cornerRadius = 9
+        button.layer.cornerRadius = .cornerRadius
         button.tag = 5
         return button
     }()
@@ -53,7 +53,7 @@ class TimedDetailView: UIViewController {
         button.setTitleColor(.label, for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.layer.masksToBounds = true
-        button.layer.cornerRadius = 9
+        button.layer.cornerRadius = .cornerRadius
         button.tag = 10
         return button
     }()
@@ -65,7 +65,7 @@ class TimedDetailView: UIViewController {
         button.setTitleColor(.label, for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.layer.masksToBounds = true
-        button.layer.cornerRadius = 9
+        button.layer.cornerRadius = .cornerRadius
         button.tag = 15
         return button
     }()
@@ -78,7 +78,7 @@ class TimedDetailView: UIViewController {
             .attributedString(
                 string: "details.start".localized,
                 with: .selectedFont,
-                ofSize: 20), for: .normal
+                ofSize: .subtitleSize), for: .normal
         )
         return button
     }()

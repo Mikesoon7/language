@@ -97,9 +97,9 @@ class SettingsViewModel{
     //Return increased heigth for cell with images.
     func heightForRowAt(indexPath: IndexPath) -> CGFloat{
         if indexPath == self.getTablePositionFor(option: .searchBarPosition(.onTop)) {
-            return 150
+            return .textViewGenericSize
         } else {
-            return 44
+            return .accessoryViewHeight
         }
     }
 
@@ -126,7 +126,7 @@ class SettingsViewModel{
         case .exceptions(let exception):
             return DataForSettingsTextCell(title: exception.title, value: nil)
         case .lauchStatus(_):
-            return DataForSettingsTextCell(title: "Tutorial", value: nil)
+            return DataForSettingsTextCell(title: "tutorial".localized, value: nil)
         }
     }
     func didSelectRowAt(indexPath: IndexPath){
@@ -165,7 +165,7 @@ class SettingsViewModel{
     //Since we use cell, which automaticaly responce on user touches, we dont need to update searchBarPosition row.
     func updateSelectedFont(font: UIFontDescriptor) {
         //        settingModel.reload(newValue: .font())
-        let font = UIFont(descriptor: font, size: 17)
+        let font = UIFont(descriptor: font, size: .bodyTextSize)
         settingsModel.reload(newValue: .font(.init(selectedFontName: font.fontName)))
         configureSettingsStructure()
         output.send(.needUpdateRowAt(self.getTablePositionFor(option: .font(.init(selectedFontName: font.fontName)))))

@@ -37,7 +37,7 @@ class DictionaryHeaderView: UICollectionReusableView {
     //MARK: Configure cell with passed data.
     func configureCellWithData(_ data: String){
         label.text = data
-        label.font = .selectedFont.withSize(19)
+        label.font = .selectedFont.withSize(.subtitleSize)
     }
     
     //MARK: Configure subviews layout.

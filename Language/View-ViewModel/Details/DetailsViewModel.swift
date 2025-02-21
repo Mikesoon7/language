@@ -78,11 +78,13 @@ class DetailsViewModel{
         selectedDisplayNumber =     Int(settings.selectedNumber)
         selectedOrder =             settings.cardOrder
         hideTransaltion =           settings.isOneSideMode
-        self.numberOfCards =        Int(dictionary.numberOfCards)
+        numberOfCards =             Int(dictionary.numberOfCards)
 
 
         output.send(.shouldUpdatePicker)
     }
+    
+    
     
     //MARK: Switch related
     func selectedCardsOrder() -> DictionariesSettings.CardOrder {
@@ -95,18 +97,33 @@ class DetailsViewModel{
         return selectedDisplayNumber
     }
     
-    //MARK: Modify details related to the dictionary.
-    func saveDetails(orderSelection: DictionariesSettings.CardOrder, isOneSideMode: Bool) {
+    func hideTranslationDidChange(on: Bool){
         do {
-            try updateManager.settingsDidChangeFor(dictionary,
-                                                   isOneSideMode: isOneSideMode,
-                                                   cardsOrderSelection: orderSelection,
-                                                   selectedDisplayNumber: Int64(selectedDisplayNumber)
-            )
+            try updateManager.settingsDidChangeFor(dictionary, isOneSideMode: on)
         } catch {
             output.send(.error(error))
         }
     }
+    func cardOrderDidChange(order: DictionariesSettings.CardOrder){
+        do {
+            try updateManager.settingsDidChangeFor(dictionary, cardsOrderSelection: order)
+        } catch {
+            output.send(.error(error))
+        }
+    }
+    
+//    //MARK: Modify details related to the dictionary.
+//    func saveDetails(orderSelection: DictionariesSettings.CardOrder, isOneSideMode: Bool) {
+//        do {
+//            try updateManager.settingsDidChangeFor(dictionary,
+//                                                   isOneSideMode: isOneSideMode,
+//                                                   cardsOrderSelection: orderSelection,
+//                                                   selectedDisplayNumber: Int64(selectedDisplayNumber)
+//            )
+//        } catch {
+//            output.send(.error(error))
+//        }
+//    }
 
     
     //MARK: Picker related.

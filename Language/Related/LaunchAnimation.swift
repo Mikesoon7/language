@@ -37,14 +37,14 @@ class LaunchAnimation{
     private var titleLabel : UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.attributedText = .attributedString(string: "Learny", with: .georgianBoldItalic, ofSize: 20)
+        label.attributedText = .attributedString(string: "Learny", with: .georgianBoldItalic, ofSize: .subtitleSize)
         return label
     }()
     
     private var subtitleLabel : UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.attributedText = .attributedString(string: "To brew something new", with: .georgianBoldItalic, ofSize: 16)
+        label.attributedText = .attributedString(string: "To brew something new", with: .georgianBoldItalic, ofSize: .subBodyTextSize)
         return label
     }()
     
@@ -91,7 +91,7 @@ class LaunchAnimation{
                 )
                 view.center = animationView.center
                 view.backgroundColor = .systemBackground
-                view.layer.cornerRadius = 20
+                view.layer.cornerRadius = cornerRadius
                 return view
             }()
             
@@ -100,7 +100,7 @@ class LaunchAnimation{
             
             NSLayoutConstraint.activate([
                 titleLabel.centerXAnchor.constraint(equalTo: cardView.centerXAnchor),
-                titleLabel.topAnchor.constraint(equalTo: cardView.topAnchor, constant: 20),
+                titleLabel.topAnchor.constraint(equalTo: cardView.topAnchor, constant: .longOuterSpacer),
                 
                 subtitleLabel.centerXAnchor.constraint(equalTo: cardView.centerXAnchor),
                 subtitleLabel.centerYAnchor.constraint(equalTo: cardView.centerYAnchor),
@@ -120,7 +120,7 @@ class LaunchAnimation{
             let view = UIView()
             view.translatesAutoresizingMaskIntoConstraints = false
             view.backgroundColor = .systemBackground
-            view.layer.cornerRadius = 20
+            view.layer.cornerRadius = cornerRadius
             return view
         }()
         
@@ -148,7 +148,7 @@ class LaunchAnimation{
         
         NSLayoutConstraint.activate([
             titleLabel.centerXAnchor.constraint(equalTo: cardView.centerXAnchor),
-            titleLabel.topAnchor.constraint(equalTo: cardView.topAnchor, constant: 20),
+            titleLabel.topAnchor.constraint(equalTo: cardView.topAnchor, constant: .subtitleSize),
             
             subtitleLabel.centerXAnchor.constraint(equalTo: cardView.centerXAnchor),
             subtitleLabel.centerYAnchor.constraint(equalTo: cardView.centerYAnchor),
@@ -178,7 +178,7 @@ class LaunchAnimation{
         let width = cardWidth
         let height = cardHeight
         let startY = cardHeight / 2
-        let curveInset = 20.0
+        let curveInset = cornerRadius
                 
         let upperStroke = createLineFrom(CGPoint(x: cardWidth, y: startY), upper: true)
         let downStroke = createLineFrom(CGPoint(x: 0, y: startY), upper: false )

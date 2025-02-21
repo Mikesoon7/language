@@ -39,7 +39,7 @@ class SearchCellExpandedView: UIViewController {
     private var cellView: UIView = {
         let view = UIView()
         view.backgroundColor = .systemGray2.withAlphaComponent(0.8)
-        view.layer.cornerRadius = 12
+        view.layer.cornerRadius = .outerCornerRadius
         view.clipsToBounds = true
         view.alpha = 0
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -48,7 +48,7 @@ class SearchCellExpandedView: UIViewController {
     
     lazy var textInputView: TextInputView = {
         let view = TextInputView(delegate: self)
-        view.textView.font = .selectedFont.withSize(14)
+        view.textView.font = .selectedFont.withSize(.assosiatedTextSize)
         view.textView.isEditable = false
         view.textView.isFindInteractionEnabled = false
         view.textView.isSelectable = false
@@ -89,7 +89,7 @@ class SearchCellExpandedView: UIViewController {
     private let copiedLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .systemFont(ofSize: 10, weight: .medium)
+        label.font = .systemFont(ofSize: .subCaptionSize, weight: .medium)
         label.tintColor = .label
         label.text = "copied".localized
         label.alpha = 0
@@ -191,8 +191,8 @@ class SearchCellExpandedView: UIViewController {
         cellView.addSubviews(copyButton, editButton, copiedLabel, deleteButton, saveButton, textInputView)
         
         //Assigning text Attributes to recreate the collectionView cell appearence.
-        let firstAttributes: [NSAttributedString.Key: Any] =    [.font: UIFont.selectedFont.withSize(14), .foregroundColor: UIColor.label]
-        let secondAttributes: [NSAttributedString.Key: Any] =   [.font: UIFont.selectedFont.withSize(11), .foregroundColor: UIColor.label]
+        let firstAttributes: [NSAttributedString.Key: Any] =    [.font: UIFont.selectedFont.withSize(.assosiatedTextSize), .foregroundColor: UIColor.label]
+        let secondAttributes: [NSAttributedString.Key: Any] =   [.font: UIFont.selectedFont.withSize(.captionTextSize), .foregroundColor: UIColor.label]
         
         let firstAttributedString = NSAttributedString(string: wordText , attributes: firstAttributes)
         let secondAttributedString = NSAttributedString(string: "\n" + "\n" + descriptionText, attributes: secondAttributes)
@@ -354,7 +354,10 @@ class SearchCellExpandedView: UIViewController {
         if activate {
             self.textInputView.textView.attributedText = NSAttributedString(
                 string: wordText + " " + separator + " " + descriptionText,
-                attributes: [.font: UIFont.selectedFont.withSize(14)]
+                attributes: [
+                    .font: UIFont.selectedFont.withSize(.assosiatedTextSize),
+                    .foregroundColor: UIColor.label
+                ]
             )
             self.textInputView.textView.becomeFirstResponder()
             self.centerY.isActive = false
@@ -397,6 +400,7 @@ class SearchCellExpandedView: UIViewController {
 
     
     @objc func editButtonDidTap(sender: Any) {
+        textInputView.textView.isEditable = true
         if textInputView.textView.isFirstResponder {
             textInputView.textView.resignFirstResponder()
         } else {

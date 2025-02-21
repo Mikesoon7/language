@@ -42,12 +42,6 @@ class DetailsView: UIViewController {
     private var viewModelFactory: ViewModelFactory
     private var cancellable = Set<AnyCancellable>()
     
-    
-    //MARK: - Variables
-    private var randomIsOn: Bool = false
-    private var selectedCardsOrder: DictionariesSettings.CardOrder = .normal
-    private var hideTransaltionIsOn: Bool = false
-    
     //MARK: - Subviews
     //SHADOWS
     private let settingsShadowView: UIView = {
@@ -100,7 +94,7 @@ class DetailsView: UIViewController {
     private let isOneSideModeLabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .selectedFont.withSize(18)
+        label.font = .selectedFont.withSize(.bodyTextSize)
         label.text = "details.showTranslation".localized
         return label
     }()
@@ -115,13 +109,13 @@ class DetailsView: UIViewController {
     private let orderOptionsLabel: UILabel = {
         var label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .selectedFont.withSize(18)
+        label.font = .selectedFont.withSize(.bodyTextSize)
         label.text = "details.cardsOrder".localized
         return label
     }()
     
     private let orderOptionSegmentedControl: UICustomSegmentedControl = {
-        var control = UICustomSegmentedControl(cornerRadius: 9)
+        var control = UICustomSegmentedControl(cornerRadius: .cornerRadius)
         control.insertSegment(withTitle: "details.cardsOrder.noraml".localized, at: 0, animated: false)
         control.insertSegment(withTitle: "details.cardsOrder.random".localized, at: 1, animated: false)
         control.insertSegment(withTitle: "details.cardsOrder.reverse".localized, at: 2, animated: false)
@@ -133,7 +127,7 @@ class DetailsView: UIViewController {
     
     private let goalLabel : UILabel = {
         let label = UILabel()
-        label.font = .selectedFont.withSize(18)
+        label.font = .selectedFont.withSize(.bodyTextSize)
         label.text = "details.goal".localized
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -224,9 +218,9 @@ class DetailsView: UIViewController {
     }
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        viewModel?.saveDetails(orderSelection: DictionariesSettings.CardOrder(
-            rawValue: Int64(self.orderOptionSegmentedControl.selectedSegmentIndex)) ?? .normal,
-                               isOneSideMode: isOneSideModeSwitch.isOn)
+//        viewModel?.saveDetails(orderSelection: DictionariesSettings.CardOrder(
+//            rawValue: Int64(self.orderOptionSegmentedControl.selectedSegmentIndex)) ?? .normal,
+//                               isOneSideMode: isOneSideModeSwitch.isOn)
         textInputView.textView.resignFirstResponder()
     }
     
@@ -300,78 +294,88 @@ class DetailsView: UIViewController {
         view.addSubviews(textViewShadowView, settingsShadowView, goalShadowView)
         
         regularWidthClassTextViewConstraints.append(contentsOf:[
-            textViewShadowView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor,
-                                                    constant: .longOuterSpacer),
-            textViewShadowView.trailingAnchor.constraint(equalTo: view.trailingAnchor,
-                                                         constant: -.longInnerSpacer),
-            textViewShadowView.widthAnchor.constraint(equalTo: view.widthAnchor,
-                                                      multiplier: 0.5,
-                                                      constant: -.longInnerSpacer - .longInnerSpacer / 2),
-            textViewShadowView.heightAnchor.constraint(equalToConstant:
-                                                        150 + .innerSpacer + .genericButtonHeight),
+            textViewShadowView.topAnchor.constraint(
+                equalTo: view.safeAreaLayoutGuide.topAnchor,
+                constant: .longOuterSpacer),
+            textViewShadowView.trailingAnchor.constraint(
+                equalTo: view.trailingAnchor, constant: -.longInnerSpacer),
+            textViewShadowView.widthAnchor.constraint(
+                equalTo: view.widthAnchor, multiplier: 0.5,
+                constant: -.longInnerSpacer - .longInnerSpacer / 2),
+            textViewShadowView.heightAnchor.constraint(
+                equalToConstant: .textViewGenericSize + .longInnerSpacer + .genericButtonHeight),
         ])
         
         
         regularWidthClassTextViewActiveConstraints.append(contentsOf: [
-            textViewShadowView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            
-            textViewShadowView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            
-            textViewShadowView.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor),
-            
-            textViewShadowView.bottomAnchor.constraint(lessThanOrEqualTo: beginBut.topAnchor,
-                                                       constant: -.longInnerSpacer),
-            textViewShadowView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            textViewShadowView.topAnchor.constraint(
+                equalTo: view.safeAreaLayoutGuide.topAnchor),
+            textViewShadowView.trailingAnchor.constraint(
+                equalTo: view.trailingAnchor),
+            textViewShadowView.bottomAnchor.constraint(
+                equalTo: view.keyboardLayoutGuide.topAnchor),
+            textViewShadowView.bottomAnchor.constraint(
+                lessThanOrEqualTo: beginBut.topAnchor,
+                constant: -.longInnerSpacer),
+            textViewShadowView.leadingAnchor.constraint(
+                equalTo: view.leadingAnchor),
         ])
         
         
         regularWidthClassConstraints.append(contentsOf: [
-            settingsShadowView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor,
-                                                    constant: .longOuterSpacer),
-            settingsShadowView.trailingAnchor.constraint(equalTo: textViewShadowView.leadingAnchor,
-                                                         constant: -.innerSpacer),
-            settingsShadowView.heightAnchor.constraint(equalToConstant: 150),
+            settingsShadowView.topAnchor.constraint(
+                equalTo: view.safeAreaLayoutGuide.topAnchor, constant: .longOuterSpacer),
+            settingsShadowView.trailingAnchor.constraint(
+                equalTo: textViewShadowView.leadingAnchor, constant: -.innerSpacer),
+            settingsShadowView.heightAnchor.constraint(
+                equalToConstant: .textViewGenericSize),
             
-            settingsShadowView.widthAnchor.constraint(equalTo: view.widthAnchor,
-                                                      multiplier: 0.5,
-                                                      constant: -.longInnerSpacer - .longInnerSpacer / 2),
+            settingsShadowView.widthAnchor.constraint(
+                equalTo: view.widthAnchor, multiplier: 0.5,  constant: -.longInnerSpacer - .longInnerSpacer / 2),
             
-            goalShadowView.topAnchor.constraint(equalTo: settingsShadowView.bottomAnchor,
-                                                constant: .longInnerSpacer),
-            goalShadowView.trailingAnchor.constraint(equalTo: settingsShadowView.trailingAnchor),
-            
-            goalShadowView.leadingAnchor.constraint(equalTo: settingsShadowView.leadingAnchor),
-            
-            goalShadowView.heightAnchor.constraint(equalToConstant: 60)
+            goalShadowView.topAnchor.constraint(
+                equalTo: settingsShadowView.bottomAnchor, constant: .longInnerSpacer),
+            goalShadowView.trailingAnchor.constraint(
+                equalTo: settingsShadowView.trailingAnchor),
+            goalShadowView.leadingAnchor.constraint(
+                equalTo: settingsShadowView.leadingAnchor),
+            goalShadowView.heightAnchor.constraint(
+                equalToConstant: .genericButtonHeight)
         ])
         
         
         compactWidthClassConstraints.append(contentsOf:[
-            settingsShadowView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor,
-                                                    constant: .longOuterSpacer),
-            settingsShadowView.trailingAnchor.constraint(equalTo: view.trailingAnchor,
-                                                         constant: -.longInnerSpacer),
-            settingsShadowView.leadingAnchor.constraint(equalTo: view.leadingAnchor,
-                                                        constant: .longInnerSpacer),
-            settingsShadowView.heightAnchor.constraint(equalToConstant: 150),
+            settingsShadowView.topAnchor.constraint(
+                equalTo: view.safeAreaLayoutGuide.topAnchor, constant: .longOuterSpacer),
+            settingsShadowView.trailingAnchor.constraint(
+                equalTo: view.trailingAnchor, constant: -.longInnerSpacer),
+            settingsShadowView.leadingAnchor.constraint(
+                equalTo: view.leadingAnchor, constant: .longInnerSpacer),
+            settingsShadowView.heightAnchor.constraint(
+                equalToConstant: .textViewGenericSize),
             
             
-            textViewShadowView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor,
-                                                    constant: .longOuterSpacer),
-            textViewShadowView.leadingAnchor.constraint(equalTo: view.trailingAnchor,
-                                                        constant: .longInnerSpacer),
-            textViewShadowView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.5,
-                                                      constant: -.longInnerSpacer - .longInnerSpacer / 2),
-            textViewShadowView.heightAnchor.constraint(equalToConstant: 150),
+            textViewShadowView.topAnchor.constraint(
+                equalTo: view.safeAreaLayoutGuide.topAnchor, constant: .longOuterSpacer),
+            textViewShadowView.leadingAnchor.constraint(
+                equalTo: view.trailingAnchor, 
+                constant: .longInnerSpacer),
+            textViewShadowView.widthAnchor.constraint(
+                equalTo: view.widthAnchor, multiplier: 0.5,
+                constant: -.longInnerSpacer - .longInnerSpacer / 2),
+            textViewShadowView.heightAnchor.constraint(
+                equalToConstant: .textViewGenericSize),
             
             
-            goalShadowView.topAnchor.constraint(equalTo: settingsShadowView.bottomAnchor,
-                                                constant: .longInnerSpacer),
-            goalShadowView.leadingAnchor.constraint(equalTo: view.leadingAnchor,
-                                                    constant: .longInnerSpacer),
-            goalShadowView.trailingAnchor.constraint(equalTo: view.trailingAnchor,
-                                                     constant: -.longInnerSpacer),
-            goalShadowView.heightAnchor.constraint(equalToConstant: .genericButtonHeight)
+            goalShadowView.topAnchor.constraint(
+                equalTo: settingsShadowView.bottomAnchor,
+                constant: .longInnerSpacer),
+            goalShadowView.leadingAnchor.constraint(
+                equalTo: view.leadingAnchor, constant: .longInnerSpacer),
+            goalShadowView.trailingAnchor.constraint(
+                equalTo: view.trailingAnchor, constant: -.longInnerSpacer),
+            goalShadowView.heightAnchor.constraint(
+                equalToConstant: .genericButtonHeight)
         ])
     }
     //MARK: - View's SetUp
@@ -392,34 +396,39 @@ class DetailsView: UIViewController {
         settingView.addSubviews( isOneSideModeLabel, isOneSideModeSwitch)
         
         NSLayoutConstraint.activate([
-            settingView.topAnchor.constraint(equalTo: settingsShadowView.topAnchor),
-            
+            settingView.topAnchor.constraint(
+                equalTo: settingsShadowView.topAnchor),
             settingView.leadingAnchor.constraint(equalTo: settingsShadowView.leadingAnchor),
-            
             settingView.bottomAnchor.constraint(equalTo: settingsShadowView.bottomAnchor),
-            
             settingView.trailingAnchor.constraint(equalTo: settingsShadowView.trailingAnchor),
             
             
-            isOneSideModeLabel.centerYAnchor.constraint(equalTo: settingView.centerYAnchor,
-                                                        constant: -45),
-            isOneSideModeLabel.leadingAnchor.constraint(equalTo: settingView.leadingAnchor,
-                                                        constant: 15),
-            
-            isOneSideModeSwitch.trailingAnchor.constraint(equalTo: settingView.trailingAnchor,
-                                                          constant: -25),
-            isOneSideModeSwitch.centerYAnchor.constraint(equalTo: isOneSideModeLabel.centerYAnchor),
+            isOneSideModeLabel.centerYAnchor.constraint(
+                equalTo: settingView.centerYAnchor, 
+                constant: -45),
+            isOneSideModeLabel.leadingAnchor.constraint(
+                equalTo: settingView.leadingAnchor,
+                constant: .innerSpacer),
             
             
-            orderOptionsLabel.leadingAnchor.constraint(equalTo: settingView.leadingAnchor,
-                                                       constant: 15),
-            orderOptionsLabel.topAnchor.constraint(equalTo: settingView.centerYAnchor),
+            isOneSideModeSwitch.trailingAnchor.constraint(
+                equalTo: settingView.trailingAnchor, 
+                constant: -.outerSpacer),
+            isOneSideModeSwitch.centerYAnchor.constraint(
+                equalTo: isOneSideModeLabel.centerYAnchor),
             
             
-            orderOptionSegmentedControl.widthAnchor.constraint(equalTo: settingView.widthAnchor,
-                                                               constant: -15),
-            orderOptionSegmentedControl.bottomAnchor.constraint(equalTo: settingView.bottomAnchor,
-                                                                constant: -10),
+            orderOptionsLabel.leadingAnchor.constraint(
+                equalTo: settingView.leadingAnchor, 
+                constant: .innerSpacer),
+            orderOptionsLabel.topAnchor.constraint(
+                equalTo: settingView.centerYAnchor),
+            
+            
+            orderOptionSegmentedControl.widthAnchor.constraint(
+                equalTo: settingView.widthAnchor, constant: -.nestedSpacer * 2),
+            orderOptionSegmentedControl.bottomAnchor.constraint(
+                equalTo: settingView.bottomAnchor, constant: -.nestedSpacer),
             orderOptionSegmentedControl.centerXAnchor.constraint(equalTo: settingView.centerXAnchor)
             
         ])
@@ -437,17 +446,26 @@ class DetailsView: UIViewController {
         goalView.addSubviews(goalLabel, goalPicker)
         
         NSLayoutConstraint.activate([
-            goalView.topAnchor.constraint(equalTo: goalShadowView.topAnchor) ,
-            goalView.leadingAnchor.constraint(equalTo: goalShadowView.leadingAnchor),
-            goalView.bottomAnchor.constraint(equalTo: goalShadowView.bottomAnchor),
-            goalView.trailingAnchor.constraint(equalTo: goalShadowView.trailingAnchor),
+            goalView.topAnchor.constraint(
+                equalTo: goalShadowView.topAnchor) ,
+            goalView.leadingAnchor.constraint(
+                equalTo: goalShadowView.leadingAnchor),
+            goalView.bottomAnchor.constraint(
+                equalTo: goalShadowView.bottomAnchor),
+            goalView.trailingAnchor.constraint(
+                equalTo: goalShadowView.trailingAnchor),
             
-            goalLabel.leadingAnchor.constraint(equalTo: goalView.leadingAnchor, constant: 15),
-            goalLabel.centerYAnchor.constraint(equalTo: goalView.centerYAnchor),
+            goalLabel.leadingAnchor.constraint(
+                equalTo: goalView.leadingAnchor, constant: .innerSpacer),
+            goalLabel.centerYAnchor.constraint(
+                equalTo: goalView.centerYAnchor),
             
-            goalPicker.trailingAnchor.constraint(equalTo: goalView.trailingAnchor),
-            goalPicker.centerYAnchor.constraint(equalTo: goalView.centerYAnchor),
-            goalPicker.widthAnchor.constraint(equalTo: goalView.widthAnchor, multiplier: 0.3)
+            goalPicker.trailingAnchor.constraint(
+                equalTo: goalView.trailingAnchor),
+            goalPicker.centerYAnchor.constraint(
+                equalTo: goalView.centerYAnchor),
+            goalPicker.widthAnchor.constraint(
+                equalTo: goalView.widthAnchor, multiplier: 0.3)
         ])
     }
     
@@ -456,41 +474,53 @@ class DetailsView: UIViewController {
         view.addSubviews(timedButton, beginBut)
         
         regularWidthClassConstraints.append(contentsOf: [
-            timedButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor,
-                                                constant: -.longInnerSpacer),
-            timedButton.trailingAnchor.constraint(equalTo: view.trailingAnchor,
-                                                  constant: -.longInnerSpacer),
-            timedButton.widthAnchor.constraint(equalTo: view.widthAnchor,
-                                               multiplier: 0.2),
-            timedButton.heightAnchor.constraint(equalToConstant: .genericButtonHeight),
+            timedButton.bottomAnchor.constraint(
+                equalTo: view.safeAreaLayoutGuide.bottomAnchor,
+                constant: -.longInnerSpacer),
+            timedButton.trailingAnchor.constraint(
+                equalTo: view.trailingAnchor, constant: -.longInnerSpacer),
+            timedButton.widthAnchor.constraint(
+                equalTo: view.widthAnchor, multiplier: 0.2),
+            timedButton.heightAnchor.constraint(
+                equalToConstant: .genericButtonHeight),
             
             
-            beginBut.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor,
-                                             constant: -.longInnerSpacer),
-            beginBut.leadingAnchor.constraint(equalTo: view.leadingAnchor,
-                                              constant: .longInnerSpacer),
-            beginBut.trailingAnchor.constraint(equalTo: timedButton.leadingAnchor,
-                                               constant: -.innerSpacer),
-            beginBut.heightAnchor.constraint(equalToConstant: .genericButtonHeight)
+            beginBut.bottomAnchor.constraint(
+                equalTo: view.safeAreaLayoutGuide.bottomAnchor,
+                constant: -.longInnerSpacer),
+            beginBut.leadingAnchor.constraint(
+                equalTo: view.leadingAnchor,
+                constant: .longInnerSpacer),
+            beginBut.trailingAnchor.constraint(
+                equalTo: timedButton.leadingAnchor,
+                constant: -.innerSpacer),
+            beginBut.heightAnchor.constraint(
+                equalToConstant: .genericButtonHeight)
         ])
         
         compactWidthClassConstraints.append(contentsOf: [
-            timedButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor,
-                                                constant: -.longInnerSpacer),
-            timedButton.trailingAnchor.constraint(equalTo: view.trailingAnchor,
-                                                  constant: -.longInnerSpacer),
-            timedButton.widthAnchor.constraint(equalToConstant: .genericButtonHeight),
+            timedButton.bottomAnchor.constraint(
+                equalTo: view.safeAreaLayoutGuide.bottomAnchor,
+                constant: -.longInnerSpacer),
+            timedButton.trailingAnchor.constraint(
+                equalTo: view.trailingAnchor,
+                constant: -.longInnerSpacer),
+            timedButton.widthAnchor.constraint(
+                equalToConstant: .genericButtonHeight),
+            timedButton.heightAnchor.constraint(
+                equalToConstant: .genericButtonHeight),
             
-            timedButton.heightAnchor.constraint(equalToConstant: .genericButtonHeight),
             
-            
-            beginBut.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor,
-                                             constant: -.longInnerSpacer),
-            beginBut.leadingAnchor.constraint(equalTo: view.leadingAnchor,
-                                              constant: .longInnerSpacer),
-            beginBut.trailingAnchor.constraint(equalTo: timedButton.leadingAnchor,
-                                               constant: -.innerSpacer),
-            beginBut.heightAnchor.constraint(equalToConstant: .genericButtonHeight)
+            beginBut.bottomAnchor.constraint(
+                equalTo: view.safeAreaLayoutGuide.bottomAnchor,
+                constant: -.longInnerSpacer),
+            beginBut.leadingAnchor.constraint(
+                equalTo: view.leadingAnchor,
+                constant: .longInnerSpacer),
+            beginBut.trailingAnchor.constraint(
+                equalTo: timedButton.leadingAnchor, constant: -.innerSpacer),
+            beginBut.heightAnchor.constraint(
+                equalToConstant: .genericButtonHeight)
         ])
     }
     
@@ -498,10 +528,10 @@ class DetailsView: UIViewController {
     
     //MARK: - Load details data.
     private func retrieveDetailsData(){
-        self.selectedCardsOrder = viewModel?.selectedCardsOrder() ?? .normal
-        self.orderOptionSegmentedControl.selectedSegmentIndex = Int(selectedCardsOrder.rawValue)
-        self.isOneSideModeSwitch.isOn = viewModel?.isHideTranslationOn() ?? false
+        let selectedOrder = viewModel?.selectedCardsOrder() ?? .normal
         
+        self.orderOptionSegmentedControl.selectedSegmentIndex = Int(selectedOrder.rawValue)
+        self.isOneSideModeSwitch.isOn = viewModel?.isHideTranslationOn() ?? false
         goalPicker.selectRow(viewModel?.selectedRowForPicker() ?? 1, inComponent: 0, animated: true)
     }
     
@@ -521,7 +551,7 @@ class DetailsView: UIViewController {
                                             ? regularWidthClassTextViewActiveConstraints
                                             : regularWidthClassTextViewConstraints)
             }
-            textInputView.layer.cornerRadius = keyboardIsVisable ? 0 : 9
+            textInputView.layer.cornerRadius = keyboardIsVisable ? 0 : .cornerRadius
             textInputView.backgroundColor = keyboardIsVisable ? .systemBackground : .secondarySystemBackground
             textViewShadowView.layer.shadowOpacity = keyboardIsVisable ? 0 : 0.8
             
@@ -611,20 +641,6 @@ class DetailsView: UIViewController {
         self.textInputView.highlightError(NSRAnge)
     }
     
-//    private func validateText() -> String?{
-//        guard let text = textInputView.textView.text,
-//                !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-//            let emptyTextAlert = UIAlertController.alertWithAction(alertTitle: "textAlert".localized,
-//                                                                   alertMessage: "textInfo".localized,
-//                                                                   alertStyle: .actionSheet,
-//                                                                   action1Title: "system.agreeInformal".localized,
-//                                                                   action1Handler: {_ in self.textInputView.textView.becomeFirstResponder()},
-//                                                                   action1Style: .cancel)
-//            self.present(emptyTextAlert, animated: true)
-//            return nil
-//        }
-//        return text
-//    }
     
     //Assigning text on initializing and if language changes
     private func configureLabels(){
@@ -644,10 +660,10 @@ class DetailsView: UIViewController {
     }
     
     private func configureFont(){
-        isOneSideModeLabel.font = .selectedFont.withSize(18)
-        orderOptionsLabel.font = .selectedFont.withSize(18)
-        goalLabel.font = .selectedFont.withSize(18)
-        textInputView.textView.font = .selectedFont.withSize(17)
+        isOneSideModeLabel.font = .selectedFont.withSize(.bodyTextSize)
+        orderOptionsLabel.font = .selectedFont.withSize(.bodyTextSize)
+        goalLabel.font = .selectedFont.withSize(.bodyTextSize)
+        textInputView.textView.font = .selectedFont.withSize(.subBodyTextSize)
         
         configureButtons()
     }
@@ -658,7 +674,7 @@ class DetailsView: UIViewController {
             .attributedString(
                 string: "details.start".localized,
                 with: .selectedFont,
-                ofSize: 20), for: .normal
+                ofSize: .subtitleSize), for: .normal
         )
         saveButton.title = "system.save".localized
     }
@@ -697,22 +713,21 @@ extension DetailsView{
     
     //MARK: PRESENT GAME
     @objc func startButtonTap(sender: UIButton){
-        guard let selectedNumber = viewModel?.selectedNumberOfCards() else {
+        guard let viewModel = viewModel else {
             return
         }
         
         let vc = MainGameVC(viewModelFactory:   viewModelFactory,
-                            dictionary:         viewModel?.dictionary ?? dictionary,
-                            selectedOrder:      selectedCardsOrder,
-                            hideTransaltion:    self.isOneSideModeSwitch.isOn,
-                            selectedNumber:     selectedNumber)
+                            dictionary:         viewModel.dictionary,
+                            selectedOrder:      viewModel.selectedCardsOrder(),
+                            hideTransaltion:    viewModel.isHideTranslationOn(),
+                            selectedNumber:     viewModel.selectedNumberOfCards())
         
         self.navigationController?.pushViewController(vc, animated: true)
-
     }
 
     @objc func orderSegwayToggle(sender: UISegmentedControl){
-        selectedCardsOrder = DictionariesSettings.CardOrder(rawValue: Int64(sender.selectedSegmentIndex)) ?? .normal
+        viewModel?.cardOrderDidChange(order: DictionariesSettings.CardOrder(rawValue: Int64(sender.selectedSegmentIndex)) ?? .normal)
     }
     
     @objc func doneButtonDidTap(sender: Any){
@@ -725,10 +740,10 @@ extension DetailsView{
     }
 
     @objc func hideTransaltionSwitchToggle(sender: UISwitch){
-        hideTransaltionIsOn = sender.isOn
+        viewModel?.hideTranslationDidChange(on: sender.isOn)
     }
 
-    }
+}
 
 //MARK: - UPPicker delegate & dataSource
 extension DetailsView: UIPickerViewDelegate, UIPickerViewDataSource{

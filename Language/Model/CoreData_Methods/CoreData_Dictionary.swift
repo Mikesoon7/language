@@ -134,7 +134,6 @@ extension CoreDataHelper: DictionaryManaging{
             dictionary.language = name
         }
         
-        
         for (index, word) in words.enumerated() {
             word.order = Int64(index)
         }
@@ -144,7 +143,7 @@ extension CoreDataHelper: DictionaryManaging{
         
         do {
             try saveContext()
-            try updateWordsOrder(for: dictionary)
+//            try updateWordsOrder(for: dictionary)
             dictionaryDidChange.send(.wasUpdated(Int(dictionary.order)))
         } catch {
             context.rollback()

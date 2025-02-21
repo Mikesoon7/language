@@ -92,7 +92,7 @@ extension UIView {
             x: max(bounds.width, bounds.height),
             y: y)
         )
-        topStroke.name = "yopStroke"
+        topStroke.name = "Stroke top"
 
         topStroke.path = path.cgPath
         topStroke.lineWidth = 1
@@ -138,7 +138,7 @@ extension UIView {
             y: y)
         )
         let stroke = CAShapeLayer()
-        stroke.name = "bottom Stroke"
+        stroke.name = "Stroke bottom"
         stroke.path = path.cgPath
         stroke.lineWidth = 1
         stroke.strokeColor = UIColor.label.cgColor

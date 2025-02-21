@@ -1,5 +1,4 @@
 //
-//  TestCell.swift
 //  Language
 //
 //  Created by Star Lord on 21/03/2023.
@@ -25,7 +24,7 @@ class CollectionViewCell: UICollectionViewCell {
     let cardView : UIView = {
         let view = UIView()
         view.backgroundColor = .systemBackground_Secondary
-        view.layer.cornerRadius = 13
+        view.layer.cornerRadius = .outerCornerRadius
         view.layer.borderColor = UIColor.black.cgColor
         view.layer.cornerCurve = .continuous
         view.layer.borderWidth = 1
@@ -60,7 +59,7 @@ class CollectionViewCell: UICollectionViewCell {
     //MARK: Labels
     var word: UILabel = {
         let label = UILabel()
-        label.font = .selectedFont.withSize(20)
+        label.font = .selectedFont.withSize(.subtitleSize)
         label.numberOfLines = 0
         label.textColor = .label
         label.text = ""
@@ -76,7 +75,7 @@ class CollectionViewCell: UICollectionViewCell {
     }()
     var translation: UILabel = {
         let label = UILabel()
-        label.font = .selectedFont.withSize(17)
+        label.font = .selectedFont.withSize(.bodyTextSize)
         label.numberOfLines = 0
         label.textColor = .label
         
@@ -92,7 +91,7 @@ class CollectionViewCell: UICollectionViewCell {
     }()
     let translationBacksideLabel: UILabel = {
         let label = UILabel()
-        label.font = .selectedFont.withSize(17)
+        label.font = .selectedFont.withSize(.bodyTextSize)
         label.numberOfLines = 0
         label.textColor = .label
         label.transform = CGAffineTransform(scaleX: -1, y: 1)
@@ -130,8 +129,8 @@ class CollectionViewCell: UICollectionViewCell {
         self.isOneSideMode = oneSideMode
         word.text = data.wordEntity.word
         word.isHidden = false
-        word.font = .selectedFont.withSize(20)
-        translation.font = .selectedFont.withSize(17)
+        word.font = .selectedFont.withSize(.subtitleSize)
+        translation.font = .selectedFont.withSize(.bodyTextSize)
         // Set the visibility based on whether there is a meaning to display
         if !data.wordEntity.meaning.isEmpty {
             translationBacksideLabel.text = data.wordEntity.meaning

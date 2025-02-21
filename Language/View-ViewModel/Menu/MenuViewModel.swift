@@ -108,7 +108,7 @@ final class MenuViewModel{
     //TODO: - Finish share functionality implementation.
     func shareCellsInformation(at index: IndexPath) -> String{
         let dictionary = dictionaries[index.item]
-        var words = "This text represents dictionary information retrieved from Learny Cards"
+        var words = "Here is my \(dictionary.language) dictionary from Learny memory cards app. \n"
         do {
             let pairs = try model.fetchWords(for: dictionary)
             pairs.forEach({ word in

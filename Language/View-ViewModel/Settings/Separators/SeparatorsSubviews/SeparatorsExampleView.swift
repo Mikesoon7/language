@@ -63,7 +63,7 @@ class SeparatorsExampleView: UIView {
     private lazy var firstLineBoldLeadingLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .helveticaNeueBold.withSize(15)
+        label.font = .helveticaNeueBold.withSize(.subBodyTextSize)
         label.text = "World "
         label.alpha = 0
         return label
@@ -71,7 +71,7 @@ class SeparatorsExampleView: UIView {
     private lazy var secondLineBoldLeadingLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .helveticaNeueBold.withSize(15)
+        label.font = .helveticaNeueBold.withSize(.subBodyTextSize)
         label.text = "Apple "
         label.alpha = 0
         return label
@@ -193,7 +193,7 @@ class SeparatorsExampleView: UIView {
     private func configureLabelWith(text: String) -> UILabel{
         let label = UILabel()
         label.text = text
-        label.font = .helveticaNeue.withSize(15)
+        label.font = .helveticaNeue.withSize(.subBodyTextSize)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }

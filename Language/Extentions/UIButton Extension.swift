@@ -71,7 +71,7 @@ extension UIButton{
             sender.layer.shadowOffset = CGSize(width: 4, height: 5)
         })
     }
-    static func configureNavButtonWith(title: String, font: UIFont = .systemBold, size: CGFloat = 15) -> UIButton{
+    static func configureNavButtonWith(title: String, font: UIFont = .systemBold, size: CGFloat = .assosiatedTextSize) -> UIButton{
         let button = UIButton()
         button.configuration = .plain()
         button.setAttributedTitle(.attributedString(string: title, with: font, ofSize: size), for: .normal)

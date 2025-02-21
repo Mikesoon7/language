@@ -27,9 +27,7 @@ class FontChangeManager {
         return font
     }
     func VCTitleAttributes() -> [NSAttributedString.Key : Any]{
-//        [NSAttributedString.Key.font : font.withSize(23),
-        let scaledFont = font.withSize(23)
-//        let scaledFont = UIFont(name: "Georgia-BoldItalic", size: 23) ?? UIFont()
+        let scaledFont = font.withSize(.titleSize)
         return [NSAttributedString.Key.font : scaledFont,
          NSAttributedString.Key.foregroundColor: UIColor.label,
          NSAttributedString.Key.backgroundColor: UIColor.clear

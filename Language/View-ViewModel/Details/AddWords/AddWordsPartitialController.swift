@@ -22,7 +22,7 @@ class AddWordsPartitialController: UIViewController {
     
     private var addNewWordsLabel: UILabel = {
         let label = UILabel()
-        label.font = .selectedFont.withSize(20)
+        label.font = .selectedFont.withSize(.subtitleSize)
         label.text = "addWord.title".localized
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -145,7 +145,7 @@ class AddWordsPartitialController: UIViewController {
 
         NSLayoutConstraint.activate([
             textInputView.topAnchor.constraint(
-                equalTo: addNewWordsLabel.bottomAnchor, constant: .longInnerSpacer),
+                equalTo: addNewWordsLabel.bottomAnchor, constant: .outerSpacer),
             textInputView.leadingAnchor.constraint(
                 equalTo: view.leadingAnchor, constant: .longInnerSpacer),
             textInputView.trailingAnchor.constraint(
@@ -167,9 +167,9 @@ class AddWordsPartitialController: UIViewController {
         NSLayoutConstraint.activate([
             
             addNewWordsLabel.topAnchor.constraint(
-                equalTo: view.safeAreaLayoutGuide.topAnchor, constant: .longInnerSpacer),
+                equalTo: view.safeAreaLayoutGuide.topAnchor, constant: .outerSpacer),
             addNewWordsLabel.leadingAnchor.constraint(
-                equalTo: view.leadingAnchor, constant: .longInnerSpacer + 10),
+                equalTo: view.leadingAnchor, constant: .outerSpacer ),
             addNewWordsLabel.heightAnchor.constraint(
                 equalToConstant: addNewWordsLabel.font.lineHeight),
         
@@ -214,9 +214,9 @@ class AddWordsPartitialController: UIViewController {
     private func configureText(){
         navigationItem.title = "addWord.title".localized
         saveButton.setAttributedTitle(
-            .attributedString(string: "system.save".localized, with: .georgianBoldItalic, ofSize: 18), for: .normal)
+            .attributedString(string: "system.save".localized, with: .georgianBoldItalic, ofSize: .bodyTextSize), for: .normal)
         doneButton.setAttributedTitle(
-            .attributedString(string: "system.done".localized, with: .systemBold, ofSize: 15), for: .normal)
+            .attributedString(string: "system.done".localized, with: .systemBold, ofSize: .assosiatedTextSize), for: .normal)
         textInputView.updatePlaceholder()
     }
 

@@ -13,21 +13,21 @@ class PickerCallView: UIView {
     //MARK: Views
     private let titleLabel: UILabel = {
         let label = UILabel()
-        label.font = .helveticaNeue.withSize(15)
+        label.font = .helveticaNeue.withSize(.assosiatedTextSize)
         label.textColor = .label
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     private let subtitleDateLabel: UILabel = {
         let label = UILabel()
-        label.font = .helveticaNeue.withSize(12)
+        label.font = .helveticaNeue.withSize(.captionTextSize)
         label.textColor = .lightGray
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
-    //MARK: Dimensions
-    private let subviewsInset: CGFloat = 10
+//    //MARK: Dimensions
+//    private let subviewsInset: CGFloat = 10
 
     
     //MARK: Inherited
@@ -48,8 +48,8 @@ class PickerCallView: UIView {
         addSubview(titleLabel)
         
         NSLayoutConstraint.activate([
-            titleLabel.bottomAnchor.constraint(equalTo: centerYAnchor, constant: -(subviewsInset / 3)),
-            titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: subviewsInset),
+            titleLabel.bottomAnchor.constraint(equalTo: centerYAnchor, constant: -(.nestedSpacer / 3)),
+            titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: .nestedSpacer),
         ])
     }
     
@@ -58,8 +58,8 @@ class PickerCallView: UIView {
         addSubview(subtitleDateLabel)
         
         NSLayoutConstraint.activate([
-            subtitleDateLabel.topAnchor.constraint(equalTo: centerYAnchor, constant: subviewsInset / 3),
-            subtitleDateLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: subviewsInset),
+            subtitleDateLabel.topAnchor.constraint(equalTo: centerYAnchor, constant: .nestedSpacer / 3),
+            subtitleDateLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: .nestedSpacer),
         ])
     }
     

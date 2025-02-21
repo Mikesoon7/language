@@ -64,7 +64,7 @@ class PieStatisticView: UIView {
         let attributedText = NSMutableAttributedString.attributedMutableString(
             string: "statistic.timeSpent".localized + "\n\(totalNumber)",
             with: .helveticaNeueBold,
-            ofSize: 22,
+            ofSize: .subtitleSize,
             alignment: .center
         )
         
@@ -255,7 +255,7 @@ class PieChartView: UIView {
         let sliceLabel = UILabel()
         sliceLabel.text = entity.label + "\n" + entity.assosiatedData
         sliceLabel.textColor = .white
-        sliceLabel.font = UIFont.systemFont(ofSize: 14, weight: .bold)
+        sliceLabel.font = UIFont.systemFont(ofSize: .assosiatedTextSize, weight: .bold)
         sliceLabel.sizeToFit()
         sliceLabel.numberOfLines = 3
         sliceLabel.textAlignment = .center

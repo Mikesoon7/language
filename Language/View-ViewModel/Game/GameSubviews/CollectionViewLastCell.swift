@@ -41,7 +41,7 @@ class CollectionViewLastCell: UICollectionViewCell {
     let cardView : UIView = {
         let view = UIView()
         view.backgroundColor = .systemBackground_Secondary
-        view.layer.cornerRadius = 9
+        view.layer.cornerRadius = .outerCornerRadius
         view.layer.borderColor = UIColor.black.cgColor
         view.layer.borderWidth = 1
         view.clipsToBounds = false
@@ -95,7 +95,7 @@ class CollectionViewLastCell: UICollectionViewCell {
         label.transform = CGAffineTransform(scaleX: -1, y: 1)
 
         label.textAlignment = .center
-        label.font = .selectedFont.withSize(22)
+        label.font = .selectedFont.withSize(.subtitleSize)
         label.textColor = .label
         label.text = "game.lastCell.congratulations".localized
         label.adjustsFontSizeToFitWidth = true
@@ -109,7 +109,7 @@ class CollectionViewLastCell: UICollectionViewCell {
         label.transform = CGAffineTransform(scaleX: -1, y: 1)
 
         label.textAlignment = .center
-        label.font = .selectedFont.withSize(17)
+        label.font = .selectedFont.withSize(.subBodyTextSize)
         label.textColor = .label
         label.text = "game.lastCell.checked".localized
         label.adjustsFontSizeToFitWidth = true
@@ -123,7 +123,7 @@ class CollectionViewLastCell: UICollectionViewCell {
         label.transform = CGAffineTransform(scaleX: -1, y: 1)
 
         label.textAlignment = .center
-        label.font = .systemFont(ofSize: 14)
+        label.font = .systemFont(ofSize: .assosiatedTextSize)
         label.textColor = .label
         label.text = "???"
         label.adjustsFontSizeToFitWidth = true
@@ -137,7 +137,7 @@ class CollectionViewLastCell: UICollectionViewCell {
         label.transform = CGAffineTransform(scaleX: -1, y: 1)
 
         label.textAlignment = .center
-        label.font = .selectedFont.withSize(17)
+        label.font = .selectedFont.withSize(.subBodyTextSize)
         label.textColor = .label
         label.text = "game.lastCell.spending".localized
         label.adjustsFontSizeToFitWidth = true
@@ -150,7 +150,7 @@ class CollectionViewLastCell: UICollectionViewCell {
         label.transform = CGAffineTransform(scaleX: -1, y: 1)
 
         label.textAlignment = .center
-        label.font = .systemFont(ofSize: 14)
+        label.font = .systemFont(ofSize: .assosiatedTextSize)
         label.textColor = .label
         label.text = "???"
         label.adjustsFontSizeToFitWidth = true
@@ -164,7 +164,7 @@ class CollectionViewLastCell: UICollectionViewCell {
         label.transform = CGAffineTransform(scaleX: -1, y: 1)
 
         label.textAlignment = .center
-        label.font = .selectedFont.withSize(19)
+        label.font = .selectedFont.withSize(.bodyTextSize)
         label.textColor = .label
         label.text = "???"
         label.numberOfLines = 4
@@ -346,7 +346,7 @@ class CollectionViewLastCell: UICollectionViewCell {
             .attributedString(
                 string: "system.great".localized,
                 with: .georgianBoldItalic,
-                ofSize: 20
+                ofSize: .subtitleSize
             ),
             for: .normal
         )

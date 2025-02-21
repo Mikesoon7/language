@@ -56,7 +56,7 @@ class SeparatorsView: UIViewController{
     
     private let headerInfoLabel: UILabel = {
         let label = UILabel()
-        label.font = .helveticaNeueMedium.withSize(25)
+        label.font = .helveticaNeueMedium.withSize(.subtitleSize)
         label.text = "separators.title".localized
         label.numberOfLines = 0
         label.textAlignment = .left
@@ -69,7 +69,7 @@ class SeparatorsView: UIViewController{
         let label = UILabel()
         label.numberOfLines = 0
         label.tintColor = .label
-        label.font = .helveticaNeue.withSize(16)
+        label.font = .helveticaNeue.withSize(.subBodyTextSize)
         label.text = "separators.infoFirstPart".localized
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -79,7 +79,7 @@ class SeparatorsView: UIViewController{
         let label = UILabel()
         label.numberOfLines = 0
         label.tintColor = .label
-        label.font = .helveticaNeue.withSize(16)
+        label.font = .helveticaNeue.withSize(.subBodyTextSize)
         label.text = "separators.infoSecondPart".localized
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -89,7 +89,7 @@ class SeparatorsView: UIViewController{
         let label = UILabel()
         label.numberOfLines = 0
         label.tintColor = .label
-        label.font = .helveticaNeue.withSize(16)
+        label.font = .helveticaNeue.withSize(.assosiatedTextSize)
         label.text = "separators.infoFinalPart".localized
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -100,7 +100,6 @@ class SeparatorsView: UIViewController{
     
     //MARK: - Constraints and related
     private let heightForExampleViews: CGFloat = 80
-    private let insetForSubviews: CGFloat = 20
     
     private var tableViewHeightAnchor : NSLayoutConstraint!
     private var lastInfoLabelTopAnchor: NSLayoutConstraint!
@@ -191,25 +190,25 @@ class SeparatorsView: UIViewController{
             equalToConstant: CGFloat(tableView.numberOfRows(inSection: 0) * 35) + 50.0)
         lastInfoLabelTopAnchor = lastInfoLabel.topAnchor.constraint(
             equalTo: tableView.topAnchor,
-            constant: (tableViewHeightAnchor?.constant ?? 0) + insetForSubviews )
+            constant: (tableViewHeightAnchor?.constant ?? 0) + .outerSpacer )
 
         NSLayoutConstraint.activate([
             headerInfoLabel.widthAnchor.constraint(
                 equalTo: contentView.widthAnchor, multiplier: 0.9),
             headerInfoLabel.topAnchor.constraint(
-                equalTo: contentView.topAnchor, constant: insetForSubviews),
+                equalTo: contentView.topAnchor, constant: .outerSpacer),
             headerInfoLabel.centerXAnchor.constraint(
                 equalTo: contentView.centerXAnchor),
             
             firstInfoLabel.topAnchor.constraint(
-                equalTo: headerInfoLabel.bottomAnchor, constant: insetForSubviews),
+                equalTo: headerInfoLabel.bottomAnchor, constant: .outerSpacer),
             firstInfoLabel.widthAnchor.constraint(
                 equalTo: contentView.widthAnchor, multiplier: .widthMultiplerFor(type: .forViews)),
             firstInfoLabel.centerXAnchor.constraint(
                 equalTo: contentView.centerXAnchor),
             
             exampleView.topAnchor.constraint(
-                equalTo: firstInfoLabel.bottomAnchor, constant: insetForSubviews),
+                equalTo: firstInfoLabel.bottomAnchor, constant: .outerSpacer),
             exampleView.centerXAnchor.constraint(
                 equalTo: contentView.centerXAnchor),
             exampleView.widthAnchor.constraint(
@@ -218,7 +217,7 @@ class SeparatorsView: UIViewController{
                 equalToConstant: heightForExampleViews),
             
             secondInfoLabel.topAnchor.constraint(
-                equalTo: exampleView.bottomAnchor, constant: insetForSubviews),
+                equalTo: exampleView.bottomAnchor, constant: .outerSpacer),
             secondInfoLabel.widthAnchor.constraint(
                 equalTo: contentView.widthAnchor, multiplier: .widthMultiplerFor(type: .forViews)),
             secondInfoLabel.centerXAnchor.constraint(
@@ -238,7 +237,7 @@ class SeparatorsView: UIViewController{
                 equalTo: contentView.centerXAnchor),
             lastInfoLabelTopAnchor,
             lastInfoLabel.bottomAnchor.constraint(
-                equalTo: contentView.bottomAnchor, constant: -insetForSubviews)
+                equalTo: contentView.bottomAnchor, constant: -.outerSpacer)
         ])
     }
     //MARK: Updating subviewsConstraints.
@@ -246,7 +245,7 @@ class SeparatorsView: UIViewController{
     private func updateTableConstrait(){
         tableView.reloadData()
         tableViewHeightAnchor?.constant = CGFloat(tableView.numberOfRows(inSection: 0) * 35 + 50)
-        lastInfoLabelTopAnchor?.constant = (tableViewHeightAnchor?.constant ?? 0 ) + insetForSubviews
+        lastInfoLabelTopAnchor?.constant = (tableViewHeightAnchor?.constant ?? 0 ) + .outerSpacer
         view.layoutIfNeeded()
     }
     
