@@ -35,8 +35,8 @@ class CustomSearchBar: UIView {
     var topStroke = CAShapeLayer()
     
     //MARK: Constraints and releated
-    private var cancelButtonLeadingAnchor: NSLayoutConstraint!
-    private var cancelButtonTrailingAnchor: NSLayoutConstraint!
+    private var cancelButtonLeadingAnchor: NSLayoutConstraint = .init()
+    private var cancelButtonTrailingAnchor: NSLayoutConstraint = .init()
     
     //MARK: - Inherited
     convenience init(){

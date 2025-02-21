@@ -36,11 +36,9 @@ class AddDictionaryViewModel {
         NotificationCenter.default.addObserver(self, selector: #selector(appFontDidChange(sender: )), name:
                 .appFontDidChange, object: nil)
     }
-    deinit{
-        NotificationCenter.default.removeObserver(self, name: .appLanguageDidChange, object: nil)
-        NotificationCenter.default.removeObserver(self, name: .appSeparatorDidChange, object: nil)
-        NotificationCenter.default.removeObserver(self, name: .appFontDidChange, object: nil)
-    }
+    
+    deinit { NotificationCenter.default.removeObserver(self) }
+    
     func configureTextPlaceholder() -> String{
         return "viewPlaceholderWord".localized + " \(settingsmodel.appSeparators.value) " + "viewPlaceholderMeaning".localized
     }

@@ -34,8 +34,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "9A7B91D7298D6D9900E60CDD"
-               BuildableName = "LanguageTests.xctest"
-               BlueprintName = "LanguageTests"
+               BuildableName = "LearnyTests.xctest"
+               BlueprintName = "LearnyTests"
                ReferencedContainer = "container:Learny.xcodeproj">
             </BuildableReference>
          </TestableReference>
@@ -45,8 +45,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "9A7B91E1298D6D9A00E60CDD"
-               BuildableName = "LanguageUITests.xctest"
-               BlueprintName = "LanguageUITests"
+               BuildableName = "LearnyUITests.xctest"
+               BlueprintName = "LearnyUITests"
                ReferencedContainer = "container:Learny.xcodeproj">
             </BuildableReference>
          </TestableReference>

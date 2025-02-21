@@ -117,38 +117,63 @@ final class StatisticViewSelectedCell: UITableViewCell {
         contentView.addSubviews(colourView, nameLabel)
         contentView.addSubviews(creationDateLabel, creationDateResultLabel, accessNumberLabel, accessNumberResultLabel, cardsNumberLabel, cardsNumberResultLabel)
         
+        
         NSLayoutConstraint.activate([
-            colourView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 7),
-            colourView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: .nestedSpacer * 2 ),
-            colourView.heightAnchor.constraint(equalToConstant: 50 * 0.7),
-            colourView.widthAnchor.constraint(equalTo: colourView.heightAnchor),
+            colourView.topAnchor.constraint(
+                equalTo: contentView.topAnchor, constant: .nestedSpacer),
+            colourView.leadingAnchor.constraint(
+                equalTo: contentView.leadingAnchor, constant: .nestedSpacer * 2 ),
+            colourView.heightAnchor.constraint(
+                equalToConstant: 50 * 0.7),
+            colourView.widthAnchor.constraint(
+                equalTo: colourView.heightAnchor),
             
-            nameLabel.centerYAnchor.constraint(equalTo: colourView.centerYAnchor),
-            nameLabel.leadingAnchor.constraint(equalTo: colourView.trailingAnchor, constant: .nestedSpacer),
+            nameLabel.centerYAnchor.constraint(
+                equalTo: colourView.centerYAnchor),
+            nameLabel.leadingAnchor.constraint(
+                equalTo: colourView.trailingAnchor, constant: .nestedSpacer),
             
-            creationDateLabel.topAnchor.constraint(equalTo: colourView.bottomAnchor, constant: .outerSpacer),
-            creationDateLabel.leadingAnchor.constraint(equalTo: nameLabel.leadingAnchor),
-            creationDateLabel.heightAnchor.constraint(equalToConstant: .outerSpacer),
+            creationDateLabel.topAnchor.constraint(
+                equalTo: colourView.bottomAnchor, constant: .outerSpacer),
+            creationDateLabel.leadingAnchor.constraint(
+                equalTo: nameLabel.leadingAnchor),
+            creationDateLabel.heightAnchor.constraint(
+                equalToConstant: .outerSpacer),
             
-            creationDateResultLabel.topAnchor.constraint(equalTo: colourView.bottomAnchor, constant: .outerSpacer),
-            creationDateResultLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -.nestedSpacer * 2),
-            creationDateResultLabel.heightAnchor.constraint(equalToConstant: .outerSpacer),
+            creationDateResultLabel.topAnchor.constraint(
+                equalTo: colourView.bottomAnchor, constant: .outerSpacer),
+            creationDateResultLabel.trailingAnchor.constraint(
+                equalTo: contentView.trailingAnchor, constant: -.nestedSpacer * 2),
+            creationDateResultLabel.heightAnchor.constraint(
+                equalToConstant: .outerSpacer),
             
-            accessNumberLabel.topAnchor.constraint(equalTo: creationDateLabel.bottomAnchor, constant: .outerSpacer),
-            accessNumberLabel.leadingAnchor.constraint(equalTo: nameLabel.leadingAnchor),
-            accessNumberLabel.heightAnchor.constraint(equalToConstant: .outerSpacer),
+            accessNumberLabel.topAnchor.constraint(
+                equalTo: creationDateLabel.bottomAnchor, constant: .outerSpacer),
+            accessNumberLabel.leadingAnchor.constraint(
+                equalTo: nameLabel.leadingAnchor),
+            accessNumberLabel.heightAnchor.constraint(
+                equalToConstant: .outerSpacer),
             
-            accessNumberResultLabel.topAnchor.constraint(equalTo: creationDateLabel.bottomAnchor, constant: .outerSpacer),
-            accessNumberResultLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -.nestedSpacer * 2),
-            accessNumberResultLabel.heightAnchor.constraint(equalToConstant: .outerSpacer),
+            accessNumberResultLabel.topAnchor.constraint(
+                equalTo: creationDateLabel.bottomAnchor, constant: .outerSpacer),
+            accessNumberResultLabel.trailingAnchor.constraint(
+                equalTo: contentView.trailingAnchor, constant: -.nestedSpacer * 2),
+            accessNumberResultLabel.heightAnchor.constraint(
+                equalToConstant: .outerSpacer),
             
-            cardsNumberLabel.topAnchor.constraint(equalTo: accessNumberLabel.bottomAnchor, constant: .outerSpacer),
-            cardsNumberLabel.leadingAnchor.constraint(equalTo: nameLabel.leadingAnchor),
-            cardsNumberLabel.heightAnchor.constraint(equalToConstant: .outerSpacer),
+            cardsNumberLabel.topAnchor.constraint(
+                equalTo: accessNumberLabel.bottomAnchor, constant: .outerSpacer),
+            cardsNumberLabel.leadingAnchor.constraint(
+                equalTo: nameLabel.leadingAnchor),
+            cardsNumberLabel.heightAnchor.constraint(
+                equalToConstant: .outerSpacer),
             
-            cardsNumberResultLabel.topAnchor.constraint(equalTo: accessNumberLabel.bottomAnchor, constant: .outerSpacer),
-            cardsNumberResultLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -.nestedSpacer * 2),
-            cardsNumberResultLabel.heightAnchor.constraint(equalToConstant: .outerSpacer),
+            cardsNumberResultLabel.topAnchor.constraint(
+                equalTo: accessNumberLabel.bottomAnchor, constant: .outerSpacer),
+            cardsNumberResultLabel.trailingAnchor.constraint(
+                equalTo: contentView.trailingAnchor, constant: -.nestedSpacer * 2),
+            cardsNumberResultLabel.heightAnchor.constraint(
+                equalToConstant: .outerSpacer),
         ])
     }
 }

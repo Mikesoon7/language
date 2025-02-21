@@ -300,7 +300,7 @@ enum AppLanguage: String, Codable, CaseIterable{
         switch self {
         case .english:      return "en"
         case .russian:      return "ru"
-        case .ukrainian:    return "ua"
+        case .ukrainian:    return "uk"
         case .turkish:      return "tr"
         }
     }

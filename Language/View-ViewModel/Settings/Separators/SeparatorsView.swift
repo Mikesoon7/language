@@ -101,8 +101,8 @@ class SeparatorsView: UIViewController{
     //MARK: - Constraints and related
     private let heightForExampleViews: CGFloat = 80
     
-    private var tableViewHeightAnchor : NSLayoutConstraint!
-    private var lastInfoLabelTopAnchor: NSLayoutConstraint!
+    private var tableViewHeightAnchor : NSLayoutConstraint = .init()
+    private var lastInfoLabelTopAnchor: NSLayoutConstraint = .init()
     
     required init(factory: ViewModelFactory){
         self.viewModel = factory.configureSeparatorsModel()
@@ -190,7 +190,7 @@ class SeparatorsView: UIViewController{
             equalToConstant: CGFloat(tableView.numberOfRows(inSection: 0) * 35) + 50.0)
         lastInfoLabelTopAnchor = lastInfoLabel.topAnchor.constraint(
             equalTo: tableView.topAnchor,
-            constant: (tableViewHeightAnchor?.constant ?? 0) + .outerSpacer )
+            constant: (tableViewHeightAnchor.constant) + .outerSpacer )
 
         NSLayoutConstraint.activate([
             headerInfoLabel.widthAnchor.constraint(
@@ -244,8 +244,8 @@ class SeparatorsView: UIViewController{
     //Called in response to changing number of rows in tableView.
     private func updateTableConstrait(){
         tableView.reloadData()
-        tableViewHeightAnchor?.constant = CGFloat(tableView.numberOfRows(inSection: 0) * 35 + 50)
-        lastInfoLabelTopAnchor?.constant = (tableViewHeightAnchor?.constant ?? 0 ) + .outerSpacer
+        tableViewHeightAnchor.constant = CGFloat(tableView.numberOfRows(inSection: 0) * 35 + 50)
+        lastInfoLabelTopAnchor.constant = (tableViewHeightAnchor.constant ) + .outerSpacer
         view.layoutIfNeeded()
     }
     

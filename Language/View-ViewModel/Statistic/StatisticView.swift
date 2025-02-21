@@ -224,8 +224,8 @@ class StatisticView: UIViewController {
         super.viewWillTransition(to: size, with: coordinator)
         //Reload the chart view and interval picker.
         coordinator.animate { _ in
-            if self.activePicker != nil{
-                self.updateDisplayedPicker(for: self.activePicker!)
+            if let picker = self.activePicker{
+                self.updateDisplayedPicker(for: picker)
             }
         } completion: { _ in
             self.pieChartView?.chartView?.layoutSubviews()
@@ -296,8 +296,10 @@ class StatisticView: UIViewController {
         
         NSLayoutConstraint.activate([
             
-            customPickerCallButton.centerYAnchor.constraint(equalTo: titleLabel.centerYAnchor),
-            customPickerCallButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -.outerSpacer),
+            customPickerCallButton.centerYAnchor.constraint(
+                equalTo: titleLabel.centerYAnchor),
+            customPickerCallButton.trailingAnchor.constraint(
+                equalTo: view.trailingAnchor, constant: -.outerSpacer),
         ])
     }
     

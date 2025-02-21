@@ -60,11 +60,8 @@ class EditViewModel {
             self, selector: #selector(languageDidChange(sender: )), name: .appLanguageDidChange, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(fontDidChange(sedner: )), name: .appFontDidChange, object: nil)
     }
-    deinit {
-        NotificationCenter.default.removeObserver(self, name: .appSeparatorDidChange, object: nil)
-        NotificationCenter.default.removeObserver(self, name: .appLanguageDidChange, object: nil)
-    }
-    
+    deinit { NotificationCenter.default.removeObserver(self) }
+
     //MARK: Open methods
     func updateDictionaryWith(name: String?, text: String?){
         parseTextToArray(name: name, newText: text, oldCollection: oldTextByLines)

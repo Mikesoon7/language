@@ -9,7 +9,7 @@ import UIKit
 
 class SettingsTableLinkView: UIView {
     
-    static var footerHeight: CGFloat = .genericButtonHeight
+    static var footerHeight: CGFloat = 80
     
     private var stackView: UIStackView = {
         let view = UIStackView()
@@ -32,6 +32,7 @@ class SettingsTableLinkView: UIView {
         label.textAlignment = .center
         label.tag = 1
         label.numberOfLines = 0
+        label.lineBreakMode = .byWordWrapping
         return label
     }()
     
@@ -45,6 +46,7 @@ class SettingsTableLinkView: UIView {
         label.textAlignment = .center
         label.tag = 2
         label.numberOfLines = 0
+        label.lineBreakMode = .byWordWrapping
         return label
     }()
     
@@ -58,6 +60,7 @@ class SettingsTableLinkView: UIView {
         label.textAlignment = .center
         label.tag = 3
         label.numberOfLines = 0
+        label.lineBreakMode = .byWordWrapping
         return label
     }()
     
@@ -67,9 +70,8 @@ class SettingsTableLinkView: UIView {
     override init(frame: CGRect){
         super.init(frame: frame)
         configureSubviews()
-        applyLayout()
-        self.backgroundColor = .clear
     }
+    
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -82,20 +84,19 @@ class SettingsTableLinkView: UIView {
         }
     }
     
-    func configureSubviews(){
+    private func configureSubviews(){
         self.addSubviews(stackView, buyCoffee)
         stackView.addArrangedSubviews(privacyPolicy, contactSupport)
-        
         
         compactWidthConstraints = [
             stackView.topAnchor.constraint(
                 equalTo: topAnchor),
             stackView.leadingAnchor.constraint(
-                equalTo: leadingAnchor, constant: .innerSpacer),
+                equalTo: leadingAnchor, constant: .outerSpacer),
             stackView.trailingAnchor.constraint(
-                equalTo: trailingAnchor, constant: -.innerSpacer),
+                equalTo: trailingAnchor, constant: -.outerSpacer),
             stackView.heightAnchor.constraint(
-                equalTo: heightAnchor, multiplier: 0.5),
+                equalTo: heightAnchor, multiplier: 0.66, constant: -.innerSpacer),
                                    
             buyCoffee.topAnchor.constraint(
                 equalTo: stackView.bottomAnchor, constant: .innerSpacer),
@@ -108,9 +109,9 @@ class SettingsTableLinkView: UIView {
             stackView.topAnchor.constraint(
                 equalTo: topAnchor),
             stackView.leadingAnchor.constraint(
-                equalTo: leadingAnchor, constant: .innerSpacer),
+                equalTo: leadingAnchor, constant: .outerSpacer),
             stackView.widthAnchor.constraint(
-                equalTo: widthAnchor, multiplier: 0.66, constant: -.innerSpacer * 2),
+                equalTo: widthAnchor, multiplier: 0.66, constant: -.outerSpacer * 2),
             stackView.heightAnchor.constraint(
                 equalTo: heightAnchor),
                                    
@@ -119,7 +120,7 @@ class SettingsTableLinkView: UIView {
             buyCoffee.leadingAnchor.constraint(
                 equalTo: stackView.trailingAnchor),
             buyCoffee.trailingAnchor.constraint(
-                equalTo: trailingAnchor, constant: -.innerSpacer)
+                equalTo: trailingAnchor, constant: -.outerSpacer)
         ]
                 
         let privacyTap = UITapGestureRecognizer(target: self, action: #selector(privacyPolicy(sender: )))
@@ -131,7 +132,11 @@ class SettingsTableLinkView: UIView {
         buyCoffee.addGestureRecognizer(coffeeTap)
     }
     
-    
+    func updateLabels(){
+        privacyPolicy.text = "settings.footer.policy".localized
+        contactSupport.text = "settings.footer.support".localized
+        buyCoffee.text = "settings.footer.buyCoffee".localized
+    }
     
     func applyLayout(){
         if traitCollection.isRegularWidth {

@@ -101,9 +101,7 @@ class CustomNavigationController: UINavigationController {
             y: 0
         )
 
-        guard let tabBar = self.tabBarController?.tabBar else {
-            print("failed to add bottom stroke")
-            return }
+        guard let tabBar = self.tabBarController?.tabBar else { return }
         tabBar.layer.addSublayer(bottomStroke)
 
     }

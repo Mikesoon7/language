@@ -383,10 +383,14 @@ class DetailsView: UIViewController {
         textViewShadowView.addSubview(textInputView)
         
         NSLayoutConstraint.activate([
-            textInputView.topAnchor.constraint(equalTo: textViewShadowView.topAnchor) ,
-            textInputView.leadingAnchor.constraint(equalTo: textViewShadowView.leadingAnchor),
-            textInputView.bottomAnchor.constraint(equalTo: textViewShadowView.bottomAnchor),
-            textInputView.trailingAnchor.constraint(equalTo: textViewShadowView.trailingAnchor),
+            textInputView.topAnchor.constraint(
+                equalTo: textViewShadowView.topAnchor) ,
+            textInputView.leadingAnchor.constraint(
+                equalTo: textViewShadowView.leadingAnchor),
+            textInputView.bottomAnchor.constraint(
+                equalTo: textViewShadowView.bottomAnchor),
+            textInputView.trailingAnchor.constraint(
+                equalTo: textViewShadowView.trailingAnchor),
         ])
     }
     
@@ -398,9 +402,12 @@ class DetailsView: UIViewController {
         NSLayoutConstraint.activate([
             settingView.topAnchor.constraint(
                 equalTo: settingsShadowView.topAnchor),
-            settingView.leadingAnchor.constraint(equalTo: settingsShadowView.leadingAnchor),
-            settingView.bottomAnchor.constraint(equalTo: settingsShadowView.bottomAnchor),
-            settingView.trailingAnchor.constraint(equalTo: settingsShadowView.trailingAnchor),
+            settingView.leadingAnchor.constraint(
+                equalTo: settingsShadowView.leadingAnchor),
+            settingView.bottomAnchor.constraint(
+                equalTo: settingsShadowView.bottomAnchor),
+            settingView.trailingAnchor.constraint(
+                equalTo: settingsShadowView.trailingAnchor),
             
             
             isOneSideModeLabel.centerYAnchor.constraint(

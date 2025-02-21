@@ -12,7 +12,7 @@ import UIKit
 class DataForLastCell: Hashable{
     var identifier = UUID()
     var score : Float
-    var delegate : CustomCellDelegate?
+    weak var delegate : CustomCellDelegate?
     
     init(score: Float, delegate: CustomCellDelegate) {
         self.score = score
@@ -49,7 +49,7 @@ class CollectionViewLastCell: UICollectionViewCell {
         return view
     }()
 
-    let cardShadowTestView : UIView = {
+    let cardShadowView : UIView = {
         let view = UIView()
         view.backgroundColor = .clear
         
@@ -193,18 +193,18 @@ class CollectionViewLastCell: UICollectionViewCell {
 
     //MARK: Subviews Configuration
     func configureCardView(){
-        self.contentView.addSubview(cardShadowTestView)
-        cardShadowTestView.addSubview(cardView)
+        self.contentView.addSubview(cardShadowView)
+        cardShadowView.addSubview(cardView)
         cardView.addSubviews(scoreLabel)
         
         NSLayoutConstraint.activate([
-            cardShadowTestView.centerXAnchor.constraint(
+            cardShadowView.centerXAnchor.constraint(
                 equalTo: self.contentView.centerXAnchor),
-            cardShadowTestView.centerYAnchor.constraint(
+            cardShadowView.centerYAnchor.constraint(
                 equalTo: self.contentView.centerYAnchor),
-            cardShadowTestView.widthAnchor.constraint(
+            cardShadowView.widthAnchor.constraint(
                 equalTo: self.contentView.widthAnchor),
-            cardShadowTestView.heightAnchor.constraint(
+            cardShadowView.heightAnchor.constraint(
                 equalTo: self.contentView.heightAnchor ),
                         
             cardView.centerXAnchor.constraint(

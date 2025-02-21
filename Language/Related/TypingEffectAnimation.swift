@@ -39,7 +39,6 @@ class TypingEffectController {
             if charactersNumber > 0 {
                 DispatchQueue.main.async {
                     self?.label.text!.append(characters[typeIndex])
-                    print(characters[typeIndex])
                     typeIndex += 1
                     charactersNumber -= 1
                 }

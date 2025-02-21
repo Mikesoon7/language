@@ -70,29 +70,30 @@ class GameDetailsVC: UIViewController {
     private lazy var doneButton:    UIButton = configureButtonWith(title: "system.done".localized)
     
     //MARK: Gestures
-    private var wordTapGesture: UITapGestureRecognizer! // For selecting word
-    private var viewDismissTapGesture: UITapGestureRecognizer! // Dismiss the view if user taps on dimmedView
-    private var viewPanGesture: UIPanGestureRecognizer!
+    private var wordTapGesture: UITapGestureRecognizer = .init() // For selecting word
+    private var viewDismissTapGesture: UITapGestureRecognizer = .init()
+    // Dismiss the view if user taps on dimmedView
+    private var viewPanGesture: UIPanGestureRecognizer = .init()
     
     //MARK: Constrait related properties
     private let insetFromBottom: CGFloat = 30
-    private var initialAnchorConstant:  CGFloat!
-    private var secondAnchorConstant:   CGFloat!
-    private var thirdAnchorConstant:    CGFloat!
-    private var finalAnchorConstant:    CGFloat!
-    private var currentAnchorConstant:  CGFloat!
+    private var initialAnchorConstant:  CGFloat = 0
+    private var secondAnchorConstant:   CGFloat = 0
+    private var thirdAnchorConstant:    CGFloat = 0
+    private var finalAnchorConstant:    CGFloat = 0
+    private var currentAnchorConstant:  CGFloat = 0
     
     //Constraits
-    private var doneButtonTrailingAnchor:       NSLayoutConstraint = .init()
-    private var doneButtonActiveTrailingAnchor: NSLayoutConstraint = .init()
+    private var doneButtonTrailingAnchor:           NSLayoutConstraint = .init()
+    private var doneButtonActiveTrailingAnchor:     NSLayoutConstraint = .init()
     
-    private var containerViewBottomAnchor:        NSLayoutConstraint = .init()
+    private var containerViewBottomAnchor:          NSLayoutConstraint = .init()
     
-    private var textViewBottomToContainer:      NSLayoutConstraint = .init()
+    private var textViewBottomToContainer:          NSLayoutConstraint = .init()
     private var textViewBottomToKeyboardConstraint: NSLayoutConstraint = .init()
     
-    private var deleteBottomToContainer:        NSLayoutConstraint!
-    private var editBottomToContainer:          NSLayoutConstraint = .init()
+    private var deleteBottomToContainer:            NSLayoutConstraint = .init()
+    private var editBottomToContainer:              NSLayoutConstraint = .init()
     
     
     //MARK: - Inherited methods
@@ -532,7 +533,7 @@ class GameDetailsIPadVC: UIViewController {
     private lazy var doneButton:    UIButton = configureButtonWith(title: "system.done".localized)
     
     //MARK: Gestures
-    private var wordTapGesture: UITapGestureRecognizer! // For selecting word
+    private var wordTapGesture: UITapGestureRecognizer = .init() // For selecting word
 
     //MARK: Constrait related properties
     //Constraits

@@ -143,11 +143,8 @@ final class TextInputView: UIView {
         fatalError("Coder wasn's imported")
     }
     
-    deinit {
-        NotificationCenter.default.removeObserver(self, name: UIScene.didEnterBackgroundNotification, object: nil)
-        NotificationCenter.default.removeObserver(self, name: UIScene.didActivateNotification, object: nil)
-    }
-    
+    deinit { NotificationCenter.default.removeObserver(self) }
+
     //MARK: View SetUp
     private func configureView(){
         self.layer.cornerRadius = .cornerRadius

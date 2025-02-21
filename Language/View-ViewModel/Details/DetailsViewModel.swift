@@ -65,10 +65,8 @@ class DetailsViewModel{
             self, selector: #selector(fontDidChange(sender: )), name: .appFontDidChange, object: nil)
         
     }
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-    }
-    
+    deinit { NotificationCenter.default.removeObserver(self) }
+
     
     func updateDictionary(){
         guard let settings = model.fetchSettings(for: dictionary) else {

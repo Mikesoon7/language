@@ -65,8 +65,7 @@ class MainGameVC: UIViewController{
     private var longPressCompleted = false
 
     //MARK: Timer Related
-    private lazy var timerView = CountdownTimerLabel(initialTimerTime: ( selectedTime ?? 0 ),
-                                             delegate: self)
+    private lazy var timerView: CountdownTimerLabel = CountdownTimerLabel(initialTimerTime: ( selectedTime ?? 0 ), delegate: self)
     private var popUpTimeView: PopUpTimerView?
     
     //MARK: Views
@@ -104,7 +103,7 @@ class MainGameVC: UIViewController{
     //Updates log data with spent time.
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-
+        timerView.kill()
         viewModel?.updateLogWith(time: timerView.timeSpent(), cardsChecked: scrolledCards.count)
     
     }
@@ -450,7 +449,7 @@ class MainGameVC: UIViewController{
     
     ///Reload all the view's which display labels.
     private func reloadFont(){
-        guard selectedCell != nil, let cell = collectionView.cellForItem(at: selectedCell!) as? CollectionViewCell else{
+        guard let index = selectedCell, let cell = collectionView.cellForItem(at: index) as? CollectionViewCell else{
             collectionView.reloadData()
             return
         }
@@ -582,8 +581,8 @@ extension MainGameVC {
 //MARK: MainGameVCDelegate
 extension MainGameVC: MainGameVCDelegate {
     func restoreAnimation() -> UIViewPropertyAnimator{
-        guard selectedCell != nil,
-              let cell = collectionView.cellForItem(at: selectedCell!) as? CollectionViewCell
+        guard let index = selectedCell,
+              let cell = collectionView.cellForItem(at: index) as? CollectionViewCell
         else {
             return UIViewPropertyAnimator()
         }
@@ -615,7 +614,7 @@ extension MainGameVC: MainGameVCDelegate {
         let animation = restoreAnimation()
         animation.addCompletion { [ weak self ] _ in
 
-            guard let self = self, let item = dataSource.itemIdentifier(for: selectedCell!) else { return }
+            guard let self = self, let index = selectedCell, let item = dataSource.itemIdentifier(for: index) else { return }
             var snapshot = self.dataSource.snapshot()
             guard let hashableInstance = item as? HashableWordsEntity else { return }
             self.viewModel?.deleteWord(word: hashableInstance.wordEntity)
@@ -624,9 +623,9 @@ extension MainGameVC: MainGameVCDelegate {
             self.dataSource.apply(snapshot, animatingDifferences: true)
             self.selectedCell = nil
             
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: { [weak self] in
                 if snapshot.numberOfItems == 1 {
-                    self.navigationController?.popToRootViewController(animated: true)
+                    self?.navigationController?.popToRootViewController(animated: true)
                 }
             })
         }
@@ -651,7 +650,7 @@ extension MainGameVC: MainGameVCDelegate {
         let wordEntity = hashableInstance.wordEntity
         
         ///Ensures, that if cell was edited, it will flip to it's initial appearence.
-        if let cell = collectionView.cellForItem(at:selectedCell!) as? CollectionViewCell, cell.isFlipped {
+        if let cell = collectionView.cellForItem(at: index) as? CollectionViewCell, cell.isFlipped {
             animateCellFlip(cell: cell, frontToBack: false)
         }
 
@@ -787,8 +786,8 @@ extension MainGameVC: PopUpTimerViewDelegate {
     }
     
     func finishButtonDidTap() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3, execute: {
-            self.navigationController?.popToRootViewController(animated: true)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3, execute: {  [weak self] in
+            self?.navigationController?.popToRootViewController(animated: true)
         })
     }
     

@@ -97,10 +97,8 @@ class EditView: UIViewController {
         )
 
     }
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-    }
-    
+    deinit { NotificationCenter.default.removeObserver(self) }
+
     //MARK: Binding View and ViewModel
     private func bind(){
         viewModel.$data
@@ -188,10 +186,14 @@ class EditView: UIViewController {
         textField.delegate = self
         textField.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            textField.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
-            textField.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
-            textField.topAnchor.constraint(equalTo: containerView.topAnchor),
-            textField.bottomAnchor.constraint(equalTo: containerView.bottomAnchor),
+            textField.leadingAnchor.constraint(
+                equalTo: containerView.leadingAnchor),
+            textField.trailingAnchor.constraint(
+                equalTo: containerView.trailingAnchor),
+            textField.topAnchor.constraint(
+                equalTo: containerView.topAnchor),
+            textField.bottomAnchor.constraint(
+                equalTo: containerView.bottomAnchor),
         ])
 
         navigationItem.titleView = containerView

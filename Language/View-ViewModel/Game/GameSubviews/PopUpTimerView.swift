@@ -15,7 +15,7 @@ protocol PopUpTimerViewDelegate: AnyObject {
 }
 class PopUpTimerView: UIView {
     
-    var delegate: PopUpTimerViewDelegate
+    weak var delegate: PopUpTimerViewDelegate?
     
     var learnedNumber: Int
     var sourceViewRect: CGRect
@@ -184,13 +184,14 @@ class PopUpTimerView: UIView {
 //MARK: - Actions
 extension PopUpTimerView{
     @objc func continueButDidTap(){
-        dismiss(completion: delegate.continueButtonDidTap)
+        dismiss(completion: delegate?.continueButtonDidTap ?? {})
     }
     @objc func finishButDidTap(){
-        dismiss(completion: delegate.finishButtonDidTap)
+        
+        dismiss(completion: delegate?.finishButtonDidTap ?? {})
         
     }
     @objc func viewDidDismiss(){
-        dismiss(completion: delegate.viewDidDismiss)
+        dismiss(completion: delegate?.viewDidDismiss ?? {})
     }
 }

@@ -66,10 +66,8 @@ class DataUpdateManager{
             try dataModel.addWordsTo(dictionary: dictionary, words: words)
             
             if currentSelectedNumber == currentTotalNumber {
-                print(currentSelectedNumber + Int64(words.count), "in addNewWordsFor")
                 try settingsDidChangeFor(dictionary, selectedDisplayNumber: currentSelectedNumber + Int64(words.count))
             } else {
-                print(currentSelectedNumber)
 
                 dataModel.settingsDidChange.send(true)
             }
@@ -83,13 +81,11 @@ class DataUpdateManager{
         let currentSettings = dataModel.fetchSettings(for: dictionary)
         let currentNumberOfCards = dictionary.numberOfCards
         let currentSelectedNumber = currentSettings?.selectedNumber
-        print(currentSelectedNumber, "before")
 
         do {
             try dataModel.update(dictionary: dictionary, words: words, name: name)
             if currentSettings == nil || currentNumberOfCards == currentSelectedNumber || words.count < currentSelectedNumber!{
                 try settingsDidChangeFor(dictionary, selectedDisplayNumber: Int64(words.count))
-                print(words.count, "updated")
             }
         } catch {
             throw error

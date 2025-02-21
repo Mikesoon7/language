@@ -12,7 +12,7 @@ protocol TutorialModifier: AnyObject {
     func displayCellActionView(activate: Bool)
 }
 
-class TutorialVCTest: UIViewController {
+class TutorialVC: UIViewController {
     
     private weak var delegate: TutorialModifier?
     private var isTutorialAnimated: Bool = false
@@ -330,7 +330,6 @@ class TutorialVCTest: UIViewController {
         containerView.addSubviews(newLineButton, separatorButton, translateButton, cardView)
         cardView.addSubview(exampleTextView)
         NSLayoutConstraint.activate([
-            
             separatorButton.heightAnchor.constraint(
                 equalToConstant: 50),
             separatorButton.widthAnchor.constraint(
@@ -523,7 +522,7 @@ class TutorialVCTest: UIViewController {
 }
 
 //MARK: CollectionViewDelegate
-extension TutorialVCTest: UICollectionViewDelegate, UICollectionViewDataSource {
+extension TutorialVC: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         2
     }
@@ -550,7 +549,7 @@ extension TutorialVCTest: UICollectionViewDelegate, UICollectionViewDataSource {
 }
 
 //MARK: Required Collection Cell Delegate
-extension TutorialVCTest: MenuCellDelegate {
+extension TutorialVC: MenuCellDelegate {
     func panningBegan(for cell: UICollectionViewCell)       {}
     
     func panningEnded(active: Bool)                         {}
@@ -563,7 +562,7 @@ extension TutorialVCTest: MenuCellDelegate {
 }
 
 //MARK: PageController Delegate
-extension TutorialVCTest: AccessViewDelegate {
+extension TutorialVC: AccessViewDelegate {
     ///Depending on tutorial state calls delegate animation methods and animate main changes.
     ///Insuring, that view has a proper layout instructruction with both foward and backward scrolling.
     func didChangeCurrentPage(manually: Bool, with pointerOn: Int) {
@@ -675,7 +674,7 @@ extension TutorialVCTest: AccessViewDelegate {
 
 //MARK: ScrollView delegate
 //Handle user's actions if swipe was prefered over button
-extension TutorialVCTest: UIScrollViewDelegate{
+extension TutorialVC: UIScrollViewDelegate{
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         scrollView.contentOffset.y = 0
     }
@@ -686,7 +685,7 @@ extension TutorialVCTest: UIScrollViewDelegate{
 }
 
 //MARK: Tutorial Cell Delegate
-extension TutorialVCTest: TutorialModifier{
+extension TutorialVC: TutorialModifier{
     func displayCellActionView(activate: Bool) {
         if let cell = collectionView.cellForItem(at: IndexPath(item: 0, section: 0)) as? MenuDictionaryCVCell {
             cell.activate(activate)

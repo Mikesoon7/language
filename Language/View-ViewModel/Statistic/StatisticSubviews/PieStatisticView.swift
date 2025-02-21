@@ -51,10 +51,14 @@ class PieStatisticView: UIView {
         chartView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            chartView.topAnchor.constraint(equalTo: topAnchor),
-            chartView.leadingAnchor.constraint(equalTo: leadingAnchor),
-            chartView.bottomAnchor.constraint(equalTo: bottomAnchor),
-            chartView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            chartView.topAnchor.constraint(
+                equalTo: topAnchor),
+            chartView.leadingAnchor.constraint(
+                equalTo: leadingAnchor),
+            chartView.bottomAnchor.constraint(
+                equalTo: bottomAnchor),
+            chartView.trailingAnchor.constraint(
+                equalTo: trailingAnchor),
         ])
     }
     ///Assigning passed data to the pie chart
@@ -146,10 +150,14 @@ class PieChartView: UIView {
         self.addSubviews(containerView, centreLabel)
         
         NSLayoutConstraint.activate([
-            containerView.topAnchor.constraint(equalTo: topAnchor),
-            containerView.leadingAnchor.constraint(equalTo: leadingAnchor),
-            containerView.trailingAnchor.constraint(equalTo: trailingAnchor),
-            containerView.bottomAnchor.constraint(equalTo: bottomAnchor),
+            containerView.topAnchor.constraint(
+                equalTo: topAnchor),
+            containerView.leadingAnchor.constraint(
+                equalTo: leadingAnchor),
+            containerView.trailingAnchor.constraint(
+                equalTo: trailingAnchor),
+            containerView.bottomAnchor.constraint(
+                equalTo: bottomAnchor),
             
             centreLabel.centerXAnchor.constraint(
                 equalTo: centerXAnchor),
@@ -420,7 +428,6 @@ class PieChartView: UIView {
             delegate?.chartValueSelected(entry: nil)
             return
         } else if distance > radius { //Outside
-            print("ouside")
             return
         }
         

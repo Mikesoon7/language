@@ -66,21 +66,34 @@ class CustomSearchToolBar: UIView {
     private func configureView(){
         addSubviews(chevronUpBut, chevronDonwBut, searchBar)
         
+        
         NSLayoutConstraint.activate([
-            chevronDonwBut.topAnchor.constraint(equalTo: topAnchor),
-            chevronDonwBut.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -inset),
-            chevronDonwBut.bottomAnchor.constraint(equalTo: bottomAnchor),
-            chevronDonwBut.widthAnchor.constraint(equalTo: chevronDonwBut.heightAnchor),
+            chevronDonwBut.topAnchor.constraint(
+                equalTo: topAnchor),
+            chevronDonwBut.trailingAnchor.constraint(
+                equalTo: trailingAnchor, constant: -inset),
+            chevronDonwBut.bottomAnchor.constraint(
+                equalTo: bottomAnchor),
+            chevronDonwBut.widthAnchor.constraint(
+                equalTo: chevronDonwBut.heightAnchor),
             
-            chevronUpBut.trailingAnchor.constraint(equalTo: chevronDonwBut.leadingAnchor),
-            chevronUpBut.topAnchor.constraint(equalTo: topAnchor),
-            chevronUpBut.bottomAnchor.constraint(equalTo: bottomAnchor),
-            chevronUpBut.widthAnchor.constraint(equalTo: chevronUpBut.heightAnchor),
+            chevronUpBut.trailingAnchor.constraint(
+                equalTo: chevronDonwBut.leadingAnchor),
+            chevronUpBut.topAnchor.constraint(
+                equalTo: topAnchor),
+            chevronUpBut.bottomAnchor.constraint(
+                equalTo: bottomAnchor),
+            chevronUpBut.widthAnchor.constraint(
+                equalTo: chevronUpBut.heightAnchor),
             
-            searchBar.topAnchor.constraint(equalTo: topAnchor),
-            searchBar.bottomAnchor.constraint(equalTo: bottomAnchor),
-            searchBar.leadingAnchor.constraint(equalTo: leadingAnchor, constant: inset),
-            searchBar.trailingAnchor.constraint(equalTo: chevronUpBut.leadingAnchor),
+            searchBar.topAnchor.constraint(
+                equalTo: topAnchor),
+            searchBar.bottomAnchor.constraint(
+                equalTo: bottomAnchor),
+            searchBar.leadingAnchor.constraint(
+                equalTo: leadingAnchor, constant: inset),
+            searchBar.trailingAnchor.constraint(
+                equalTo: chevronUpBut.leadingAnchor),
         ])
         self.backgroundColor = .secondarySystemBackground
     }

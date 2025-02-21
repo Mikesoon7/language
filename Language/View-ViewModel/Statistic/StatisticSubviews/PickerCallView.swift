@@ -48,8 +48,10 @@ class PickerCallView: UIView {
         addSubview(titleLabel)
         
         NSLayoutConstraint.activate([
-            titleLabel.bottomAnchor.constraint(equalTo: centerYAnchor, constant: -(.nestedSpacer / 3)),
-            titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: .nestedSpacer),
+            titleLabel.bottomAnchor.constraint(
+                equalTo: centerYAnchor, constant: -(.nestedSpacer / 3)),
+            titleLabel.leadingAnchor.constraint(
+                equalTo: leadingAnchor, constant: .nestedSpacer),
         ])
     }
     
@@ -58,8 +60,10 @@ class PickerCallView: UIView {
         addSubview(subtitleDateLabel)
         
         NSLayoutConstraint.activate([
-            subtitleDateLabel.topAnchor.constraint(equalTo: centerYAnchor, constant: .nestedSpacer / 3),
-            subtitleDateLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: .nestedSpacer),
+            subtitleDateLabel.topAnchor.constraint(
+                equalTo: centerYAnchor, constant: .nestedSpacer / 3),
+            subtitleDateLabel.leadingAnchor.constraint(
+                equalTo: leadingAnchor, constant: .nestedSpacer),
         ])
     }
     

@@ -7,7 +7,7 @@
 
 import XCTest
 
-final class LanguageUITestsLaunchTests: XCTestCase {
+final class LearnyUITestsLaunchTests: XCTestCase {
 
     override class var runsForEachTargetApplicationUIConfiguration: Bool {
         true
@@ -25,7 +25,7 @@ final class LanguageUITestsLaunchTests: XCTestCase {
         // such as logging into a test account or navigating somewhere in the app
 
         let attachment = XCTAttachment(screenshot: app.screenshot())
-        attachment.name = "Launch Screen"
+                attachment.name = "Launch Screen"
         attachment.lifetime = .keepAlways
         add(attachment)
     }

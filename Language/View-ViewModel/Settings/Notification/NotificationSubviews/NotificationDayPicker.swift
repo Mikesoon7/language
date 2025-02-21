@@ -11,7 +11,7 @@ import UIKit
 
 class NotificationDayPicker: UIView{
     
-    private var selectedDaysSet : [Int]!
+    private var selectedDaysSet : [Int] = []
     private var viewModel: NotificationViewModel?
         
     //Array of names for each day, starts from the same as in system day.
@@ -31,7 +31,7 @@ class NotificationDayPicker: UIView{
     //MARK: Inherited
     required init(viewModel: NotificationViewModel?){
         super.init(frame: .zero)
-        self.selectedDaysSet = viewModel?.getSelectedDays()
+        self.selectedDaysSet = viewModel?.getSelectedDays() ?? [0]
         self.viewModel = viewModel
 
         configureView()

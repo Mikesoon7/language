@@ -8,7 +8,8 @@
 import UIKit
 
 class CountdownTimerLabel: UILabel {
-    var delegate: CountdownTimerDelegate
+    
+    weak var delegate: CountdownTimerDelegate?
     
     var initialTimerTime: Int
     var remainingTimerTime: Int
@@ -17,7 +18,7 @@ class CountdownTimerLabel: UILabel {
     var isCountingDown: Bool
     private var timer: DispatchSourceTimer?
 
-    required init(initialTimerTime: Int, delegate: CountdownTimerDelegate) {
+    required init(initialTimerTime: Int, delegate: CountdownTimerDelegate?) {
         self.delegate = delegate
         self.initialTimerTime = initialTimerTime
         self.remainingTimerTime = initialTimerTime
@@ -53,10 +54,10 @@ class CountdownTimerLabel: UILabel {
                 }
             } else {
                 self.timer?.cancel()
-                DispatchQueue.main.async {
-                    self.text = "Time's up!"
-                    self.delegate.timerDidFire()
-                    self.isCountingDown = false
+                DispatchQueue.main.async { [weak self] in
+                    self?.text = "Time's up!"
+                    self?.delegate?.timerDidFire()
+                    self?.isCountingDown = false
                     return
                 }
             }
@@ -78,6 +79,7 @@ class CountdownTimerLabel: UILabel {
                 self.text = String.timeString(from: self.additionalTimerTime)
             }
         }
+
         isCountingDown = false
         timer?.resume()
     }
@@ -86,15 +88,14 @@ class CountdownTimerLabel: UILabel {
         timer?.cancel()
     }
     
+    func kill(){
+        timer?.cancel()
+        timer = nil
+    }
+    
     func resumeCountdown() {
         isCountingDown ? startCountdown() : startCountingUp()
     }
-
-//    func timeString(from seconds: Int) -> String {
-//        let minutes = seconds / 60
-//        let seconds = seconds % 60
-//        return String(format: "%02d:%02d", minutes, seconds)
-//    }
     
     func timeSpent() -> Int{
         if remainingTimerTime == 0 {
@@ -105,7 +106,7 @@ class CountdownTimerLabel: UILabel {
     }
 }
 
-protocol CountdownTimerDelegate {
+protocol CountdownTimerDelegate: AnyObject {
     func timerDidFire()
 }
 

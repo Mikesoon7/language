@@ -24,8 +24,6 @@ struct StatisticCellData{
 final class StatisticViewCell: UITableViewCell {
     static let id = "StatisticViewCell"
     
-    private let subviewsInsets: CGFloat = 10
-    
     private let colourView: UIView = {
         let view = UIView()
         view.clipsToBounds = true
@@ -89,19 +87,29 @@ final class StatisticViewCell: UITableViewCell {
         contentView.addSubviews(colourView, nameLabel, accessTimeLabel, accessTimeRationLabel)
         
         NSLayoutConstraint.activate([
-            colourView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            colourView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: subviewsInsets * 2 ),
-            colourView.heightAnchor.constraint(equalTo: contentView.heightAnchor, multiplier: 0.7),
-            colourView.widthAnchor.constraint(equalTo: colourView.heightAnchor),
+            colourView.centerYAnchor.constraint(
+                equalTo: contentView.centerYAnchor),
+            colourView.leadingAnchor.constraint(
+                equalTo: contentView.leadingAnchor, constant: .nestedSpacer * 2 ),
+            colourView.heightAnchor.constraint(
+                equalTo: contentView.heightAnchor, multiplier: 0.7),
+            colourView.widthAnchor.constraint(
+                equalTo: colourView.heightAnchor),
             
-            nameLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            nameLabel.leadingAnchor.constraint(equalTo: colourView.trailingAnchor, constant: subviewsInsets),
+            nameLabel.centerYAnchor.constraint(
+                equalTo: contentView.centerYAnchor),
+            nameLabel.leadingAnchor.constraint(
+                equalTo: colourView.trailingAnchor, constant: .nestedSpacer),
             
-            accessTimeLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -subviewsInsets * 2 ),
-            accessTimeLabel.bottomAnchor.constraint(equalTo: contentView.centerYAnchor, constant: -subviewsInsets / 3),
+            accessTimeLabel.trailingAnchor.constraint(
+                equalTo: contentView.trailingAnchor, constant: -.nestedSpacer * 2 ),
+            accessTimeLabel.bottomAnchor.constraint(
+                equalTo: contentView.centerYAnchor, constant: -.nestedSpacer / 3),
             
-            accessTimeRationLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -subviewsInsets * 2 ),
-            accessTimeRationLabel.topAnchor.constraint(equalTo: contentView.centerYAnchor, constant: subviewsInsets / 3),
+            accessTimeRationLabel.trailingAnchor.constraint(
+                equalTo: contentView.trailingAnchor, constant: -.nestedSpacer * 2 ),
+            accessTimeRationLabel.topAnchor.constraint(
+                equalTo: contentView.centerYAnchor, constant: .nestedSpacer / 3),
         ])
     }
 }

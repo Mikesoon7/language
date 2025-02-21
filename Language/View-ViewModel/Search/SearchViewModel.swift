@@ -71,12 +71,8 @@ class SearchViewModel {
             name: .appFontDidChange, object: nil)
     }
     
-    deinit{
-        NotificationCenter.default.removeObserver(self, name: .appLanguageDidChange, object: nil)
-        NotificationCenter.default.removeObserver(self, name: .appSearchBarPositionDidChange, object: nil)
-        NotificationCenter.default.removeObserver(self, name: .appFontDidChange, object: nil)
-    }
-    
+    deinit { NotificationCenter.default.removeObserver(self) }
+
     func transform(input: AnyPublisher<Input, Never>) -> AnyPublisher<Output, Never> {
         input
             .receive(on: DispatchQueue.main)

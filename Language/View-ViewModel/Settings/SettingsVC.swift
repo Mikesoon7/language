@@ -16,8 +16,8 @@ class SettingsVC: UIViewController {
     private var cancellable = Set<AnyCancellable>()
     
     //MARK: Views.
-    lazy var tableView: UITableView = {
-        let view = UITableView(frame: .zero, style: .insetGrouped)
+    lazy var tableView: AccessableTableView = {
+        let view = AccessableTableView(frame: .zero, style: .insetGrouped)
         view.register(SettingsHeaderCell.self, forCellReuseIdentifier: SettingsHeaderCell.identifier)
         view.register(SettingsTextCell.self, forCellReuseIdentifier: SettingsTextCell.identifier)
         view.register(SettingsImageCell.self, forCellReuseIdentifier: SettingsImageCell.identifier)
@@ -28,6 +28,13 @@ class SettingsVC: UIViewController {
         view.subviews.forEach { sections in
             sections.addCenterShadows()
         }
+        return view
+    }()
+    
+    private var foorLinkView: SettingsTableLinkView = {
+        let view = SettingsTableLinkView(frame: .zero)
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .clear
         return view
     }()
     
@@ -45,8 +52,8 @@ class SettingsVC: UIViewController {
         bind()
         configureTableView()
         configureLabels()
+        setUpTransparentFooterView()
         
-        setupTableFooter()
     }
         
     //MARK: - StyleChange Responding
@@ -92,7 +99,7 @@ class SettingsVC: UIViewController {
     }
     //MARK: Subviews SetUp
     private func configureTableView(){
-        view.addSubview(tableView)
+        view.addSubviews(foorLinkView, tableView)
         
         tableView.delegate = self
         tableView.dataSource = self
@@ -105,18 +112,26 @@ class SettingsVC: UIViewController {
             tableView.bottomAnchor.constraint(
                 equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             tableView.trailingAnchor.constraint(
-                equalTo: view.trailingAnchor)
+                equalTo: view.trailingAnchor),
+            
+            foorLinkView.bottomAnchor.constraint(
+                equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            foorLinkView.leadingAnchor.constraint(
+                equalTo: view.leadingAnchor),
+            foorLinkView.trailingAnchor.constraint(
+                equalTo: view.trailingAnchor),
+            foorLinkView.heightAnchor.constraint(
+                equalToConstant: SettingsTableLinkView.footerHeight),
         ])
+        //There was a naughty error i couldnt solve. So i triggering item layout straight from the superview.
+        foorLinkView.applyLayout()
     }
-    func setupTableFooter() {
-        let footerView = SettingsTableLinkView(frame: CGRect(
-            origin: .zero, size: CGSize(width: tableView.bounds.width, height: SettingsTableLinkView.footerHeight)))
-        footerView.backgroundColor = .clear
-        
-        tableView.tableFooterView = footerView
+    func setUpTransparentFooterView(){
+        let view = UIView(frame: CGRect(origin: .zero, size: CGSize(width: view.bounds.width, height: SettingsTableLinkView.footerHeight)))
+        view.backgroundColor = .clear
+        tableView.tableFooterView = view
     }
-
-
+    
     //MARK: System
     private func presentNotificationVC(){
         let vc = NotificationView(factory: viewModelFactory)
@@ -139,7 +154,7 @@ class SettingsVC: UIViewController {
         self.present(vc, animated: true)
     }
     private func presentTutorialVC(){
-        let vc = TutorialVCTest()
+        let vc = TutorialVC()
         self.navigationController?.present(vc, animated: true)
     }
     //Attaching cancel action to passed action.
@@ -169,7 +184,7 @@ class SettingsVC: UIViewController {
 
     private func configureLabels(){
         navigationItem.title = "settings.title".localized
-        setupTableFooter()
+        foorLinkView.updateLabels()
     }
 }
 
@@ -210,9 +225,9 @@ extension SettingsVC: UITableViewDelegate,  UITableViewDataSource{
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         viewModel.heightForRowAt(indexPath: indexPath)
     }
-    
+        
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return .longOuterSpacer
+        return .innerSpacer
     }
 }
 
@@ -222,5 +237,15 @@ extension SettingsVC: UIFontPickerViewControllerDelegate {
         viewModel.updateSelectedFont(font: selectedFont)
         
         viewController.dismiss(animated: true)
+    }
+}
+
+class AccessableTableView: UITableView {
+    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+        let hitView = super.hitTest(point, with: event)
+        
+        // Allow touches to pass through transparent areas
+        if hitView == self.tableFooterView { return nil }
+        return hitView
     }
 }

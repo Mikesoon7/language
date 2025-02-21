@@ -143,11 +143,8 @@ class SearchCellExpandedView: UIViewController {
         configureTextView()
     }
 
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-    }
-    
-    
+    deinit { NotificationCenter.default.removeObserver(self) }
+
     private func configureView() {
         self.view.backgroundColor = .clear
         
@@ -157,6 +154,7 @@ class SearchCellExpandedView: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
+    
     
     private func configureCellView(){
         view.addSubviews(cellView)

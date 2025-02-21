@@ -72,6 +72,8 @@ class AddWordsPartitialController: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
         self.textInputView.textView.becomeFirstResponder()
     }
+    deinit { NotificationCenter.default.removeObserver(self) }
+
             
     //MARK: - StyleChange Responding
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {

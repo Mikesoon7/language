@@ -20,7 +20,6 @@ extension CoreDataHelper: LogsManaging{
     ///Return log entity, assosiated with passed dictionary at the specific date.
     private func fetchLog(for dictionary: DictionariesEntity, at date: Date = Date()) -> DictionariesAccessLog? {
         let dateWithoutTime = date.timeStripped
-        print(dateWithoutTime)
         let fetchRequest: NSFetchRequest<DictionariesAccessLog> = DictionariesAccessLog.fetchRequest()
         fetchRequest.predicate = NSPredicate(format: "dictionary == %@ AND accessDate == %@", dictionary, dateWithoutTime as NSDate)
 

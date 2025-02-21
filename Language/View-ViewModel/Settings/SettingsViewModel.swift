@@ -28,7 +28,7 @@ class SettingsViewModel{
     }
 
     private var settingsModel: UserSettingsStorageProtocol
-    private var settingsStructure: [SettingsSection]!
+    private var settingsStructure: [SettingsSection] = []
         
     var output = PassthroughSubject<Output, Never>()
 
@@ -40,10 +40,9 @@ class SettingsViewModel{
         NotificationCenter.default.addObserver(self, selector: #selector(appFontDidChange(sender: )), name: .appFontDidChange, object: nil)
 
     }
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-    }
     
+    deinit { NotificationCenter.default.removeObserver(self) }
+
     //MARK: Configure or update structure of settings tableView.
     func configureSettingsStructure(){
         settingsStructure = [

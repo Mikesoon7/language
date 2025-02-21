@@ -17,9 +17,6 @@ class AddDictionaryView: UIViewController {
     private var viewModelFactory: ViewModelFactory
     private var cancellabel = Set<AnyCancellable>()
     
-//    var isFirstLaunch = false
-    
-//    private var tutorialVC: TutorialSecondPart!
     //MARK: Views
     private lazy var textInputView: TextInputView = TextInputView(delegate: self)
     
@@ -85,11 +82,7 @@ class AddDictionaryView: UIViewController {
         configureText()
     }
     
-//    override func viewDidAppear(_ animated: Bool) {
-//        if isFirstLaunch {
-//            animateTutorialView()
-//        }
-//    }
+    deinit { NotificationCenter.default.removeObserver(self) }
         
     //MARK: - StyleChange Responding
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {

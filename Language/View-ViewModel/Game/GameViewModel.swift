@@ -61,15 +61,13 @@ class GameViewModel{
         self.initialNumberOfCards = dictionary.numberOfCards
         configureData()
         
-        NotificationCenter.default.addObserver(self, selector: #selector(languageDidUpdate(sender:)), name: .appLanguageDidChange,object: nil
+        NotificationCenter.default.addObserver(self, selector: #selector(languageDidUpdate(sender:)), name: .appLanguageDidChange, object: nil
         )
-        NotificationCenter.default.addObserver(self, selector: #selector(fontDidChange(sender:)), name: .appFontDidChange,object: nil
+        NotificationCenter.default.addObserver(self, selector: #selector(fontDidChange(sender:)), name: .appFontDidChange, object: nil
         )
 
     }
-    deinit {
-        NotificationCenter.default.removeObserver(self, name: .appLanguageDidChange, object: nil)
-    }
+    deinit { NotificationCenter.default.removeObserver(self)    }
     
         //MARK: Methods
     func configureCompletionPercent() -> Float{

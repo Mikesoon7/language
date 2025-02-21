@@ -139,7 +139,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard languageCode == settings.appLanguage.languageCode else {
             switch languageCode {
             case "tr": settings.reload(newValue: .language(.turkish))
-            case "ua": settings.reload(newValue: .language(.ukrainian))
+            case "uk": settings.reload(newValue: .language(.ukrainian))
             case "ru": settings.reload(newValue: .language(.russian))
             default: settings.reload(newValue: .language(.english))
             }

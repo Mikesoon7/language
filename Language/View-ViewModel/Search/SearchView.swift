@@ -124,9 +124,8 @@ class SearchView: UIViewController {
             }
         }
     }
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-    }
+    deinit { NotificationCenter.default.removeObserver(self) }
+
     //MARK: - Binding View and VM
     func bind(){
         let output = viewModel.transform(input: input.eraseToAnyPublisher())
@@ -160,6 +159,7 @@ class SearchView: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
+    
     
     //MARK:  NavBar SetUp
     private func configureNavBar(){

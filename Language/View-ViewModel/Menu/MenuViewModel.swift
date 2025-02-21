@@ -62,9 +62,7 @@ final class MenuViewModel{
             name: .appDidFinishLaunchAnimation, object: nil)
     }
     
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-    }
+    deinit { NotificationCenter.default.removeObserver(self)}
 
     //MARK: Fetch and update local dictionary variable.
     func fetch(){

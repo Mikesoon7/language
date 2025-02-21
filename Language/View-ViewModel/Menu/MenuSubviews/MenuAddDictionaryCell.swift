@@ -51,10 +51,8 @@ class MenuAddDictionaryCVCell: UICollectionViewCell {
     required init?(coder: NSCoder) {
         fatalError("coder wasn't imported")
     }
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-    }
-    
+    deinit { NotificationCenter.default.removeObserver(self) }
+
     //MARK: Configuring views properties.
     func configureCellView(){
         self.backgroundColor = .secondarySystemBackground
@@ -75,13 +73,19 @@ class MenuAddDictionaryCVCell: UICollectionViewCell {
         addButton.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            importLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: .longInnerSpacer),
-            importLabel.centerYAnchor.constraint(equalTo: self.centerYAnchor),
+            importLabel.leadingAnchor.constraint(
+                equalTo: leadingAnchor, constant: .longInnerSpacer),
+            importLabel.centerYAnchor.constraint(
+                equalTo: centerYAnchor),
             
-            addButton.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -.longInnerSpacer),
-            addButton.centerYAnchor.constraint(equalTo: self.centerYAnchor),
-            addButton.widthAnchor.constraint(equalToConstant: .genericButtonHeight),
-            addButton.heightAnchor.constraint(equalToConstant: .genericButtonHeight)
+            addButton.trailingAnchor.constraint(
+                equalTo: trailingAnchor, constant: -.longInnerSpacer),
+            addButton.centerYAnchor.constraint(
+                equalTo: centerYAnchor),
+            addButton.widthAnchor.constraint(
+                equalToConstant: .genericButtonHeight),
+            addButton.heightAnchor.constraint(
+                equalToConstant: .genericButtonHeight)
         ])
     }
     //MARK: Configuring views labels.

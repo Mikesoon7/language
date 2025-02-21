@@ -1,0 +1,229 @@
+//MARK: - TabBarController
+"tabBar.dictionaries" = "Словники";
+"tabBar.search" = "Пошук";
+"tabBar.settings" = "Налаштування";
+//MARK: - MainVC
+"menu.title" = "Словники";
+"menu.deleteDictionary" = "Видалити словник?";
+"menu.cell.name" = "Назва";
+"menu.cell.number" = "Всього карток";
+"menu.cell.import" = "Додати словник";
+"menu.undo.title" = "Ви хочете відновити щойно видалений словник?";
+//MARK: - StatisticView
+"statistic.title" = "Статистика";
+"statistic.beginDate" = "Початок:";
+"statistic.endDate" = "Кінець:";
+//Custom options
+"statistic.currentWeek" = "Поточний тиждень";
+"statistic.currentMonth" = "Поточний місяць";
+"statistic.previousMonth" = "Попередній місяць";
+"statistic.allTime" = "За весь час";
+"statistic.custom" = "Обрати свій";
+//Cell Labels:
+"statistic.creationDate" = "Створено:";
+"statistic.accessNumber" = "Відкрито:";
+"statistic.cardsNumber" = "Містить:";
+"statistic.accessNumber.time" = "раз";
+"statistic.cardsNumber.card" = "карта";
+"statistic.accessNumber.times" = "разів";
+"statistic.cardsNumber.cards" = "карти";
+//Chart Labels:
+"statistic.timeSpent" = "Навчання:";
+"statistic.cardsLearned" = "Повторених карт";
+//MARK: - SettingsVC
+"settings.title" = "Налаштування";
+//Sections
+"settings.sections.general" = "Основні";
+"settings.sections.search" = "Пошук";
+"settings.sections.dictionaries" = "Словники";
+//Items for General
+"settings.general.language" = "Мова";
+"settings.general.theme" = "Тема";
+    //Choose options
+"settings.general.theme.dark" = "Темна";
+"settings.general.theme.light" = "Світла";
+"settings.general.theme.system" = "Системна";
+
+"settings.general.notification" = "Повідомлення";
+"settings.general.fonts" = "Шрифт";
+//Items for Search
+"settings.search.barPosition" = "Розташування пошуку";
+//Items for Dictionaries
+"settings.dictionaries.separator" = "Символи для поділу";
+"settings.dictionaries.exception" = "Символи винятку";
+//Items for SignHeader
+"settings.iCloud.sign" = "Підключити ваш Apple ID для передачі даних між пристроями та збереження у iCloud";
+//Accessabe buttons.
+"settings.footer.policy" = "Політика конфіденційності";
+"settings.footer.support" = "Зв’язатися з підтримкою";
+"settings.footer.buyCoffee" = "Пригостити кавою";
+//MARK: - AddDictionary or WordsVC
+"addDict.title" = "Створення";
+"addWord.title" = "Додавання нових слів";
+"viewPlaceholderWord" = "Слово ";
+"viewPlaceholderMeaning" = " опис";
+"fieldPlaceholder" = "Назва";
+"dictionaryName" = "Назва словника";
+//Alerts
+"textAlert" = "Вкажіть текст";
+"nameAlert" = "Вкажіть назву";
+"textInfo" = "Будь ласка, не залишайте поля з текстом порожнім.";
+"nameInfo" = "Майже закінчили. Залишилось задати назву.";
+"addWords.contentSaving.title" = "Вміст не було збережено";
+"addWords.contentSaving.text" = "Бажаєте зберегти нові слова?";
+"addWords.contentSaving.save" = "Зберегти";
+"addWords.contentSaving.clear" = "Очистити";
+
+//MARK: - System
+"system.cancel" = "Cкасувати";
+"system.agreeFormal" = "Зрозумiло";
+"system.agreeInformal" = "Добре";
+"system.save" = "Зберегти";
+"system.create" = "Створити";
+"system.great" = "Чудово";
+"system.edit" = "Редагувати";
+"system.delete" = "Видалити";
+"system.done" = "Готово";
+"system.yes" = "Так";
+"system.no" = "Ні";
+"system.settings" = "Налаштування";
+"system.newLine" = "З нового \n рядка";
+"system.next" = "Далі";
+"system.letsGo" = "Поїхали";
+"system.skip" = "Пропустити";
+"system.restore" = "Відновити";
+"system.total" = "Всього";
+"system.min.shortned" = "хв";
+"system.continue" = "Продовжити";
+"system.finish" = "Залишити";
+"system.checked" = "Перевірено";
+
+
+//MARK: - DetailsVC
+"details.title" = "Подробиці";
+"details.randomize" = "У перемішку";
+"details.goal" = "Встановити ціль";
+"details.showTranslation" = "Показувати переклад";
+"details.cardsOrder" = "Порядок карток:";
+"details.cardsOrder.noraml" = "Звичайний";
+"details.cardsOrder.random" = "Випадковий";
+"details.cardsOrder.reverse" = "Зворотний";
+"details.addWords" = "Додати слів";
+"details.start" = "Почати";
+
+//MARK: - GameVC
+"game.title" = "Картки";
+"game.lastCell.congratulations" = "Вітаємо";
+"game.lastCell.checked" = "Перевірено:";
+"game.lastCell.spending" = "Витрачено часу:";
+"game.lastCell.bestResult" = "Найкращий результат!";
+"game.lastCell.avarageResult.firstPart" = "Ви виконали це ";
+"game.lastCell.avarageResult.secondPart" = " минулого разу";
+"game.lastCell.slower" = "повільніше ніж";
+"game.lastCell.faster" = "швидше ніж";
+"game.lastCell.same" = "так само швидко, як";
+"game.lastCell.cards" = "картки";
+"game.lastCell.min" = "хв";
+
+//MARK: - GameDetailsVc
+"gameDetails.information" = "Торкніться будь-якого слова, щоб дізнатися його значення за допомогою вбудованого словника iOS. За потреби, ви також можете відредагувати або видалити свою картку.";
+"gameDetails.suggestion1Part" = "Якщо у вас виникнуть проблеми із доступом до словників, можливо, вам потрібно їх завантажити або оновити. Для цього перейдіть у";
+"gameDetails.suggestion2Part" = "на вашому пристрої та переконайтеся, що потрібні словники встановлені.";
+"gameDetails.settingsPath" = " Налаштування -> Основні -> Словники ";
+"gameDetails.deleteAlert.title" = "Видалити поточну картку";
+"gameDetails.deleteAlert.message" = "Ви впевнені, що хочете видалити цю пару?";
+"gameDetails.deleteAlert.message.warning" = "\n Це остання картка, тому ваш словник також буде видалено.";
+"gameDetails.emptyTextAlert.title" = "Текст не може бути порожнім.";
+"gameDetails.emptyTextAlert.message" = "Якщо зберегти картку порожньою, вона буде видалена.";
+
+//MARK: - Notification
+"notification.allowNotification" = "Увімкнути сповіщення";
+"frequency" = "Нагадувати";
+"chooseTime" = "Час";
+//Frequency Option
+"everyDay" = "Кожен день";
+"onceAWeek" = "Раз на тиждень";
+"onWeekdays" = "У будні";
+"onTheWeekend" = "На вихідних";
+"custom" = "Обрати свій";
+//Notification message
+"notification.notificationTitle" = "Саме час повторити ваші словники";
+"notification.notificationMessage" = "Всього 10 хвилин на день забезпечать 5 годин активного вивчення на місяць!";
+//Notification Denied Alert
+"notification.alertTitle" = "Увімкніть сповіщення, щоб бути в курсі";
+"notification.alertMessage" = "Знаємо, що час цінний, тому надсилатимемо лише одне повідомлення в день. Це ваш нагадувач про можливість практикувати та вдосконалювати знання з допомогою наших карток. Завжди можна змінити налаштування в додатку";
+//MARK: - SearchVC
+"searchVCTitle" = "Пошук";
+"yourWord" = "Введіть текст";
+"copied" = "Cкопійованo";
+//MARK: - SeparatorsVC
+"separators.addChar" = "Додати символ";
+"separators.placeholder" = "Введіть текст";
+"separators.alertErrorTitle" = "Неприпустимий ввід";
+"separators.alertTitle" = "Введіть від 1 до 3 символів";
+"separators.alertDuplicateMessage" = "Не додавайте повторювані символи";
+"separators.alertSpaceMessage" = "Будь ласка, не вводьте лише пробіли";
+"separators.title" = "Спеціальні символи та розподіл тексту";
+"separators.infoFirstPart" = "Спочатку текст розподіляється на блоки, використовуючи новий рядок як маркер. Щоб не переривати поточний блок, скористайтеся кнопкою 'З нового рядка' у верхній частині клавіатури.";
+"separators.infoSecondPart" = "У кожному блоку передбачено розділення тексту на пари. Використовуйте символ-роздільник для відокремлення інформації в межах вашої картки.";
+"separators.infoFinalPart" = "Зміна спеціального символу не вплине на існуючі словники. Якщо блок містить кілька символів, лише перший буде розпізнаватися як спеціальний.";
+//MARK: - SystemErrors
+//Dictionary
+"coreDataError.dictionary.creation" = "Не вдалося створити";
+"coreDataError.dictionary.deletion" = "Не вдалося видалити";
+"coreDataError.dictionary.fetch" = "Не вдалося завантажити словники.";
+"coreDataError.dictionary.update" = "Не вдалося оновити";
+"coreDataError.dictionary.addition" = "Не вдалося доповнити";
+"coreDataError.dictionary.orderUpdate" = "Не вдалося оновити порядок словників.";
+//Words.Title
+"coreDataError.words.deletion" = "Не вдалося видалити пару";
+"coreDataError.words.fetch" = "Не вдалося завантажити дані для";
+"coreDataError.words.emptyWord" = "Не вдалося створити чи оновити пару";
+//Words.Message
+"coreDataError.words.emptyWord.message" = "Схоже, використані символи-винятки обрізали текст.";
+//Logs
+"coreDataError.logs.creation" = "Не вдалося створити інформацію про статистику для";
+"coreDataError.logs.update" = "Не вдалося оновити дані статистики для";
+"coreDataError.logs.fetch" = "Не вдалося завантажити статистику.";
+//Unknown
+"unknownError.save.title" = "Не вдалося зберегти зміни";
+"unknownError.save.message" = "Будь ласка, зверніться до служби підтримки для вирішення проблеми";
+"unknownError.title" = "Трапилася незрозуміла помилка";
+"unknownError.message" = "Спробуйте ще раз або зверніться до служби підтримки, якщо проблема збережеться";
+"unknownGameError.title" = "Трапилася помилка під час гри";
+"unknownGameError.message" = "Зміни були збережені, але вони будуть видимі лише під час наступної сесії";
+//MARK: - EditVC
+"edit.searchPlaceholder" = "Ваш текст...";
+"edit.emptyField.title" = "Назва відсутня";
+"edit.emptyField.message" = "Будь ласка, введіть хоча б один символ для назви словника";
+"edit.emptyText.title" = "Редагований текст порожній";
+"edit.emptyText.message" = "Якщо зберегти словник у такому стані, його буде видалено. \nВи впевнені?";
+//MARK: - Tutorial
+"tutorial" = "Навчання";
+//FirstView
+"tutorial.firstViewLabel.title" = "Вітаємо! \n Ласково просимо до Learny!";
+"tutorial.firstViewLabel" = "Learny впорядковує ваші матеріали у зручні для засвоєння блоки. Додаток використовує кілька простих правил, щоб розбивати ваш текст на картки. Ви можете створювати будь-яку кількість карток одночасно, що робить Learny зручним для зберігання будь-якої інформації. \n\n  Декілька слів про функціонал, і ви готові до роботи!";
+//SecondView
+"tutorial.secondViewLabel" = "На головному екрані натисніть, щоб відкрити словник, та свайпніть вліво для редагування або спільного доступу.";
+//ThirdView
+"tutorial.thirdViewLabel" = "Додайте текст та назву, щоб створити ваш перший словник! \n \n Починаємо!";
+//FourthView
+"tutorial.fourthViewLabel" = "Кожна картка починається з нового рядка. Щоб почати новий абзац у межах однієї картки, використовуйте кнопку 'З нового рядка' у верхній частині клавіатури.";
+//FifthView
+"tutorial.fifthViewLabel" = "Для детальнішого поділу, наприклад, терміну та його визначення, використовуйте роздільник. Його можна змінити в налаштуваннях, і він буде відображатися під час редагування.";
+//TranslationView
+"tutorial.translation" = "При виділенні слова ви можете перекласти його за допомогою вбудованих словників iOS. Завантажені словники працюють офлайн, тож ви можете користуватися ними будь-коли.";
+//SixthView
+"tutorial.sixthViewLabel" = "Отже, все готово! Ми раді бути частиною вашого навчального шляху. \n \n Бажаємо успіху та приємного користування!";
+"tutorial.card.name" = "Вітаємо";
+"tutorial.card.title" = "Ми раді бути частиною вашого освітнього шляху! ";
+"tutorial.card.message" = " P.S. Ми завжди прагнемо до вдосконалення. \r Якщо вам подобається Learny, оцініть нас у App Store. \r\r Бажаємо успіхів у навчанні!";
+//MARK: Exceptions
+"exception.title" = "Символи - винятки";
+"exception.firstPart" = "Вкажіть символи, які потрібно ігнорувати на початку та в кінці ваших текстових блоків.";
+"exception.secondPart" = "Наприклад, якщо у тексті є номери, яких ви хочете позбутися – додайте їх сюди.";
+"exception.infoPart" = "Увага: символи-виключення можуть впливати на текст, якщо серед них будуть літери. Символи, що знаходяться між іншими, залишаться без змін.";
+"exception.placeholder" = "Введіть символи тут...";
+"exception.alertTitle" = "Введіть символи для виключення.";
+"exception.alertErrorTitle" = "Помилка вводу";
+"exception.alertSpaceMessage" = "Будь ласка, не вводьте лише пробіли";

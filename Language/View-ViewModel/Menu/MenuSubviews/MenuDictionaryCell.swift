@@ -144,6 +144,7 @@ class MenuDictionaryCVCell: UICollectionViewCell {
         contentView.layer.cornerRadius = ViewConstants.cornerRadius
 
     }
+    deinit { NotificationCenter.default.removeObserver(self) }
 
     required init?(coder: NSCoder) {
         fatalError("coder wasn't imported")

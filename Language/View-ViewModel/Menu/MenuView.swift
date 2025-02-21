@@ -46,11 +46,12 @@ class MenuView: UIViewController {
         return view
     }()
     
-    lazy var layout: UICollectionViewFlowLayout = {
-        let layout = UICollectionViewFlowLayout()
-        layout.minimumLineSpacing = .innerSpacer
-        return layout
-    }()
+    lazy private var layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
+//    {
+//        let layout = UICollectionViewFlowLayout()
+//        layout.minimumLineSpacing = .innerSpacer
+//        return layout
+//    }()
     
     
     //MARK: Inherited
@@ -71,7 +72,6 @@ class MenuView: UIViewController {
         configureNavBar()
         setupCollectionView()
         configureLabels()
-        print(max(UIScreen.main.bounds.width, UIScreen.main.bounds.height))
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -169,15 +169,20 @@ class MenuView: UIViewController {
         view.addSubview(collectionView)
         
         NSLayoutConstraint.activate([
-            collectionView.topAnchor.constraint(equalTo: view.topAnchor),
-            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+            collectionView.topAnchor.constraint(
+                equalTo: view.topAnchor),
+            collectionView.bottomAnchor.constraint(
+                equalTo: view.bottomAnchor),
+            collectionView.leadingAnchor.constraint(
+                equalTo: view.leadingAnchor),
+            collectionView.trailingAnchor.constraint(
+                equalTo: view.trailingAnchor)
         ])
     }
     
     
     private func adjustLayoutForSizeClass() {
+//        let layout = collectionView.collectionViewLayout
         let isCompact = traitCollection.horizontalSizeClass == .compact
         let numberOfColumns: CGFloat = isCompact ? 1 : 2
         
@@ -187,6 +192,7 @@ class MenuView: UIViewController {
         layout.minimumLineSpacing = .outerSpacer
         layout.invalidateLayout()
     }
+
         
     private func configureNavBar(){
         //Statisctic BarButton
@@ -232,7 +238,7 @@ class MenuView: UIViewController {
         self.navigationController?.pushViewController(vc, animated: true)
     }
     func pushTutorialVC(){
-        let vc = TutorialVCTest()
+        let vc = TutorialVC()
         
         self.navigationController?.present(vc, animated: true)
     }

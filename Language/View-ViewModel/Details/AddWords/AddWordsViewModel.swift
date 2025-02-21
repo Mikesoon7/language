@@ -35,11 +35,8 @@ class AddWordsViewModel {
         
         NotificationCenter.default.addObserver(self, selector: #selector(appSeparatorDidChange(sender: )), name: .appSeparatorDidChange, object: nil)
     }
-    deinit{
-        NotificationCenter.default.removeObserver(self, name: .appLanguageDidChange, object: nil)
-        NotificationCenter.default.removeObserver(self, name: .appSeparatorDidChange, object: nil)
-    }
-    
+    deinit { NotificationCenter.default.removeObserver(self) }
+
     func configureTextPlaceholder() -> String{
         return "viewPlaceholderWord".localized + " \(settingModel.appSeparators.value) " + "viewPlaceholderMeaning".localized
     }
