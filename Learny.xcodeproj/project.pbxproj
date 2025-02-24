@@ -13,20 +13,20 @@
 		0836F0662D5B4D8300B78F88 /* TutorialVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0836F0652D5B4D8300B78F88 /* TutorialVC.swift */; };
 		0836F0682D5E1EFD00B78F88 /* CGFloat Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0836F0672D5E1EFD00B78F88 /* CGFloat Extension.swift */; };
 		0836F06A2D5E3C6900B78F88 /* SettingsTableLinkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0836F0692D5E3C6900B78F88 /* SettingsTableLinkView.swift */; };
+		085E24B22D6C58E600CB5ECB /* DictionariesEntity+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 085E24AA2D6C58E600CB5ECB /* DictionariesEntity+CoreDataProperties.swift */; };
+		085E24B32D6C58E600CB5ECB /* DictionariesAccessLog+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 085E24AB2D6C58E600CB5ECB /* DictionariesAccessLog+CoreDataClass.swift */; };
+		085E24B42D6C58E600CB5ECB /* WordsEntity+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 085E24AC2D6C58E600CB5ECB /* WordsEntity+CoreDataClass.swift */; };
+		085E24B52D6C58E600CB5ECB /* DictionariesAccessLog+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 085E24AD2D6C58E600CB5ECB /* DictionariesAccessLog+CoreDataProperties.swift */; };
+		085E24B62D6C58E600CB5ECB /* DictionariesEntity+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 085E24AE2D6C58E600CB5ECB /* DictionariesEntity+CoreDataClass.swift */; };
+		085E24B72D6C58E600CB5ECB /* WordsEntity+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 085E24AF2D6C58E600CB5ECB /* WordsEntity+CoreDataProperties.swift */; };
+		085E24B82D6C58E600CB5ECB /* DictionariesSettings+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 085E24B02D6C58E600CB5ECB /* DictionariesSettings+CoreDataProperties.swift */; };
+		085E24B92D6C58E600CB5ECB /* DictionariesSettings+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 085E24B12D6C58E600CB5ECB /* DictionariesSettings+CoreDataClass.swift */; };
 		086854EB2CE5064900CBB618 /* AddWordsPartitialController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 086854EA2CE5064900CBB618 /* AddWordsPartitialController.swift */; };
 		0873A1C02CE62D730048D012 /* CountdownBarButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0873A1BF2CE62D730048D012 /* CountdownBarButton.swift */; };
 		0887CB492D3B962000BACA7C /* DataUpdateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0887CB482D3B962000BACA7C /* DataUpdateManager.swift */; };
 		08AD928B2D4BA5330077BAD9 /* SearchViewHeaderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08AD928A2D4BA5330077BAD9 /* SearchViewHeaderCell.swift */; };
 		08B80D102B924FC300768784 /* FontChangeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B80D0F2B924FC300768784 /* FontChangeManager.swift */; };
 		08C097F72CDD072A00ED875A /* TimedDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08C097F62CDD072A00ED875A /* TimedDetailView.swift */; };
-		08C665422C80D23100427BA5 /* DictionariesSettings+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08C6653A2C80D23000427BA5 /* DictionariesSettings+CoreDataClass.swift */; };
-		08C665432C80D23100427BA5 /* DictionariesSettings+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08C6653B2C80D23000427BA5 /* DictionariesSettings+CoreDataProperties.swift */; };
-		08C665442C80D23100427BA5 /* DictionariesAccessLog+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08C6653C2C80D23000427BA5 /* DictionariesAccessLog+CoreDataClass.swift */; };
-		08C665452C80D23100427BA5 /* DictionariesAccessLog+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08C6653D2C80D23000427BA5 /* DictionariesAccessLog+CoreDataProperties.swift */; };
-		08C665462C80D23100427BA5 /* WordsEntity+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08C6653E2C80D23000427BA5 /* WordsEntity+CoreDataClass.swift */; };
-		08C665472C80D23100427BA5 /* WordsEntity+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08C6653F2C80D23000427BA5 /* WordsEntity+CoreDataProperties.swift */; };
-		08C665482C80D23100427BA5 /* DictionariesEntity+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08C665402C80D23100427BA5 /* DictionariesEntity+CoreDataClass.swift */; };
-		08C665492C80D23100427BA5 /* DictionariesEntity+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08C665412C80D23100427BA5 /* DictionariesEntity+CoreDataProperties.swift */; };
 		08C6654B2C80D35400427BA5 /* CoreData_Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08C6654A2C80D35400427BA5 /* CoreData_Settings.swift */; };
 		08C7E7062D3536E2006E6C55 /* PopUpTimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08C7E7052D3536E2006E6C55 /* PopUpTimerView.swift */; };
 		08CEFF1F2D4E6AF300E6DF82 /* SearchCellDetailedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08CEFF1E2D4E6AF300E6DF82 /* SearchCellDetailedView.swift */; };
@@ -145,6 +145,14 @@
 		0836F0672D5E1EFD00B78F88 /* CGFloat Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGFloat Extension.swift"; sourceTree = "<group>"; };
 		0836F0692D5E3C6900B78F88 /* SettingsTableLinkView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTableLinkView.swift; sourceTree = "<group>"; };
 		085E24A52D68B97200CB5ECB /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = uk.lproj/Localizable.strings; sourceTree = "<group>"; };
+		085E24AA2D6C58E600CB5ECB /* DictionariesEntity+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "DictionariesEntity+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		085E24AB2D6C58E600CB5ECB /* DictionariesAccessLog+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "DictionariesAccessLog+CoreDataClass.swift"; sourceTree = "<group>"; };
+		085E24AC2D6C58E600CB5ECB /* WordsEntity+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "WordsEntity+CoreDataClass.swift"; sourceTree = "<group>"; };
+		085E24AD2D6C58E600CB5ECB /* DictionariesAccessLog+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "DictionariesAccessLog+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		085E24AE2D6C58E600CB5ECB /* DictionariesEntity+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "DictionariesEntity+CoreDataClass.swift"; sourceTree = "<group>"; };
+		085E24AF2D6C58E600CB5ECB /* WordsEntity+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "WordsEntity+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		085E24B02D6C58E600CB5ECB /* DictionariesSettings+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "DictionariesSettings+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		085E24B12D6C58E600CB5ECB /* DictionariesSettings+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "DictionariesSettings+CoreDataClass.swift"; sourceTree = "<group>"; };
 		086854EA2CE5064900CBB618 /* AddWordsPartitialController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddWordsPartitialController.swift; sourceTree = "<group>"; };
 		0873A1BF2CE62D730048D012 /* CountdownBarButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountdownBarButton.swift; sourceTree = "<group>"; };
 		0887CB482D3B962000BACA7C /* DataUpdateManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataUpdateManager.swift; sourceTree = "<group>"; };
@@ -152,14 +160,6 @@
 		08AD928A2D4BA5330077BAD9 /* SearchViewHeaderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewHeaderCell.swift; sourceTree = "<group>"; };
 		08B80D0F2B924FC300768784 /* FontChangeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontChangeManager.swift; sourceTree = "<group>"; };
 		08C097F62CDD072A00ED875A /* TimedDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimedDetailView.swift; sourceTree = "<group>"; };
-		08C6653A2C80D23000427BA5 /* DictionariesSettings+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DictionariesSettings+CoreDataClass.swift"; sourceTree = SOURCE_ROOT; };
-		08C6653B2C80D23000427BA5 /* DictionariesSettings+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DictionariesSettings+CoreDataProperties.swift"; sourceTree = SOURCE_ROOT; };
-		08C6653C2C80D23000427BA5 /* DictionariesAccessLog+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DictionariesAccessLog+CoreDataClass.swift"; sourceTree = SOURCE_ROOT; };
-		08C6653D2C80D23000427BA5 /* DictionariesAccessLog+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DictionariesAccessLog+CoreDataProperties.swift"; sourceTree = SOURCE_ROOT; };
-		08C6653E2C80D23000427BA5 /* WordsEntity+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WordsEntity+CoreDataClass.swift"; sourceTree = SOURCE_ROOT; };
-		08C6653F2C80D23000427BA5 /* WordsEntity+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WordsEntity+CoreDataProperties.swift"; sourceTree = SOURCE_ROOT; };
-		08C665402C80D23100427BA5 /* DictionariesEntity+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DictionariesEntity+CoreDataClass.swift"; sourceTree = SOURCE_ROOT; };
-		08C665412C80D23100427BA5 /* DictionariesEntity+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DictionariesEntity+CoreDataProperties.swift"; sourceTree = SOURCE_ROOT; };
 		08C6654A2C80D35400427BA5 /* CoreData_Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreData_Settings.swift; sourceTree = "<group>"; };
 		08C7E7052D3536E2006E6C55 /* PopUpTimerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopUpTimerView.swift; sourceTree = "<group>"; };
 		08CEFF1E2D4E6AF300E6DF82 /* SearchCellDetailedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchCellDetailedView.swift; sourceTree = "<group>"; };
@@ -642,14 +642,14 @@
 		9AB43A1A29F4669900984350 /* CoreData_Subclass */ = {
 			isa = PBXGroup;
 			children = (
-				08C6653A2C80D23000427BA5 /* DictionariesSettings+CoreDataClass.swift */,
-				08C6653B2C80D23000427BA5 /* DictionariesSettings+CoreDataProperties.swift */,
-				08C6653C2C80D23000427BA5 /* DictionariesAccessLog+CoreDataClass.swift */,
-				08C6653D2C80D23000427BA5 /* DictionariesAccessLog+CoreDataProperties.swift */,
-				08C6653E2C80D23000427BA5 /* WordsEntity+CoreDataClass.swift */,
-				08C6653F2C80D23000427BA5 /* WordsEntity+CoreDataProperties.swift */,
-				08C665402C80D23100427BA5 /* DictionariesEntity+CoreDataClass.swift */,
-				08C665412C80D23100427BA5 /* DictionariesEntity+CoreDataProperties.swift */,
+				085E24AB2D6C58E600CB5ECB /* DictionariesAccessLog+CoreDataClass.swift */,
+				085E24AD2D6C58E600CB5ECB /* DictionariesAccessLog+CoreDataProperties.swift */,
+				085E24AE2D6C58E600CB5ECB /* DictionariesEntity+CoreDataClass.swift */,
+				085E24AA2D6C58E600CB5ECB /* DictionariesEntity+CoreDataProperties.swift */,
+				085E24B12D6C58E600CB5ECB /* DictionariesSettings+CoreDataClass.swift */,
+				085E24B02D6C58E600CB5ECB /* DictionariesSettings+CoreDataProperties.swift */,
+				085E24AC2D6C58E600CB5ECB /* WordsEntity+CoreDataClass.swift */,
+				085E24AF2D6C58E600CB5ECB /* WordsEntity+CoreDataProperties.swift */,
 				9AB43A1729F40EA000984350 /* LearnyLocal.xcdatamodeld */,
 			);
 			path = CoreData_Subclass;
@@ -831,14 +831,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				085E24B42D6C58E600CB5ECB /* WordsEntity+CoreDataClass.swift in Sources */,
 				08D01AAA2D5F70FC00A25E31 /* AppProperties.swift in Sources */,
+				085E24B72D6C58E600CB5ECB /* WordsEntity+CoreDataProperties.swift in Sources */,
 				9A75413D2A70042D0064BE4E /* SearchViewModel.swift in Sources */,
 				082495992D159A1D00435AE1 /* TableViewCells.swift in Sources */,
-				08C665432C80D23100427BA5 /* DictionariesSettings+CoreDataProperties.swift in Sources */,
 				9A90775A2A9CB83D00C88DD3 /* PieStatisticView.swift in Sources */,
 				9AAC8A072A88E9E00068828C /* CustomUserDefaults.swift in Sources */,
 				9AA61BEF2A616D3200FACAD2 /* AddDictionaryViewModel.swift in Sources */,
 				9AA71C6129C34EA8008A193B /* CollectionViewLastCell.swift in Sources */,
+				085E24B52D6C58E600CB5ECB /* DictionariesAccessLog+CoreDataProperties.swift in Sources */,
 				9ABC83A62A582C5600E630F5 /* MenuViewModel.swift in Sources */,
 				9A883CE32A6C65D7008682F3 /* UIView Extensions.swift in Sources */,
 				9AB43A1629F3E72D00984350 /* SearchViewCell.swift in Sources */,
@@ -846,34 +848,34 @@
 				9AB43A1929F40EA000984350 /* LearnyLocal.xcdatamodeld in Sources */,
 				9ABC83A42A582C3F00E630F5 /* MenuView.swift in Sources */,
 				0887CB492D3B962000BACA7C /* DataUpdateManager.swift in Sources */,
-				08C665482C80D23100427BA5 /* DictionariesEntity+CoreDataClass.swift in Sources */,
 				08CEFF1F2D4E6AF300E6DF82 /* SearchCellDetailedView.swift in Sources */,
 				9AA71C5B29C20894008A193B /* MainGameVC.swift in Sources */,
 				9A77B0242AD58974006DA151 /* ExceptionsViewModel.swift in Sources */,
-				08C665462C80D23100427BA5 /* WordsEntity+CoreDataClass.swift in Sources */,
 				9A02AA5C2AA0B47100644820 /* StatisticViewCell.swift in Sources */,
 				9A912FC62A06BB540004A91A /* NotificationTextCell.swift in Sources */,
 				9A02B2862A38993F00652FC3 /* EditView.swift in Sources */,
 				08C6654B2C80D35400427BA5 /* CoreData_Settings.swift in Sources */,
-				08C665422C80D23100427BA5 /* DictionariesSettings+CoreDataClass.swift in Sources */,
 				9AFFCE7B299D073D00C12B94 /* MenuAddDictionaryCell.swift in Sources */,
 				9AE34A782A115DD300F8BB65 /* GameDetailsVC.swift in Sources */,
-				08C665492C80D23100427BA5 /* DictionariesEntity+CoreDataProperties.swift in Sources */,
 				0836F06A2D5E3C6900B78F88 /* SettingsTableLinkView.swift in Sources */,
 				9A77B0222AD58960006DA151 /* ExceptionsVC.swift in Sources */,
+				085E24B92D6C58E600CB5ECB /* DictionariesSettings+CoreDataClass.swift in Sources */,
 				7D3C3FA32B17467B00025234 /* UIButton Extension.swift in Sources */,
+				085E24B32D6C58E600CB5ECB /* DictionariesAccessLog+CoreDataClass.swift in Sources */,
 				9AB9A96129FD71F000694FE8 /* SeparatorsView.swift in Sources */,
 				9A9970FE29DB2D86007EE635 /* LaunchAnimation.swift in Sources */,
 				9AB43A3629F4695B00984350 /* CoreDataMethods.swift in Sources */,
 				081EB2342D47A9AA00D518C9 /* GameCollectionViewLayout.swift in Sources */,
 				9A1F67D429E3F69A003993C5 /* SettingsHeaderCell.swift in Sources */,
 				9A5D51D52A6808CC00F85720 /* DetailsViewModel.swift in Sources */,
+				085E24B22D6C58E600CB5ECB /* DictionariesEntity+CoreDataProperties.swift in Sources */,
 				9AA71C6829C9CE9B008A193B /* CollectionViewCell.swift in Sources */,
 				9AADA5142A8C48280044708E /* SeparatorsViewModel.swift in Sources */,
 				9A77B0262AD6C94A006DA151 /* ExceptionExampleView.swift in Sources */,
 				9AD4E2432A950862009090EA /* GameViewModel.swift in Sources */,
 				9A5D51D32A67E05300F85720 /* AddWordsViewModel.swift in Sources */,
 				9AE509352997C07700D86DD7 /* AddDictionaryView.swift in Sources */,
+				085E24B62D6C58E600CB5ECB /* DictionariesEntity+CoreDataClass.swift in Sources */,
 				9A7E9F932AA5F06600C702B4 /* StatisticViewModel.swift in Sources */,
 				086854EB2CE5064900CBB618 /* AddWordsPartitialController.swift in Sources */,
 				08DA98B12D00AEE8007A3C00 /* CustomTableViewDelegate.swift in Sources */,
@@ -885,7 +887,6 @@
 				9AADA5162A8E298C0044708E /* SeparatorsExampleView.swift in Sources */,
 				9A5641FF2A5D779400027BCD /* EditViewModel.swift in Sources */,
 				08B80D102B924FC300768784 /* FontChangeManager.swift in Sources */,
-				08C665472C80D23100427BA5 /* WordsEntity+CoreDataProperties.swift in Sources */,
 				7DB5A5AE2AF8D7FE003B0E0A /* HiglightLayoutManager.swift in Sources */,
 				9A883CE62A6C68E0008682F3 /* DictionariesLogsConverter.swift in Sources */,
 				9A8284142AC70FA70071D4D7 /* TutorialInformationView.swift in Sources */,
@@ -910,7 +911,6 @@
 				9ABAEE1C2A79BFA10065494A /* NotificationView.swift in Sources */,
 				9A4D211A2AB0B74400EA9196 /* CustomNavigationController.swift in Sources */,
 				9A3825EC2ABB284E00113AAD /* Tutorial.swift in Sources */,
-				08C665452C80D23100427BA5 /* DictionariesAccessLog+CoreDataProperties.swift in Sources */,
 				9AFFCE7D299E747400C12B94 /* StatisticView.swift in Sources */,
 				7D3C3FA12B17462500025234 /* UIColor Extension.swift in Sources */,
 				0873A1C02CE62D730048D012 /* CountdownBarButton.swift in Sources */,
@@ -919,12 +919,12 @@
 				0836F0682D5E1EFD00B78F88 /* CGFloat Extension.swift in Sources */,
 				9AB40FF229CC6A9D00353FFC /* MenuDictionaryCell.swift in Sources */,
 				9AABAEB02A87D3E00032C008 /* TextInputView.swift in Sources */,
+				085E24B82D6C58E600CB5ECB /* DictionariesSettings+CoreDataProperties.swift in Sources */,
 				9AA6C4E52AB621AA0094F8D5 /* SearchToolBarView.swift in Sources */,
 				9A7B91C8298D6D9600E60CDD /* SceneDelegate.swift in Sources */,
 				0836F0662D5B4D8300B78F88 /* TutorialVC.swift in Sources */,
 				9AFFCE8129A4DFEF00C12B94 /* DetailsView.swift in Sources */,
 				9AAECFBE29B5052F00439C0B /* SettingsVC.swift in Sources */,
-				08C665442C80D23100427BA5 /* DictionariesAccessLog+CoreDataClass.swift in Sources */,
 				08C7E7062D3536E2006E6C55 /* PopUpTimerView.swift in Sources */,
 				08EA16F62CFB1E3A00E1CA56 /* StatisticViewSelectedCell.swift in Sources */,
 				9A5D51D92A680F4E00F85720 /* CoreDataChangeTypes.swift in Sources */,
