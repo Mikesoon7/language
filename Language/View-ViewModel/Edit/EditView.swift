@@ -348,7 +348,7 @@ extension EditView: UITextFieldDelegate{
 //MARK: - TextViewDelegate
 extension EditView: PlaceholderTextViewDelegate {
     ///Reloading input accessory view, finishing search session or cleaning error glyph.
-    func textViewDidBeginEditing()  {
+    func textViewDidBeginEditing(sender: UITextView)  {
         if isSearching {
             changeSearchSessionState(activate: false)
         } else if textInputView.layoutManager.errorRange != nil {
@@ -361,8 +361,8 @@ extension EditView: PlaceholderTextViewDelegate {
     func presentErrorAlert(alert: UIAlertController) {
         self.present(alert, animated: true)
     }
-    func textViewDidEndEditing()    { }
-    func textViewDidChange()        { }
+    func textViewDidEndEditing(sender: UITextView)    { }
+    func textViewDidChange(sender: UITextView)        { }
     
     func textViewDidScroll() {
         if isSearching {
@@ -373,7 +373,7 @@ extension EditView: PlaceholderTextViewDelegate {
     func currentSeparatorSymbol() -> String? {
         viewModel.textSeparator()
     }
-    func configurePlaceholderText() -> String? {
+    func configurePlaceholderText(sender: UITextView) -> String? {
         viewModel.configureTextPlaceholder()
     }
 }

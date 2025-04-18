@@ -33,6 +33,8 @@ class CustomFlowLayout: UICollectionViewFlowLayout {
         let isSplitScreen = isInSplitScreenMode()
 
         let widthToHeightRatio = collectionView.bounds.width / collectionView.bounds.height
+        
+        print(collectionView.bounds.height)
         let isWidthMainAnchor = isSplitScreen && widthToHeightRatio < 0.5
         
         let viewsBounds = collectionView.superview?.bounds ?? collectionView.bounds

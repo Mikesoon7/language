@@ -21,6 +21,7 @@
 		085E24B72D6C58E600CB5ECB /* WordsEntity+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 085E24AF2D6C58E600CB5ECB /* WordsEntity+CoreDataProperties.swift */; };
 		085E24B82D6C58E600CB5ECB /* DictionariesSettings+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 085E24B02D6C58E600CB5ECB /* DictionariesSettings+CoreDataProperties.swift */; };
 		085E24B92D6C58E600CB5ECB /* DictionariesSettings+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 085E24B12D6C58E600CB5ECB /* DictionariesSettings+CoreDataClass.swift */; };
+		085E24BC2D8B2DAF00CB5ECB /* MultiCardsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 085E24BB2D8B2DAF00CB5ECB /* MultiCardsCell.swift */; };
 		086854EB2CE5064900CBB618 /* AddWordsPartitialController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 086854EA2CE5064900CBB618 /* AddWordsPartitialController.swift */; };
 		0873A1C02CE62D730048D012 /* CountdownBarButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0873A1BF2CE62D730048D012 /* CountdownBarButton.swift */; };
 		0887CB492D3B962000BACA7C /* DataUpdateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0887CB482D3B962000BACA7C /* DataUpdateManager.swift */; };
@@ -29,6 +30,7 @@
 		08C097F72CDD072A00ED875A /* TimedDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08C097F62CDD072A00ED875A /* TimedDetailView.swift */; };
 		08C6654B2C80D35400427BA5 /* CoreData_Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08C6654A2C80D35400427BA5 /* CoreData_Settings.swift */; };
 		08C7E7062D3536E2006E6C55 /* PopUpTimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08C7E7052D3536E2006E6C55 /* PopUpTimerView.swift */; };
+		08CEADA52DB14B390092A283 /* AddImageController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08CEADA42DB14B390092A283 /* AddImageController.swift */; };
 		08CEFF1F2D4E6AF300E6DF82 /* SearchCellDetailedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08CEFF1E2D4E6AF300E6DF82 /* SearchCellDetailedView.swift */; };
 		08D01AAA2D5F70FC00A25E31 /* AppProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08D01AA92D5F70FC00A25E31 /* AppProperties.swift */; };
 		08D01AAF2D68A19300A25E31 /* LearnyTests.xctest in Resources */ = {isa = PBXBuildFile; fileRef = 9A7B91D8298D6D9900E60CDD /* LearnyTests.xctest */; };
@@ -153,6 +155,7 @@
 		085E24AF2D6C58E600CB5ECB /* WordsEntity+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "WordsEntity+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		085E24B02D6C58E600CB5ECB /* DictionariesSettings+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "DictionariesSettings+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		085E24B12D6C58E600CB5ECB /* DictionariesSettings+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "DictionariesSettings+CoreDataClass.swift"; sourceTree = "<group>"; };
+		085E24BB2D8B2DAF00CB5ECB /* MultiCardsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiCardsCell.swift; sourceTree = "<group>"; };
 		086854EA2CE5064900CBB618 /* AddWordsPartitialController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddWordsPartitialController.swift; sourceTree = "<group>"; };
 		0873A1BF2CE62D730048D012 /* CountdownBarButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountdownBarButton.swift; sourceTree = "<group>"; };
 		0887CB482D3B962000BACA7C /* DataUpdateManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataUpdateManager.swift; sourceTree = "<group>"; };
@@ -162,6 +165,7 @@
 		08C097F62CDD072A00ED875A /* TimedDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimedDetailView.swift; sourceTree = "<group>"; };
 		08C6654A2C80D35400427BA5 /* CoreData_Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreData_Settings.swift; sourceTree = "<group>"; };
 		08C7E7052D3536E2006E6C55 /* PopUpTimerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopUpTimerView.swift; sourceTree = "<group>"; };
+		08CEADA42DB14B390092A283 /* AddImageController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddImageController.swift; sourceTree = "<group>"; };
 		08CEFF1E2D4E6AF300E6DF82 /* SearchCellDetailedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchCellDetailedView.swift; sourceTree = "<group>"; };
 		08D01AA92D5F70FC00A25E31 /* AppProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppProperties.swift; sourceTree = "<group>"; };
 		08DA98B02D00AEE8007A3C00 /* CustomTableViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTableViewDelegate.swift; sourceTree = "<group>"; };
@@ -281,6 +285,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		085E24BA2D8B2D8100CB5ECB /* MultiCardsSubviews */ = {
+			isa = PBXGroup;
+			children = (
+				085E24BB2D8B2DAF00CB5ECB /* MultiCardsCell.swift */,
+			);
+			path = MultiCardsSubviews;
+			sourceTree = "<group>";
+		};
 		089F83AA2D17048E0093800B /* Non-Used */ = {
 			isa = PBXGroup;
 			children = (
@@ -358,8 +370,10 @@
 		9A5641FA2A5D756800027BCD /* AddDictionary */ = {
 			isa = PBXGroup;
 			children = (
+				085E24BA2D8B2D8100CB5ECB /* MultiCardsSubviews */,
 				9AE509342997C07700D86DD7 /* AddDictionaryView.swift */,
 				9AA61BEE2A616D3100FACAD2 /* AddDictionaryViewModel.swift */,
+				08CEADA42DB14B390092A283 /* AddImageController.swift */,
 			);
 			path = AddDictionary;
 			sourceTree = "<group>";
@@ -759,7 +773,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1410;
-				LastUpgradeCheck = 1410;
+				LastUpgradeCheck = 1510;
 				TargetAttributes = {
 					9A7B91C1298D6D9600E60CDD = {
 						CreatedOnToolsVersion = 14.1;
@@ -847,8 +861,10 @@
 				9A1F67D129E18BBE003993C5 /* SettingsImageCell.swift in Sources */,
 				9AB43A1929F40EA000984350 /* LearnyLocal.xcdatamodeld in Sources */,
 				9ABC83A42A582C3F00E630F5 /* MenuView.swift in Sources */,
+				085E24BC2D8B2DAF00CB5ECB /* MultiCardsCell.swift in Sources */,
 				0887CB492D3B962000BACA7C /* DataUpdateManager.swift in Sources */,
 				08CEFF1F2D4E6AF300E6DF82 /* SearchCellDetailedView.swift in Sources */,
+				08CEADA52DB14B390092A283 /* AddImageController.swift in Sources */,
 				9AA71C5B29C20894008A193B /* MainGameVC.swift in Sources */,
 				9A77B0242AD58974006DA151 /* ExceptionsViewModel.swift in Sources */,
 				9A02AA5C2AA0B47100644820 /* StatisticViewCell.swift in Sources */,
@@ -1020,6 +1036,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -1082,6 +1099,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -1174,8 +1192,9 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = ZPMQQ4YYLW;
+				DEVELOPMENT_TEAM = GZY5759NR5;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.LanguageTests;
@@ -1194,11 +1213,12 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = ZPMQQ4YYLW;
+				DEVELOPMENT_TEAM = GZY5759NR5;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.LanguageTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.LearnyTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
@@ -1215,6 +1235,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = ZPMQQ4YYLW;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.LanguageUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1231,10 +1252,11 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = ZPMQQ4YYLW;
+				DEVELOPMENT_TEAM = GZY5759NR5;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.LanguageUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.LearnyUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;

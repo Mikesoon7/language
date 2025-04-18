@@ -447,17 +447,17 @@ class SearchCellExpandedView: UIViewController {
 }
 
 extension SearchCellExpandedView: PlaceholderTextViewDelegate {
-    func textViewDidBeginEditing() { }
+    func textViewDidBeginEditing(sender: UITextView) { }
     
-    func textViewDidEndEditing() {  }
+    func textViewDidEndEditing(sender: UITextView) {  }
     
-    func textViewDidChange() { }
+    func textViewDidChange(sender: UITextView) { }
     
     func currentSeparatorSymbol() -> String? {
         self.separator
     }
     
-    func configurePlaceholderText() -> String? {
+    func configurePlaceholderText(sender: UITextView) -> String? {
         self.placeholder
     }
     

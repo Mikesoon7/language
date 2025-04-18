@@ -465,11 +465,11 @@ extension GameDetailsVC {
 }
 //MARK: - Delegates
 extension GameDetailsVC: PlaceholderTextViewDelegate{
-    func textViewDidBeginEditing()  { }
+    func textViewDidBeginEditing(sender: UITextView)  { }
     
-    func textViewDidEndEditing()    { }
+    func textViewDidEndEditing(sender: UITextView)    { }
     
-    func textViewDidChange()        { }
+    func textViewDidChange(sender: UITextView)        { }
     
     func presentErrorAlert(alert: UIAlertController) {
         self.present(alert, animated: true)
@@ -477,7 +477,7 @@ extension GameDetailsVC: PlaceholderTextViewDelegate{
     func currentSeparatorSymbol() -> String? {
         viewModel?.textSeparator()
     }
-    func configurePlaceholderText() -> String? {
+    func configurePlaceholderText(sender: UITextView) -> String? {
         viewModel?.configureTextPlaceholder()
     }
     ///If user scroll TextView, trigger animation, which will expand view to revieal more content.
@@ -790,11 +790,11 @@ extension GameDetailsIPadVC {
 }
 //MARK: - Delegates
 extension GameDetailsIPadVC: PlaceholderTextViewDelegate{
-    func textViewDidBeginEditing()  { }
+    func textViewDidBeginEditing(sender: UITextView)  { }
     
-    func textViewDidEndEditing()    { }
+    func textViewDidEndEditing(sender: UITextView)    { }
     
-    func textViewDidChange()        { }
+    func textViewDidChange(sender: UITextView)        { }
     
     func presentErrorAlert(alert: UIAlertController) {
         self.present(alert, animated: true)
@@ -804,7 +804,7 @@ extension GameDetailsIPadVC: PlaceholderTextViewDelegate{
         viewModel?.textSeparator()
     }
     
-    func configurePlaceholderText() -> String? {
+    func configurePlaceholderText(sender: UITextView) -> String? {
         viewModel?.configureTextPlaceholder()
     }
 }

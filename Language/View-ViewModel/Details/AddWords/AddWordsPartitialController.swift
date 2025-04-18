@@ -278,14 +278,14 @@ class AddWordsPartitialController: UIViewController {
 
 //MARK: - PlaceholderTextViewDelegate delegate
 extension AddWordsPartitialController: PlaceholderTextViewDelegate{
-    func textViewDidBeginEditing()  {   }
-    func textViewDidEndEditing()    {   }
-    func textViewDidChange()        {   }
+    func textViewDidBeginEditing(sender: UITextView)  {   }
+    func textViewDidEndEditing(sender: UITextView)    {   }
+    func textViewDidChange(sender: UITextView)        {   }
     
     func presentErrorAlert(alert: UIAlertController) {
         self.presentErrorAlert(alert: alert)
     }
-    func configurePlaceholderText() -> String? {
+    func configurePlaceholderText(sender: UITextView) -> String? {
         viewModel?.configureTextPlaceholder()
     }
     func currentSeparatorSymbol() -> String? {

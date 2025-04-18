@@ -9,11 +9,12 @@
 import UIKit
 
 @objc protocol PlaceholderTextViewDelegate: AnyObject{
-    func textViewDidBeginEditing()
-    func textViewDidEndEditing()
-    func textViewDidChange()
+    func textViewDidBeginEditing(sender: UITextView)
+    func textViewDidEndEditing(sender: UITextView)
+    func textViewDidChange(sender: UITextView)
+    
     func currentSeparatorSymbol() -> String?
-    func configurePlaceholderText() -> String?
+    func configurePlaceholderText(sender: UITextView) -> String?
     func presentErrorAlert(alert: UIAlertController)
     
     @objc optional func textViewDidScroll()
@@ -58,6 +59,16 @@ final class TextInputView: UIView {
     
     //MARK: AccessoryView
     var customAccessoryView : UIView = UIView()
+//    var customPlaceholderText: String? {
+//        get {
+//            return delegate?.configurePlaceholderText(sender: UITextView)
+//        }
+//        set {
+//            self.placeholderLabel.text = newValue
+//            self.updatePlaceholderVisability()
+//        }
+//    }
+    
     private let customAccessoryViewHeight : CGFloat = .accessoryViewHeight
 
     private let newLineButton: UIButton = {
@@ -106,19 +117,22 @@ final class TextInputView: UIView {
     
 
     //MARK: Inherited
-    convenience init(delegate: PlaceholderTextViewDelegate){
-        self.init(frame: .zero, delegate: delegate)
+    convenience init(delegate: PlaceholderTextViewDelegate, tag: Int = 0){
+        self.init(frame: .zero, delegate: delegate, tag: tag)
     }
     
     init(frame: CGRect, delegate: PlaceholderTextViewDelegate,
          textContainer: NSTextContainer? = NSTextContainer(),
-         textContainerInsets: UIEdgeInsets? = .init(top: 10, left: 5, bottom: 5, right: 5)) {
+         textContainerInsets: UIEdgeInsets? = .init(top: 10, left: 5, bottom: 5, right: 5), tag: Int = 0) {
         self.delegate = delegate
         self.textContainer = textContainer!
         self.textContainerInsets = textContainerInsets!
         super.init(frame: frame)
         configureView()
         configureTableView()
+        
+        textView.tag = tag
+        
         configureAccessoryView()
         updatePlaceholder()
         
@@ -221,7 +235,7 @@ final class TextInputView: UIView {
     ///Changes placeholder text with provided by the delegate.
     func updatePlaceholder(){
         textView.font = .selectedFont.withSize(.subBodyTextSize)
-        placeholderLabel.text = delegate?.configurePlaceholderText() ?? ""
+        placeholderLabel.text = delegate?.configurePlaceholderText(sender: textView) ?? ""
         placeholderLabel.font = .selectedFont.withSize(.assosiatedTextSize)
         newLineButton.setTitle("system.newLine".localized, for: .normal)
         placeholderLabel.sizeToFit()
@@ -256,6 +270,14 @@ final class TextInputView: UIView {
         self.textView.text = ""
         self.textViewDidChange(textView)
         self.textView.resignFirstResponder()
+    }
+    
+    //Assigning text and updating the placeholder.
+    func assignText(text: String?){
+        if let text = text {
+            self.textView.text = text
+            self.updatePlaceholderVisability()
+        }
     }
     
     func validateText() -> String?{
@@ -380,18 +402,18 @@ extension TextInputView: UITextViewDelegate{
         
         updatePlaceholderVisability()
         guard let delegate = self.delegate else { return }
-        delegate.textViewDidBeginEditing()
+        delegate.textViewDidBeginEditing(sender: textView)
     }
 
     func textViewDidEndEditing(_ textView: UITextView) {
         guard let delegate = self.delegate else { return }
-        delegate.textViewDidEndEditing()
+        delegate.textViewDidEndEditing(sender: textView)
         updatePlaceholderVisability()
     }
     
     func textViewDidChange(_ textView: UITextView) {
         updatePlaceholderVisability()
-        delegate?.textViewDidChange()
+        delegate?.textViewDidChange(sender: textView)
     }
     
     func textViewDidChangeSelection(_ textView: UITextView) {

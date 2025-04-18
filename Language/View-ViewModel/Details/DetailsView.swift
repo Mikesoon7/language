@@ -773,12 +773,12 @@ extension DetailsView: UIPickerViewDelegate, UIPickerViewDataSource{
 
 //MARK: - TextView Placeholder Delegate
 extension DetailsView: PlaceholderTextViewDelegate{
-    func textViewDidBeginEditing()  {     
+    func textViewDidBeginEditing(sender: UITextView)  {
         updateTextViewConstraits(keyboardIsVisable: true)
         changeSaveButtonState(active: true)
     }
     
-    func textViewDidEndEditing()    {
+    func textViewDidEndEditing(sender: UITextView)    {
         updateTextViewConstraits(keyboardIsVisable: false)
         changeSaveButtonState(active: false)
     }
@@ -786,11 +786,11 @@ extension DetailsView: PlaceholderTextViewDelegate{
         self.presentErrorAlert(alert: alert)
     }
     
-    func textViewDidChange()        {
+    func textViewDidChange(sender: UITextView)        {
         changeSaveButtonState(active: true)
     }
     
-    func configurePlaceholderText() -> String? {
+    func configurePlaceholderText(sender: UITextView) -> String? {
         addWordsViewModel?.configureTextPlaceholder()
     }
     
