@@ -60,10 +60,13 @@
 //MARK: - AddDictionary or WordsVC
 "addDict.title" = "Создание";
 "addWord.title" = "Добавление новых слов";
+"addImage.title" = "Добавить изображение";
 "viewPlaceholderWord" = "Слово ";
 "viewPlaceholderMeaning" = " описание";
 "fieldPlaceholder" = "Имя";
 "dictionaryName" = "Название словаря";
+"frontSide" = "Лицевая сторона";
+"backSide" = "Обратная сторона";
 //Alerts
 "textAlert" = "Введите текст";
 "nameAlert" = "Укажите имя";
@@ -71,6 +74,7 @@
 "nameInfo" = "Осталось назвать ваш словарь.";
 "addWords.contentSaving.title" = "Содержимое не было сохранено";
 "addWords.contentSaving.text" = "Вы хотите сохранить новые слова?";
+"addWords.contentSaving.image" = "Вы хотите сохранить новое изображение?";
 "addWords.contentSaving.save" = "Сохранить";
 "addWords.contentSaving.clear" = "Очистить";
 

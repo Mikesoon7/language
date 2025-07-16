@@ -117,7 +117,7 @@ class TimedDetailView: UIViewController {
     //MARK: Views SetUp
     private func configureView() {
         view.backgroundColor = ((traitCollection.userInterfaceStyle == .dark)
-                                ? .secondarySystemBackground
+                                ? .selectedColourPalette.primaryBackgroundColour
                                 : .systemBackground
         )
     }

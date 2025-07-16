@@ -11,14 +11,9 @@ import UIKit
 import Combine
 
 
-struct IndividualCellData {
-    var word: String
-    var definition: String
-    
-    var image: UIImage?
-}
 
 class AddDictionaryViewModel {
+    
     enum Output {
         case shouldPresentError(Error)
         case shouldUpdateText
@@ -27,16 +22,21 @@ class AddDictionaryViewModel {
         case shouldHighlightError(String)
         case shouldPop
     }
+    enum CollectionViewOutput {
+        case shouldPresent(UIViewController)
+        case shouldAddCellAt(IndexPath)
+    }
+
     
     private var dataModel: DictionaryManaging
     private var settingsModel: UserSettingsStorageProtocol
 
-    
-    var currentWords: [IndividualCellData] = []
-    var currentText: String = ""
+    private var currentWords: [SingleModeCellData] = []
+    private var currentText: String = ""
     
     var output = PassthroughSubject<Output, Never>()
-    
+    var singleOutput = PassthroughSubject<CollectionViewOutput, Never>()
+
     init(model: DictionaryManaging, settingsModel: UserSettingsStorageProtocol) {
         self.dataModel = model
         self.settingsModel = settingsModel
@@ -51,7 +51,10 @@ class AddDictionaryViewModel {
     
     deinit { NotificationCenter.default.removeObserver(self) }
     
-    func splitTheText(text: String) {
+    
+    //MARK: Single Mode Methods
+    ///Transforms text from textView into an array of text pairs.
+    func splitTheText(text: String, final: Bool = false) {
         currentText = text
         
         let trimmedText = text.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -95,67 +98,51 @@ class AddDictionaryViewModel {
                 currentWords[index].word = newWord
                 currentWords[index].definition = newDefinition
             } else {
-                currentWords.append(.init(word: newWord, definition: newDefinition))
+                currentWords.append(.init(word: newWord, definition: newDefinition, imageDetails: .init()))
             }
             numberOfLines = index + 1
-//            wordsResult.append(trimmedText)
-        }
-
-        if currentWords.isEmpty {
-            addEmptyCell()
-        } else if currentWords.count > numberOfLines {
-            currentWords.removeLast(currentWords.count - numberOfLines)
         }
         
+        let numberOfCells = currentWords.count
+        if currentWords.isEmpty {
+            if final != true {
+                addEmptyCell()
+            }
+        } else if numberOfCells > numberOfLines {
+            for number in numberOfLines...numberOfCells - 1{
+                currentWords[number].word = ""
+                currentWords[number].definition = ""
+            }
+        }
     }
     
     func uniteTheText() -> String{
         var textByLines: [String] = []
         for cellData in currentWords {
-            if cellData.word.isEmpty && cellData.word.isEmpty {
-                break
+            if (cellData.word + cellData.definition).isEmpty {
+                
+            } else {
+                let line = cellData.word.trimmingCharacters(in: .whitespacesAndNewlines) + " \(settingsModel.appSeparators.value) " + cellData.definition.trimmingCharacters(in: .whitespacesAndNewlines)
+                let singleLine = line.split(separator: "\n")
+                textByLines.append(singleLine.joined(separator: "\r"))
             }
-            let line = cellData.word.trimmingCharacters(in: .whitespacesAndNewlines) + " \(settingsModel.appSeparators.value) " + cellData.definition.trimmingCharacters(in: .whitespacesAndNewlines)
-            let singleLine = line.split(separator: "\n")
-            textByLines.append(singleLine.joined(separator: "\r"))
         }
         currentText = textByLines.joined(separator: "\n")
         return currentText
     }
     
     func addEmptyCell(){
-        currentWords.append(.init(word: "", definition: "", image: nil))
+        currentWords.append(.init(word: "", definition: "", imageDetails: .init()))
     }
     
-    func numberOfCells(text: String) -> Int{
-        return currentWords.count + 2
-    }
-    func dataForCellAt(index: IndexPath) -> MultiCardsData{
-        guard index.item <= currentWords.count - 1 else { return MultiCardsData(word: "", translation: "", image: nil) }
-        var pair = currentWords[index.item]
-        
-        return MultiCardsData(word: pair.word, translation: pair.definition, image: pair.image)
-            
-        
-    }
-    func definitionDidTye(index: IndexPath, text: String) {
+    func imageDidAdd(imageDetails: ImageDetailsCheck, index: IndexPath){
         if index.item <= currentWords.count {
-            currentWords[index.item].definition = text
-        }
-    }
-    
-    func wordDidType(index: IndexPath, text: String) {
-        if index.item <= currentWords.count {
-            currentWords[index.item].word = text
-        }
-    }
-    func imageDidAdd(image: UIImage?, index: IndexPath){
-        if index.item <= currentWords.count && image != nil {
-            currentWords[index.item].image = image
+            currentWords[index.item].imageDetails = imageDetails
         }
     }
 
     
+    //MARK: TextView
     func configureTextPlaceholder() -> String{
         return "viewPlaceholderWord".localized + " \(settingsModel.appSeparators.value) " + "viewPlaceholderMeaning".localized
     }
@@ -163,6 +150,7 @@ class AddDictionaryViewModel {
         settingsModel.appSeparators.value
     }
     
+    //MARK: Dictionary Creation
     func createDictionary(name: String, text: String){
         do{
             try dataModel.createDictionary(language: name, text: text)
@@ -179,8 +167,21 @@ class AddDictionaryViewModel {
         }
     }
     func createDictionaryByCards(name: String) {
+        splitTheText(text: currentText)
+        
         do {
-            
+            try dataModel.createDictionary(language: name, data: currentWords)
+            output.send(.shouldPop)
+        } catch {
+            if let emptyLineError = error as? WordsErrorType {
+                switch emptyLineError {
+                case .failedToAssignEmptyString(let word):
+                    output.send(.shouldHighlightError(word))
+                default: break
+                }
+            }
+            output.send(.shouldPresentError(error))
+
         }
     }
     
@@ -198,4 +199,46 @@ class AddDictionaryViewModel {
     
 }
 
+//MARK: SingleModeView Delegate
+extension AddDictionaryViewModel: SingleModeViewDelegate {
+    
+    func didSelectAnImage(imageDetails: ImageDetailsCheck, cell: SingleModeImageCell, index: IndexPath) {
+        cell.addPhoto(imageDetails: imageDetails)
+        imageDidAdd(imageDetails: imageDetails, index: index)
+    }
+    
+    func deleteCell(index: IndexPath) {
+        currentWords.remove(at: index.item)
+    }
+    
+    func definitionDidTye(index: IndexPath, text: String) {
+        if index.item <= currentWords.count {
+            currentWords[index.item].definition = text
+        }
+    }
+    
+    func wordDidType(index: IndexPath, text: String) {
+        if index.item <= currentWords.count {
+            currentWords[index.item].word = text
+        }
+    }
+        
+    func didTapAddImage(cell: SingleModeImageCell, index: IndexPath) {
+        let pair = currentWords[index.item]
+        let vc = AddImageController(data: pair, delegate: self, cell: cell, index: index)
 
+        singleOutput.send(.shouldPresent(vc))
+    }
+
+    func numberOfCells() -> Int {
+        return currentWords.count
+    }
+    
+    func dataForCellAt(index: IndexPath) -> SingleModeCellData{
+        guard index.item <= currentWords.count - 1 else { return SingleModeCellData(word: "", definition: "", imageDetails: .init()) }
+        var pair = currentWords[index.item]
+        
+        return pair
+    }
+
+}

@@ -95,9 +95,12 @@ class CustomSearchToolBar: UIView {
             searchBar.trailingAnchor.constraint(
                 equalTo: chevronUpBut.leadingAnchor),
         ])
-        self.backgroundColor = .secondarySystemBackground
+        self.backgroundColor = .selectedColourPalette.primaryBackgroundColour
     }
 
+//    override func resignFirstResponder() -> Bool {
+//        super.resignFirstResponder()
+//    }
     //MARK: External methods
     func configureLabels(){
         searchBar.placeholder = "edit.searchPlaceholder".localized
@@ -105,11 +108,13 @@ class CustomSearchToolBar: UIView {
     func beginSearchSession(){
         self.searchBar.becomeFirstResponder()
     }
+    
     func endSearchSession() {
         layoutManager?.clearContentHiglight()
         searchResultsByRange = []
         searchResultPointerIndex = 0
         searchBar.text = nil
+        textView?.backgroundColor = .systemBackground
         textView?.setNeedsDisplay()
     }
     func enterBackgroundState(){
@@ -258,7 +263,7 @@ extension CustomSearchToolBar: UISearchBarDelegate {
     }
 }
 //MARK: - Actions
-extension CustomSearchToolBar{
+extension CustomSearchToolBar {
     @objc func navigateToNextResult(sender: Any) {
         guard searchResultsByRange.count > searchResultPointerIndex + 1 else {
             return

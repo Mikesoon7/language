@@ -15,18 +15,39 @@ class CustomNavigationController: UINavigationController {
     var initialLaunch = true
 
     var didCreateStrokeForLandscapePosition: Bool = false
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        appearance.backgroundColor = .systemBackground
+        appearance.titleTextAttributes = FontChangeManager.shared.VCTitleAttributes()
+        
+        self.navigationBar.standardAppearance = appearance
+        self.navigationBar.scrollEdgeAppearance = appearance
+        self.navigationBar.compactAppearance = appearance
+        
+        self.view.backgroundColor = .systemBackground
+        self.navigationBar.isTranslucent = true
+        self.navigationBar.backgroundColor = .systemBackground
+        self.navigationBar.barTintColor = .systemBackground
+        self.navigationBar.shadowImage = UIImage()
+//        self.navigationBar.backItem = UIImage()
+
         self.navigationBar.titleTextAttributes = FontChangeManager.shared.VCTitleAttributes()
         self.navigationBar.autoresizingMask = UIView.AutoresizingMask.flexibleHeight
         self.navigationBar.tintColor = .label
-        self.navigationBar.isTranslucent = true
+
         NotificationCenter.default.addObserver(self, selector: #selector(updateFonts(sender: )), name: .appFontDidChange, object: nil)
     }
     
     //The CAShapeLayer stroke, being added to the tabBarController, displayes on every view. By the design, SearchView need its own logic for any stroke diplay, so any added stroke with name "Stroke" will be removed on the appearence.
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        if self.viewControllers.first is EditView {
+            print("fwefwef")
+        }
         if self.viewControllers.first is SearchView {
             self.navigationBar.layer.sublayers?.removeAll(where: { stroke in
                 return stroke.name == "Stroke"
@@ -39,7 +60,7 @@ class CustomNavigationController: UINavigationController {
                 return stroke.name == "Stroke"
             }){
                 self.setUpBottomStroke()
-            } 
+            }
             if let sub = self.navigationBar.layer.sublayers, !sub.contains(where: {stroke in
                 return stroke.name == "Stroke"
             } ){
@@ -48,9 +69,10 @@ class CustomNavigationController: UINavigationController {
         }
     }
     
+    
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        if initialLaunch && !(self.viewControllers.first is SearchView){
+        if initialLaunch && !(self.viewControllers.first is SearchView) {
             setUpStrokes()
             initialLaunch.toggle()
         }
@@ -119,6 +141,10 @@ class CustomNavigationController: UINavigationController {
     
     @objc private func updateFonts(sender: Any){
         self.navigationBar.titleTextAttributes = FontChangeManager.shared.VCTitleAttributes()
+        
+        navigationBar.standardAppearance.titleTextAttributes = FontChangeManager.shared.VCTitleAttributes()
+        navigationBar.scrollEdgeAppearance?.titleTextAttributes = FontChangeManager.shared.VCTitleAttributes()
+        navigationBar.compactAppearance?.titleTextAttributes = FontChangeManager.shared.VCTitleAttributes()
     }
     
 }

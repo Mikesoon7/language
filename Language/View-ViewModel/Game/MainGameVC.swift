@@ -294,7 +294,6 @@ class MainGameVC: UIViewController{
                 }) { _ in
                     UIView.animate(withDuration: duration / 2) {
                         cell.cardView.layer.transform = CATransform3DConcat(opositeFinalTransform, initialTransfrom)
-                        
                     }
                 }
             }
@@ -302,6 +301,7 @@ class MainGameVC: UIViewController{
         }
         animation.addCompletion { _ in
             cell.word.isHidden = frontToBack
+            cell.imageView.isHidden = frontToBack
             cell.translationBacksideLabel.alpha = frontToBack ? 1 : 0
             self.collectionView.isUserInteractionEnabled = true
         }
@@ -462,86 +462,109 @@ class MainGameVC: UIViewController{
 }
 
 
-//MARK: - Actions
+//MARK: - Gesture Related Actions
 extension MainGameVC {
     ///Handles two types of gesture. Tap animation begins at the very beginning, while leading to either long or short gesture execution.
     @objc func longGestureDidPress(sender: UILongPressGestureRecognizer) {
-        guard let cell = sender.view as? CollectionViewCell,
-              let selectedIndex = collectionView.indexPath(for: cell) else {
-            if let cell = sender.view as? CollectionViewLastCell, let selectedIndex = collectionView.indexPath(for: cell) {
-                tappedToScrollCell = selectedIndex
-                centerLastCell(at: selectedIndex, cell: cell)
-            }
-            return
-        }
+        guard let cell = resolveCell(from: sender) as? CollectionViewCell,
+              let indexPath = collectionView.indexPath(for: cell) else { return }
         
-        let centerX = collectionView.contentOffset.x + collectionView.bounds.width / 2
-        let centerY = collectionView.bounds.height / 2
-        let center = CGPoint(x: centerX, y: centerY)
-
-        let impactGenerator = UIImpactFeedbackGenerator(style: .medium)
-        let point = sender.location(in: cell)
+        let centerIndexPath = collectionView.indexPathForItem(at: centerPoint)
         
         switch sender.state {
         case .began:
-            impactGenerator.prepare()
-            longPressCompleted = false
-            longGestureCannHappen = isOneSidesMode
-            
-            if collectionView.indexPathForItem(at: center) == selectedIndex {
-                selectedCell = selectedIndex
-                                
-                shrinkCellIn(cell: cell) {
-                    if sender.state == .began {
-                        impactGenerator.impactOccurred()
-                        self.longGestureCannHappen = true
-                        self.longPressCompleted = true
-                    } else {
-                        self.longGestureCannHappen = self.isOneSidesMode
-                    }
-                }
-            } else {
-                tappedToScrollCell = selectedIndex
-            }
-            
+            handleGestureBegan(cell: cell, indexPath: indexPath, centerIndexPath: centerIndexPath, sender: sender)
         case .changed:
-            return
-            
+            break
         case .ended:
-            if collectionView.indexPathForItem(at: center) != selectedIndex {
-                centerCellManually(at: selectedIndex)
-                return
-            }
-
-            if cell.bounds.contains(point) {
-                if longGestureCannHappen || longPressCompleted {
-                    impactGenerator.impactOccurred()
-                    let controllerToPresent: UIViewController = configureDetailedVCFor(cell: dataSource.itemIdentifier(for: selectedIndex) as! HashableWordsEntity)
-                    animateCellTransition(from: cell, to: controllerToPresent)
-                } else {
-                    animateCellFlip(cell: cell, frontToBack: !cell.isFlipped)
-                    shrinkCellOut(cell: cell)
-                }
-            } else {
-                shrinkCellOut(cell: cell)
-                selectedCell = nil
-            }
-            
+            handleGestureEnded(cell: cell, indexPath: indexPath, centerIndexPath: centerIndexPath, sender: sender)
         case .cancelled:
-            self.selectedCell = nil
-            self.tappedToScrollCell = nil
+            resetGestureState()
         default:
-            guard cell.transform == .identity else {
-                UIView.animate(withDuration: 0.2) {
-                    cell.transform = .identity
-                    self.selectedCell = nil
-                    self.tappedToScrollCell = nil
-                }
-                break
-            }
+            restoreCellTransformIfNeeded(cell)
         }
     }
     
+    private func resolveCell(from sender: UILongPressGestureRecognizer) -> UICollectionViewCell? {
+        if let cell = sender.view as? CollectionViewCell {
+            return cell
+        }
+        if let cell = sender.view as? CollectionViewLastCell,
+           let indexPath = collectionView.indexPath(for: cell) {
+            tappedToScrollCell = indexPath
+            centerLastCell(at: indexPath, cell: cell)
+        }
+        return nil
+    }
+    
+    private var centerPoint: CGPoint {
+        let centerX = collectionView.contentOffset.x + collectionView.bounds.width / 2
+        let centerY = collectionView.bounds.height / 2
+        return CGPoint(x: centerX, y: centerY)
+    }
+    
+    private func handleGestureBegan(cell: CollectionViewCell, indexPath: IndexPath, centerIndexPath: IndexPath?, sender: UILongPressGestureRecognizer) {
+        let impactGenerator = UIImpactFeedbackGenerator(style: .medium)
+        impactGenerator.prepare()
+        longPressCompleted = false
+        longGestureCannHappen = isOneSidesMode
+        
+        if indexPath == centerIndexPath {
+            selectedCell = indexPath
+            shrinkCellIn(cell: cell) {
+                if sender.state == .began {
+                    impactGenerator.impactOccurred()
+                    self.longGestureCannHappen = true
+                    self.longPressCompleted = true
+                }
+            }
+        } else {
+            tappedToScrollCell = indexPath
+        }
+    }
+    
+    private func handleGestureEnded(cell: CollectionViewCell, indexPath: IndexPath, centerIndexPath: IndexPath?, sender: UILongPressGestureRecognizer) {
+        let impactGenerator = UIImpactFeedbackGenerator(style: .medium)
+        let point = sender.location(in: cell)
+        
+        guard indexPath == centerIndexPath else {
+            centerCellManually(at: indexPath)
+            return
+        }
+        
+        if cell.bounds.contains(point) {
+            if longGestureCannHappen || longPressCompleted {
+                impactGenerator.impactOccurred()
+                if let item = dataSource.itemIdentifier(for: indexPath) as? HashableWordsEntity {
+                    let controller = configureDetailedVCFor(cell: item)
+                    animateCellTransition(from: cell, to: controller)
+                }
+            } else {
+                animateCellFlip(cell: cell, frontToBack: !cell.isFlipped)
+                shrinkCellOut(cell: cell)
+            }
+        } else {
+            shrinkCellOut(cell: cell)
+            selectedCell = nil
+        }
+    }
+    
+    private func resetGestureState() {
+        selectedCell = nil
+        tappedToScrollCell = nil
+    }
+    
+    private func restoreCellTransformIfNeeded(_ cell: UICollectionViewCell) {
+        guard cell.transform != .identity else { return }
+        UIView.animate(withDuration: 0.2) {
+            cell.transform = .identity
+            self.resetGestureState()
+        }
+    }
+    
+}
+//MARK: Actions
+extension MainGameVC {
     //Initializing the popUp view to display information about current session.
     @objc private func showPopover() {
         guard popUpTimeView == nil else {
@@ -575,9 +598,6 @@ extension MainGameVC {
 }
 
 //MARK: - DELEGATES
-
-
-
 //MARK: MainGameVCDelegate
 extension MainGameVC: MainGameVCDelegate {
     func restoreAnimation() -> UIViewPropertyAnimator{
@@ -675,6 +695,12 @@ extension MainGameVC: UICollectionViewDelegateFlowLayout, CustomCellDelegate{
     func finishButtonTap() {
         self.navigationController?.popToRootViewController(animated: true)
     }
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        if let cell = cell as? CollectionViewCell {
+            cell.loadImageLazily()
+        }
+    }
+
 }
 //MARK: - CollectionView Delegate
 extension MainGameVC: UIScrollViewDelegate{

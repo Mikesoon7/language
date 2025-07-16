@@ -20,10 +20,12 @@ class CollectionViewCell: UICollectionViewCell {
     var isOneSideMode = false
     var shadowOpacity: Float = 0.1
     
+    var imageData: Data?
+    
     //MARK: Views
     let cardView : UIView = {
         let view = UIView()
-        view.backgroundColor = .systemBackground_Secondary
+        view.backgroundColor = .systemSecondary_WhiteColour
         view.layer.cornerRadius = .outerCornerRadius
         view.layer.borderColor = UIColor.black.cgColor
         view.layer.cornerCurve = .continuous
@@ -43,15 +45,41 @@ class CollectionViewCell: UICollectionViewCell {
         return view
     }()
     
+    let imageView: UIImageView = {
+        
+        let view = UIImageView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.layer.cornerRadius = .cornerRadius
+        view.layer.cornerCurve = .continuous
+        
+        view.layer.masksToBounds = true
+        view.contentMode = .scaleAspectFill
+        return view
+    }()
+
     private var stackView: UIStackView = {
         let view = UIStackView()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.backgroundColor = .clear
         view.spacing = 10.0
         view.distribution = .fill
-        
+        view.layer.cornerRadius = .cornerRadius
+        view.layer.cornerCurve = .continuous
+//        view.layer.masksToBounds = true
         view.axis = .vertical
         view.alignment = .fill
+        
+        view.layer.backgroundColor = UIColor.systemBackground.withAlphaComponent(0.5).cgColor
+        
+        view.isLayoutMarginsRelativeArrangement = true
+        view.layoutMargins = UIEdgeInsets(
+            top: .innerSpacer,
+            left: .innerSpacer,
+            bottom: .innerSpacer,
+            right: .innerSpacer
+        )
+
+        
         return view
     }()
 
@@ -64,6 +92,8 @@ class CollectionViewCell: UICollectionViewCell {
         label.textColor = .label
         label.text = ""
         label.textAlignment = .center
+        
+        label.layer.cornerRadius = .cornerRadius
 
         label.translatesAutoresizingMaskIntoConstraints = false
         label.minimumScaleFactor = 0.8
@@ -71,6 +101,7 @@ class CollectionViewCell: UICollectionViewCell {
         label.baselineAdjustment = .alignCenters
         label.setContentCompressionResistancePriority(.required, for: .horizontal)
         label.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        
         return label
     }()
     var translation: UILabel = {
@@ -79,6 +110,8 @@ class CollectionViewCell: UICollectionViewCell {
         label.numberOfLines = 0
         label.textColor = .label
         
+        label.layer.cornerRadius = .cornerRadius
+
         label.text = ""
         label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -87,6 +120,7 @@ class CollectionViewCell: UICollectionViewCell {
         label.baselineAdjustment = .alignCenters
         label.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
             label.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+        
         return label
     }()
     let translationBacksideLabel: UILabel = {
@@ -96,6 +130,9 @@ class CollectionViewCell: UICollectionViewCell {
         label.textColor = .label
         label.transform = CGAffineTransform(scaleX: -1, y: 1)
         label.text = ""
+        
+        label.layer.cornerRadius = .cornerRadius
+        
         label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
         label.minimumScaleFactor = 0.8
@@ -119,6 +156,11 @@ class CollectionViewCell: UICollectionViewCell {
         word.isHidden = true
         translation.isHidden = true
         translationBacksideLabel.isHidden = true
+        imageView.image = nil
+        imageData = nil
+        
+        word.layer.backgroundColor = nil
+        translationBacksideLabel.layer.backgroundColor = nil
         self.gestureRecognizers = nil
     }
     
@@ -127,14 +169,29 @@ class CollectionViewCell: UICollectionViewCell {
     ///Assigning passed values to labels and asks stackView to layout subviews.
     func configure(with data: HashableWordsEntity, oneSideMode: Bool){
         self.isOneSideMode = oneSideMode
+        
         word.text = data.wordEntity.word
         word.isHidden = false
+        
         word.font = .selectedFont.withSize(.subtitleSize)
         translation.font = .selectedFont.withSize(.bodyTextSize)
+        
+        if let image = data.wordEntity.image {
+            self.imageData = image
+//            loadImageLazily(from: data.wordEntity, at: indexPath) // ⬅️ new method
+        }
+//        if let imageData = data.wordEntity.image, let imageDetails = try? JSONDecoder().decode(ImageDetailsCheck.self, from: imageData), let image = imageDetails.image {
+//            let processedImage = imageDetails.filterValue.original ? image : image.applyBlackAndWhiteFilter()
+//            imageView.image = processedImage
+//            imageView.contentMode = imageDetails.contentMode.uiViewContentMode
+//        }
+        
+        
         // Set the visibility based on whether there is a meaning to display
         if !data.wordEntity.meaning.isEmpty {
             translationBacksideLabel.text = data.wordEntity.meaning
             translation.text = data.wordEntity.meaning
+        
             isAccessable = true
             translation.isHidden = false
             translationBacksideLabel.isHidden = false
@@ -146,22 +203,61 @@ class CollectionViewCell: UICollectionViewCell {
         configureTextDisplay()
     }
     
+    func loadImageLazily() {
+        guard let imageData = imageData else { return }
+        if let imageDetails = try? JSONDecoder().decode(ImageDetailsCheck.self, from: imageData), let image = imageDetails.image {
+            let processedImage = imageDetails.filterValue.original ? image : image.applyBlackAndWhiteFilter()
+            imageView.image = processedImage
+            imageView.contentMode = imageDetails.contentMode.uiViewContentMode
+        }
+    }
+//    func loadImageLazily(from wordEntity: WordsEntity, at indexPath: IndexPath) {
+//        let key = wordEntity.word as NSString
+//        if let cached = imageCache.object(forKey: key) {
+//            self.imageView.image = cached
+//            return
+//        }
+//
+//        self.imageView.image = nil // Reset
+//
+//        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+//            guard let imageData = wordEntity.image,
+//                  let imageDetails = try? JSONDecoder().decode(ImageDetailsCheck.self, from: imageData),
+//                  let image = imageDetails.image else { return }
+//
+//            let finalImage = imageDetails.filterValue.original ? image : image.applyBlackAndWhiteFilter()
+//            self?.imageCache.setObject(finalImage, forKey: key)
+//
+//            DispatchQueue.main.async {
+//                // Ensure cell is still visible and hasn't been reused for another index
+//                guard let strongSelf = self,
+//                      strongSelf.isRepresenting(wordEntity: wordEntity) else { return }
+//
+//                strongSelf.imageView.image = finalImage
+//            }
+//        }
+//    }
+
     
     private func configureTextDisplay(){
         if isOneSideMode {
             configureStackView()
         } else {
+            
             cardView.addSubview(word)
             NSLayoutConstraint.activate([
-                word.topAnchor.constraint(equalTo: cardView.topAnchor, 
-                                          constant: .innerSpacer),
-                word.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, 
-                                              constant: .innerSpacer),
-                word.trailingAnchor.constraint(equalTo: cardView.trailingAnchor,
-                                               constant: -.innerSpacer),
-                word.bottomAnchor.constraint(equalTo: cardView.bottomAnchor,
+                word.topAnchor.constraint(greaterThanOrEqualTo: cardView.topAnchor, constant: .innerSpacer),
+                word.leadingAnchor.constraint(greaterThanOrEqualTo: cardView.leadingAnchor,
+                                              constant: .outerSpacer),
+                word.trailingAnchor.constraint(lessThanOrEqualTo: cardView.trailingAnchor,
+                                               constant: -.outerSpacer),
+                word.bottomAnchor.constraint(lessThanOrEqualTo: cardView.bottomAnchor,
                                              constant: -.innerSpacer),
+                word.centerXAnchor.constraint(equalTo: cardView.centerXAnchor),
+                word.centerYAnchor.constraint(equalTo: cardView.centerYAnchor)
             ])
+            word.layer.backgroundColor = UIColor.systemBackground.withAlphaComponent(0.7).cgColor
+            translationBacksideLabel.layer.backgroundColor = UIColor.systemBackground.withAlphaComponent(0.7).cgColor
         }
     }
 
@@ -185,7 +281,7 @@ class CollectionViewCell: UICollectionViewCell {
         self.contentView.addSubview(cardShadowView)
         cardShadowView.layer.shadowOpacity = 0.1
         cardShadowView.addSubview(cardView)
-        cardView.addSubview(translationBacksideLabel)
+        cardView.addSubviews(translationBacksideLabel, imageView)
 
         contentView.backgroundColor = .systemBackground
         
@@ -215,6 +311,17 @@ class CollectionViewCell: UICollectionViewCell {
             cardView.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor),
             
             cardView.trailingAnchor.constraint(equalTo: self.contentView.trailingAnchor),
+            
+            
+            imageView.topAnchor.constraint(equalTo: cardShadowView.topAnchor, constant: .innerSpacer),
+            
+            imageView.leadingAnchor.constraint(equalTo: cardShadowView.leadingAnchor, constant: .innerSpacer),
+            
+            imageView.bottomAnchor.constraint(equalTo: cardShadowView.bottomAnchor, constant: -.innerSpacer),
+            
+            imageView.trailingAnchor.constraint(equalTo: cardShadowView.trailingAnchor, constant: -.innerSpacer),
+
+
         ])
     }
 }

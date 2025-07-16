@@ -23,7 +23,7 @@ class PopUpTimerView: UIView {
     
     let popover: UIView = {
         let view = UIView()
-        view.backgroundColor = .systemBackground_Secondary
+        view.backgroundColor = .systemSecondary_WhiteColour
         view.layer.cornerRadius = .cornerRadius + 5
         view.layer.shadowColor = UIColor.black.cgColor
         view.layer.shadowOpacity = 0.2

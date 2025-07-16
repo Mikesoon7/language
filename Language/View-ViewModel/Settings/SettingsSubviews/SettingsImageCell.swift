@@ -71,7 +71,7 @@ class SettingsImageCell: UITableViewCell {
     //MARK: Settings up cells view.
     private func configureCellsView(){
         self.selectionStyle = .none
-        contentView.backgroundColor = .secondarySystemBackground.withAlphaComponent(0.8)
+        contentView.backgroundColor = .selectedColourPalette.primaryBackgroundColour.withAlphaComponent(0.8)
 
         configureGestures()
     }

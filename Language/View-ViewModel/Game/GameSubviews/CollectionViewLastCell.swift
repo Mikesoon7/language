@@ -40,7 +40,7 @@ class CollectionViewLastCell: UICollectionViewCell {
     //MARK: Views
     let cardView : UIView = {
         let view = UIView()
-        view.backgroundColor = .systemBackground_Secondary
+        view.backgroundColor = .systemSecondary_WhiteColour
         view.layer.cornerRadius = .outerCornerRadius
         view.layer.borderColor = UIColor.black.cgColor
         view.layer.borderWidth = 1

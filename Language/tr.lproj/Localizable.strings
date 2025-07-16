@@ -59,11 +59,14 @@
 "settings.footer.buyCoffee" = "Bana bir kahve ısmarla";
 //MARK: - AddDictionary or WordsVC
 "addDict.title" = "Oluşturma";
-"addWord.title" = "Yeni kelimeler \n ekleme";
+"addWord.title" = "Yeni kelimeler ekleme";
+"addImage.title" = "Yeni resimler ekleme";
 "viewPlaceholderWord" = "Kelime ";
 "viewPlaceholderMeaning" = " açıklama";
 "fieldPlaceholder" = "Ad";
 "dictionaryName" = "Sözlük adı";
+"frontSide" = "Yüz taraf";
+"backSide" = "Karşı taraf";
 //Alerts
 "textAlert" = "Metni girin";
 "nameAlert" = "Adı girin";
@@ -71,6 +74,7 @@
 "nameInfo" = "Neredeyse hazır. Lütfen sözlüğünüze bir ad verin.";
 "addWords.contentSaving.title" = "İçerik kaydedilmedi";
 "addWords.contentSaving.text" = "Yeni kelimelerinizi kaydetmek ister misiniz?";
+"addWords.contentSaving.image" = "Yeni resimlerinizi kaydetmek ister misiniz?";
 "addWords.contentSaving.save" = "Kaydet";
 "addWords.contentSaving.clear" = "Temizle";
 

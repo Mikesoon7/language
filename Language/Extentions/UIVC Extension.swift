@@ -5,6 +5,7 @@
 //  Created by Star's MacBook Air on 29.11.2023.
 //
 
+
 import Foundation
 import UIKit
 
@@ -45,6 +46,10 @@ extension UIViewController{
             case .fetchFailed(let name):
                 title = "coreDataError.words.fetch".localized + " '\(name)'"
             case .failedToAssignEmptyString(let word):
+                title = "coreDataError.words.emptyWord".localized + " '\(word)'"
+                message = "coreDataError.words.emptyWord.message".localized
+            case .imageUpdateFailed(let word):
+                //NOTE: Finish
                 title = "coreDataError.words.emptyWord".localized + " '\(word)'"
                 message = "coreDataError.words.emptyWord.message".localized
             }

@@ -21,16 +21,23 @@
 		085E24B72D6C58E600CB5ECB /* WordsEntity+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 085E24AF2D6C58E600CB5ECB /* WordsEntity+CoreDataProperties.swift */; };
 		085E24B82D6C58E600CB5ECB /* DictionariesSettings+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 085E24B02D6C58E600CB5ECB /* DictionariesSettings+CoreDataProperties.swift */; };
 		085E24B92D6C58E600CB5ECB /* DictionariesSettings+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 085E24B12D6C58E600CB5ECB /* DictionariesSettings+CoreDataClass.swift */; };
-		085E24BC2D8B2DAF00CB5ECB /* MultiCardsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 085E24BB2D8B2DAF00CB5ECB /* MultiCardsCell.swift */; };
+		086351412DBA62830076C242 /* InfoPopOverVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 086351402DBA62830076C242 /* InfoPopOverVC.swift */; };
 		086854EB2CE5064900CBB618 /* AddWordsPartitialController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 086854EA2CE5064900CBB618 /* AddWordsPartitialController.swift */; };
 		0873A1C02CE62D730048D012 /* CountdownBarButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0873A1BF2CE62D730048D012 /* CountdownBarButton.swift */; };
 		0887CB492D3B962000BACA7C /* DataUpdateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0887CB482D3B962000BACA7C /* DataUpdateManager.swift */; };
+		0898B2172DC4E1F90046549A /* CollectionSearchToolBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0898B2162DC4E1F90046549A /* CollectionSearchToolBar.swift */; };
 		08AD928B2D4BA5330077BAD9 /* SearchViewHeaderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08AD928A2D4BA5330077BAD9 /* SearchViewHeaderCell.swift */; };
 		08B80D102B924FC300768784 /* FontChangeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B80D0F2B924FC300768784 /* FontChangeManager.swift */; };
 		08C097F72CDD072A00ED875A /* TimedDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08C097F62CDD072A00ED875A /* TimedDetailView.swift */; };
 		08C6654B2C80D35400427BA5 /* CoreData_Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08C6654A2C80D35400427BA5 /* CoreData_Settings.swift */; };
 		08C7E7062D3536E2006E6C55 /* PopUpTimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08C7E7052D3536E2006E6C55 /* PopUpTimerView.swift */; };
 		08CEADA52DB14B390092A283 /* AddImageController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08CEADA42DB14B390092A283 /* AddImageController.swift */; };
+		08CEADA82DB686B50092A283 /* SingleModeInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08CEADA72DB686B50092A283 /* SingleModeInputView.swift */; };
+		08CEADAB2DB68BD30092A283 /* SingleModeImageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08CEADAA2DB68BD30092A283 /* SingleModeImageCell.swift */; };
+		08CEADAD2DB68CD60092A283 /* SingleModeNameCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08CEADAC2DB68CD60092A283 /* SingleModeNameCell.swift */; };
+		08CEADAF2DB68CE80092A283 /* SingleModeAddCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08CEADAE2DB68CE80092A283 /* SingleModeAddCell.swift */; };
+		08CEADB12DB68D580092A283 /* SingleModeDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08CEADB02DB68D580092A283 /* SingleModeDelegate.swift */; };
+		08CEADB72DB7A53A0092A283 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 08CEADB92DB7A53A0092A283 /* InfoPlist.strings */; };
 		08CEFF1F2D4E6AF300E6DF82 /* SearchCellDetailedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08CEFF1E2D4E6AF300E6DF82 /* SearchCellDetailedView.swift */; };
 		08D01AAA2D5F70FC00A25E31 /* AppProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08D01AA92D5F70FC00A25E31 /* AppProperties.swift */; };
 		08D01AAF2D68A19300A25E31 /* LearnyTests.xctest in Resources */ = {isa = PBXBuildFile; fileRef = 9A7B91D8298D6D9900E60CDD /* LearnyTests.xctest */; };
@@ -155,10 +162,11 @@
 		085E24AF2D6C58E600CB5ECB /* WordsEntity+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "WordsEntity+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		085E24B02D6C58E600CB5ECB /* DictionariesSettings+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "DictionariesSettings+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		085E24B12D6C58E600CB5ECB /* DictionariesSettings+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "DictionariesSettings+CoreDataClass.swift"; sourceTree = "<group>"; };
-		085E24BB2D8B2DAF00CB5ECB /* MultiCardsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiCardsCell.swift; sourceTree = "<group>"; };
+		086351402DBA62830076C242 /* InfoPopOverVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoPopOverVC.swift; sourceTree = "<group>"; };
 		086854EA2CE5064900CBB618 /* AddWordsPartitialController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddWordsPartitialController.swift; sourceTree = "<group>"; };
 		0873A1BF2CE62D730048D012 /* CountdownBarButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountdownBarButton.swift; sourceTree = "<group>"; };
 		0887CB482D3B962000BACA7C /* DataUpdateManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataUpdateManager.swift; sourceTree = "<group>"; };
+		0898B2162DC4E1F90046549A /* CollectionSearchToolBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionSearchToolBar.swift; sourceTree = "<group>"; };
 		089F83AB2D1C07F10093800B /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/Localizable.strings; sourceTree = "<group>"; };
 		08AD928A2D4BA5330077BAD9 /* SearchViewHeaderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewHeaderCell.swift; sourceTree = "<group>"; };
 		08B80D0F2B924FC300768784 /* FontChangeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontChangeManager.swift; sourceTree = "<group>"; };
@@ -166,6 +174,16 @@
 		08C6654A2C80D35400427BA5 /* CoreData_Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreData_Settings.swift; sourceTree = "<group>"; };
 		08C7E7052D3536E2006E6C55 /* PopUpTimerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopUpTimerView.swift; sourceTree = "<group>"; };
 		08CEADA42DB14B390092A283 /* AddImageController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddImageController.swift; sourceTree = "<group>"; };
+		08CEADA72DB686B50092A283 /* SingleModeInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleModeInputView.swift; sourceTree = "<group>"; };
+		08CEADAA2DB68BD30092A283 /* SingleModeImageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleModeImageCell.swift; sourceTree = "<group>"; };
+		08CEADAC2DB68CD60092A283 /* SingleModeNameCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleModeNameCell.swift; sourceTree = "<group>"; };
+		08CEADAE2DB68CE80092A283 /* SingleModeAddCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleModeAddCell.swift; sourceTree = "<group>"; };
+		08CEADB02DB68D580092A283 /* SingleModeDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleModeDelegate.swift; sourceTree = "<group>"; };
+		08CEADB22DB7A3FD0092A283 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; name = Info.plist; path = Language/Info.plist; sourceTree = SOURCE_ROOT; };
+		08CEADB82DB7A53A0092A283 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		08CEADBA2DB7A54E0092A283 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		08CEADBB2DB7A5560092A283 /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		08CEADBC2DB7A5570092A283 /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = uk.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		08CEFF1E2D4E6AF300E6DF82 /* SearchCellDetailedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchCellDetailedView.swift; sourceTree = "<group>"; };
 		08D01AA92D5F70FC00A25E31 /* AppProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppProperties.swift; sourceTree = "<group>"; };
 		08DA98B02D00AEE8007A3C00 /* CustomTableViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTableViewDelegate.swift; sourceTree = "<group>"; };
@@ -285,14 +303,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		085E24BA2D8B2D8100CB5ECB /* MultiCardsSubviews */ = {
-			isa = PBXGroup;
-			children = (
-				085E24BB2D8B2DAF00CB5ECB /* MultiCardsCell.swift */,
-			);
-			path = MultiCardsSubviews;
-			sourceTree = "<group>";
-		};
 		089F83AA2D17048E0093800B /* Non-Used */ = {
 			isa = PBXGroup;
 			children = (
@@ -323,6 +333,35 @@
 			path = AddWords;
 			sourceTree = "<group>";
 		};
+		08CEADA62DB684EA0092A283 /* SingleModeCollectionView */ = {
+			isa = PBXGroup;
+			children = (
+				08CEADA72DB686B50092A283 /* SingleModeInputView.swift */,
+				08CEADA92DB68B810092A283 /* SingleModeCells */,
+				08CEADB02DB68D580092A283 /* SingleModeDelegate.swift */,
+				08CEADA42DB14B390092A283 /* AddImageController.swift */,
+			);
+			path = SingleModeCollectionView;
+			sourceTree = "<group>";
+		};
+		08CEADA92DB68B810092A283 /* SingleModeCells */ = {
+			isa = PBXGroup;
+			children = (
+				08CEADAA2DB68BD30092A283 /* SingleModeImageCell.swift */,
+				08CEADAC2DB68CD60092A283 /* SingleModeNameCell.swift */,
+				08CEADAE2DB68CE80092A283 /* SingleModeAddCell.swift */,
+			);
+			path = SingleModeCells;
+			sourceTree = "<group>";
+		};
+		08CEADB42DB7A4D30092A283 /* InfoPlist.localizable */ = {
+			isa = PBXGroup;
+			children = (
+				08CEADB92DB7A53A0092A283 /* InfoPlist.strings */,
+			);
+			path = InfoPlist.localizable;
+			sourceTree = "<group>";
+		};
 		193AA18A94BF67BB62C02EA7 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -334,6 +373,7 @@
 			isa = PBXGroup;
 			children = (
 				9AA6C4E42AB621AA0094F8D5 /* SearchToolBarView.swift */,
+				0898B2162DC4E1F90046549A /* CollectionSearchToolBar.swift */,
 			);
 			path = EditSubviews;
 			sourceTree = "<group>";
@@ -370,10 +410,8 @@
 		9A5641FA2A5D756800027BCD /* AddDictionary */ = {
 			isa = PBXGroup;
 			children = (
-				085E24BA2D8B2D8100CB5ECB /* MultiCardsSubviews */,
 				9AE509342997C07700D86DD7 /* AddDictionaryView.swift */,
 				9AA61BEE2A616D3100FACAD2 /* AddDictionaryViewModel.swift */,
-				08CEADA42DB14B390092A283 /* AddImageController.swift */,
 			);
 			path = AddDictionary;
 			sourceTree = "<group>";
@@ -574,8 +612,11 @@
 		9A94B9572A5E178600DF6E4C /* Related */ = {
 			isa = PBXGroup;
 			children = (
+				08CEADB42DB7A4D30092A283 /* InfoPlist.localizable */,
 				089F83AA2D17048E0093800B /* Non-Used */,
 				9A7B91CE298D6D9900E60CDD /* Assets.xcassets */,
+				08CEADB22DB7A3FD0092A283 /* Info.plist */,
+				086351402DBA62830076C242 /* InfoPopOverVC.swift */,
 				9A9970FD29DB2D86007EE635 /* LaunchAnimation.swift */,
 				9A1F67CE29E166C4003993C5 /* LanguageChangeManager.swift */,
 				0887CB482D3B962000BACA7C /* DataUpdateManager.swift */,
@@ -629,6 +670,7 @@
 		9AB40FF029CC534600353FFC /* View-ViewModel */ = {
 			isa = PBXGroup;
 			children = (
+				08CEADA62DB684EA0092A283 /* SingleModeCollectionView */,
 				9A8284102AC45C2A0071D4D7 /* TutorialViews */,
 				9ABC83A22A582C0D00E630F5 /* Menu */,
 				9A5642072A5E15AB00027BCD /* Statistic */,
@@ -816,6 +858,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7D59FEBC2B07925B00FAD332 /* Settings.bundle in Resources */,
+				08CEADB72DB7A53A0092A283 /* InfoPlist.strings in Resources */,
 				9A1F67C829DFFD39003993C5 /* Localizable.strings in Resources */,
 				9A94B9592A5EB1FA00DF6E4C /* Launch Screen.storyboard in Resources */,
 				9A7B91CF298D6D9900E60CDD /* Assets.xcassets in Resources */,
@@ -845,6 +888,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				08CEADB12DB68D580092A283 /* SingleModeDelegate.swift in Sources */,
 				085E24B42D6C58E600CB5ECB /* WordsEntity+CoreDataClass.swift in Sources */,
 				08D01AAA2D5F70FC00A25E31 /* AppProperties.swift in Sources */,
 				085E24B72D6C58E600CB5ECB /* WordsEntity+CoreDataProperties.swift in Sources */,
@@ -855,17 +899,19 @@
 				9AA61BEF2A616D3200FACAD2 /* AddDictionaryViewModel.swift in Sources */,
 				9AA71C6129C34EA8008A193B /* CollectionViewLastCell.swift in Sources */,
 				085E24B52D6C58E600CB5ECB /* DictionariesAccessLog+CoreDataProperties.swift in Sources */,
+				08CEADAD2DB68CD60092A283 /* SingleModeNameCell.swift in Sources */,
 				9ABC83A62A582C5600E630F5 /* MenuViewModel.swift in Sources */,
 				9A883CE32A6C65D7008682F3 /* UIView Extensions.swift in Sources */,
 				9AB43A1629F3E72D00984350 /* SearchViewCell.swift in Sources */,
 				9A1F67D129E18BBE003993C5 /* SettingsImageCell.swift in Sources */,
+				08CEADAB2DB68BD30092A283 /* SingleModeImageCell.swift in Sources */,
 				9AB43A1929F40EA000984350 /* LearnyLocal.xcdatamodeld in Sources */,
 				9ABC83A42A582C3F00E630F5 /* MenuView.swift in Sources */,
-				085E24BC2D8B2DAF00CB5ECB /* MultiCardsCell.swift in Sources */,
 				0887CB492D3B962000BACA7C /* DataUpdateManager.swift in Sources */,
 				08CEFF1F2D4E6AF300E6DF82 /* SearchCellDetailedView.swift in Sources */,
 				08CEADA52DB14B390092A283 /* AddImageController.swift in Sources */,
 				9AA71C5B29C20894008A193B /* MainGameVC.swift in Sources */,
+				086351412DBA62830076C242 /* InfoPopOverVC.swift in Sources */,
 				9A77B0242AD58974006DA151 /* ExceptionsViewModel.swift in Sources */,
 				9A02AA5C2AA0B47100644820 /* StatisticViewCell.swift in Sources */,
 				9A912FC62A06BB540004A91A /* NotificationTextCell.swift in Sources */,
@@ -911,6 +957,7 @@
 				9AABAEAC2A8527060032C008 /* UIFont Extensions.swift in Sources */,
 				9A883CEC2A6D37C4008682F3 /* CoreData_Logs.swift in Sources */,
 				7D3C3F9F2B1745A200025234 /* UIVC Extension.swift in Sources */,
+				08CEADA82DB686B50092A283 /* SingleModeInputView.swift in Sources */,
 				9A8284082ABDF2890071D4D7 /* TutorialSecondPart.swift in Sources */,
 				08C097F72CDD072A00ED875A /* TimedDetailView.swift in Sources */,
 				9A5D51D72A680EED00F85720 /* CoreDataCustomErrors.swift in Sources */,
@@ -928,6 +975,7 @@
 				9A4D211A2AB0B74400EA9196 /* CustomNavigationController.swift in Sources */,
 				9A3825EC2ABB284E00113AAD /* Tutorial.swift in Sources */,
 				9AFFCE7D299E747400C12B94 /* StatisticView.swift in Sources */,
+				0898B2172DC4E1F90046549A /* CollectionSearchToolBar.swift in Sources */,
 				7D3C3FA12B17462500025234 /* UIColor Extension.swift in Sources */,
 				0873A1C02CE62D730048D012 /* CountdownBarButton.swift in Sources */,
 				9A7B91C6298D6D9600E60CDD /* AppDelegate.swift in Sources */,
@@ -944,6 +992,7 @@
 				08C7E7062D3536E2006E6C55 /* PopUpTimerView.swift in Sources */,
 				08EA16F62CFB1E3A00E1CA56 /* StatisticViewSelectedCell.swift in Sources */,
 				9A5D51D92A680F4E00F85720 /* CoreDataChangeTypes.swift in Sources */,
+				08CEADAF2DB68CE80092A283 /* SingleModeAddCell.swift in Sources */,
 				9AB9A95F29FD70A800694FE8 /* SeparatorsCell.swift in Sources */,
 				0825FE8C2D536DC0000C2114 /* TypingEffectAnimation.swift in Sources */,
 				9AD4E2452A960163009090EA /* InformationView.swift in Sources */,
@@ -985,6 +1034,17 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
+		08CEADB92DB7A53A0092A283 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				08CEADB82DB7A53A0092A283 /* en */,
+				08CEADBA2DB7A54E0092A283 /* ru */,
+				08CEADBB2DB7A5560092A283 /* tr */,
+				08CEADBC2DB7A5570092A283 /* uk */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
 		9A1F67CA29DFFD39003993C5 /* Localizable.strings */ = {
 			isa = PBXVariantGroup;
 			children = (

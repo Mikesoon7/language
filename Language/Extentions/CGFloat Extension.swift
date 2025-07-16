@@ -37,6 +37,7 @@ extension CGFloat{
     static var longOuterSpacer = (UIDevice.isDeviceLarge ? 35 : (
         UIDevice.isDeviceCompact ? 20 : 30.0))
     static var keyboardInputAccessoryViewInset = (UIDevice.current.userInterfaceIdiom == .pad ? -44.0 : 0)
+    static var customSearchAccessoryView = 50.0
     
     //Buttons
     static var textViewGenericSize = (UIDevice.isDeviceLarge ? 160 : (

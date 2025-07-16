@@ -68,6 +68,15 @@ class GameDetailsViewModel{
         return text
     }
     
+    func getCellData() -> SingleModeCellData {
+        if let imageData = selectedWord.image,
+           let imageDetails = try? JSONDecoder().decode(ImageDetailsCheck.self, from: imageData) {
+            return .init(word: selectedWord.word, definition: selectedWord.meaning, imageDetails: imageDetails)
+        } else {
+            return .init(word: selectedWord.word, definition: selectedWord.meaning, imageDetails: .init())
+
+        }
+    }
     ///Presenting alert to submit deletion.
     func deleteWord(view: UIView?){
         configureAlert(forDeletion: true, view: view)
@@ -97,6 +106,14 @@ class GameDetailsViewModel{
             self.currentText = text
             self.cardState = .wasUpdated
             output.send(.shouldEndEditing)
+        } catch {
+            output.send(.error(error))
+        }
+    }
+    func editImage(imageDetails: ImageDetailsCheck){
+        do {
+            try dataModel.updateWordsImage(for: selectedWord, imageDetails: imageDetails)
+            self.cardState = .wasUpdated
         } catch {
             output.send(.error(error))
         }

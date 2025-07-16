@@ -16,6 +16,7 @@ class SearchView: UIViewController {
         viewModel.searchBarPositionIsOnTop()
     }
     private var searchBarDidChanged = false
+    private var isLayoutRequired = true
     
     private let viewModelFactory: ViewModelFactory
     private let viewModel: SearchViewModel
@@ -266,7 +267,7 @@ class SearchView: UIViewController {
         }
     }
     
-    //MARK: Prepairing view by canishing current searchBar
+    //MARK: Prepairing view by vanishing current searchBar
     private func prepeareForNewPosition(){
         if searchBarOnTop {
             self.tabBarController?.tabBar.layer.addSublayer(bottomStroke)
@@ -276,7 +277,9 @@ class SearchView: UIViewController {
         } else {
             bottomStroke.removeFromSuperlayer()
             refreshTopSearchBar()
+            
             navigationItem.searchController = nil
+            
             self.navigationController?.navigationBar.layer.addSublayer(topStroke)
         }
         searchBarDidChanged = true
@@ -424,11 +427,17 @@ extension SearchView: UICollectionViewDataSource, UICollectionViewDelegate {
         
         if selectedIndexPath != nil { self.dismissPopover() }
         
+        if bottomSearchView.searchBar.isFirstResponder {
+            bottomSearchView.searchBar.resignFirstResponder()
+        } else if topSearchController.searchBar.isFirstResponder {
+            topSearchController.searchBar.resignFirstResponder()
+        }
+        
         let numberOfColumns = traitCollection.isRegularWidth ? 3 : 2
         
         let viewToAttach = view.window ?? view ?? collectionView
         
-        let cellFrameInWindow = collectionView.convert(cell.frame, to: view)
+        let cellFrameInWindow = collectionView.convert(cell.frame, to: viewToAttach)
         
         let data = viewModel.dataForCellFor(indexPath: indexPath)
         

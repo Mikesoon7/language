@@ -10,7 +10,7 @@ import UIKit
 import SwiftUI
 import Combine
 
-private enum Direction1{
+enum Direction{
     case left
     case right
 }
@@ -19,10 +19,10 @@ struct DataForMenuCell {
     var name: String
     var numberOfCards: Int64
 }
-private enum ViewConstants {
-    static let overlayPoints: CGFloat = 2
-    static let actionViewMultiplier: CGFloat = 0.2
-}
+//private enum ViewConstants {
+//    static let overlayPoints: CGFloat = 2
+//    static let actionViewMultiplier: CGFloat = 0.2
+//}
 
 class MenuDictionaryCVCell: UICollectionViewCell {
     private enum ViewConstants{
@@ -33,7 +33,7 @@ class MenuDictionaryCVCell: UICollectionViewCell {
     
     static let identifier = "dictCell"
         
-    private var direction: Direction1 = .right
+    private var direction: Direction = .right
     private var isActionActive: Bool = false
     private var isActionLooped: Bool = false
     private var isStatActive: Bool = false
@@ -48,8 +48,9 @@ class MenuDictionaryCVCell: UICollectionViewCell {
     //Labels
     lazy var mainView : UIView = {
         let view = UIView()
-        view.backgroundColor = .secondarySystemBackground
-        
+        view.backgroundColor = .selectedColourPalette.primaryBackgroundColour
+//        let colour = UIColor(named: "TestBlueColour")
+//        view.backgroundColor = colour
         view.layer.cornerRadius = .cornerRadius
         view.clipsToBounds = true
         
@@ -88,13 +89,17 @@ class MenuDictionaryCVCell: UICollectionViewCell {
         imageName: "square.and.arrow.up",
         colour: .systemGray5)
 
+    lazy var inspectView: UIView = configureCustomActions(
+        imageName: "list.clipboard",
+        colour: .systemGray4)
+    
     lazy var editView: UIView = configureCustomActions(
         imageName: "pencil",
-        colour: .systemGray4)
+        colour: .systemGray3)
     
     lazy var deleteView: UIView = configureCustomActions(
         imageName: "trash",
-        colour: .systemGray3)
+        colour: .systemGray2)
     
     
     //MARK: Constrait related properties
@@ -118,11 +123,18 @@ class MenuDictionaryCVCell: UICollectionViewCell {
     var currentEditConstant: CGFloat = 0
     var finalEditConstant: CGFloat = 0
     
+    //Inspect button
+    var inspectViewLeadingAnchor: NSLayoutConstraint = .init()
+    var currentInspectConstant: CGFloat = 0
+    var finalInspectConstant: CGFloat = 0
+
+    
     //SHare button
     var shareViewLeadingAnchor: NSLayoutConstraint = .init()
 
     //Animation final stage.
     var editViewFinalConstant: NSLayoutConstraint = .init()
+    var inspectViewFinalConstant: NSLayoutConstraint = .init()
     var deleteViewFinalConstant: NSLayoutConstraint = .init()
     var statViewFinalConstant: NSLayoutConstraint = .init()
         
@@ -156,9 +168,15 @@ class MenuDictionaryCVCell: UICollectionViewCell {
         shareView.layer.mask = UIView().configureActionMaskWith(size: CGSize(
             width: contentView.frame.width * 0.2 + ViewConstants.overlayPoints,
             height: contentView.frame.height), cornerRadius: .cornerRadius)
+        
+        inspectView.layer.mask = UIView().configureActionMaskWith(size: CGSize(
+            width: contentView.frame.width * 0.2 + ViewConstants.overlayPoints,
+            height: contentView.frame.height), cornerRadius: .cornerRadius)
+
         editView.layer.mask = UIView().configureActionMaskWith(size: CGSize(
             width: contentView.frame.width * 0.2 + ViewConstants.overlayPoints,
             height: contentView.frame.height), cornerRadius: .cornerRadius)
+        
         deleteView.layer.mask = UIView().configureActionMaskWith(size: CGSize(
             width: contentView.frame.width * 0.2 + ViewConstants.overlayPoints,
             height: contentView.frame.height), cornerRadius: .cornerRadius)
@@ -166,16 +184,27 @@ class MenuDictionaryCVCell: UICollectionViewCell {
         
         contentViewWidth = contentView.bounds.width
 
-        mainViewFinal = -(contentViewWidth * 0.6 - ViewConstants.cornerRadius * 3.5)
+        mainViewFinal = -(contentViewWidth * 0.8 - ViewConstants.cornerRadius * 4)
 
-        finalDeleteConstant = contentViewWidth * 0.4 - ViewConstants.cornerRadius * 3
+        finalDeleteConstant = contentViewWidth * 0.6 - ViewConstants.cornerRadius * 4
 
-        finalEditConstant = contentViewWidth * 0.2 - ViewConstants.cornerRadius * 2
+        finalEditConstant = contentViewWidth * 0.4 - ViewConstants.cornerRadius * 3
+        
+        finalInspectConstant = contentViewWidth * 0.2 - ViewConstants.cornerRadius * 2
 
 
-        editViewFinalConstant = editView.leadingAnchor.constraint(equalTo: shareView.trailingAnchor, constant: -ViewConstants.cornerRadius)
-        deleteViewFinalConstant = deleteView.leadingAnchor.constraint(equalTo: editView.trailingAnchor, constant: -ViewConstants.cornerRadius)
-        statViewFinalConstant = shareView.leadingAnchor.constraint(equalTo: mainView.trailingAnchor, constant: -ViewConstants.cornerRadius)
+        statViewFinalConstant = shareView.leadingAnchor.constraint(
+            equalTo: mainView.trailingAnchor, constant: -ViewConstants.cornerRadius)
+
+        inspectViewFinalConstant = inspectView.leadingAnchor.constraint(
+            equalTo: shareView.trailingAnchor, constant: -ViewConstants.cornerRadius)
+        
+        editViewFinalConstant = editView.leadingAnchor.constraint(
+            equalTo: inspectView.trailingAnchor, constant: -ViewConstants.cornerRadius)
+        
+        deleteViewFinalConstant = deleteView.leadingAnchor.constraint(
+            equalTo: editView.trailingAnchor, constant: -ViewConstants.cornerRadius)
+        
     }
     
     override func prepareForReuse() {
@@ -199,28 +228,34 @@ class MenuDictionaryCVCell: UICollectionViewCell {
         contentView.frame = self.bounds
 
         contentView.backgroundColor = .clear
-        contentView.addSubviews(mainView, shareView, editView, deleteView)
+        contentView.addSubviews(mainView, shareView, inspectView, editView, deleteView)
 
         contentViewWidth = contentView.bounds.width
         initialActionConstant = -ViewConstants.cornerRadius
 
         //Related to the holder
-        mainViewFinal = -(contentViewWidth * 0.6 - ViewConstants.cornerRadius * 2)
+        mainViewFinal = -(contentViewWidth * 0.8 - ViewConstants.cornerRadius * 2)
         mainViewLeadingAnchor = mainView.leadingAnchor.constraint(
             equalTo: contentView.leadingAnchor, constant: mainViewCurrent)
         
         //Related to Delete
         currentDeleteConstant = -ViewConstants.cornerRadius
-        finalDeleteConstant = contentViewWidth * 0.4 - .cornerRadius * 2
+        finalDeleteConstant = contentViewWidth * 0.6 - .cornerRadius * 2
         deleteViewLeadingAnchor = deleteView.leadingAnchor.constraint(
             equalTo: mainView.trailingAnchor, constant: initialActionConstant)
         
         //Related to Edit
         currentEditConstant = -ViewConstants.cornerRadius
-        finalEditConstant = contentViewWidth * 0.2 - .cornerRadius * 1.5
+        finalEditConstant = contentViewWidth * 0.4 - .cornerRadius * 1.5
         editViewLeadingAnchor = editView.leadingAnchor.constraint(
             equalTo: mainView.trailingAnchor, constant: initialActionConstant)
         
+        currentInspectConstant = -ViewConstants.cornerRadius
+        finalInspectConstant = contentViewWidth * 0.2 - .cornerRadius
+        
+        inspectViewLeadingAnchor = inspectView.leadingAnchor.constraint(
+            equalTo: mainView.trailingAnchor, constant: initialActionConstant)
+
         //Related to Stat
         shareViewLeadingAnchor = shareView.leadingAnchor.constraint(
             equalTo: mainView.trailingAnchor, constant: initialActionConstant)
@@ -253,6 +288,15 @@ class MenuDictionaryCVCell: UICollectionViewCell {
                 equalTo: contentView.widthAnchor,
                 multiplier: ViewConstants.actionViewMultiplier),
             editViewLeadingAnchor,
+            
+            inspectView.topAnchor.constraint(
+                equalTo: mainView.topAnchor),
+            inspectView.bottomAnchor.constraint(
+                equalTo: mainView.bottomAnchor),
+            inspectView.widthAnchor.constraint(
+                equalTo: contentView.widthAnchor,
+                multiplier: ViewConstants.actionViewMultiplier),
+            inspectViewLeadingAnchor,
             
             shareView.topAnchor.constraint(
                 equalTo: mainView.topAnchor),
@@ -336,9 +380,11 @@ class MenuDictionaryCVCell: UICollectionViewCell {
         let editTap = UITapGestureRecognizer(target: self, action: #selector(editViewDidTap(sender: )))
         let deleteTap = UITapGestureRecognizer(target: self, action: #selector(deleteViewDidTap(sender: )))
         let statTap = UITapGestureRecognizer(target: self, action: #selector(shareViewDidTap(sender: )))
+        let inspectTap = UITapGestureRecognizer(target: self, action: #selector(inspectViewDidTap(sender:)))
         
         editView.addGestureRecognizer(editTap)
         deleteView.addGestureRecognizer(deleteTap)
+        inspectView.addGestureRecognizer(inspectTap)
         shareView.addGestureRecognizer(statTap)
     }
 
@@ -346,12 +392,14 @@ class MenuDictionaryCVCell: UICollectionViewCell {
         NSLayoutConstraint.deactivate([
             self.deleteViewLeadingAnchor,
             self.editViewLeadingAnchor,
-            self.shareViewLeadingAnchor
+            self.shareViewLeadingAnchor,
+            self.inspectViewLeadingAnchor
         ])
         NSLayoutConstraint.activate([
             self.editViewFinalConstant,
             self.deleteViewFinalConstant,
-            self.statViewFinalConstant
+            self.statViewFinalConstant,
+            self.inspectViewFinalConstant
         ])
     }
     
@@ -361,6 +409,7 @@ class MenuDictionaryCVCell: UICollectionViewCell {
             self.mainViewLeadingAnchor.constant = activate ? self.mainViewFinal : 0
             self.deleteViewLeadingAnchor.constant = activate ? self.finalDeleteConstant : self.initialActionConstant
             self.editViewLeadingAnchor.constant = activate ? self.finalEditConstant : self.initialActionConstant
+            self.inspectViewLeadingAnchor.constant = activate ? self.finalInspectConstant : self.initialActionConstant
             self.layoutIfNeeded()
         }
         
@@ -371,9 +420,11 @@ class MenuDictionaryCVCell: UICollectionViewCell {
         }
         
         
-        editView.isUserInteractionEnabled = activate ? true : false
-        shareView.isUserInteractionEnabled = isStatActive ? true : (activate ? true : false )
-        deleteView.isUserInteractionEnabled = activate ? true : false
+        editView.isUserInteractionEnabled = activate
+        shareView.isUserInteractionEnabled = activate
+        inspectView.isUserInteractionEnabled = activate
+        deleteView.isUserInteractionEnabled = activate
+        
 
         animation.startAnimation()
         
@@ -381,6 +432,7 @@ class MenuDictionaryCVCell: UICollectionViewCell {
         mainViewCurrent = mainViewLeadingAnchor.constant
         currentDeleteConstant = deleteViewLeadingAnchor.constant
         currentEditConstant = editViewLeadingAnchor.constant
+        currentInspectConstant = inspectViewLeadingAnchor.constant
     }
     
     override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
@@ -398,8 +450,14 @@ class MenuDictionaryCVCell: UICollectionViewCell {
         let velocity = sender.velocity(in: mainView).x
             
         let holderConstant = mainViewCurrent + translation
-        let editConstant = currentEditConstant + -(translation / 3)
-        let deleteConstant = currentDeleteConstant + -(translation / 1.5)
+        let inspectConstant = currentInspectConstant + -(translation / 4)
+        let editConstant = currentEditConstant + -(translation / 2)
+        let deleteConstant = currentDeleteConstant + -(translation / 1.35)
+        
+//        let inspectConstant = currentInspectConstant + -(translation / 3)
+//        let editConstant = currentEditConstant + -(translation / 3)
+//        let deleteConstant = currentDeleteConstant + -(translation / 1.5)
+
         
         direction = (0 < translation ? .right : .left)
 
@@ -410,6 +468,7 @@ class MenuDictionaryCVCell: UICollectionViewCell {
             if holderConstant >= mainViewFinal && holderConstant <= 0{
                 mainViewLeadingAnchor.constant = holderConstant
                 editViewLeadingAnchor.constant = editConstant
+                inspectViewLeadingAnchor.constant = inspectConstant
                 deleteViewLeadingAnchor.constant = deleteConstant
                 
                 if direction == .left && holderConstant < -10{
@@ -460,7 +519,15 @@ class MenuDictionaryCVCell: UICollectionViewCell {
         activate(false)
         delegate?.shareButtonDidTap(for: self)
     }
-    
+    @objc func inspectViewDidTap(sender: UITapGestureRecognizer){
+        let point = sender.location(in: inspectView)
+        guard inspectView.maskedViewContaintPoint(point) else {
+            return
+        }
+        activate(false)
+        delegate?.inspectButtonDidTap(for: self)
+
+    }
     @objc func editViewDidTap(sender: UITapGestureRecognizer){
         let point = sender.location(in: editView)
         guard editView.maskedViewContaintPoint(point) else {

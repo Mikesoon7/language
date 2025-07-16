@@ -60,10 +60,13 @@
 //MARK: - AddDictionary or WordsVC
 "addDict.title" = "Створення";
 "addWord.title" = "Додавання нових слів";
+"addImage.title" = "Додавання зображеня";
 "viewPlaceholderWord" = "Слово ";
 "viewPlaceholderMeaning" = " опис";
 "fieldPlaceholder" = "Назва";
 "dictionaryName" = "Назва словника";
+"frontSide" = "Передня сторона";
+"backSide" = "Зворотна сторона";
 //Alerts
 "textAlert" = "Вкажіть текст";
 "nameAlert" = "Вкажіть назву";
@@ -71,6 +74,7 @@
 "nameInfo" = "Майже закінчили. Залишилось задати назву.";
 "addWords.contentSaving.title" = "Вміст не було збережено";
 "addWords.contentSaving.text" = "Бажаєте зберегти нові слова?";
+"addWords.contentSaving.image" = "Бажаєте зберегти Нове зображення?";
 "addWords.contentSaving.save" = "Зберегти";
 "addWords.contentSaving.clear" = "Очистити";
 

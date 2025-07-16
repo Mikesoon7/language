@@ -60,7 +60,7 @@ class SettingsTextCell: UITableViewCell {
     
     //MARK: Settings up cells view.
     func configureCellsView(){
-        contentView.backgroundColor = .secondarySystemBackground.withAlphaComponent(0.8)
+        contentView.backgroundColor = .selectedColourPalette.primaryBackgroundColour.withAlphaComponent(0.8)
 
     }
     //MARK: Configure cell with passed data.

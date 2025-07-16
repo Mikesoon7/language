@@ -27,7 +27,7 @@ class CustomSearchBar: UIView {
     private let cancelButton: UIButton = {
         let button = UIButton(type: .system)
         button.tintColor = .label
-        button.backgroundColor = .systemBackground
+        button.backgroundColor = .clear
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
@@ -106,8 +106,13 @@ class CustomSearchBar: UIView {
     
     func animateTransitionTo(isActivated: Bool, time: TimeInterval){
         UIView.animate(withDuration: time) { [ unowned self ] in
-            self.cancelButtonLeadingAnchor.isActive = isActivated ? false : true
-            self.cancelButtonTrailingAnchor.isActive = isActivated ? true : false
+            if isActivated {
+                self.cancelButtonTrailingAnchor.isActive = true
+                self.cancelButtonLeadingAnchor.isActive = false
+            } else {
+                self.cancelButtonLeadingAnchor.isActive = true
+                self.cancelButtonTrailingAnchor.isActive = false
+            }
              self.layoutIfNeeded()
         }
     }

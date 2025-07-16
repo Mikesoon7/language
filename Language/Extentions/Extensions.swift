@@ -249,3 +249,32 @@ extension UIResponder {
         return nil
     }
 }
+
+extension UIImage {
+    func applyBlackAndWhiteFilter() -> UIImage? {
+        guard let ciImage = CIImage(image: self) else { return nil }
+
+        let filter = CIFilter(name: "CIPhotoEffectMono")
+        filter?.setValue(ciImage, forKey: kCIInputImageKey)
+
+        let context = CIContext()
+        if let output = filter?.outputImage,
+           let cgImage = context.createCGImage(output, from: output.extent) {
+            
+            // Recreate UIImage with original orientation
+            return UIImage(cgImage: cgImage, scale: self.scale, orientation: self.imageOrientation)
+        }
+        return nil
+    }
+}
+
+extension UIWindow {
+    static func isInSplitScreenMode() -> Bool {
+        guard let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let window = scene.windows.first else {
+            return false
+        }
+        return window.bounds.width < UIScreen.main.bounds.width
+    }
+
+}

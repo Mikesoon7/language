@@ -19,6 +19,8 @@ protocol MenuCellDelegate: AnyObject{
     
     func editButtonDidTap(for cell: UICollectionViewCell)
     
+    func inspectButtonDidTap(for cell: UICollectionViewCell)
+    
     func shareButtonDidTap(for cell: UICollectionViewCell)
 }
 
@@ -118,6 +120,8 @@ class MenuView: UIViewController {
                     self?.pushDetailsVCFor(dict)
                 case .shouldPresentEditView(let dict):
                     self?.pushEditVCFor(dict)
+                case .shouldPresentInspectView(let dict):
+                    self?.pushInspectEditVCFor(dict)
                 case .shouldPresentTutorialView:
                     self?.pushTutorialVC()
                 case .shouldUpdateLabels:
@@ -141,8 +145,8 @@ class MenuView: UIViewController {
         }
     }
     
-    override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
         adjustLayoutForSizeClass()
     }
 
@@ -234,8 +238,16 @@ class MenuView: UIViewController {
     }
     func pushEditVCFor(_ dictionary: DictionariesEntity){
         let vc = EditView(dictionary: dictionary,
-                          factory: self.viewModelFactory)
+                          factory: self.viewModelFactory,
+                          oneByOne: true)
         self.navigationController?.pushViewController(vc, animated: true)
+    }
+    func pushInspectEditVCFor(_ dictionary: DictionariesEntity){
+        let vc = EditView(dictionary: dictionary,
+                          factory: self.viewModelFactory,
+                          oneByOne: false)
+        self.navigationController?.pushViewController(vc, animated: true)
+
     }
     func pushTutorialVC(){
         let vc = TutorialVC()
@@ -371,6 +383,12 @@ extension MenuView: MenuCellDelegate {
         menuAccessedForCell = nil
         guard let index = collectionView.indexPath(for: cell) else { return }
         viewModel.editDictionary(at: index)
+    }
+    
+    func inspectButtonDidTap(for cell: UICollectionViewCell) {
+        menuAccessedForCell = nil
+        guard let index = collectionView.indexPath(for: cell) else { return }
+        viewModel.inspectDictionary(at: index)
     }
     
     func shareButtonDidTap(for cell: UICollectionViewCell) {

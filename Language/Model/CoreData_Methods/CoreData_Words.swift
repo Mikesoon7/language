@@ -8,16 +8,20 @@
 import Foundation
 import CoreData
 import Combine
+import UIKit
+
 
 
 //MARK: - Working with words.
 protocol WordsManaging{
     func createWordsFromText(for dictionary : DictionariesEntity, text: String) throws -> [WordsEntity]
     func createWordFromLine(for dictionary: DictionariesEntity, text: String, index: Int, id: UUID) throws -> WordsEntity
+    func createWordWithImage(for dictionary: DictionariesEntity, data: SingleModeCellData, index: Int, id: UUID) -> WordsEntity
     func assignWordsProperties(for newWord: WordsEntity, from text: String) throws
     func reassignWordsProperties(for newWord: WordsEntity, from text: String) throws
     func fetchWords(for dictionary: DictionariesEntity) throws -> [WordsEntity]
     func updateWordsOrder(for dictionary: DictionariesEntity) throws
+    func updateWordsImage(for word: WordsEntity, imageDetails: ImageDetailsCheck ) throws
     func deleteWord(word: WordsEntity) throws
 }
 
@@ -52,12 +56,15 @@ extension CoreDataHelper: WordsManaging{
 
         return results
     }
+//    func createWordsFromText(for dictionary : DictionariesEntity, text: String) throws -> [WordsEntity] {
+
     ///Assigning requiered properties for Words Entity. Passes word entity and text to complete creation.
     func createWordFromLine(for dictionary: DictionariesEntity, text: String, index: Int, id: UUID = UUID()) throws -> WordsEntity {
         let newWord = WordsEntity(context: context)
         newWord.order = Int64(index)
         newWord.identifier = id
         newWord.dictionary = dictionary
+                
         do {
             try assignWordsProperties(for: newWord, from: text)
         } catch {
@@ -65,6 +72,21 @@ extension CoreDataHelper: WordsManaging{
         }
         return newWord
     }
+    
+    func createWordWithImage(for dictionary: DictionariesEntity, data: SingleModeCellData , index: Int, id: UUID = UUID()) -> WordsEntity {
+        let newWord = WordsEntity(context: context)
+        newWord.order = Int64(index)
+        newWord.identifier = id
+        newWord.dictionary = dictionary
+        
+        newWord.word = data.word
+        newWord.meaning = data.definition
+        newWord.image = try? JSONEncoder().encode(data.imageDetails)
+//        newWord.imageFilter = imageDetails.imageFilterMode == .original ? false : true
+//        newWord.imageScaleFit = imageDetails.contentMode == .fill ? false : true
+        return newWord
+    }
+
     ///Assigning text and description values to passed word with  devided passed text.
     internal func assignWordsProperties(for wordEntity: WordsEntity, from text: String) throws {
         
@@ -106,6 +128,15 @@ extension CoreDataHelper: WordsManaging{
     func reassignWordsProperties(for newWord: WordsEntity, from text: String) throws {
         try assignWordsProperties(for: newWord, from: text)
         try saveContext()
+    }
+    func updateWordsImage(for word: WordsEntity, imageDetails: ImageDetailsCheck) throws {
+        do {
+            word.image = try? JSONEncoder().encode(imageDetails)
+
+            try saveContext()
+        } catch {
+            throw WordsErrorType.imageUpdateFailed(word.word)
+        }
     }
     //Called inside the dictionary update method.
     ///Reassign words order index for passed dictionary.

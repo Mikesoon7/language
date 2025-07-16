@@ -19,6 +19,7 @@ final class MenuViewModel{
         case shouldPresentAddView
         case shouldPresentDetailsView(DictionariesEntity)
         case shouldPresentEditView(DictionariesEntity)
+        case shouldPresentInspectView(DictionariesEntity)
         case shouldPresentTutorialView
         case shouldUpdateLabels
         case shouldUpdateFont
@@ -101,6 +102,10 @@ final class MenuViewModel{
     func editDictionary(at index: IndexPath) {
         let dictionary = dictionaries[index.item]
         output.send(.shouldPresentEditView(dictionary))
+    }
+    func inspectDictionary(at index: IndexPath) {
+        let dictionary = dictionaries[index.item]
+        output.send(.shouldPresentInspectView(dictionary))
     }
     
     //TODO: - Finish share functionality implementation.

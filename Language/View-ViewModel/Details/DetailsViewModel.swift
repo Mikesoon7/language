@@ -67,7 +67,7 @@ class DetailsViewModel{
     }
     deinit { NotificationCenter.default.removeObserver(self) }
 
-    
+    //    //MARK: Modify details related to the dictionary.
     func updateDictionary(){
         guard let settings = model.fetchSettings(for: dictionary) else {
             return
@@ -110,18 +110,6 @@ class DetailsViewModel{
         }
     }
     
-//    //MARK: Modify details related to the dictionary.
-//    func saveDetails(orderSelection: DictionariesSettings.CardOrder, isOneSideMode: Bool) {
-//        do {
-//            try updateManager.settingsDidChangeFor(dictionary,
-//                                                   isOneSideMode: isOneSideMode,
-//                                                   cardsOrderSelection: orderSelection,
-//                                                   selectedDisplayNumber: Int64(selectedDisplayNumber)
-//            )
-//        } catch {
-//            output.send(.error(error))
-//        }
-//    }
 
     
     //MARK: Picker related.

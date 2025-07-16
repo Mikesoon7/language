@@ -15,7 +15,10 @@ class AddDictionaryView: UIViewController {
     //MARK: Properties
     private var viewModel: AddDictionaryViewModel?
     private var viewModelFactory: ViewModelFactory
-    private var cancellabel = Set<AnyCancellable>()
+    private var cancellable = Set<AnyCancellable>()
+
+    private var isInRegularMode = true
+    
     
     //MARK: Views
     private lazy var textInputView: TextInputView = TextInputView(delegate: self)
@@ -56,34 +59,37 @@ class AddDictionaryView: UIViewController {
         return button
     }()
     
+    //MARK: Info views
+    var infoPopOver: InfoPopoverViewController?
+    
+    lazy var informationButton: UIBarButtonItem = {
+        let button = UIBarButtonItem(
+            image: UIImage(systemName: "info.circle"),
+            style: .done,
+            target: self,
+            action: #selector(showPopover))
+        return button
+    }()
+
+    //MARK: Single mode view's
+    let contentInset = UIEdgeInsets.init(top: .longOuterSpacer, left: .outerSpacer, bottom: .outerSpacer, right: .outerSpacer)
+    lazy var singleModeInputView: SingleModeInputView = {
+        let view = SingleModeInputView(frame: view.bounds,  delegate: viewModel!, addDelegate: self, nameDelegate: self, contentInsets: contentInset)
+        
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .systemBackground
+        return view
+    }()
+    
     private lazy var switchModeButton: UIBarButtonItem = {
-        let button = UIBarButtonItem(image: UIImage(systemName: "doc.richtext"),
-                                     style: .done,
-                                     target: self,
-                                     action: #selector(sigleModeWasEngaged(sender: )))
+        let button = UIBarButtonItem(
+            image: UIImage(systemName: "doc.richtext"),
+            style: .done,
+            target: self,
+            action: #selector(sigleModeWasEngaged(sender: )))
         button.tag = 0
         return button
     }()
-    
-    //MARK: Test
-    var layout = UICollectionViewFlowLayout()
-    
-    lazy var collectionView: UICollectionView = {
-        let view = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        view.delegate = self
-        view.dataSource = self
-        view.contentInset = .init(top: .longOuterSpacer, left: .outerSpacer, bottom: .outerSpacer, right: .outerSpacer)
-        view.backgroundColor = .systemBackground
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.alwaysBounceVertical = true
-        view.showsVerticalScrollIndicator = false
-        view.register(MultiCardsCell.self, forCellWithReuseIdentifier: MultiCardsCell.identifier)
-        view.register(MultiCardsAddCell.self, forCellWithReuseIdentifier: MultiCardsAddCell.identifier)
-        view.register(MultiCardsNameCell.self, forCellWithReuseIdentifier: MultiCardsNameCell.identifier)
-        
-        return view
-    }()
-
     
     //MARK: - Constraints and related.
     private var textInputViewHeightAnchor: NSLayoutConstraint = .init()
@@ -92,6 +98,7 @@ class AddDictionaryView: UIViewController {
     private var regularModeConstraints: [NSLayoutConstraint] = []
     private var singleModeConstraints: [NSLayoutConstraint] = []
     
+    //MARK: - Inherited
     required init(factory: ViewModelFactory){
         self.viewModelFactory = factory
         self.viewModel = viewModelFactory.configureAddDictionaryModel()
@@ -101,18 +108,16 @@ class AddDictionaryView: UIViewController {
         fatalError("init?(coder: NSCoder) wasn't imported")
     }
 
-    
-    //MARK: - Inherited
     override func viewDidLoad() {
         super.viewDidLoad()
         bind()
         configureController()
-        configureNavBar()
         configureTextInputView()
         configureNameInputView()
         configureSaveButton()
         configureText()
         configureCollection()
+        
         NSLayoutConstraint.activate(regularModeConstraints)
     }
     
@@ -122,7 +127,7 @@ class AddDictionaryView: UIViewController {
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
         if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection){
-            collectionView.subviews.forEach { section in
+            singleModeInputView.collectionView.subviews.forEach { section in
                 section.layer.shadowColor = (traitCollection.userInterfaceStyle == .dark
                                              ? shadowColorForDarkIdiom
                                              : shadowColorForLightIdiom)
@@ -138,6 +143,23 @@ class AddDictionaryView: UIViewController {
                 saveButton.layer.shadowColor = shadowColorForLightIdiom
             }
         }
+    }
+
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        //Insure proper sizing and positioning of pop up view
+        if infoPopOver != nil{
+            coordinator.animate { _ in
+                self.dismisPopUp()
+            } completion: { _ in
+                self.showPopover()
+            }
+        }
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        singleModeInputView.adjustLayoutForSizeClass()
     }
 
     //MARK: Bind
@@ -162,55 +184,51 @@ class AddDictionaryView: UIViewController {
                     self?.configureFont()
                 }
             
+            }       
+            .store(in: &cancellable)
+
+        viewModel?.singleOutput
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] output in
+                switch output {
+                case .shouldPresent(let view):
+                    self?.present(view, animated: true)
+                case .shouldAddCellAt(let index):
+                    self?.singleModeInputView.collectionView.insertItems(at: [index])
+                }
+                
             }
-            .store(in: &cancellabel)
+            .store(in: &cancellable)
     }
     //MARK: Controller SetUp
-    private func configureController(){        
+    private func configureController(){    
+        self.view.backgroundColor = .systemBackground
+        self.navigationItem.rightBarButtonItems = [ switchModeButton, informationButton ]
+
         //Keyboard appearence
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(sender:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(sender:)), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
-    
-    private func configureNavBar(){
-        self.navigationItem.rightBarButtonItem = switchModeButton
-    }
-    //MARK: Test
-    override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
-        adjustLayoutForSizeClass()
-    }
-
-    private func adjustLayoutForSizeClass() {
-        let isCompact = traitCollection.horizontalSizeClass == .compact
-        let numberOfColumns: CGFloat = isCompact ? 1 : 2
-        
-        let itemWidth = ((self.view.bounds.width - (.outerSpacer * 2)) / numberOfColumns) - (isCompact ? 0 : 10)
-        
-        layout.itemSize = CGSize(width: itemWidth, height: .largeButtonHeight)
-        layout.minimumLineSpacing = .outerSpacer
-        layout.invalidateLayout()
-    }
 
     private func configureCollection(){
-        view.addSubviews(collectionView)
+        view.addSubviews(singleModeInputView)
         
         singleModeConstraints.append(contentsOf: [
-            collectionView.topAnchor.constraint(
+            singleModeInputView.topAnchor.constraint(
                 equalTo: view.safeAreaLayoutGuide.topAnchor),
-            collectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
-            collectionView.bottomAnchor.constraint(
-                equalTo: view.keyboardLayoutGuide.topAnchor),
-            collectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            singleModeInputView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            singleModeInputView.bottomAnchor.constraint(
+                equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            singleModeInputView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
         ])
         
         regularModeConstraints.append(contentsOf: [
-            collectionView.topAnchor.constraint(
-                equalTo: view.topAnchor),
-            collectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
-            collectionView.bottomAnchor.constraint(
+            singleModeInputView.heightAnchor.constraint(
+                equalTo: view.heightAnchor),
+            singleModeInputView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            singleModeInputView.bottomAnchor.constraint(
                 equalTo: view.safeAreaLayoutGuide.topAnchor),
-            collectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            singleModeInputView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
         ])
     }
     private func configureTextInputView(){
@@ -242,6 +260,8 @@ class AddDictionaryView: UIViewController {
                 equalTo: view.trailingAnchor, constant: -.outerSpacer),
             textInputView.heightAnchor.constraint(
                 lessThanOrEqualTo: textInputView.widthAnchor),
+            
+            textInputViewHeightAnchor
         ])
     }
     private func configureNameInputView(){
@@ -261,9 +281,6 @@ class AddDictionaryView: UIViewController {
                 equalTo: view.trailingAnchor, constant: -.outerSpacer),
             nameView.heightAnchor.constraint(
                 equalToConstant: .genericButtonHeight),
-            
-            
-            
             
             nameLabel.leadingAnchor.constraint(
                 equalTo: nameView.leadingAnchor, constant: .innerSpacer),
@@ -298,7 +315,6 @@ class AddDictionaryView: UIViewController {
         saveButton.translatesAutoresizingMaskIntoConstraints = false
         
         regularModeConstraints.append(contentsOf:[
-//        NSLayoutConstraint.activate([
             saveButton.bottomAnchor.constraint(
                 equalTo: UIDevice.isIPadDevice ? view.safeAreaLayoutGuide.bottomAnchor
                                                : view.keyboardLayoutGuide.topAnchor ,
@@ -329,6 +345,9 @@ class AddDictionaryView: UIViewController {
         //Action
         saveButton.addTarget(self, action: #selector(saveButtonDidTap(sender:)), for: .touchUpInside)
     }
+    
+    
+    
     //MARK: System
     /// Congifure all text properties of the view.
     private func configureText(){
@@ -365,6 +384,7 @@ class AddDictionaryView: UIViewController {
     }
     ///Update textView layout.
     private func updateTextViewConstraits(keyboardIsVisable: Bool){
+    
         textInputViewHeightAnchor.isActive = !keyboardIsVisable
         if UIDevice.isIPadDevice {
             nameFieldViewBottomAnchor.isActive = keyboardIsVisable
@@ -383,13 +403,8 @@ class AddDictionaryView: UIViewController {
     }
 }
 //MARK: - Actions
-    
 extension AddDictionaryView{
     @objc func sigleModeWasEngaged(sender: UIBarButtonItem) {
-        
-        
-//        collectionView.reloadData()
-        print(sender.tag)
         if sender.tag == 0 {
             viewModel?.splitTheText(text: textInputView.textView.text)
             UIView.animate(withDuration: 0.3) {
@@ -399,14 +414,15 @@ extension AddDictionaryView{
                 self.textInputView.alpha = 0
                 self.nameView.alpha = 0
                 self.saveButton.alpha = 0
+                self.singleModeInputView.alpha = 1
                 sender.image = UIImage(systemName: "doc.plaintext")
                 self.view.layoutIfNeeded()
                 
             }
-            self.collectionView.reloadData()
-            self.adjustLayoutForSizeClass()
+            self.singleModeInputView.collectionView.reloadData()
+            self.singleModeInputView.adjustLayoutForSizeClass()
 
-            
+            isInRegularMode = false
             sender.tag = 1
         } else if sender.tag == 1 {
             self.textInputView.assignText(text: viewModel?.uniteTheText())
@@ -417,17 +433,50 @@ extension AddDictionaryView{
                 self.textInputView.alpha = 1
                 self.nameView.alpha = 1
                 self.saveButton.alpha = 1
+                self.singleModeInputView.alpha = 0
+
                 sender.image = UIImage(systemName: "doc.richtext")
                 self.view.layoutIfNeeded()
             }
-            self.collectionView.reloadData()
+            self.singleModeInputView.collectionView.reloadData()
+            self.singleModeInputView.adjustLayoutForSizeClass()
 
-            self.adjustLayoutForSizeClass()
-
+            isInRegularMode = true
             sender.tag = 0
 
         }
     }
+    @objc private func showPopover() {
+        guard infoPopOver == nil else {
+            self.dismisPopUp()
+            return
+        }
+        
+        let infoText = switchModeButton.tag == 0 ? "You are in line - by - line mode. It offers much more sufficient way of adding the cards, since text of any size will be devided into cards where one paragrath equals to one card." : "You are in one - by - one mode. It requires to add cards one by one but offers more controll over the end result, allowing to add images"
+        
+        let infoPopOver = InfoPopoverViewController(frame: view.frame, infoText: infoText, safeAreaInsets: view.safeAreaInsets, delegate: self)
+        if let window = view.window {
+            window.addSubview(infoPopOver)
+            NSLayoutConstraint.activate([
+                infoPopOver.topAnchor.constraint(equalTo: window.topAnchor),
+                infoPopOver.leadingAnchor.constraint(equalTo: window.leadingAnchor),
+                infoPopOver.trailingAnchor.constraint(equalTo: window.trailingAnchor),
+                infoPopOver.bottomAnchor.constraint(equalTo: window.bottomAnchor)
+            ])
+        }
+
+        
+        self.infoPopOver = infoPopOver
+        infoPopOver.present()
+    }
+    
+    @objc private func dismisPopUp(){
+        self.infoPopOver?.dismiss {
+            self.infoPopOver?.removeFromSuperview()
+            self.infoPopOver = nil
+        }
+    }
+
 }
 
 extension AddDictionaryView {
@@ -436,7 +485,7 @@ extension AddDictionaryView {
         
         viewModel?.createDictionary(name: name, text: text)
                         
-        navigationItem.rightBarButtonItem = nil
+//        navigationItem.rightBarButtonItem = nil
         view.becomeFirstResponder()
     }
     //Done buttom tap
@@ -452,25 +501,16 @@ extension AddDictionaryView {
         }
         
         
-//        let button = UIBarButtonItem(image: UIImage(systemName: "doc.richtext"), style: .done, target: self, action: #selector(sigleModeWasEngaged(sender: )))
-        self.navigationItem.rightBarButtonItem = switchModeButton
-//        button.tag = 0
-
+        self.navigationItem.rightBarButtonItems = [ switchModeButton, informationButton ]
     }
     @objc func nonAccurateNameFieldTap(sender: Any){
         nameInputField.becomeFirstResponder()
     }
     
     @objc func keyboardWillShow(sender: Notification){
-        
-        updateTextViewConstraits(keyboardIsVisable: true)
-        
-        if let userInfo = sender.userInfo,
-           let keyboardFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect,
-           let animation = userInfo[UIResponder.keyboardDidShowNotification]{
-            let keyboardHeight = keyboardFrame.height
-            collectionView.contentInset = UIEdgeInsets(top: .longOuterSpacer, left: .outerSpacer, bottom: keyboardHeight, right: .outerSpacer)
-            collectionView.scrollIndicatorInsets = collectionView.contentInset
+        if isInRegularMode {
+            updateTextViewConstraits(keyboardIsVisable: true)
+            
         }
         guard navigationItem.rightBarButtonItem == doneButton else {
             navigationItem.setRightBarButton(doneButton, animated: true)
@@ -479,11 +519,15 @@ extension AddDictionaryView {
 
     }
     @objc func keyboardWillHide(sender: Notification){
-        updateTextViewConstraits(keyboardIsVisable: false)
-        collectionView.contentInset = UIEdgeInsets(top: .longOuterSpacer, left: .outerSpacer, bottom: .outerSpacer, right: .outerSpacer)
-        
-        collectionView.scrollIndicatorInsets =   collectionView.contentInset
+        if isInRegularMode {
+            updateTextViewConstraits(keyboardIsVisable: false)
+        }
 
+        guard navigationItem.rightBarButtonItems == [ switchModeButton, informationButton ] else {
+            self.navigationItem.rightBarButtonItems = [ switchModeButton, informationButton ]
+            
+            return
+        }
     }
 }
 
@@ -516,137 +560,35 @@ extension AddDictionaryView: UITextFieldDelegate{
         return newString.count <= maxLength
     }
 }
-
-extension AddDictionaryView: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout{
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        let number =  viewModel?.numberOfCells(text: textInputView.textView.text) ?? 2
-//        print(number)
-        return number
-        
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        if indexPath.item == collectionView.numberOfItems(inSection: indexPath.section) - 1 {
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MultiCardsAddCell.identifier, for: indexPath) as? MultiCardsAddCell
-//            cell?.addCenterShadows()
-            cell?.configureCellWith(delegate: self)
-            return cell ?? UICollectionViewCell()
-        } else if indexPath.item == collectionView.numberOfItems(inSection: indexPath.section) - 2 {
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MultiCardsNameCell.identifier, for: indexPath) as? MultiCardsNameCell
-            cell?.configureCellWith(name: nameInputField.text ?? "" , delegate: self)
-//            cell?.addCenterShadows()
-            return cell ?? UICollectionViewCell()
-        }  else {
-            print(indexPath.item)
-            let data = viewModel?.dataForCellAt(index: indexPath)
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MultiCardsCell.identifier, for: indexPath) as? MultiCardsCell
-            guard cell != nil, data != nil else { return UICollectionViewCell() }
-            cell!.configureCellWith(data: data!, delegate: self, index: indexPath)
-            cell?.addCenterShadows()
-            return cell!
-
-        }
-            }
-    
-    func collectionView(_ collectionView: UICollectionView, didHighlightItemAt indexPath: IndexPath) {
-        if indexPath.item == collectionView.numberOfItems(inSection: indexPath.section) - 1,
-           let cell = collectionView.cellForItem(at: indexPath) {
-            UIView.animate(withDuration: 0.1, delay: 0, options: .curveEaseIn, animations: {
-                cell.transform = CGAffineTransform(scaleX: 0.97, y: 0.97)
-            })
-        } else {
-            collectionView.scrollToItem(at: indexPath, at: .top, animated: true)
-        }
-
-    }
-    func collectionView(_ collectionView: UICollectionView, didUnhighlightItemAt indexPath: IndexPath) {
-        if indexPath.item == collectionView.numberOfItems(inSection: indexPath.section) - 1, let cell = collectionView.cellForItem(at: indexPath) {
-            UIView.animate(withDuration: 0.1, delay: 0, options: .curveEaseOut, animations: {
-                cell.transform = CGAffineTransform.identity
-            })
-        }
-    }
-    
-    func collectionView(_ collectionView: UICollectionView,
-                        layout collectionViewLayout: UICollectionViewLayout,
-                        sizeForItemAt indexPath: IndexPath) -> CGSize {
-
-        let width = layout.itemSize.width
-        
-        if indexPath.item == collectionView.numberOfItems(inSection: 0) - 1 || indexPath.item == collectionView.numberOfItems(inSection: 0) - 2 {
-            // This is the "Add" button cell
-            return CGSize(width: width, height: .genericButtonHeight)
-        } else {
-            // Regular chunk cells
-            return CGSize(width: width, height: .largeButtonHeight * 2)
-        }
-    }
-    func collectionView(_ collectionView: UICollectionView,
-                        trailingSwipeActionsConfigurationForItemAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        print("trying")
-        guard indexPath.item < collectionView.numberOfItems(inSection: 0) - 1 else {
-            return nil
-            
-        }      
-        let deleteAction = UIContextualAction(style: .normal, title: nil) { _, _, completion in
-            // Handle delete action
-            completion(true)
-        
-        }
-        deleteAction.image = UIImage(systemName: "trash") // or your custom image
-        
-
-        return UISwipeActionsConfiguration(actions: [deleteAction])
-    }
-}
-
-extension AddDictionaryView: MultiCellTypeDelegate {
-    func definitionDidTye(index: IndexPath, text: String) {
-        viewModel?.definitionDidTye(index: index, text: text)
-    }
-    
-    func wordDidType(index: IndexPath, text: String) {
-        viewModel?.wordDidType(index: index, text: text)
-    }
-    func didStartTyping(index: IndexPath) {
-        collectionView.scrollToItem(at: index, at: .top, animated: true)
-    }
-    func didTapAddImage(index: IndexPath) {
-        let pair = viewModel?.currentWords[index.item]
-        let view = AddImageController(word: pair?.word ?? "Error" , translation: pair?.definition ?? " Error ", image: pair?.image, delegate: self, index: index)
-        self.navigationController?.pushViewController(view, animated: true)
-    }
-}
-
-extension AddDictionaryView: AddImageDelegate {
-    func didSelectAnImage(image: UIImage?, index: IndexPath) {
-        if let cell = collectionView.cellForItem(at: index) as? MultiCardsCell {
-            cell.addPhoto(image: image)
-            viewModel?.imageDidAdd(image: image, index: index)
-        }
-    }
-}
-extension AddDictionaryView: MultyCellNameDelegate{
+extension AddDictionaryView: SingleModeNameDelegate {
     func didTypeName(text: String) {
         self.nameInputField.text = text
     }
-    
-    
+    func name() -> String {
+        return nameInputField.text ?? ""
+    }
 }
 
-extension AddDictionaryView: MultyCellAddDelegate {
+extension AddDictionaryView: SingleModeAddDelegate {
     func didAddCell() {
-        viewModel?.addEmptyCell()
-        collectionView.insertItems(at: [IndexPath(item: collectionView.numberOfItems(inSection: 0) - 2, section: 0)])
-
+        guard let model = viewModel else { return }
+        model.addEmptyCell()
+        singleModeInputView.collectionView.insertItems(at: [IndexPath(item: model.numberOfCells() - 1, section: 0)])
+        
     }
     
     func didSave() {
         let text = viewModel?.uniteTheText()
         textInputView.assignText(text: text)
+        guard let name = validateName(), let text = textInputView.validateText() else { return }
         
-        saveButtonDidTap(sender: self)
+        viewModel?.createDictionaryByCards(name: name)
     }
-    
-    
+}
+
+extension AddDictionaryView: InfoViewDelegate {
+    func viewDidDismiss() {
+        self.infoPopOver?.removeFromSuperview()
+        self.infoPopOver = nil
+    }
 }

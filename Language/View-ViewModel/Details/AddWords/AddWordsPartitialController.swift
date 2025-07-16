@@ -10,15 +10,25 @@ import UIKit
 import Combine
 
 class AddWordsPartitialController: UIViewController {
-
+    
     private var viewModel: AddWordsViewModel?
     private var viewModelFactory: ViewModelFactory
     private var cancellable = Set<AnyCancellable>()
     
+    
     private var isSavingRequired: Bool = false
     
+    private var isRegularModeRequired = true
     private var displayWithText: String?
+    
     //MARK: Views
+    
+    private var fakeNavView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .systemSecondary_WhiteColour
+        return view
+    }()
     
     private var addNewWordsLabel: UILabel = {
         let label = UILabel()
@@ -41,17 +51,57 @@ class AddWordsPartitialController: UIViewController {
         return button
     }()
     
-
+    
+    //MARK: Single Mode View's
+    
+    let contentInset = UIEdgeInsets.init(top: .innerSpacer, left: .outerSpacer, bottom: .outerSpacer, right: .outerSpacer)
+    
+    lazy var singleModeInputView: SingleModeInputView = {
+        let view = SingleModeInputView(frame: view.bounds,  delegate: viewModel!, addDelegate: self, nameDelegate: nil, contentInsets: contentInset)
+        print(view.bounds, "viewBounds")
+        print(view.frame, "View.frame")
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .systemBackground
+        return view
+    }()
+    
+    private lazy var switchModeButton: UIButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setImage(UIImage(systemName: "doc.richtext"), for: .normal)
+        button.tintColor = .label
+        button.contentMode = .scaleAspectFill
+        button.addTarget(self, action: #selector(sigleModeWasEngaged(sender: )), for: .touchUpInside)
+        button.tag = 0
+        return button
+    }()
+    
+    
     
     //MARK: Constraints related
     private var subviewsInactiveConstraints: [NSLayoutConstraint] = []
     private var subviewsActiveConstraints: [NSLayoutConstraint] = []
     
+    
+    private var regularModeConstraints: [NSLayoutConstraint] = []
+    private var singleModeConstraints: [NSLayoutConstraint] = []
+    
+    private var doneButtonTrailingInactive :    NSLayoutConstraint = .init()
+    private var doneButtonTrailingActive :      NSLayoutConstraint = .init()
+    private var switchButtonTrailingInactive :  NSLayoutConstraint = .init()
+    private var switchButtonTrailingActive :    NSLayoutConstraint = .init()
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        singleModeInputView.adjustLayoutForSizeClass()
+    }
+    
     //MARK: Inherited
-    required init(factory: ViewModelFactory, dictionary: DictionariesEntity, text: String?){
+    required init(factory: ViewModelFactory, dictionary: DictionariesEntity, text: String?, regularMode: Bool){
         self.viewModelFactory = factory
         self.viewModel = factory.configureAddWordsViewModel(dictionary: dictionary)
         self.displayWithText = text
+        self.isRegularModeRequired = regularMode
         
         super.init(nibName:  nil, bundle: nil)
     }
@@ -67,18 +117,37 @@ class AddWordsPartitialController: UIViewController {
         configureTextInputView()
         configureText()
         configureSaveButton()
+        configureSingleModeInput()
+        
         
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
-        self.textInputView.textView.becomeFirstResponder()
+        
+        
+        if isRegularModeRequired {
+            NSLayoutConstraint.activate(regularModeConstraints)
+            self.textInputView.textView.becomeFirstResponder()
+        } else {
+            //            NSLayoutConstraint.activate(singleModeConstraints)
+            self.sigleModeWasEngaged(sender: switchModeButton)
+        }
     }
+    
+    
+    
     deinit { NotificationCenter.default.removeObserver(self) }
-
-            
+    
+    
     //MARK: - StyleChange Responding
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
         if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+            singleModeInputView.collectionView.subviews.forEach { section in
+                section.layer.shadowColor = (traitCollection.userInterfaceStyle == .dark
+                                             ? shadowColorForDarkIdiom
+                                             : shadowColorForLightIdiom)
+            }
+            
             if traitCollection.userInterfaceStyle == .dark {
                 textInputView.layer.shadowColor = shadowColorForDarkIdiom
                 saveButton.layer.shadowColor = shadowColorForDarkIdiom
@@ -88,7 +157,7 @@ class AddWordsPartitialController: UIViewController {
             }
         }
     }
-
+    
     //MARK: Binding
     private func bind(){
         viewModel?.output
@@ -106,22 +175,32 @@ class AddWordsPartitialController: UIViewController {
                 }
             }
             .store(in: &cancellable)
+        viewModel?.singleOutput
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] output in
+                switch output {
+                case .shouldPresent(let view):
+                    self?.present(view, animated: true)
+                case .shouldAddCellAt(let index):
+                    self?.singleModeInputView.collectionView.insertItems(at: [index])
+                }
+                
+            }
+            .store(in: &cancellable)
+        
     }
     
     
     //MARK: View Setup
     private func configureView(){
-        view.backgroundColor = ((traitCollection.userInterfaceStyle == .dark)
-                                ? .secondarySystemBackground
-                                : .systemBackground)
-
+        view.backgroundColor = .systemSecondary_WhiteColour
+        
         if let sheetPresentationController = self.presentationController as? UISheetPresentationController {
-                sheetPresentationController.delegate = self
-            }
+            sheetPresentationController.delegate = self
+        }
     }
-
-    //MARK: Subviews SetUp
     
+    //MARK: Subviews SetUp
     private func configureTextInputView(){
         if let text = displayWithText {
             self.textInputView.textViewDidChange(textInputView.textView)
@@ -130,22 +209,33 @@ class AddWordsPartitialController: UIViewController {
         
         textInputView.setUpCustomView()
         textInputView.backgroundColor = .popoverSubviewsBackgroundColour
-    
+        
         view.addSubviews(textInputView)
         
         let textViewHeightInactive = textInputView.heightAnchor.constraint(
             equalTo: view.widthAnchor, multiplier: .widthMultiplerFor(type: .forViews) * 0.66)
         
         let textViewHeightActive = textInputView.bottomAnchor.constraint(
-            equalTo: ( UIDevice.isIPadDevice 
+            equalTo: ( UIDevice.isIPadDevice
                        ? view.keyboardLayoutGuide.topAnchor
                        : saveButton.topAnchor ),
             constant: -.longInnerSpacer)
-
+        
         subviewsInactiveConstraints.append(textViewHeightInactive)
         subviewsActiveConstraints.append(textViewHeightActive)
-
-        NSLayoutConstraint.activate([
+        
+        singleModeConstraints.append(contentsOf: [
+            textInputView.bottomAnchor.constraint(
+                equalTo: view.topAnchor, constant: -.outerSpacer),
+            textInputView.leadingAnchor.constraint(
+                equalTo: view.leadingAnchor, constant: .longInnerSpacer),
+            textInputView.trailingAnchor.constraint(
+                equalTo: view.trailingAnchor, constant: -.longInnerSpacer),
+            textInputView.heightAnchor.constraint(equalToConstant: .largeButtonHeight * 2 )
+            
+        ])
+        
+        regularModeConstraints.append(contentsOf: [
             textInputView.topAnchor.constraint(
                 equalTo: addNewWordsLabel.bottomAnchor, constant: .outerSpacer),
             textInputView.leadingAnchor.constraint(
@@ -155,36 +245,82 @@ class AddWordsPartitialController: UIViewController {
             textViewHeightInactive
         ])
     }
+    private func configureSingleModeInput(){
+        view.addSubviews(singleModeInputView)
+        
+        singleModeConstraints.append(contentsOf: [
+            singleModeInputView.topAnchor.constraint(
+                equalTo: addNewWordsLabel.bottomAnchor, constant: .innerSpacer),
+            singleModeInputView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            singleModeInputView.bottomAnchor.constraint(
+                equalTo: view.keyboardLayoutGuide.topAnchor),
+            singleModeInputView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+        ])
+        
+        regularModeConstraints.append(contentsOf: [
+            singleModeInputView.heightAnchor.constraint(
+                equalTo: view.heightAnchor),
+            singleModeInputView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            singleModeInputView.bottomAnchor.constraint(
+                equalTo: view.safeAreaLayoutGuide.topAnchor),
+            singleModeInputView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+        ])
+        view.bringSubviewToFront(fakeNavView)
+    }
+
     
     private func configureDoneButton(){
-        view.addSubviews( addNewWordsLabel, doneButton )
-        let doneButtonTrailingInactive = doneButton.leadingAnchor.constraint(
+        view.addSubviews(fakeNavView/*addNewWordsLabel, doneButton, switchModeButton*/ )
+        fakeNavView.addSubviews(addNewWordsLabel, doneButton, switchModeButton)
+        
+        doneButtonTrailingInactive = doneButton.leadingAnchor.constraint(
             equalTo: view.trailingAnchor, constant: .longInnerSpacer)
-        let doneButtonTrailingActive = doneButton.trailingAnchor.constraint(
+        doneButtonTrailingActive = doneButton.trailingAnchor.constraint(
             equalTo: view.trailingAnchor,  constant: -.longInnerSpacer)
         
-        subviewsInactiveConstraints.append(doneButtonTrailingInactive)
-        subviewsActiveConstraints.append(doneButtonTrailingActive)
-
+        switchButtonTrailingInactive = switchModeButton.leadingAnchor.constraint(
+            equalTo: view.trailingAnchor, constant: .longInnerSpacer)
+        switchButtonTrailingActive = switchModeButton.trailingAnchor.constraint(
+            equalTo: view.trailingAnchor,  constant: -.longInnerSpacer)
+        
+        subviewsInactiveConstraints.append(contentsOf: [
+            doneButtonTrailingInactive, switchButtonTrailingActive
+        ])
+        subviewsActiveConstraints.append(contentsOf: [
+            doneButtonTrailingActive, switchButtonTrailingInactive
+        ])
+        
+        
         NSLayoutConstraint.activate([
+            fakeNavView.topAnchor.constraint(
+                equalTo: view.safeAreaLayoutGuide.topAnchor),
+            fakeNavView.leadingAnchor.constraint(
+                equalTo: view.leadingAnchor),
+            fakeNavView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: .longOuterSpacer),
+            fakeNavView.heightAnchor.constraint(equalToConstant: .genericButtonHeight),
             
-            addNewWordsLabel.topAnchor.constraint(
-                equalTo: view.safeAreaLayoutGuide.topAnchor, constant: .outerSpacer),
+            
+            addNewWordsLabel.centerYAnchor.constraint(
+                equalTo: fakeNavView.centerYAnchor),
             addNewWordsLabel.leadingAnchor.constraint(
                 equalTo: view.leadingAnchor, constant: .outerSpacer ),
             addNewWordsLabel.heightAnchor.constraint(
-                equalToConstant: addNewWordsLabel.font.lineHeight),
-        
+                equalTo: fakeNavView.heightAnchor),
+            
             doneButton.centerYAnchor.constraint(
                 equalTo: addNewWordsLabel.centerYAnchor),
             doneButtonTrailingInactive,
             
+            switchModeButton.centerYAnchor.constraint(
+                equalTo: addNewWordsLabel.centerYAnchor),
+            switchModeButton.heightAnchor.constraint(equalToConstant: .systemButtonSize),
+            switchButtonTrailingActive
+            
         ])
         
         doneButton.addTarget(self, action: #selector(rightBarButDidTap(sender: )), for: .touchUpInside)
-
-
     }
+    
     private func configureSaveButton(){
         view.addSubview(saveButton)
         
@@ -192,13 +328,24 @@ class AddWordsPartitialController: UIViewController {
             equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -.longInnerSpacer)
         let saveButtonBottomActive = saveButton.bottomAnchor.constraint(
             equalTo: view.keyboardLayoutGuide.topAnchor, constant: -.longInnerSpacer)
-
+        
         if !UIDevice.isIPadDevice {
             subviewsInactiveConstraints.append(saveButtonBottomInactive)
             subviewsActiveConstraints.append(saveButtonBottomActive)
         }
         
-        NSLayoutConstraint.activate([
+        singleModeConstraints.append(contentsOf: [
+            saveButton.leadingAnchor.constraint(
+                equalTo: view.leadingAnchor, constant: .longInnerSpacer),
+            saveButton.trailingAnchor.constraint(
+                equalTo: view.trailingAnchor, constant: -.longInnerSpacer),
+            saveButton.heightAnchor.constraint(
+                equalToConstant: .genericButtonHeight),
+            saveButton.topAnchor.constraint(equalTo: view.bottomAnchor, constant: .outerSpacer)
+            
+        ])
+        
+        regularModeConstraints.append(contentsOf: [
             saveButton.leadingAnchor.constraint(
                 equalTo: view.leadingAnchor, constant: .longInnerSpacer),
             saveButton.trailingAnchor.constraint(
@@ -207,7 +354,7 @@ class AddWordsPartitialController: UIViewController {
                 equalToConstant: .genericButtonHeight),
             saveButtonBottomInactive
         ])
-
+        
         saveButton.addTarget(self, action: #selector(saveButtonDidTap(sender: )), for: .touchUpInside)
     }
     
@@ -221,7 +368,7 @@ class AddWordsPartitialController: UIViewController {
             .attributedString(string: "system.done".localized, with: .systemBold, ofSize: .assosiatedTextSize), for: .normal)
         textInputView.updatePlaceholder()
     }
-
+    
     ///Defines the range of passed word in textView and highlighting it.
     private func highlightErrorFor(_ word: String){
         guard let text = self.textInputView.textView.text, let range = text.range(of: word, options: .caseInsensitive, range: word.startIndex..<text.endIndex) else {
@@ -233,18 +380,28 @@ class AddWordsPartitialController: UIViewController {
         self.textInputView.textView.resignFirstResponder()
         
     }
+}
 
 //MARK: - Actions
+extension AddWordsPartitialController {
     //Done button, which appears when user activate keyboard.
     @objc func rightBarButDidTap(sender: Any){
-        textInputView.textView.resignFirstResponder()
+        NSLayoutConstraint.activate([doneButtonTrailingInactive, switchButtonTrailingActive])
+        NSLayoutConstraint.deactivate([doneButtonTrailingActive, switchButtonTrailingInactive])
+        
+        if textInputView.textView.isFirstResponder{
+            textInputView.textView.resignFirstResponder()
+        } else {
+            view.endEditing(true)
+        }
     }
+    
     //Addding input text to the dictionary.
     @objc func saveButtonDidTap(sender: UIButton){
         guard let text = textInputView.validateText() else { return }
-        viewModel?.getNewWordsFrom(text)
+        viewModel?.extendDictionaryWith(text)
     }
-
+    
     ///Changing textView layout and displaying done button
     @objc private func keyboardWillShow(_ notification: Notification) {
         guard let duration = notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval,
@@ -252,12 +409,17 @@ class AddWordsPartitialController: UIViewController {
         
         let curve = UIView.AnimationOptions(rawValue: curveValue << 16)
         
-        NSLayoutConstraint.deactivate(subviewsInactiveConstraints )
-        NSLayoutConstraint.activate(subviewsActiveConstraints)
-
+        if switchModeButton.tag == 1 {
+            NSLayoutConstraint.activate([doneButtonTrailingActive, switchButtonTrailingInactive])
+            NSLayoutConstraint.deactivate([doneButtonTrailingInactive, switchButtonTrailingActive])
+        } else {
+            NSLayoutConstraint.deactivate(subviewsInactiveConstraints )
+            NSLayoutConstraint.activate(subviewsActiveConstraints)
+        }
         UIView.animate(withDuration: duration, delay: 0, options: curve, animations: {
             self.view.layoutIfNeeded()
         })
+
     }
     
     ///Changing textView layout and hiding done button
@@ -267,14 +429,92 @@ class AddWordsPartitialController: UIViewController {
         
         let curve = UIView.AnimationOptions(rawValue: curveValue << 16)
         
-        NSLayoutConstraint.deactivate(subviewsActiveConstraints )
-        NSLayoutConstraint.activate(subviewsInactiveConstraints)
-
+        if switchModeButton.tag == 1 {
+            if doneButtonTrailingActive.isActive {
+                NSLayoutConstraint.activate([doneButtonTrailingInactive, switchButtonTrailingActive])
+                NSLayoutConstraint.deactivate([doneButtonTrailingActive, switchButtonTrailingInactive])
+            }
+        } else {
+            NSLayoutConstraint.deactivate(subviewsActiveConstraints )
+            NSLayoutConstraint.activate(subviewsInactiveConstraints)
+        }
+        
         UIView.animate(withDuration: duration, delay: 0, options: curve, animations: {
             self.view.layoutIfNeeded()
         })
     }
+    
+    
+
+
+    @objc func sigleModeWasEngaged(sender: UIButton) {
+        if sender.tag == 0 {
+            viewModel?.splitTheText(text: textInputView.textView.text)
+            UIView.animate(withDuration: 0.3) {
+                
+                NSLayoutConstraint.deactivate(self.regularModeConstraints)
+                NSLayoutConstraint.activate(self.singleModeConstraints)
+                self.textInputView.alpha = 0
+                self.saveButton.alpha = 0
+                self.singleModeInputView.alpha = 1
+                sender.setImage(UIImage(systemName: "doc.plaintext"), for: .normal)
+                self.view.layoutIfNeeded()
+                
+            }
+            self.singleModeInputView.adjustLayoutForSizeClass()
+            self.singleModeInputView.collectionView.reloadData()
+
+            
+            sender.tag = 1
+        } else if sender.tag == 1 {
+            self.textInputView.assignText(text: viewModel?.uniteTheText())
+            UIView.animate(withDuration: 0.3) {
+                
+                NSLayoutConstraint.deactivate(self.singleModeConstraints)
+                NSLayoutConstraint.activate(self.regularModeConstraints)
+                self.textInputView.alpha = 1
+                self.saveButton.alpha = 1
+                self.singleModeInputView.alpha = 0
+
+                sender.setImage(UIImage(systemName: "doc.richtext"), for: .normal)
+                self.view.layoutIfNeeded()
+            }
+            self.singleModeInputView.collectionView.reloadData()
+            self.singleModeInputView.adjustLayoutForSizeClass()
+
+            sender.tag = 0
+
+        }
+    }
+
 }
+
+extension AddWordsPartitialController: AddImageDelegate {
+    func didSelectAnImage(imageDetails: ImageDetailsCheck, cell: SingleModeImageCell, index: IndexPath) {
+        cell.addPhoto(imageDetails: imageDetails)
+        viewModel?.imageDidAdd(imageDetails: imageDetails, index: index)
+        
+    }
+}
+
+extension AddWordsPartitialController: SingleModeAddDelegate {
+    func didAddCell() {
+        guard let model = viewModel else { return }
+        model.addEmptyCell()
+        singleModeInputView.collectionView.insertItems(at: [IndexPath(item: model.numberOfCells() - 1, section: 0)])
+        
+    }
+
+    func didSave() {
+        let text = viewModel?.uniteTheText()
+        textInputView.assignText(text: text)
+        guard let text = textInputView.validateText() else { return }
+        
+        viewModel?.extendDictionaryWithSingleData()
+    }
+    
+}
+
 
 //MARK: - PlaceholderTextViewDelegate delegate
 extension AddWordsPartitialController: PlaceholderTextViewDelegate{
@@ -292,6 +532,7 @@ extension AddWordsPartitialController: PlaceholderTextViewDelegate{
         viewModel?.textSeparator()
     }
 }
+
 
 //MARK: UISheetPresentationController delegate.
 extension AddWordsPartitialController: UISheetPresentationControllerDelegate {
@@ -334,5 +575,6 @@ extension AddWordsPartitialController: UISheetPresentationControllerDelegate {
         
     }
 }
+
 
 

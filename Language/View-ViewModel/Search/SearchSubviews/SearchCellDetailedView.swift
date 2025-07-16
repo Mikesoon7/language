@@ -55,7 +55,7 @@ class SearchCellExpandedView: UIViewController {
         view.textView.textContainerInset = UIEdgeInsets(top: 10, left: 5, bottom: 4, right: 5 )
         view.textView.layer.cornerRadius = .cornerRadius
         view.textView.clipsToBounds = true
-        view.textView.backgroundColor = .secondarySystemBackground
+        view.textView.backgroundColor = .selectedColourPalette.primaryBackgroundColour
         view.textView.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()

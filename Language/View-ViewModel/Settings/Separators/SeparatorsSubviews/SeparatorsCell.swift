@@ -70,7 +70,7 @@ class SeparatorsCell: UITableViewCell {
         super.traitCollectionDidChange(previousTraitCollection)
         if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection){
             contentView.backgroundColor = (traitCollection.userInterfaceStyle == .dark
-                                           ? .secondarySystemBackground
+                                           ? .selectedColourPalette.primaryBackgroundColour
                                            : .systemGray6.withAlphaComponent(0.8))
         }
     }
@@ -83,7 +83,7 @@ class SeparatorsCell: UITableViewCell {
 
     //MARK: Setting up cell view
     private func configureCellView(){
-        contentView.backgroundColor = .secondarySystemBackground
+        contentView.backgroundColor = .selectedColourPalette.primaryBackgroundColour
         
     }
         

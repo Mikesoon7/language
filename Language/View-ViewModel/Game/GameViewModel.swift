@@ -14,6 +14,8 @@ struct HashableWordsEntity: Hashable{
     var identifier = UUID()
     var wordEntity: WordsEntity
     
+    var image: UIImage?
+    
     init(wordEntity: WordsEntity) {
         self.wordEntity = wordEntity
     }
@@ -113,10 +115,10 @@ class GameViewModel{
 
         self.words = prepareWords(words: words, selectedOrder: selectedCardsOrder, restrictBy: Int(selectedNumberOfWords))
     }
-
-    private func wordsHashableWrapper(word: WordsEntity ) -> HashableWordsEntity {
-        return HashableWordsEntity(wordEntity: word)
-    }
+//
+//    private func wordsHashableWrapper(word: WordsEntity ) -> HashableWordsEntity {
+//        return HashableWordsEntity(wordEntity: word)
+//    }
     ///Creating and return  new array after applying passed random value and restriction by passed number
     private func prepareWords(words: [WordsEntity],
                               selectedOrder: DictionariesSettings.CardOrder,

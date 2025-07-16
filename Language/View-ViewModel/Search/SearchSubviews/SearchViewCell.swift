@@ -84,7 +84,7 @@ class SearchCell: UICollectionViewCell {
     }
     //MARK: Setting up cells properties
     func configureContentView(){
-        contentView.backgroundColor = .secondarySystemBackground
+        contentView.backgroundColor = .selectedColourPalette.primaryBackgroundColour
         contentView.layer.cornerRadius = .cornerRadius
     }
 

@@ -35,9 +35,7 @@ class InformationView: UIViewController {
     }
     //MARK: View properties setUp
     func configureView(){
-        view.backgroundColor = ((traitCollection.userInterfaceStyle == .dark)
-                                ? .secondarySystemBackground
-                                : .systemBackground)
+        view.backgroundColor = .systemSecondary_WhiteColour
         self.modalPresentationStyle = .pageSheet
     }
     

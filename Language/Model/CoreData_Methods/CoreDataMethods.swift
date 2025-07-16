@@ -22,6 +22,7 @@ class CoreDataHelper {
     internal var numberOfDictionaries: Int64 = 0
     var settingModel: UserSettingsStorageProtocol
     internal var context: NSManagedObjectContext!
+    internal var persistenContainer: NSPersistentContainer!
     
     public var dictionaryDidChange = PassthroughSubject<DictionaryChangeType, Never>()
     public var settingsDidChange = PassthroughSubject<Bool, Never>()
@@ -29,6 +30,7 @@ class CoreDataHelper {
     init(settingsModel: UserSettingsStorageProtocol) {
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         self.context = appDelegate.persistentContainer.viewContext
+        self.persistenContainer = appDelegate.persistentContainer
         self.settingModel = settingsModel
         self.context.undoManager = UndoManager()
 
@@ -38,6 +40,7 @@ class CoreDataHelper {
             print("Failed to initialize: \(error)")
         }
     }
+    
     
     //MARK: - Method helpers
     //Get actual number of dictionaries.
@@ -53,6 +56,7 @@ class CoreDataHelper {
         newDictionary.id = UUID()
         return newDictionary
     }
+    
     // Save context shortcut
     internal func saveContext() throws {
         do {

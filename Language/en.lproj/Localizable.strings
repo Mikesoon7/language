@@ -60,10 +60,13 @@
 //MARK: - AddDictionary or WordsVC
 "addDict.title" = "Creation";
 "addWord.title" = "Adding new words";
+"addImage.title" = "Adding new image";
 "viewPlaceholderWord" = "Word ";
 "viewPlaceholderMeaning" = " description";
 "fieldPlaceholder" = "Name";
 "dictionaryName" = "Dictionary name";
+"frontSide" = "Front side";
+"backSide" = "Back side";
 //Alerts
 "textAlert" = "Enter the text";
 "nameAlert" = "Enter the name";
@@ -71,6 +74,7 @@
 "nameInfo" = "Almost done. Please, name your dictionary";
 "addWords.contentSaving.title" = "Content wasn't saved";
 "addWords.contentSaving.text" = "Would you like to save your new words?";
+"addWords.contentSaving.image" = "Would you like to save you new image?";
 "addWords.contentSaving.save" = "Save";
 "addWords.contentSaving.clear" = "Clear";
 

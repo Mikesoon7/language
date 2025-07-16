@@ -100,7 +100,7 @@ class SeparatorsExampleView: UIView {
     //MARK:  View setUp
     private func configureView(){
         self.translatesAutoresizingMaskIntoConstraints = false
-        self.backgroundColor = UIColor.secondarySystemBackground
+        self.backgroundColor = .selectedColourPalette.primaryBackgroundColour
 
         self.layer.cornerRadius = .cornerRadius
         self.layer.cornerCurve = .continuous

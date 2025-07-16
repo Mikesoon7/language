@@ -25,6 +25,7 @@
     </entity>
     <entity name="WordsEntity" representedClassName="WordsEntity" syncable="YES">
         <attribute name="identifier" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="image" optional="YES" attributeType="Binary"/>
         <attribute name="meaning" attributeType="String"/>
         <attribute name="order" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="word" attributeType="String"/>

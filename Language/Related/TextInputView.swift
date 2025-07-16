@@ -150,13 +150,18 @@ final class TextInputView: UIView {
             name: UIScene.didActivateNotification,
             object: nil
         )
-        
     }
     
     required init?(coder: NSCoder) {
         fatalError("Coder wasn's imported")
     }
     
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection){
+            self.layer.shadowColor = UIColor.shadowColour.cgColor
+        }
+    }
     deinit { NotificationCenter.default.removeObserver(self) }
 
     //MARK: View SetUp
@@ -164,7 +169,7 @@ final class TextInputView: UIView {
         self.layer.cornerRadius = .cornerRadius
 
         self.addCenterShadows()
-        self.backgroundColor = .secondarySystemBackground
+        self.backgroundColor = .selectedColourPalette.primaryBackgroundColour
         self.translatesAutoresizingMaskIntoConstraints = false
     }
     

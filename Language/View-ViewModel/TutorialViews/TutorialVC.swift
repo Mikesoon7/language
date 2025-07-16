@@ -93,7 +93,7 @@ class TutorialVC: UIViewController {
     //MARK: Example View's
     private var cardView: UIView = {
         let view = UIView()
-        view.backgroundColor = .systemBackground_Secondary
+        view.backgroundColor = .systemSecondary_WhiteColour
         view.layer.cornerRadius = .outerCornerRadius
         view.layer.borderColor = UIColor.black.cgColor
         view.layer.cornerCurve = .continuous
@@ -230,8 +230,8 @@ class TutorialVC: UIViewController {
         self.view.backgroundColor = .systemBackground
     }
     
-    override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
         adjustLayoutForSizeClass()
     }
     
@@ -550,6 +550,8 @@ extension TutorialVC: UICollectionViewDelegate, UICollectionViewDataSource {
 
 //MARK: Required Collection Cell Delegate
 extension TutorialVC: MenuCellDelegate {
+    func inspectButtonDidTap(for cell: UICollectionViewCell){}
+    
     func panningBegan(for cell: UICollectionViewCell)       {}
     
     func panningEnded(active: Bool)                         {}

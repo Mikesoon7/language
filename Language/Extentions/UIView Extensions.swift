@@ -72,7 +72,7 @@ extension UIView {
     func setUpCustomView(){
         self.layer.cornerRadius = 9
         self.addCenterShadows()
-        self.backgroundColor = .secondarySystemBackground
+        self.backgroundColor = .selectedColourPalette.primaryBackgroundColour
         self.translatesAutoresizingMaskIntoConstraints = false
     }
     //MARK: - Creating top stroke offset by navigation Controller.
@@ -102,6 +102,34 @@ extension UIView {
         
         return topStroke
     }
+//    func addTopStroke(vc: UIViewController) -> CAShapeLayer {
+//        let topStroke = CAShapeLayer()
+//        let path = UIBezierPath()
+//
+//        // Get the navigation bar's absolute frame
+//        guard let navBar = vc.navigationController?.navigationBar,
+//              let window = vc.view.window ?? UIApplication.shared.windows.first else {
+//            return topStroke
+//        }
+//
+//        // Convert navigationBar frame to window coordinates
+//        let navBarFrameInWindow = navBar.convert(navBar.bounds, to: window)
+//        let y = navBarFrameInWindow.minY
+//
+//        let screenWidth = window.bounds.width
+//        path.move(to: CGPoint(x: 0, y: y))
+//        path.addLine(to: CGPoint(x: screenWidth, y: y))
+//
+//        topStroke.name = "Stroke top"
+//        topStroke.path = path.cgPath
+//        topStroke.lineWidth = 1
+//        topStroke.strokeColor = UIColor.label.cgColor
+//        topStroke.fillColor = UIColor.clear.cgColor
+//        topStroke.opacity = 1
+//
+//        return topStroke
+//    }
+
     func addStroke(x: CGFloat, y: CGFloat) -> CAShapeLayer {
         let path = UIBezierPath()
         path.move(to: CGPoint(x: 0, y: y))
@@ -123,13 +151,6 @@ extension UIView {
     func addBottomStroke(vc: UIViewController) -> CAShapeLayer{
         let path = UIBezierPath()
         let y = 0.0
-//        {
-//            if vc.tabBarController?.tabBar != nil{
-//                return vc.tabBarController!.tabBar.frame.minY
-//            } else {
-//                return 0
-//            }
-//        }()
         let bounds = UIWindow().bounds
 
         path.move(to: CGPoint(x: 0, y: y))
@@ -150,9 +171,8 @@ extension UIView {
     //MARK: - Creates shadow for a view with 0 side ofset
     func addCenterShadows(){
         self.layer.masksToBounds = false
-        self.layer.shadowColor = ((traitCollection.userInterfaceStyle == .dark)
-                                  ? shadowColorForDarkIdiom
-                                  : shadowColorForLightIdiom)
+        self.layer.shadowColor = UIColor.shadowColour.cgColor
+        
         self.layer.shadowOpacity = 0.7
         self.layer.shadowOffset = CGSize(width: 2, height: 3)
         self.layer.shadowRadius = 5.0
@@ -175,6 +195,14 @@ extension UIView {
             .screen.bounds ?? .zero
         return UIView(frame: screenBounds)
     }
+    func superview<T: UIView>(of type: T.Type) -> T? {
+        if let superview = self.superview as? T {
+            return superview
+        } else {
+            return self.superview?.superview(of: T.self)
+        }
+    }
+    
 }
 
 extension UIStackView{

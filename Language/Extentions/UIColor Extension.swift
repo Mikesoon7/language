@@ -11,7 +11,28 @@ import UIKit
 public let shadowColorForDarkIdiom = UIColor.clear.cgColor
 public let shadowColorForLightIdiom = UIColor.systemGray2.cgColor
 
+//extension CGColor {
+//    static var shadowColour: CGColor {
+//        CGColor{ traitCollection in
+//            if traitCollection.userInterfaceStyle == .dark {
+//                return UIColor.clear.cgColor
+//            } else {
+//                return UIColor.systemGray2.cgColor
+//            }
+//        }
+//    }
+//}
 extension UIColor {
+    static var shadowColour: UIColor {
+        UIColor { traitCollection in
+            if traitCollection.userInterfaceStyle == .dark {
+                return UIColor.clear
+            } else {
+                return UIColor.systemGray2
+            }
+        }
+    }
+
     static var popoverSubviewsBackgroundColour: UIColor {
         UIColor { traitCollection in
             if traitCollection.userInterfaceStyle == .dark {
@@ -21,7 +42,7 @@ extension UIColor {
             }
         }
     }
-    static var systemBackground_Secondary: UIColor {
+    static var systemSecondary_WhiteColour: UIColor {
         UIColor { traitCollection in
             if traitCollection.userInterfaceStyle == .dark {
                 return .secondarySystemBackground
@@ -48,6 +69,29 @@ extension UIColor {
             }
         }
     }
+}
+
+struct ColourPalette {
+    var primaryBackgroundColour: UIColor
+    var secondaryBackgroundColour: UIColor
+    
+    var backgroundColour: UIColor
+    var back: UIColor
+    
+    var textColour: UIColor
+    var textSecondaryColour: UIColor
+}
+extension UIColor {
+    static var selectedColourPalette: ColourPalette = .init(
+        primaryBackgroundColour: .secondarySystemBackground,
+        secondaryBackgroundColour: .white,
+        
+        backgroundColour: .black,
+        back: .black,
+                                     
+        textColour: .label,
+        textSecondaryColour: .gray )
+    
 }
 
 extension UIColor{

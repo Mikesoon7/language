@@ -161,6 +161,18 @@ class DetailsView: UIViewController {
         return button
     }()
     
+    //Button for ipad version to access single Mode input view.
+    private lazy var switchModeButton: UIBarButtonItem = {
+        let button = UIBarButtonItem(
+            image: UIImage(systemName: "doc.richtext"),
+                                     style: .done,
+                                     target: self,
+                                     action: #selector(sigleModeWasEngaged(sender: )))
+        button.tag = 0
+        return button
+    }()
+
+    
     //MARK: Buttons
     lazy var timedButton: UIButton = {
         let button = UIButton()
@@ -216,11 +228,9 @@ class DetailsView: UIViewController {
         configureLabels()
         retrieveDetailsData()
     }
+    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-//        viewModel?.saveDetails(orderSelection: DictionariesSettings.CardOrder(
-//            rawValue: Int64(self.orderOptionSegmentedControl.selectedSegmentIndex)) ?? .normal,
-//                               isOneSideMode: isOneSideModeSwitch.isOn)
         textInputView.textView.resignFirstResponder()
     }
     
@@ -286,6 +296,7 @@ class DetailsView: UIViewController {
     //MARK: - Subviews SetUp
     private func configureView() {
         self.view.backgroundColor = .systemBackground
+        self.navigationItem.rightBarButtonItems = [switchModeButton]
     }
     
     //MARK: Shadow view's setUp
@@ -559,7 +570,7 @@ class DetailsView: UIViewController {
                                             : regularWidthClassTextViewConstraints)
             }
             textInputView.layer.cornerRadius = keyboardIsVisable ? 0 : .cornerRadius
-            textInputView.backgroundColor = keyboardIsVisable ? .systemBackground : .secondarySystemBackground
+            textInputView.backgroundColor = keyboardIsVisable ? .systemBackground : .selectedColourPalette.primaryBackgroundColour
             textViewShadowView.layer.shadowOpacity = keyboardIsVisable ? 0 : 0.8
             
             view.layoutIfNeeded()
@@ -579,7 +590,8 @@ class DetailsView: UIViewController {
             changeSaveButtonState(active: false)
             let vc = AddWordsPartitialController(factory: self.viewModelFactory,
                                                  dictionary: viewModel?.dictionary ?? dictionary,
-                                                 text: text
+                                                 text: text,
+                                                 regularMode: true
             )
             present(vc, animated: true)
         }
@@ -591,10 +603,18 @@ class DetailsView: UIViewController {
             
             NSLayoutConstraint.activate(regularWidthClassTextViewConstraints)
             NSLayoutConstraint.activate(regularWidthClassConstraints)
+            guard let bar = navigationItem.rightBarButtonItems, bar.contains(where: { button in
+                button == switchModeButton }) else {
+                navigationItem.rightBarButtonItems?.append(switchModeButton)
+                return
+            }
         } else {
             if navigationItem.rightBarButtonItems == nil {
                 navigationItem.setRightBarButton(self.addNewWordsButton, animated: true)
             } else {
+                navigationItem.rightBarButtonItems?.removeAll(where: { button in
+                    button == self.switchModeButton
+                })
                 navigationItem.rightBarButtonItems?.append(self.addNewWordsButton)
             }
             
@@ -612,23 +632,23 @@ class DetailsView: UIViewController {
         guard UIDevice.isIPadDevice else { return }
         if active {
             if let text = textInputView.textView.text, text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                navigationItem.rightBarButtonItems?.removeAll(where: { button in
-                    button == self.saveButton
-                })
-                guard let bar = navigationItem.rightBarButtonItems, !bar.contains(where: {$0 == doneButton}) else {
-                    navigationItem.setRightBarButton(self.doneButton, animated: true)
+                guard let bar = navigationItem.rightBarButtonItems, bar.contains(where: {$0 == doneButton}) else {
+                    navigationItem.rightBarButtonItems?.removeAll(where: { button in
+                        button == self.saveButton
+                    })
+
+                    navigationItem.rightBarButtonItems?.append(self.doneButton)
                     return
                 }
-                navigationItem.rightBarButtonItems?.append(self.doneButton)
             } else {
-                navigationItem.rightBarButtonItems?.removeAll(where: { button in
-                    button == self.doneButton
-                })
-                guard let bar = navigationItem.rightBarButtonItems, !bar.contains(where: {$0 == saveButton}) else {
-                    navigationItem.setRightBarButton(self.saveButton, animated: true)
+                guard let bar = navigationItem.rightBarButtonItems, bar.contains(where: {$0 == saveButton}) else {
+                    navigationItem.rightBarButtonItems?.removeAll(where: { button in
+                        button == self.doneButton
+                    })
+
+                    navigationItem.rightBarButtonItems?.append(self.saveButton)
                     return
                 }
-                navigationItem.rightBarButtonItems?.append(self.saveButton)
             }
         } else {
             if textInputView.textView.text.isEmpty {
@@ -692,13 +712,31 @@ extension DetailsView{
     @objc func addNavButtonTap(sender: UIBarButtonItem){
         let vc = AddWordsPartitialController(factory:       self.viewModelFactory,
                                              dictionary:    viewModel?.dictionary ?? dictionary,
-                                             text:          textInputView.textView.text
+                                             text:          textInputView.textView.text,
+                                             regularMode:   true
         )
         vc.modalPresentationStyle = .pageSheet
         vc.sheetPresentationController?.detents = [.large()]
 
         self.navigationController?.present(vc, animated: true)
     }
+    
+    @objc func sigleModeWasEngaged(sender: UIButton) {
+        if textInputView.textView.isFirstResponder {
+            textInputView.textView.resignFirstResponder()
+        }
+        let vc = AddWordsPartitialController(factory:       self.viewModelFactory,
+                                             dictionary:    viewModel?.dictionary ?? dictionary,
+                                             text:          textInputView.textView.text,
+                                             regularMode:   false
+        )
+        vc.modalPresentationStyle = .pageSheet
+        vc.sheetPresentationController?.detents = [.large()]
+
+        self.navigationController?.present(vc, animated: true)
+
+    }
+
 
     //MARK: PRESENT TIME DETAILS
     @objc func clockedSession(sender: UIBarButtonItem){
@@ -743,7 +781,7 @@ extension DetailsView{
 
     @objc func saveButtonDidTap(sender: Any){
         guard let text = textInputView.validateText() else { return }
-        addWordsViewModel?.getNewWordsFrom(text)
+        addWordsViewModel?.extendDictionaryWith(text)
     }
 
     @objc func hideTransaltionSwitchToggle(sender: UISwitch){

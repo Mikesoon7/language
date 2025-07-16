@@ -116,14 +116,14 @@ class NotificationView: UIViewController {
                 containerView.subviews.forEach { view in
                     view.layer.shadowColor = shadowColorForDarkIdiom
                 }
-                containerView.backgroundColor = .secondarySystemBackground
+                containerView.backgroundColor = .selectedColourPalette.primaryBackgroundColour
                 dayPicker.backgroundColor = .systemGray5
             } else {
                 containerView.subviews.forEach { view in
                     view.layer.shadowColor = shadowColorForLightIdiom
                 }
                 containerView.backgroundColor = .systemBackground
-                dayPicker.backgroundColor = .secondarySystemBackground
+                dayPicker.backgroundColor = .selectedColourPalette.primaryBackgroundColour
             }
         }
     }
@@ -178,9 +178,7 @@ class NotificationView: UIViewController {
     
     //MARK: - Container SetUp
     private func configureContainerView(){
-        containerView.backgroundColor = ((traitCollection.userInterfaceStyle == .dark)
-                                ? UIColor.secondarySystemBackground
-                                : UIColor.systemBackground)
+        containerView.backgroundColor = .systemSecondary_WhiteColour
         
         view.addSubviews(dimmedView, containerView)
                 

@@ -21,6 +21,7 @@ enum WordsErrorType: Error {
     case failedToAssignEmptyString(String)
     case fetchFailed(String)
     case deleteFailed(String)
+    case imageUpdateFailed(String)
 }
 
 enum LogsErrorType: Error {

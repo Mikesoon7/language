@@ -17,7 +17,7 @@ extension UIButton{
         self.titleLabel?.numberOfLines = 1
         self.setTitleColor(.label, for: .normal)
         self.addCenterShadows()
-        self.backgroundColor = .secondarySystemBackground
+        self.backgroundColor = .selectedColourPalette.primaryBackgroundColour
         self.translatesAutoresizingMaskIntoConstraints = false
         self.addTargetTouchBegin()
         self.addTargetInsideTouchStop()

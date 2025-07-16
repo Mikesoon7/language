@@ -55,7 +55,7 @@ class MenuAddDictionaryCVCell: UICollectionViewCell {
 
     //MARK: Configuring views properties.
     func configureCellView(){
-        self.backgroundColor = .secondarySystemBackground
+        self.backgroundColor = .selectedColourPalette.primaryBackgroundColour
         self.layer.cornerRadius = .cornerRadius
         
         NotificationCenter.default.addObserver(self, selector: #selector(languageDidChange(sender:)), name: .appLanguageDidChange, object: nil)

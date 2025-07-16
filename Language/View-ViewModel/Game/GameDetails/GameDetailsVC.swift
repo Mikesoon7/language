@@ -33,7 +33,7 @@ class GameDetailsVC: UIViewController {
         let view = UIView()
         view.layer.cornerRadius = .outerCornerRadius
         view.clipsToBounds = true
-        view.backgroundColor = .systemBackground_Secondary
+        view.backgroundColor = .systemSecondary_WhiteColour
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -62,6 +62,15 @@ class GameDetailsVC: UIViewController {
             for: .normal
         )
         button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+    var imageButton: UIButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.layer.cornerRadius = .cornerRadius
+        button.layer.masksToBounds = true
+        button.setImage(UIImage(systemName: "photo.badge.plus"), for: .normal)
+        button.tintColor = .label
         return button
     }()
     
@@ -94,6 +103,7 @@ class GameDetailsVC: UIViewController {
     
     private var deleteBottomToContainer:            NSLayoutConstraint = .init()
     private var editBottomToContainer:              NSLayoutConstraint = .init()
+    private var imageBottomToContainer:             NSLayoutConstraint = .init()
     
     
     //MARK: - Inherited methods
@@ -149,7 +159,7 @@ class GameDetailsVC: UIViewController {
         initialAnchorConstant = view.bounds.height
         secondAnchorConstant = initialAnchorConstant * 0.6
         thirdAnchorConstant = initialAnchorConstant * 0.4
-        finalAnchorConstant = navBarTopInset + 5
+        finalAnchorConstant = initialAnchorConstant * 0.12
     }
     
     //MARK: Subviews SetUp
@@ -212,7 +222,7 @@ class GameDetailsVC: UIViewController {
 
     
     private func configureActionButtons(){
-        containerView.addSubviews(deleteButton, editButton, doneButton, informationButton)
+        containerView.addSubviews(deleteButton, imageButton, editButton, doneButton, informationButton)
         
         
         doneButtonTrailingAnchor = doneButton.leadingAnchor.constraint(equalTo: view.trailingAnchor,
@@ -222,6 +232,7 @@ class GameDetailsVC: UIViewController {
         
         deleteBottomToContainer = deleteButton.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -(secondAnchorConstant + .longOuterSpacer) )
         editBottomToContainer = editButton.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -(secondAnchorConstant + .longOuterSpacer))
+        imageBottomToContainer = imageButton.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -(secondAnchorConstant + .longOuterSpacer))
         
         NSLayoutConstraint.activate([
             deleteButton.leadingAnchor.constraint(equalTo: view.leadingAnchor,
@@ -230,6 +241,15 @@ class GameDetailsVC: UIViewController {
                                                 multiplier: 0.3),
             deleteBottomToContainer,
             
+            
+            imageButton.centerXAnchor.constraint(
+                equalTo: view.centerXAnchor),
+            imageButton.heightAnchor.constraint(
+                equalToConstant: .systemButtonSize),
+            imageButton.widthAnchor.constraint(
+                equalToConstant: .systemButtonSize),
+            imageBottomToContainer,
+
             
             editButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, 
                                                  constant: -.longInnerSpacer),
@@ -247,8 +267,10 @@ class GameDetailsVC: UIViewController {
                                                         constant: -.longInnerSpacer),
             informationButton.centerYAnchor.constraint(equalTo: animationView.centerYAnchor)
         ])
+        
         editButton.addTarget(self, action: #selector(editButtonDidTap(sender:)), for: .touchUpInside)
         deleteButton.addTarget(self , action: #selector(deleteButtonDidTap(sender:)), for: .touchUpInside)
+        imageButton.addTarget(self, action: #selector(imageButtonDidTap(sender: )), for: .touchUpInside)
         doneButton.addTarget(self, action: #selector(doneButtonDidTap(sender: )), for: .touchUpInside)
         informationButton.addTarget(self, action: #selector(informationButtonDidTap(sender: )), for: .touchUpInside)
     }
@@ -324,6 +346,7 @@ class GameDetailsVC: UIViewController {
             
             self.editBottomToContainer.constant = -(self.currentAnchorConstant + self.insetFromBottom)
             self.deleteBottomToContainer.constant = -(self.currentAnchorConstant + self.insetFromBottom)
+            self.imageBottomToContainer.constant = -(self.currentAnchorConstant + self.insetFromBottom)
             
             if newValue != self.finalAnchorConstant{
                 self.textViewBottomToContainer.constant = -(self.currentAnchorConstant + self.insetFromBottom * 2.5)
@@ -414,6 +437,7 @@ extension GameDetailsVC {
                 if translation < 0{
                     deleteBottomToContainer.constant = -(newConstant + insetFromBottom)
                     editBottomToContainer.constant = -(newConstant + insetFromBottom)
+                    imageBottomToContainer.constant = -(newConstant + insetFromBottom)
                 }
                 containerViewBottomAnchor.constant = newConstant
                 view.layoutIfNeeded()
@@ -453,7 +477,18 @@ extension GameDetailsVC {
         //Passing view for an iPad version.
         viewModel?.deleteWord(view: self.view)
     }
-    
+    @objc func imageButtonDidTap(sender: UIButton) {
+        guard let data = viewModel?.getCellData() else {
+            self.presentUnknownError()
+            return
+        }
+        let view = AddImageController(data: data,
+                                      delegate: self,
+                                      cell: SingleModeImageCell(),
+                                      index: IndexPath(index: 0))
+        self.present(view, animated: true)
+    }
+
     @objc func doneButtonDidTap(sender: UIButton){
         viewModel?.editWord(with: textInputView.textView.text, view: self.view)
     }
@@ -463,6 +498,7 @@ extension GameDetailsVC {
         present(vc, animated: true)
     }
 }
+
 //MARK: - Delegates
 extension GameDetailsVC: PlaceholderTextViewDelegate{
     func textViewDidBeginEditing(sender: UITextView)  { }
@@ -486,6 +522,16 @@ extension GameDetailsVC: PlaceholderTextViewDelegate{
             animateTransition(newValue: thirdAnchorConstant)
         }
     }
+}
+
+extension GameDetailsVC: AddImageDelegate {
+    func didSelectAnImage(imageDetails: ImageDetailsCheck, cell: SingleModeImageCell, index: IndexPath) {
+        viewModel?.editImage(imageDetails: imageDetails)
+    }
+    
+//    func didSelectAnImage(image: UIImage?, index: IndexPath) {
+//        viewModel?.editImage(with: image)
+//    }
 }
 
 class GameDetailsIPadVC: UIViewController {
@@ -532,6 +578,16 @@ class GameDetailsIPadVC: UIViewController {
     private lazy var deleteButton:  UIButton = configureButtonWith(title: "system.delete".localized)
     private lazy var doneButton:    UIButton = configureButtonWith(title: "system.done".localized)
     
+    var imageButton: UIButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.layer.cornerRadius = .cornerRadius
+        button.layer.masksToBounds = true
+        button.setImage(UIImage(systemName: "photo.badge.plus"), for: .normal)
+        button.tintColor = .label
+        return button
+    }()
+
     //MARK: Gestures
     private var wordTapGesture: UITapGestureRecognizer = .init() // For selecting word
 
@@ -592,7 +648,7 @@ class GameDetailsIPadVC: UIViewController {
     
     //MARK: View SetUp
     private func controllerCustomization(){
-        view.backgroundColor = .systemBackground_Secondary
+        view.backgroundColor = .systemSecondary_WhiteColour
     }
     
     //MARK: Subviews SetUp
@@ -629,7 +685,7 @@ class GameDetailsIPadVC: UIViewController {
     
         
     private func configureActionButtons(){
-        view.addSubviews(deleteButton, editButton, doneButton, informationButton)
+        view.addSubviews(deleteButton, editButton, imageButton, doneButton, informationButton)
         
         doneButtonTrailingAnchor = doneButton.leadingAnchor.constraint(equalTo: view.trailingAnchor,
                                                                        constant: .longInnerSpacer)
@@ -638,31 +694,41 @@ class GameDetailsIPadVC: UIViewController {
                                                                               constant: -.innerSpacer)
 
         NSLayoutConstraint.activate([
-            deleteButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: .longInnerSpacer),
-            
-            deleteButton.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.3),
-            
-            deleteButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor,
-                                                 constant: -.longInnerSpacer ),
+            deleteButton.leadingAnchor.constraint(
+                equalTo: view.leadingAnchor, constant: .longInnerSpacer),
+            deleteButton.widthAnchor.constraint(
+                equalTo: view.widthAnchor, multiplier: 0.3),
+            deleteButton.bottomAnchor.constraint(
+                equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -.longInnerSpacer ),
 
-            editButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -.longInnerSpacer),
+            editButton.trailingAnchor.constraint(
+                equalTo: view.trailingAnchor, constant: -.longInnerSpacer),
+            editButton.widthAnchor.constraint(
+                equalTo: view.widthAnchor, multiplier: 0.3),
+            editButton.bottomAnchor.constraint(
+                equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -.longInnerSpacer),
             
-            editButton.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.3),
-            
-            editButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor,
-                                               constant: -.longInnerSpacer),
-            
-            doneButton.centerYAnchor.constraint(equalTo: animationView.centerYAnchor),
-            
+            imageButton.centerXAnchor.constraint(
+                equalTo: view.centerXAnchor),
+            imageButton.widthAnchor.constraint(
+                equalToConstant: .systemButtonSize),
+            imageButton.bottomAnchor.constraint(
+                equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -.longInnerSpacer),
+            imageButton.heightAnchor.constraint(
+                equalToConstant: .systemButtonSize),
+
+            doneButton.centerYAnchor.constraint(
+                equalTo: animationView.centerYAnchor),
             doneButtonTrailingAnchor,
             
-            
-            informationButton.centerYAnchor.constraint(equalTo: animationView.centerYAnchor),
-            
-            informationButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -.longInnerSpacer)
+            informationButton.centerYAnchor.constraint(
+                equalTo: animationView.centerYAnchor),
+            informationButton.trailingAnchor.constraint(
+                equalTo: view.trailingAnchor, constant: -.longInnerSpacer)
         ])
         editButton.addTarget(self, action: #selector(editButtonDidTap(sender:)), for: .touchUpInside)
         deleteButton.addTarget(self , action: #selector(deleteButtonDidTap(sender:)), for: .touchUpInside)
+        imageButton.addTarget(self, action: #selector(imageButtonDidTap(sender: )), for: .touchUpInside)
         doneButton.addTarget(self, action: #selector(doneButtonDidTap(sender: )), for: .touchUpInside)
         informationButton.addTarget(self, action: #selector(informationButtonDidTap(sender: )), for: .touchUpInside)
     }
@@ -778,6 +844,19 @@ extension GameDetailsIPadVC {
         viewModel?.deleteWord(view: self.view)
     }
     
+    @objc func imageButtonDidTap(sender: UIButton) {
+        guard let data = viewModel?.getCellData() else {
+            self.presentUnknownError()
+            return
+        }
+        let view = AddImageController(data: data,
+                                      delegate: self,
+                                      cell: SingleModeImageCell(),
+                                      index: IndexPath(index: 0))
+        self.present(view, animated: true)
+    }
+
+    
     @objc func doneButtonDidTap(sender: UIButton){
         guard let text = textInputView.validateText() else { return }
         viewModel?.editWord(with: text, view: self.view)
@@ -809,3 +888,12 @@ extension GameDetailsIPadVC: PlaceholderTextViewDelegate{
     }
 }
 
+extension GameDetailsIPadVC: AddImageDelegate {
+    func didSelectAnImage(imageDetails: ImageDetailsCheck, cell: SingleModeImageCell, index: IndexPath) {
+        viewModel?.editImage(imageDetails: imageDetails)
+    }
+    
+//    func didSelectAnImage(image: UIImage?, index: IndexPath) {
+//        viewModel?.editImage(with: image)
+//    }
+}
