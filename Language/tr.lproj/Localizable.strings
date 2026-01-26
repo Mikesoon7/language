@@ -67,16 +67,23 @@
 "dictionaryName" = "Sözlük adı";
 "frontSide" = "Yüz taraf";
 "backSide" = "Karşı taraf";
-//Alerts
-"textAlert" = "Metni girin";
-"nameAlert" = "Adı girin";
-"textInfo" = "Lütfen en az 1 kelime çifti girin.";
-"nameInfo" = "Neredeyse hazır. Lütfen sözlüğünüze bir ad verin.";
+// Alerts
 "addWords.contentSaving.title" = "İçerik kaydedilmedi";
-"addWords.contentSaving.text" = "Yeni kelimelerinizi kaydetmek ister misiniz?";
-"addWords.contentSaving.image" = "Yeni resimlerinizi kaydetmek ister misiniz?";
+"addWords.contentSaving.text" = "Eklenen kelimeleri kaydetmek ister misiniz?";
+"addWords.contentSaving.image" = "Eklenen görseli kaydetmek ister misiniz?";
 "addWords.contentSaving.save" = "Kaydet";
 "addWords.contentSaving.clear" = "Temizle";
+"addWords.emptyName.title" = "Sözlük adı";
+"addWords.emptyName.message" = "Neredeyse tamam! Kaydetmek için sözlüğe bir ad verin.";
+"addWords.emptyText.title" = "Metin ekleyin";
+"addWords.emptyText.message" = "Sözlüğü kaydetmek için en az bir kelime ekleyin.";
+"addWords.emptyCells.title" = "İçerik ekleyin";
+"addWords.emptyCells.message" = "Sözlüğü kaydetmek için en az bir öğe ekleyin — metin veya görsel yeterlidir.";
+"addWords.croppedText.title" = "İçerik kaydedilemedi";
+"addWords.croppedText.message" = "Seçilen hariç tutulan karakterler uygulandıktan sonra metin boş kaldı. Ayarları kontrol edip tekrar deneyin.";
+//Information
+"addDict.lineMode" = "Satır Satır modundasınız.\n\n Bu mod, metninizi otomatik olarak kartlara böler ve her paragrafı ayrı bir kart hâline getirir. Birden fazla kartı hızlı ve verimli şekilde eklemenin en kolay yoludur.";
+"addDict.singleMode" = "Tek Tek modundasınız.\n\n Bu mod her kartı ayrı ayrı oluşturmanıza olanak tanır, içeriği tamamen kontrol etmenizi sağlar ve gerektiğinde görseller eklemenize imkân verir.";
 
 //MARK: - System
 "system.cancel" = "İptal";
@@ -101,6 +108,8 @@
 "system.continue" = "Devam et";
 "system.finish" = "Ayrıl";
 "system.checked" = "Kontrol edildi";
+"system.image" = "\"Görüntü\"";
+
 
 //MARK: - DetailsVC
 "details.title" = "Detaylar";
@@ -113,6 +122,7 @@
 "details.cardsOrder.reverse" = "Ters";
 "details.addWords" = "Yeni kelimeler ekle";
 "details.start" = "Başla";
+"details.flipTheCard" = "Flip the card";
 
 //MARK: - GameVC
 "game.title" = "Kartlar";
@@ -202,6 +212,8 @@
 "edit.emptyField.message" = "Lütfen sözlük adı için en az bir karakter girin.";
 "edit.emptyText.title" = "Düzenleme metni boş";
 "edit.emptyText.message" = "Sözlük bu durumda kaydedilirse silinir. \nEmin misiniz?";
+"edit.unsavedAlert.title" = "Değişiklikleriniz kaydedilmedi";
+"edit.unsavedAlert.message" = "Yaptığınız düzenlemeleri kaydetmek ister misiniz?";
 //MARK: - Tutorial
 "tutorial" = "Eğitim";
 //First view
@@ -222,6 +234,15 @@
 "tutorial.card.name" = "Merhaba";
 "tutorial.card.title" = "Öğrenme yolculuğunuzun bir parçası olmaktan mutluluk duyuyoruz!";
 "tutorial.card.message" = " \r\rP.S. Her zaman \rgelişmek için çabalıyoruz. \rEğer Learny'yi beğendiyseniz, \rApp Store'da bize puan verin. \r\rÇalışmalarınızda bol şans!";
+//MARK: In Game Tutorial
+"game.tutorial.title" = "Bir şey daha...";
+"game.tutorial.subtitle" = "Uzun eğitimler bazen sıkıcı olabilir... ama söz, bu sonuncusu!";
+"game.tutorial.tap" = "Bir kartı çevirmek ve diğer tarafını görmek için dokunun (eğer varsa).";
+"game.tutorial.press" = "Bir şeyi değiştirmek mi istiyorsunuz? Kartı basılı tutarak düzenleme moduna geçin.";
+"game.tutorial.timer" = "İlerlemenizi her an takip edin — sadece zamanlayıcı düğmesine dokunun.";
+"game.tutorial.flip" = "Kendinize güveniyor musunuz? Tersine çevirme düğmesine dokunun ve kartları ters sırayla öğrenin!";
+
+
 
 //MARK: - Exceptions
 "exception.title" = "Hariç Tutulacak Semboller";

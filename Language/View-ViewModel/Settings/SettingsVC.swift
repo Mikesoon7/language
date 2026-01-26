@@ -4,7 +4,7 @@
 //
 //  Created by Star Lord on 05/03/2023.
 //
-//  REFACTORING STATE: CHECKED
+//TODO: Polish
 
 import UIKit
 import Combine

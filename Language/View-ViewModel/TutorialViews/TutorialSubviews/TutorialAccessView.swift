@@ -4,7 +4,7 @@
 //
 //  Created by Star Lord on 27/09/2023.
 //
-//  REFACTORING STATE: NOT CHECKED
+//TODO: Polished
 
 import UIKit
 

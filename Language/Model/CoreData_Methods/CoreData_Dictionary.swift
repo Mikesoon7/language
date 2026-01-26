@@ -4,6 +4,7 @@
 //
 //  Created by Star Lord on 22/07/2023.
 //
+//TODO: Polish
 
 import Foundation
 import CoreData
@@ -13,16 +14,19 @@ protocol DictionaryManaging{
 
     var dictionaryDidChange : PassthroughSubject<DictionaryChangeType, Never> { get set }
     
-    func createDictionary(language: String, text: String) throws
-    func createDictionary(language: String, data: [SingleModeCellData]) throws
     func fetchDictionaries() throws -> [DictionariesEntity]
-    func addWordsTo(dictionary: DictionariesEntity, words: [WordsEntity]) throws
-    func delete(dictionary: DictionariesEntity) throws
+
+    func createNewDictionary(name: String) -> DictionariesEntity
+    func fillNewDictionary(dictionary: DictionariesEntity, with: [WordsEntity]) throws
+    func extendDictionary(_ dictionary: DictionariesEntity, words: [WordsEntity]) throws
+    func updateDictionary(_ dictionary: DictionariesEntity, words: [WordsEntity], name: String?) throws
+    func deleteDictionary(_ dictionary: DictionariesEntity) throws
+    
     func undoDeletion()
     func canUndo() -> Bool
+    func createTutorialDictionary() throws
     func updateDictionaryOrder() throws
-    func update(dictionary: DictionariesEntity, words: [WordsEntity], name: String?) throws
-    func updateOneByOne(dictionary: DictionariesEntity, words: [SingleModeCellData], name: String?) throws
+
 }
 
 //MARK: - Working with dictioanries.
@@ -31,12 +35,112 @@ extension CoreDataHelper: DictionaryManaging{
 //        <#code#>
 //    }
     
-    //MARK: Creation
-    func createDictionary(language: String, text: String) throws {
-        guard let dictionary = createNewDictionary(language: language) else {
-            throw DictionaryErrorType.creationFailed(language)
-        }
+
+    //MARK: Create
+    func createNewDictionary(name: String) -> DictionariesEntity {
+        let newDictionary = DictionariesEntity(context: context)
+        newDictionary.language = name
+        newDictionary.id = UUID()
+        return newDictionary
+    }
+
+    func fillNewDictionary(dictionary: DictionariesEntity , with words: [WordsEntity]) throws {
+                
+        dictionary.id = UUID()
+        dictionary.creationDate = Date().timeStripped
+        dictionary.words = NSSet(array: words)
+        dictionary.numberOfCards = Int64(words.count)
+        dictionary.order = numberOfDictionaries
+        dictionary.lastIndex = Int64(words.count)
         
+        do {
+            try context.save()
+            dictionaryDidChange.send(.wasAdded)
+            numberOfDictionaries += 1
+        } catch {
+            context.rollback()
+            throw DictionaryErrorType.creationFailed(dictionary.language)
+        }
+    }
+    
+    
+    //MARK: Update
+    //Update existing dictionaries data.
+    func updateDictionary(_ dictionary: DictionariesEntity, words: [WordsEntity], name: String? = nil) throws {
+        if let name = name {
+            dictionary.language = name
+        }
+//        var wordsWithImages: [WordsEntity] = []
+//        
+//        for (index, pair) in words.enumerated() {
+//            
+//            let currentIndex = Int(dictionary.lastIndex) + index
+//            do {
+//                
+//                let word = try createWordWithImage(for: dictionary, data: pair, index: currentIndex)
+//                
+//                wordsWithImages.append(word)
+//            } catch (let error) {
+//                throw error
+//            }
+//        }
+    
+
+        dictionary.words = Set(words) as? NSSet
+        dictionary.numberOfCards = Int64(words.count)
+        dictionary.lastIndex += Int64(words.count)
+    
+        do {
+            try saveContext()
+            dictionaryDidChange.send(.wasUpdated(Int(dictionary.order)))
+        } catch {
+            context.rollback()
+            throw DictionaryErrorType.updateFailed( dictionary.language)
+        }
+    }
+
+    
+    //MARK: Extend
+    //Add array to existing array of entities
+    func extendDictionary(_ dictionary: DictionariesEntity, words: [WordsEntity]) throws {
+
+        dictionary.addToWords(NSSet(array: words))
+        dictionary.numberOfCards += Int64(words.count)
+        dictionary.lastIndex += Int64(words.count)
+        
+        do {
+            try saveContext()
+            dictionaryDidChange.send(.wasUpdated(Int(dictionary.order)))
+        } catch {
+            context.rollback()
+            throw DictionaryErrorType.additionFailed(dictionary.language)
+        }
+    }
+
+    
+    //MARK: Delete
+    func deleteDictionary(_ dictionary: DictionariesEntity) throws {
+        let order = dictionary.order
+        context.undoManager?.registerUndo(withTarget: self, selector: #selector(undoDeleteEntity(entity: )), object: dictionary)
+        context.delete( dictionary)
+        do {
+            try saveContext()
+            dictionaryDidChange.send(.wasDeleted(Int(order)))
+        } catch {
+            context.rollback()
+            throw DictionaryErrorType.deleteFailed( dictionary.language)
+        }
+        try updateDictionaryOrder()
+    }
+
+    
+    //MARK: Tutorial
+    func createTutorialDictionary() throws {
+        let name = "tutorial.card.name".localized
+        let text = "tutorial.card.title".localized + settingModel.appSeparators.value +  "tutorial.card.message".localized
+        let dictionary = createNewDictionary(name: name)
+        
+
         var words: [WordsEntity] = []
         
         do {
@@ -46,10 +150,12 @@ extension CoreDataHelper: DictionaryManaging{
             throw error
         }
         
+        dictionary.id = AppLinks.tutorialUUID
         dictionary.creationDate = Date().timeStripped
         dictionary.words = NSSet(array: words)
         dictionary.numberOfCards = Int64(words.count)
         dictionary.order = numberOfDictionaries
+        dictionary.lastIndex = Int64(words.count)
         
         do {
             try context.save()
@@ -57,110 +163,42 @@ extension CoreDataHelper: DictionaryManaging{
             numberOfDictionaries += 1
         } catch {
             context.rollback()
-            throw DictionaryErrorType.creationFailed(language)
+            throw DictionaryErrorType.creationFailed(name)
         }
+
     }
-//    func createDictionary(language: String, text: String, completion: @escaping (Result<Void, Error>) -> Void) {
-//        persistenContainer.performBackgroundTask { backgroundContext in
+
+//    func createDictionary(language: String, data: [SingleModeCellData]) throws {
+//        guard let dictionary = createNewDictionary(language: language) else {
+//            throw DictionaryErrorType.creationFailed(language)
+//        }
+//        
+//        var words: [WordsEntity] = []
+//        
+//        for (index, pair) in data.enumerated() {
 //            do {
-//                guard let dictionary = self.createNewDictionary(language: language, context: backgroundContext) else {
-//                    throw DictionaryErrorType.creationFailed(language)
-//                }
-//
-//                var words: [WordsEntity] = []
-//                do {
-//                    words = try self.createWordsFromText(for: dictionary, text: text, context: backgroundContext)
-//                } catch {
-//                    backgroundContext.rollback()
-//                    throw error
-//                }
-//
-//                dictionary.creationDate = Date().timeStripped
-//                dictionary.words = NSSet(array: words)
-//                dictionary.numberOfCards = Int64(words.count)
-//                dictionary.order = self.numberOfDictionaries
-//
-//                // Save the background context
-//                try backgroundContext.save()
-//
-//                // Merge into the main context on main thread
-//                DispatchQueue.main.async {
-//                    self.context.perform {
-//                        self.context.mergeChanges(fromContextDidSave: backgroundContext)
-//                        self.numberOfDictionaries += 1
-//                        self.dictionaryDidChange.send(.wasAdded)
-//                        completion(.success(()))
-//                    }
-//                }
-//
+//                let word = try createWordWithImage(for: dictionary, data: pair, index: index)
+//                words.append(word)
 //            } catch {
-//                backgroundContext.rollback()
-//                DispatchQueue.main.async {
-//                    completion(.failure(error))
-//                }
+//                throw error
 //            }
 //        }
-//    }
-
-    func createDictionary(language: String, data: [SingleModeCellData]) throws {
-        guard let dictionary = createNewDictionary(language: language) else {
-            throw DictionaryErrorType.creationFailed(language)
-        }
-        
-        var words: [WordsEntity] = []
-        
-        for (index, pair) in data.enumerated() {
-            let word = createWordWithImage(for: dictionary, data: pair, index: index)
-            words.append(word)
-        }
-        
-        dictionary.creationDate = Date().timeStripped
-        dictionary.words = NSSet(array: words)
-        dictionary.numberOfCards = Int64(words.count)
-        dictionary.order = numberOfDictionaries
-        
-        do {
-            try context.save()
-            dictionaryDidChange.send(.wasAdded)
-            numberOfDictionaries += 1
-        } catch {
-            context.rollback()
-            throw DictionaryErrorType.creationFailed(language)
-        }
-        //
-    }
-//        try self.persistenContainer.performBackgroundTask { context in
-//
-//            do {
-//                guard let dictionary = self.createNewDictionary(language: language, context: context) else {
-//                    throw DictionaryErrorType.creationFailed(language)
-//                }
-//
-//                var words: [WordsEntity] = []
-//
-//                for (index, pair) in data.enumerated() {
-//                    let word = self.createWordWithImage(for: dictionary, data: pair, index: index, context: context)
-//                    words.append(word)
-//                }
-//
-//                dictionary.creationDate = Date().timeStripped
-//                dictionary.words = NSSet(array: words)
-//                dictionary.numberOfCards = Int64(words.count)
-//                dictionary.order = self.numberOfDictionaries
-//
-//                try context.save()
-//
-//                DispatchQueue.main.async {
-//                    self.dictionaryDidChange.send(.wasAdded)
-//                    self.numberOfDictionaries += 1
-//                }
-//            } catch {
-//                context.rollback()
-//                    throw DictionaryErrorType.creationFailed(language)
-//
-//                }
+//        
+//        dictionary.creationDate = Date().timeStripped
+//        dictionary.words = NSSet(array: words)
+//        dictionary.numberOfCards = Int64(words.count)
+//        dictionary.lastIndex = Int64(words.count)
+//        dictionary.order = numberOfDictionaries
+//        
+//        do {
+//            try context.save()
+//            dictionaryDidChange.send(.wasAdded)
+//            numberOfDictionaries += 1
+//        } catch {
+//            context.rollback()
+//            throw DictionaryErrorType.creationFailed(language)
 //        }
-
+//        //
 //    }
     
     //MARK: Fetch
@@ -175,21 +213,9 @@ extension CoreDataHelper: DictionaryManaging{
             throw DictionaryErrorType.fetchFailed
         }
     }
-    //MARK: Deletion
-    func delete(dictionary: DictionariesEntity) throws {
-        let order = dictionary.order
-        context.undoManager?.registerUndo(withTarget: self, selector: #selector(undoDeleteEntity(entity: )), object: dictionary)
-        context.delete(dictionary)
-        do {
-            try saveContext()
-            dictionaryDidChange.send(.wasDeleted(Int(order)))
-        } catch {
-            context.rollback()
-            throw DictionaryErrorType.deleteFailed(dictionary.language)
-        }
-        try updateDictionaryOrder()
-    }
     
+    
+    //MARK: Others
     func canUndo() -> Bool{
         return context.undoManager?.canUndo ?? false
     }
@@ -222,68 +248,9 @@ extension CoreDataHelper: DictionaryManaging{
         }
     }
     
-    //Add array to existing array of entities
-    func addWordsTo(dictionary: DictionariesEntity, words: [WordsEntity]) throws {
-        
-        dictionary.addToWords(NSSet(array: words))
-        dictionary.numberOfCards = Int64(dictionary.words?.count ?? 0)
-        
-        do {
-            try saveContext()
-            dictionaryDidChange.send(.wasUpdated(Int(dictionary.order)))
-        } catch {
-            context.rollback()
-            throw DictionaryErrorType.additionFailed(dictionary.language)
-        }
-    }
     
-    //Takes new array of entities
-    func update(dictionary: DictionariesEntity, words: [WordsEntity], name: String? = nil) throws {
-        if let name = name {
-            dictionary.language = name
-        }
         
-        for (index, word) in words.enumerated() {
-            word.order = Int64(index)
-        }
-
-        dictionary.words = Set(words) as? NSSet
-        dictionary.numberOfCards = Int64(words.count)
-        
-        do {
-            try saveContext()
-//            try updateWordsOrder(for: dictionary)
-            dictionaryDidChange.send(.wasUpdated(Int(dictionary.order)))
-        } catch {
-            context.rollback()
-            throw DictionaryErrorType.updateFailed(dictionary.language)
-        }
-    }
-    //Takes new array of entities
-    func updateOneByOne(dictionary: DictionariesEntity, words: [SingleModeCellData], name: String? = nil) throws {
-        if let name = name {
-            dictionary.language = name
-        }
-        var wordsWithImages: [WordsEntity] = []
-        
-        for (index, pair) in words.enumerated() {
-            let word = createWordWithImage(for: dictionary, data: pair, index: index)
-            wordsWithImages.append(word)
-        }
     
-
-        dictionary.words = Set(wordsWithImages) as? NSSet
-        dictionary.numberOfCards = Int64(wordsWithImages.count)
-        
-        do {
-            try saveContext()
-//            try updateWordsOrder(for: dictionary)
-            dictionaryDidChange.send(.wasUpdated(Int(dictionary.order)))
-        } catch {
-            context.rollback()
-            throw DictionaryErrorType.updateFailed(dictionary.language)
-        }
-    }
-
+    
 }
 

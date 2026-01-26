@@ -48,7 +48,7 @@ class SearchCellExpandedView: UIViewController {
     
     lazy var textInputView: TextInputView = {
         let view = TextInputView(delegate: self)
-        view.textView.font = .selectedFont.withSize(.assosiatedTextSize)
+        view.updateFont(font: .selectedFont.withSize(.assosiatedTextSize))
         view.textView.isEditable = false
         view.textView.isFindInteractionEnabled = false
         view.textView.isSelectable = false
@@ -199,7 +199,7 @@ class SearchCellExpandedView: UIViewController {
         finalAttributedString.append(firstAttributedString)
         finalAttributedString.append(secondAttributedString)
         
-        textInputView.textView.attributedText = finalAttributedString
+        textInputView.updateAttributedText(text: finalAttributedString)
         
         //Constraints for changing view's dimensions.
         textTopAnchor = textInputView.topAnchor.constraint(
@@ -302,7 +302,7 @@ class SearchCellExpandedView: UIViewController {
         UIView.animate(withDuration: 0.3, animations: {
             self.view.backgroundColor = activate ? .black.withAlphaComponent(0.2) : .clear
             
-            if !activate && self.textInputView.textView.isFirstResponder {
+            if !activate && self.textInputView.isFirstResponder() {
                 self.chagneEditState(activate: false)
             }
             self.deleteButton.alpha =  activate ? 1 : 0
@@ -350,14 +350,17 @@ class SearchCellExpandedView: UIViewController {
         self.cellEditStateBottomAnchor.isActive = activate ? true : false
 
         if activate {
-            self.textInputView.textView.attributedText = NSAttributedString(
+            let attributedText = NSAttributedString(
                 string: wordText + " " + separator + " " + descriptionText,
                 attributes: [
                     .font: UIFont.selectedFont.withSize(.assosiatedTextSize),
                     .foregroundColor: UIColor.label
                 ]
             )
-            self.textInputView.textView.becomeFirstResponder()
+
+
+            self.textInputView.updateAttributedText(text: attributedText)
+            self.textInputView.becomeFirstResponder()
             self.centerY.isActive = false
             self.cellEditStateBottomAnchor.isActive = true
 
@@ -365,7 +368,7 @@ class SearchCellExpandedView: UIViewController {
             
             self.cellEditStateBottomAnchor.isActive = false
             self.centerY.isActive = true
-            self.textInputView.textView.resignFirstResponder()
+            self.textInputView.resignFirstResponder()
         }
         
         UIView.animate(withDuration: duration ?? 0.3) {
@@ -399,10 +402,10 @@ class SearchCellExpandedView: UIViewController {
     
     @objc func editButtonDidTap(sender: Any) {
         textInputView.textView.isEditable = true
-        if textInputView.textView.isFirstResponder {
-            textInputView.textView.resignFirstResponder()
+        if textInputView.isFirstResponder() {
+            textInputView.resignFirstResponder()
         } else {
-            textInputView.textView.becomeFirstResponder()
+            textInputView.becomeFirstResponder()
         }
     }
 

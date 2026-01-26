@@ -4,7 +4,7 @@
 //
 //  Created by Star Lord on 13/08/2023.
 //
-//  REFACTORING STATE: CHECKED
+//TODO: Polish
 
 import UIKit
 import Combine
@@ -126,6 +126,9 @@ class SettingsViewModel{
             return DataForSettingsTextCell(title: exception.title, value: nil)
         case .lauchStatus(_):
             return DataForSettingsTextCell(title: "tutorial".localized, value: nil)
+            //This line is impossible to be executed, though statying for a possible future implementation.
+        case .tutorialStatus(_):
+            return DataForSettingsTextCell(title: "lauchStatus".localized, value: nil)
         }
     }
     func didSelectRowAt(indexPath: IndexPath){

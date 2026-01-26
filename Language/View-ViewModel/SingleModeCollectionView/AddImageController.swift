@@ -4,29 +4,14 @@
 //
 //  Created by Star Lord on 17/04/2025.
 //
+//TODO: Polished
 
 import UIKit
 import PhotosUI
 
 protocol AddImageDelegate: AnyObject {
-    func didSelectAnImage(imageDetails: ImageDetailsCheck, cell: SingleModeImageCell, index: IndexPath)
+    func didSelectAnImage(imageDetails: ImageDetailsCheck, data: SingleModeCellData)
 }
-
-
-
-//struct ImageDetails {
-//    var contentMode: ImageContentMode
-//    var imageFilterMode: ImageFilterMode
-//    
-//    init(){
-//        contentMode = .fill
-//        imageFilterMode = .original
-//    }
-//    init(contentMode: ImageContentMode, imageFilterMode: ImageFilterMode) {
-//        self.contentMode = contentMode
-//        self.imageFilterMode = imageFilterMode
-//    }
-//}
 
 
 class AddImageController: UIViewController {
@@ -36,13 +21,12 @@ class AddImageController: UIViewController {
     
     //MARK: Properties
     var delegate: AddImageDelegate?
-    
-    var cell: SingleModeImageCell
-    var index: IndexPath
+    var data: SingleModeCellData
     
     var originalImage: UIImage? = nil
     var imageDetails: ImageDetailsCheck = .init()
     
+    var isInSplitMode: Bool?
     var isSavingRequired = false
     
     //MARK: - Views
@@ -211,9 +195,8 @@ class AddImageController: UIViewController {
         }
     }
     
-    init(data: SingleModeCellData, delegate: AddImageDelegate, cell: SingleModeImageCell, index: IndexPath) {
-        self.index = index
-        self.cell = cell
+    init(data: SingleModeCellData, delegate: AddImageDelegate) {
+        self.data = data
         self.delegate = delegate
         
         if let imageDetails = data.imageDetails, let image = imageDetails.originalImage {
@@ -228,10 +211,7 @@ class AddImageController: UIViewController {
         self.translation.text = data.definition
         
         if data.word.isEmpty && data.definition.isEmpty {
-            print("yes")
             stackView.layer.backgroundColor = UIColor.clear.cgColor
-        } else {
-            print("no")
         }
         if let image = originalImage {
             let processedImage = self.imageDetails.filterValue.original ? image : image.applyBlackAndWhiteFilter()
@@ -258,23 +238,16 @@ class AddImageController: UIViewController {
             }
         }
     }
+    override func viewWillTransition(to size: CGSize, with coordinator: any UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        coordinator.animate { _ in
+            self.adjustLayoutIfNeeded(size: size)
+        }
+    }
     
     override func viewDidLayoutSubviews() {
-        if isInPortraitSplit() {
-            NSLayoutConstraint.activate(cellSizeToWidth)
-            NSLayoutConstraint.deactivate(cellSizeToHeight)
-            UIView.animate(withDuration: 0.1) {
-                self.view.layoutIfNeeded()
-            }
-        } else {
-            if !cellSizeToHeight[0].isActive {
-                NSLayoutConstraint.activate(cellSizeToHeight)
-                NSLayoutConstraint.deactivate(cellSizeToWidth)
-                UIView.animate(withDuration: 0.1) {
-                        self.view.layoutIfNeeded()
-                    }
-            }
-        }
+        super.viewDidLayoutSubviews()
+        self.adjustLayoutIfNeeded()
     }
 
     
@@ -303,9 +276,6 @@ class AddImageController: UIViewController {
         ])
     }
     
-    func isInPortraitSplit() -> Bool{
-        return UIWindow.isInSplitScreenMode() && (view.bounds.width / view.bounds.height) < 0.5
-    }
     private func configureCardView(){
         self.view.addSubviews( addImageLabel, saveButton, cardShadowView, cardView)
         cardView.addSubview(imageView)
@@ -404,9 +374,37 @@ class AddImageController: UIViewController {
         saveButton.addTarget(self, action: #selector(saveButtonDidTap(sender: )), for: .touchUpInside)
     }
 
+    //MARK: Layout
+    func isInPortraitSplit(size: CGSize? = nil) -> Bool{
+        return UIWindow.isInSplitScreenMode() && (size?.width ?? view.bounds.width) / (size?.height ?? view.bounds.height) < 0.5
+    }
+
+    private func adjustLayoutIfNeeded(size: CGSize? = nil){
+        if let size = size {
+            let isInSplitMode = isInPortraitSplit(size: size)
+            changeLayoutForSplitMode(isActive: isInSplitMode)
+            self.isInSplitMode = isInSplitMode
+        } else {
+            let isInSplitMode = isInPortraitSplit()
+            guard self.isInSplitMode != isInSplitMode else { return }
+            changeLayoutForSplitMode(isActive: isInSplitMode)
+            self.isInSplitMode = isInSplitMode
+        }
+        self.view.layoutIfNeeded()
+    }
     
+    func changeLayoutForSplitMode(isActive: Bool){
+        if isActive {
+            NSLayoutConstraint.deactivate(cellSizeToHeight)
+            NSLayoutConstraint.activate(cellSizeToWidth)
+        } else {
+            NSLayoutConstraint.deactivate(cellSizeToWidth)
+            NSLayoutConstraint.activate(cellSizeToHeight)
+        }
+        
+    }
+
     //MARK: Present Image Picker
-    
     private func configureAddImageTapGesture(){
         let tap = UITapGestureRecognizer(target: self, action: #selector(addImageDidTap(sender: )))
         stackView.isUserInteractionEnabled = true
@@ -479,7 +477,7 @@ extension AddImageController {
             image: originalImage,
             contentMode: imageDetails.contentMode,
             filterValue: imageDetails.filterValue)
-        delegate?.didSelectAnImage(imageDetails: imageDetails, cell: cell, index: index)
+        delegate?.didSelectAnImage(imageDetails: imageDetails, data: data)
         
         isSavingRequired = false
         self.dismiss(animated: true)
@@ -530,10 +528,11 @@ extension AddImageController {
 //MARK: Image Picker Delegate
 extension AddImageController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        self.isSavingRequired = true
         picker.dismiss(animated: true)
         
         if let selectedImage = info[.originalImage] as? UIImage {
+            print("Image was set")
+            self.isSavingRequired = true
             DispatchQueue.main.async {
                 let processedImage = self.imageDetails.filterValue.original ? selectedImage : selectedImage.applyBlackAndWhiteFilter()
                 self.originalImage = selectedImage
@@ -552,7 +551,7 @@ extension AddImageController: UIImagePickerControllerDelegate, UINavigationContr
 extension AddImageController: UISheetPresentationControllerDelegate {
     ///Insures, that view won't be accedentaly dismissed without saving the data.
     func presentationControllerShouldDismiss(_ presentationController: UIPresentationController) -> Bool {
-        guard !isSavingRequired else { return true }
+        guard isSavingRequired else { return true }
         
         let alert = UIAlertController.alertWithAction(
             alertTitle: "addWords.contentSaving.title".localized,

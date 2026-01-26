@@ -4,7 +4,7 @@
 //
 //  Created by Star Lord on 23/03/2023.
 //
-//  REFACTORING STATE: CHECKED
+//TODO: Polished
 
 import UIKit
 import SwiftUI
@@ -19,10 +19,6 @@ struct DataForMenuCell {
     var name: String
     var numberOfCards: Int64
 }
-//private enum ViewConstants {
-//    static let overlayPoints: CGFloat = 2
-//    static let actionViewMultiplier: CGFloat = 0.2
-//}
 
 class MenuDictionaryCVCell: UICollectionViewCell {
     private enum ViewConstants{
@@ -32,6 +28,7 @@ class MenuDictionaryCVCell: UICollectionViewCell {
     }
     
     static let identifier = "dictCell"
+    
         
     private var direction: Direction = .right
     private var isActionActive: Bool = false
@@ -49,8 +46,6 @@ class MenuDictionaryCVCell: UICollectionViewCell {
     lazy var mainView : UIView = {
         let view = UIView()
         view.backgroundColor = .selectedColourPalette.primaryBackgroundColour
-//        let colour = UIColor(named: "TestBlueColour")
-//        view.backgroundColor = colour
         view.layer.cornerRadius = .cornerRadius
         view.clipsToBounds = true
         
@@ -60,13 +55,11 @@ class MenuDictionaryCVCell: UICollectionViewCell {
 
     var languageLabel : UILabel = {
         var label = UILabel()
-        label.text = "menu.cell.name".localized
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     var cardsLabel : UILabel = {
         var label = UILabel()
-        label.text = "menu.cell.number".localized
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -151,12 +144,9 @@ class MenuDictionaryCVCell: UICollectionViewCell {
         configurePanGesture()
         configureTapGesture()
         
-        NotificationCenter.default.addObserver(self, selector: #selector(languageDidChange(sender:)), name: .appLanguageDidChange, object: nil)
         contentView.clipsToBounds = true
         contentView.layer.cornerRadius = ViewConstants.cornerRadius
-
     }
-    deinit { NotificationCenter.default.removeObserver(self) }
 
     required init?(coder: NSCoder) {
         fatalError("coder wasn't imported")
@@ -193,18 +183,6 @@ class MenuDictionaryCVCell: UICollectionViewCell {
         finalInspectConstant = contentViewWidth * 0.2 - ViewConstants.cornerRadius * 2
 
 
-        statViewFinalConstant = shareView.leadingAnchor.constraint(
-            equalTo: mainView.trailingAnchor, constant: -ViewConstants.cornerRadius)
-
-        inspectViewFinalConstant = inspectView.leadingAnchor.constraint(
-            equalTo: shareView.trailingAnchor, constant: -ViewConstants.cornerRadius)
-        
-        editViewFinalConstant = editView.leadingAnchor.constraint(
-            equalTo: inspectView.trailingAnchor, constant: -ViewConstants.cornerRadius)
-        
-        deleteViewFinalConstant = deleteView.leadingAnchor.constraint(
-            equalTo: editView.trailingAnchor, constant: -ViewConstants.cornerRadius)
-        
     }
     
     override func prepareForReuse() {
@@ -220,7 +198,9 @@ class MenuDictionaryCVCell: UICollectionViewCell {
         self.languageResultLabel.text = data.name
         self.cardsResultLabel.text = String(data.numberOfCards)
         self.delegate = delegate
-        self.configureFonts()
+        
+        configureFonts()
+        configureLabels()
     }
     
     //MARK: - HolderView SetUp
@@ -259,6 +239,21 @@ class MenuDictionaryCVCell: UICollectionViewCell {
         //Related to Stat
         shareViewLeadingAnchor = shareView.leadingAnchor.constraint(
             equalTo: mainView.trailingAnchor, constant: initialActionConstant)
+        
+        //Final points for each of the buttons.
+        statViewFinalConstant = shareView.leadingAnchor.constraint(
+            equalTo: mainView.trailingAnchor, constant: -ViewConstants.cornerRadius)
+
+        inspectViewFinalConstant = inspectView.leadingAnchor.constraint(
+            equalTo: shareView.trailingAnchor, constant: -ViewConstants.cornerRadius)
+        
+        editViewFinalConstant = editView.leadingAnchor.constraint(
+            equalTo: inspectView.trailingAnchor, constant: -ViewConstants.cornerRadius)
+        
+        deleteViewFinalConstant = deleteView.leadingAnchor.constraint(
+            equalTo: editView.trailingAnchor, constant: -ViewConstants.cornerRadius)
+        
+
                 
         NSLayoutConstraint.activate([
             mainView.topAnchor.constraint(
@@ -337,6 +332,12 @@ class MenuDictionaryCVCell: UICollectionViewCell {
 
     }
     
+    //MARK: System
+    private func configureLabels() {
+        languageLabel.text = LanguageChangeManager.shared.localizedString(forKey: "menu.cell.name")
+        cardsLabel.text = LanguageChangeManager.shared.localizedString(forKey: "menu.cell.number")
+
+    }
     private func configureFonts(){
         self.cardsLabel.font = .selectedFont.withSize(.subtitleSize)
         self.cardsResultLabel.font = .selectedFont.withSize(.assosiatedTextSize)
@@ -345,31 +346,7 @@ class MenuDictionaryCVCell: UICollectionViewCell {
         self.languageResultLabel.font = .selectedFont.withSize(.assosiatedTextSize)
 
     }
-    
-    func configureCustomActions(imageName: String, colour: UIColor) -> UIView{
-        let actionView: UIView = {
-            let view = UIView()
-            view.backgroundColor = colour
-            view.translatesAutoresizingMaskIntoConstraints = false
-            return view
-        }()
-        let imageView: UIImageView = {
-            let view = UIImageView()
-            view.image = UIImage(systemName: imageName)
-            view.translatesAutoresizingMaskIntoConstraints = false
-            view.tintColor = .label
-            view.contentMode = .center
-            return view
-        }()
         
-        actionView.addSubview(imageView)
-        
-        imageView.centerXAnchor.constraint(equalTo: actionView.centerXAnchor, constant: ViewConstants.cornerRadius / 2).isActive = true
-        imageView.centerYAnchor.constraint(equalTo: actionView.centerYAnchor).isActive = true
-        
-        return actionView
-    }
-    
     func configurePanGesture(){
         let pan = UIPanGestureRecognizer(target: self, action: #selector(viewDidPan(sender:)))
         pan.delegate = self
@@ -454,10 +431,6 @@ class MenuDictionaryCVCell: UICollectionViewCell {
         let editConstant = currentEditConstant + -(translation / 2)
         let deleteConstant = currentDeleteConstant + -(translation / 1.35)
         
-//        let inspectConstant = currentInspectConstant + -(translation / 3)
-//        let editConstant = currentEditConstant + -(translation / 3)
-//        let deleteConstant = currentDeleteConstant + -(translation / 1.5)
-
         
         direction = (0 < translation ? .right : .left)
 
@@ -545,12 +518,6 @@ class MenuDictionaryCVCell: UICollectionViewCell {
         activate(false)
         delegate?.deleteButtonDidTap(for: self)
     }
-    //LanguageChange
-    @objc func languageDidChange(sender: Any){
-        languageLabel.text = LanguageChangeManager.shared.localizedString(forKey: "menu.cell.name")
-        cardsLabel.text = LanguageChangeManager.shared.localizedString(forKey: "menu.cell.number")
-    }
-
 }
 extension MenuDictionaryCVCell: UIGestureRecognizerDelegate {
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {

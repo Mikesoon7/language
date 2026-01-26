@@ -4,6 +4,7 @@
 //
 //  Created by Star Lord on 23/07/2023.
 //
+//TODO: Polish
 
 import Foundation
 import CoreData
@@ -16,11 +17,11 @@ import UIKit
 protocol WordsManaging{
     func createWordsFromText(for dictionary : DictionariesEntity, text: String) throws -> [WordsEntity]
     func createWordFromLine(for dictionary: DictionariesEntity, text: String, index: Int, id: UUID) throws -> WordsEntity
-    func createWordWithImage(for dictionary: DictionariesEntity, data: SingleModeCellData, index: Int, id: UUID) -> WordsEntity
+    func createWordWithImage(for dictionary: DictionariesEntity, data: SingleModeCellData, index: Int, id: UUID) throws -> WordsEntity
     func assignWordsProperties(for newWord: WordsEntity, from text: String) throws
     func reassignWordsProperties(for newWord: WordsEntity, from text: String) throws
     func fetchWords(for dictionary: DictionariesEntity) throws -> [WordsEntity]
-    func updateWordsOrder(for dictionary: DictionariesEntity) throws
+//    func updateWordsOrder(for dictionary: DictionariesEntity) throws
     func updateWordsImage(for word: WordsEntity, imageDetails: ImageDetailsCheck ) throws
     func deleteWord(word: WordsEntity) throws
 }
@@ -30,7 +31,7 @@ extension CoreDataHelper: WordsManaging{
     /// Iterate over passed text, divided by lines. Returns array of Words Entities
     func createWordsFromText(for dictionary : DictionariesEntity, text: String) throws -> [WordsEntity] {
         var results = [WordsEntity]()
-        let currentNumberOfCards = Int(dictionary.numberOfCards)
+        let currentIndex = Int(dictionary.lastIndex)
         let trimmedText = text.trimmingCharacters(in: .whitespacesAndNewlines)
         let lines = trimmedText.split(separator: "\n", omittingEmptySubsequences: true)
                 
@@ -38,7 +39,8 @@ extension CoreDataHelper: WordsManaging{
             guard line != "\r" else { break }
             do {
                 //Validating line
-                let newWord = try createWordFromLine(for: dictionary, text: String(line), index:  index + currentNumberOfCards)
+                let newWord = try createWordFromLine(for: dictionary, text: String(line), index:  index + currentIndex)
+                print(newWord, "Create wordsFromText", "Index - \(index + currentIndex)")
                 results.append(newWord)
             } catch {
                 if let _ = error as? WordsErrorType {
@@ -56,7 +58,6 @@ extension CoreDataHelper: WordsManaging{
 
         return results
     }
-//    func createWordsFromText(for dictionary : DictionariesEntity, text: String) throws -> [WordsEntity] {
 
     ///Assigning requiered properties for Words Entity. Passes word entity and text to complete creation.
     func createWordFromLine(for dictionary: DictionariesEntity, text: String, index: Int, id: UUID = UUID()) throws -> WordsEntity {
@@ -73,17 +74,23 @@ extension CoreDataHelper: WordsManaging{
         return newWord
     }
     
-    func createWordWithImage(for dictionary: DictionariesEntity, data: SingleModeCellData , index: Int, id: UUID = UUID()) -> WordsEntity {
+    func createWordWithImage(for dictionary: DictionariesEntity, data: SingleModeCellData , index: Int, id: UUID = UUID()) throws -> WordsEntity {
         let newWord = WordsEntity(context: context)
+        
         newWord.order = Int64(index)
         newWord.identifier = id
         newWord.dictionary = dictionary
         
+        
+        do {
+            let image = try JSONEncoder().encode(data.imageDetails)
+            newWord.image = image
+        } catch {
+            throw WordsErrorType.imageUpdateFailed(data, nil)
+        }
+        
         newWord.word = data.word
         newWord.meaning = data.definition
-        newWord.image = try? JSONEncoder().encode(data.imageDetails)
-//        newWord.imageFilter = imageDetails.imageFilterMode == .original ? false : true
-//        newWord.imageScaleFit = imageDetails.contentMode == .fill ? false : true
         return newWord
     }
 
@@ -129,26 +136,28 @@ extension CoreDataHelper: WordsManaging{
         try assignWordsProperties(for: newWord, from: text)
         try saveContext()
     }
+    
     func updateWordsImage(for word: WordsEntity, imageDetails: ImageDetailsCheck) throws {
+        
         do {
             word.image = try? JSONEncoder().encode(imageDetails)
 
             try saveContext()
         } catch {
-            throw WordsErrorType.imageUpdateFailed(word.word)
+            throw WordsErrorType.imageUpdateFailed(nil, word)
         }
     }
     //Called inside the dictionary update method.
     ///Reassign words order index for passed dictionary.
-    func updateWordsOrder(for dictionary: DictionariesEntity) throws{
-        let words = try fetchWords(for: dictionary)
-        
-        for (index, word) in words.enumerated() {
-            word.order = Int64(index)
-        }
-        
-        try saveContext()
-    }
+//    func updateWordsOrder(for dictionary: DictionariesEntity) throws{
+//        let words = try fetchWords(for: dictionary)
+//        
+//        for (index, word) in words.enumerated() {
+//            word.order = Int64(index)
+//        }
+//        
+//        try saveContext()
+//    }
 
     //MARK: Fetch
     func fetchWords(for dictionary: DictionariesEntity) throws -> [WordsEntity] {
@@ -171,7 +180,7 @@ extension CoreDataHelper: WordsManaging{
         }
         
         if associatedDictionary.words?.count == 1 {
-            try delete(dictionary: associatedDictionary)
+            try deleteDictionary(associatedDictionary)
         } else {
             associatedDictionary.removeFromWords(word)
             associatedDictionary.numberOfCards = Int64(associatedDictionary.words?.count ??

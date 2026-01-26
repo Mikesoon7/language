@@ -4,6 +4,7 @@
 //
 //  Created by Star Lord on 28/02/2023.
 //
+//TODO: Polish
 
 import Foundation
 import UIKit
@@ -277,4 +278,28 @@ extension UIWindow {
         return window.bounds.width < UIScreen.main.bounds.width
     }
 
+}
+extension UICollectionView {
+    func loadedCellsIndeces() -> [IndexPath] {
+        return subviews
+            .compactMap { $0 as? UICollectionViewCell }
+            .compactMap { self.indexPath(for: $0) }
+    }
+}
+
+extension UIImage {
+    func resize(to size: CGSize) -> UIImage? {
+        let renderer = UIGraphicsImageRenderer(size: size)
+        return renderer.image { _ in
+            self.draw(in: CGRect(origin: .zero, size: size))
+        }
+    }
+}
+
+protocol LanguageUpdatable: AnyObject {
+    func updateForLanguageChange()
+}
+
+protocol FontUpdatable: AnyObject {
+    func updateForFontChange()
 }

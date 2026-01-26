@@ -4,40 +4,51 @@
 //
 //  Created by Star Lord on 11/07/2023.
 //
-//  REFACTORING STATE: CHECKED
+//TODO: Polished
 
 import Foundation
 import Combine
 import UIKit
 
 class EditViewModel {
-    enum InvalidText{
-        case invalidName
-        case invalidText
+    
+    enum EditState: Equatable {
+        case idle
+        case editingText
+    }
+    enum SearchState: Equatable {
+        case searching
+        case idle
     }
     
-    enum Input{
-        case viewWillAppear
-        case reciveText(String)
-    }
-
     enum Output{
-        case shouldPresentData(ParsedDictionary)
-        case shouldPresentAlert(UIAlertController)
-        case shouldPresentError(Error)
-        case shouldHighlightErrorLine(String)
+        case shouldPop
         case shouldUpdateLabels
         case shouldUpdateFont
-        case editSucceed
-        case shouldUpdateResults
-        case shouldPresentController(UIViewController)
+        case shouldUpdateName(String)
+        case shouldPresentAlert(AlertType)
+        case shouldPresentError(Error)
     }
-
+    
+    enum StateChangedOutput {
+        case searchStateChanged(SearchState)
+        case interuptSearchSession
+        case continueSearchSession
+    }
+    
+    enum CollectionViewOutput {
+        case shouldUpdateResult([SingleModeCellData])
+        case shouldInsert(SingleModeCellData)
+        case shouldPresentAddImageView(SingleModeCellData)
+    }
+    
+    
     //MARK: - Properties
     private let model: DictionaryFullAccess
     private let dictionary: DictionariesEntity
     private let settingsmodel: UserSettingsStorageProtocol
-    private lazy var updateManager = DataUpdateManager(dataModel: model)
+    
+    private lazy var updateManager = DataUpdateManager(dataModel: model, settings: settingsmodel)
     
     private var dictionaryName: String = .init()
     private var words: [WordsEntity] = []
@@ -47,11 +58,21 @@ class EditViewModel {
     private var currentWords: [SingleModeCellData] = []
     private var filteredWords: [SingleModeCellData] = []
     
-    private var searchPromt = ""
-
-    @Published var data: ParsedDictionary?
-    @Published var collectionData: [SingleModeCellData]?
+    private var searchPrompt = ""
+    
+    private var editState: EditState = .idle
+    
+    private var searchState: SearchState = .idle {
+        didSet {
+            stateOutput.send(.searchStateChanged(self.searchState))
+        }
+    }
+    
     var output = PassthroughSubject<Output, Never>()
+    var stateOutput = PassthroughSubject<StateChangedOutput, Never>()
+    var collectionOutput = PassthroughSubject<CollectionViewOutput, Never>()
+    
+    private(set) var requiresUpdate: Bool = false
 
     //MARK: Inhereted and initialization
     init(dataModel: DictionaryFullAccess, settingsModel: UserSettingsStorageProtocol, dictionary: DictionariesEntity){
@@ -61,253 +82,119 @@ class EditViewModel {
         
         do {
             words = try model.fetchWords(for: dictionary)
-            let parsedDictionary = parseArrayToText(with: words, name: dictionary.language)
-            self.data = parsedDictionary
-            
-            DispatchQueue.global(qos: .background).async(execute: {
-                for word in self.words {
-                    var imageDetails: ImageDetailsCheck? = nil
-                    if let imageData = word.image {
-                        imageDetails = try? JSONDecoder().decode(ImageDetailsCheck.self, from: imageData)
-                    }
-                    self.currentWords.append(SingleModeCellData(word: word.word, definition: word.meaning, imageDetails: imageDetails))
+            print(words)
+            for word in self.words {
+                var imageDetails: ImageDetailsCheck? = nil
+                if let imageData = word.image {
+                    imageDetails = try? JSONDecoder().decode(ImageDetailsCheck.self, from: imageData)
                 }
-                self.filteredWords = self.currentWords
-                self.collectionData = self.currentWords
-            })
+                self.currentWords.append(SingleModeCellData(word: word.word, definition: word.meaning, imageDetails: imageDetails))
+                print(currentWords)
+            }
+            self.filteredWords = self.currentWords
+            self.dictionaryName = dictionary.language
+            
+            self.output.send(.shouldUpdateName(self.dictionaryName))
+            print(filteredWords)
+            self.collectionOutput.send(.shouldUpdateResult( self.filteredWords))
+            
         } catch {
             words = []
             output.send(.shouldPresentError(error))
         }
         
         NotificationCenter.default.addObserver(
-            self, selector: #selector(separatorDidChange(sender: )), name: .appSeparatorDidChange, object: nil)
-        NotificationCenter.default.addObserver(
             self, selector: #selector(languageDidChange(sender: )), name: .appLanguageDidChange, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(fontDidChange(sedner: )), name: .appFontDidChange, object: nil)
     }
     deinit { NotificationCenter.default.removeObserver(self) }
 
-    
-    func transform(input: AnyPublisher<Input, Never>) -> AnyPublisher<Output, Never> {
-        input
-            .receive(on: DispatchQueue.main)
-            .sink { inputType in
-                switch inputType{
-                    //                case .viewWillAppear:
-                    //                    self.output.send(.shouldUpdateResults)
-                case .reciveText(let text):
-                    self.filter(for: text)
-                case .viewWillAppear:
-                    return
-                    
-                }
-            }
-            .store(in: &cancellables)
-        return output.eraseToAnyPublisher()
-    }
-
-    
-    //MARK: Open methods
-    func updateDictionaryWith(name: String?, text: String?){
-//        parseTextToArray(name: name, newText: text, oldCollection: oldTextByLines)
-    }
-
-    
     //MARK: Private Methods
-    ///Converting passed Words objects  into string.
-    private func parseArrayToText(with words: [WordsEntity], name: String) -> ParsedDictionary{
-        var textToEdit = ""
-        var textByLines = [String]()
-        for pair in words {
-            let line = "\(pair.word) \(settingsmodel.appSeparators.value) \(pair.meaning)"
-            textByLines.append(line)
-            textToEdit += line + "\n\n"
-        }
-        oldTextByLines = textByLines
-        return ParsedDictionary(name: name, text: textToEdit)
-    }
-    
-//    ///Validating passed values. Parsing passed text into compatible format. Initiating update if succeed.
-//    private func parseTextToArray(name: String?, newText: String?, oldCollection: [String]){
-//        guard let name = name, !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-//            configureAlertFor(.invalidName)
-//            return
-//        }
-//        guard let text = newText, !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-//            configureAlertFor(.invalidText)
-//            return 
-//        }
-//        self.dictionaryName = name
-//        let lines = text.split(separator: "\n", omittingEmptySubsequences: true)
-//        let newCollection = lines.map({ String($0)})
-//        let difference = newCollection.difference(from: oldCollection)
-//
-//        var errorAppeared = false
-//        for i in difference {
-//            if errorAppeared {
-//                break
-//            }
-//            switch i {
-//            case .remove(offset: let index, element: _ , associatedWith: _):
-//                words.remove(at: index)
-//                oldTextByLines.remove(at: index)
-//            case .insert(offset: let index, element: let text, associatedWith: _):
-//                do {
-//                    words.insert( try model.createWordFromLine(for: dictionary, text: text, index: index, id: UUID()), at: index)
-//                    oldTextByLines.insert(text, at: index)
-//                } catch {
-//                    errorAppeared = true
-//                    output.send(.shouldPresentError(error))
-//                    output.send(.shouldHighlightErrorLine(text))
-//                }
-//            }
-//        }
-//        updateDictionary()
-//    }
-    
     private func filter(for text: String){
-        if text.isEmpty {
+        searchPrompt = text
+        
+        if searchPrompt.isEmpty {
             filteredWords = currentWords
         } else {
-            if text.count > searchPromt.count {
-                var filteredArray: [SingleModeCellData] = []
-                
-                
-//                filter.forEach { dictionary in
-                     let filtered = filteredWords.filter { word in
-                        word.word.lowercased().contains(text.lowercased()) ||
-                        word.definition.lowercased().contains(text.lowercased())
-                    }
-                
-                    if filtered.count != 0 {
-//                        filteredArray.append(filteredWords)
-                        filteredArray.append(contentsOf: filtered )
-                    }
-                filteredWords = filteredArray
-
-            } else if text.count <= searchPromt.count {
-                var filteredArray: [SingleModeCellData] = []
-                
-                     let filtered = currentWords.filter { word in
-                        word.word.lowercased().contains(text.lowercased()) ||
-                        word.definition.lowercased().contains(text.lowercased())
-                    }
-                    if filtered.count != 0 {
-                        filteredArray.append(contentsOf: filtered)
-                    }
-                
-                filteredWords = filteredArray
+            filteredWords = currentWords.filter {
+                $0.word.localizedCaseInsensitiveContains(searchPrompt) ||
+                $0.definition.localizedCaseInsensitiveContains(searchPrompt)
             }
         }
-        searchPromt = text
-        output.send(.shouldUpdateResults)
-    }
 
-    func addEmptyCell(){
-        filteredWords.append(.init(word: "", definition: "", imageDetails: .init()))
-        currentWords.append(.init(word: "", definition: "", imageDetails: .init()))
-    }
-
-    private func configureAlertFor(_ errorType: InvalidText){
-        let isForEmtyText = errorType == .invalidText ? true : false
-        let alert = UIAlertController
-            .alertWithAction(
-                alertTitle: (isForEmtyText ? "edit.emptyText.title" : "edit.emptyField.title").localized,
-                alertMessage: (isForEmtyText ? "edit.emptyText.message" : "edit.emptyField.message").localized,
-                alertStyle: .actionSheet,
-                action1Title: "system.cancel".localized,
-                action1Style: .cancel
-            )
-        if isForEmtyText {
-            let deleteAction = UIAlertAction(title: "system.delete".localized, style: .destructive){ [weak self] _ in
-                self?.deleteDictionary()
-            }
-            alert.addAction(deleteAction)
-        }
-        output.send(.shouldPresentAlert(alert))
-    }
-
-    func imageDidAdd(imageDetails: ImageDetailsCheck, index: IndexPath){
-        
-        let pair = filteredWords[index.item]
-        let mainIndex = currentWords.firstIndex(where: {$0 == pair})
-        if let mainIndex = mainIndex {
-            filteredWords[index.item].imageDetails = imageDetails
-            currentWords[mainIndex].imageDetails = imageDetails
-        }
-
-        
-//        let currentPair = filteredWords[index.item]
-//        filteredWords[index.item].imageDetails = imageDetails
-////        let index = currentWords.firstIndex { pair in
-////            pair == currentPair
-////        }
-////        currentWords.firstIndex(of: currentPair)
-//        
-//        currentWords[currentWords.firstIndex(of: currentPair)!].imageDetails = imageDetails
-        
-
-//        if index.item <= currentWords.count {
-//            currentWords[index.item].imageDetails = imageDetails
-//        }
+        collectionOutput.send(.shouldUpdateResult(filteredWords))
     }
     
-    //MARK: Dictionary update
-    func extendDictionaryWithSingleData(name: String?) {
-//        splitTheText(text: currentText)
-        guard let name = name, !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-                    configureAlertFor(.invalidName)
-                    return
-                }
 
-
-        do {
-            try updateManager.updateExistingDictionary(dictionary: dictionary, with: currentWords, name: name)
-            output.send(.editSucceed)
-        } catch {
-            if let emptyLineError = error as? WordsErrorType {
-                switch emptyLineError {
-                case .failedToAssignEmptyString(let word):
-//                    output.send(.shouldHighlightError(word))
-                    output.send(.shouldPresentError(error))
-                    return
-                default:
-                    output.send(.shouldPresentError(error))
-                    break
-                }
-            } else {
+    //MARK: Data Model
+    func extendDictionary() {
+        let verificationResult = updateManager.verifySingleCellData(data: currentWords, name: dictionaryName)
+        
+        switch verificationResult {
+        case .success(let data, let name):
+            do {
+                try updateManager.updateDictionary(dictionary: dictionary, with: data, name: name)
+                self.requiresUpdate = false
+                output.send(.shouldPop)
+            } catch {
                 output.send(.shouldPresentError(error))
             }
+        case .emptyName:
+            output.send(.shouldPresentAlert(.emptyName))
+        case .emptyText:
+            output.send(.shouldPresentAlert(.emptyText))
+        case .croppedText:
+            output.send(.shouldPresentAlert(.invalidContent))
+        case .emptyArray:
+            output.send(.shouldPresentAlert(.emptyArray))
         }
     }
-
-
-    ///Delete current dictionary.
+    
+    //MARK: State Change Related
     private func deleteDictionary(){
+        self.requiresUpdate = false
         do {
-            try model.delete(dictionary: dictionary)
-            output.send(.editSucceed)
+            try model.deleteDictionary(dictionary)
+            output.send(.shouldPop)
         } catch {
             output.send(.shouldPresentError(error))
         }
     }
-    
-    ///Update current dictionary with existing local properties.
-    private func updateDictionary(){
-        do {
-            try updateManager.updateExistingDictionary(dictionary: dictionary, with: words, name: dictionaryName)
-            output.send(.editSucceed)
-        } catch {
-            output.send(.shouldPresentError(error))
+
+    func viewRequestToClose(){
+        if requiresUpdate {
+            output.send(.shouldPresentAlert(.saveAlert))
+        } else {
+            self.requiresUpdate = false
+            self.output.send(.shouldPop)
         }
     }
-    
+    func userPermitedToClose(){
+        self.requiresUpdate = false
+        self.output.send(.shouldPop)
+    }
+
+    func updateName(name: String) {
+        self.dictionaryName = name
+        if !name.isEmpty {
+            self.requiresUpdate = true
+        }
+    }
+    func currentName() -> String {
+        return dictionaryName
+    }
+
     func configureTextPlaceholder() -> String{
         return "viewPlaceholderWord".localized + " \(settingsmodel.appSeparators.value) " + "viewPlaceholderMeaning".localized
     }
     func textSeparator() -> String{
         settingsmodel.appSeparators.value
+    }
+    
+    func viewIsReadyForTheDataDisplay() {
+        self.output.send(.shouldUpdateName(self.dictionaryName))
+
+        self.collectionOutput.send(.shouldUpdateResult( self.filteredWords))
     }
 
     
@@ -315,78 +202,134 @@ class EditViewModel {
     @objc private func languageDidChange(sender: Notification){
         output.send(.shouldUpdateLabels)
     }
-    @objc private func separatorDidChange(sender: Notification){
-        let parsedDictionary = parseArrayToText(with: words, name: dictionary.language)
-        output.send(.shouldPresentData(parsedDictionary))
-    }
     @objc private func fontDidChange(sedner: Notification){
         output.send(.shouldUpdateFont)
     }
+    
+    
+    //MARK: SingleInputView Related
+    func addEmptyCell(){
+        let emptyEntity = SingleModeCellData(word: "", definition: "", imageDetails: .init())
+        filteredWords.append(emptyEntity)
+        currentWords.append(emptyEntity)
+        
+        collectionOutput.send(.shouldInsert(emptyEntity))
+    }
+
+    func requestAddImage(id: UUID) {
+        guard let pair = currentWords.first(where: { $0.identifier == id }) else { return }
+        
+        collectionOutput.send(.shouldPresentAddImageView(pair))
+    }
+    
+    func didSelectAnImage(imageDetails: ImageDetailsCheck, data: SingleModeCellData) {
+        guard let pair = filteredWords.first(where: { $0.identifier == data.identifier }), let pairIndex = filteredWords.firstIndex(where: {$0.identifier == pair.identifier}) else { return }
+        
+        let mainIndex = currentWords.firstIndex(where: {$0 == pair})
+        if let mainIndex = mainIndex {
+            filteredWords[pairIndex].imageDetails = imageDetails
+            currentWords[mainIndex].imageDetails = imageDetails
+            requiresUpdate = true
+        }
+        
+        collectionOutput.send(.shouldUpdateResult(filteredWords))
+        
+    }
+    
+    func wordDidType(id: UUID, text: String) {
+        guard let pairIndex = filteredWords.firstIndex(where: {$0.identifier == id}) else {
+            return
+        }
+        
+        let mainIndex = currentWords.firstIndex(where: {$0.identifier == id})
+        if let mainIndex = mainIndex {
+            filteredWords[pairIndex].word = text
+            currentWords[mainIndex].word = text
+            requiresUpdate = true
+        }
+
+    }
+    
+    func definitionDidType(id: UUID, text: String) {
+        guard let pairIndex = filteredWords.firstIndex(where: {$0.identifier == id}) else {
+            return
+        }
+        
+        let mainIndex = currentWords.firstIndex(where: {$0.identifier == id})
+        if let mainIndex = mainIndex {
+            filteredWords[pairIndex].definition = text
+            currentWords[mainIndex].definition = text
+            requiresUpdate = true
+        }
+
+    }
+    
+    func nameDidType(text: String) {
+        self.dictionaryName = text
+        if !text.isEmpty {
+            self.requiresUpdate = true
+        }
+    }
+    
+    func enteredEditingMode() {
+        if searchState == .searching {
+            stateOutput.send(.interuptSearchSession)
+        }
+        self.editState = .editingText
+        
+    }
+    
+    func exitedEditingMode() {
+        editState = .idle
+    }
+        
+    func requestedDeletion(id: UUID) {
+        filteredWords.removeAll(where: { $0.identifier == id })
+        currentWords.removeAll(where: {$0.identifier == id})
+        
+        collectionOutput.send(.shouldUpdateResult(filteredWords))
+        requiresUpdate = true
+
+    }
 }
 
-extension EditViewModel: SingleModeViewDelegate {
-    func numberOfCells() -> Int {
-        
-        return filteredWords.count
+
+//MARK: SearchView Intents
+extension EditViewModel {
+    func search(query: String) {
+        searchPrompt = query
+        searchState = .searching
+        filter(for: query)
+    }
+
+    func cancelSearch() {
+        searchPrompt = ""
+        searchState = .idle
+        filter(for: searchPrompt)
+    }
+
+    func setSearchActive(_ active: Bool, query: String) {
+        searchState = active ?
+            .searching :  (query.isEmpty ? .idle : .searching)
     }
     
-    func dataForCellAt(index: IndexPath) -> SingleModeCellData {
-        guard index.item <= filteredWords.count - 1 else {
-            return SingleModeCellData(word: "", definition: "", imageDetails: .init())
-        }
-        var pair = filteredWords[index.item]
-        
-        return pair
-    }
-    
-    func deleteCell(index: IndexPath) {
-        let word = filteredWords.remove(at: index.item)
-        currentWords.removeAll(where: { $0 == word })
-    }
-    
-    func wordDidType(index: IndexPath, text: String) { 
-        let pair = filteredWords[index.item]
-        let mainIndex = currentWords.firstIndex(where: {$0 == pair})
-        if let mainIndex = mainIndex {
-            filteredWords[index.item].word = text
-            currentWords[mainIndex].word = text
+    func finishEditing() {
+        if case .searching = searchState{
+            stateOutput.send(.continueSearchSession)
         }
     }
-    
-    func definitionDidTye(index: IndexPath, text: String) { 
-        let pair = filteredWords[index.item]
-        let mainIndex = currentWords.firstIndex(where: {$0 == pair})
-        if let mainIndex = mainIndex {
-            filteredWords[index.item].definition = text
-            currentWords[mainIndex].definition = text
-        }
-
-//        filteredWords[index.item].definition = text
-    }
-    
-    func didSelectAnImage(imageDetails: ImageDetailsCheck, cell: SingleModeImageCell, index: IndexPath) {
-        cell.addPhoto(imageDetails: imageDetails)
-        imageDidAdd(imageDetails: imageDetails, index: index)
-    }
-
-    func didTapAddImage(cell: SingleModeImageCell, index: IndexPath) {
-        let pair = filteredWords[index.item]
-        let vc = AddImageController(data: pair, delegate: self, cell: cell, index: index)
-
-        output.send(.shouldPresentController(vc))
-    }
-
-    
 }
 
 
 //MARK: - EditView initial data.
-struct ParsedDictionary{
+struct ParsedArray {
     let name: String
-    let text: String
+    let data: [SingleModeCellData]
     
-    init(name: String, text: String){
+    init(name: String, data: [SingleModeCellData]){
         self.name = name
-        self.text = text
+        self.data = data
     }
+
 }
+

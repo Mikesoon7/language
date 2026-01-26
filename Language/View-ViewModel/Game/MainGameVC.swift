@@ -3,7 +3,7 @@
 //
 //  Created by Star Lord on 15/03/2023.
 //
-//  REFACTORING STATE: CHECKED
+//TODO: Polish
 
 import UIKit
 import Combine
@@ -24,6 +24,19 @@ struct DataForDetailsView {
     var word: WordsEntity
 }
 
+enum CellDataWrapper: Hashable {
+    case mainCellData(HashableWordsEntity)
+    case lastCellData(DataForLastCell)
+    
+    var data: any Hashable  {
+        switch self{
+        case .mainCellData(let data):
+            return data
+        case .lastCellData(let data):
+            return data
+        }
+    }
+}
 ///Quick overview: Each contentView's cell has a long press gesture recognizer that supports two types of taps:
 /// 1. A short tap to flip the cell, revealing information on its back.
 /// 2. A long tap to present a new controller with more detailed information and functionality.
@@ -38,9 +51,12 @@ class MainGameVC: UIViewController{
     // MARK: - TypeAliases
     typealias MainCell = UICollectionView.CellRegistration<CollectionViewCell, HashableWordsEntity>
     typealias LastCell = UICollectionView.CellRegistration<CollectionViewLastCell, DataForLastCell>
-    typealias DataSource = UICollectionViewDiffableDataSource<Section, AnyHashable>
-    typealias Snapshot = NSDiffableDataSourceSnapshot<Section, AnyHashable>
+    typealias DataSource = UICollectionViewDiffableDataSource<Section, CellDataWrapper>
+    typealias Snapshot = NSDiffableDataSourceSnapshot<Section, CellDataWrapper>
     
+    //MARK: Coordinators
+    private var animator: GameAnimator!
+//    private var gestureHandler: GameGestureHandler!
     //MARK: Properties.
     private var viewModel: GameViewModel?
     private var viewModelFactory: ViewModelFactory
@@ -60,6 +76,9 @@ class MainGameVC: UIViewController{
     private var scrolledCards: Set<AnyHashable> = []
     private var currentDictionaryHash: UUID
     
+    private var isFlippedGlobally: Bool = false
+    private var isFirstLaunch: Bool = false
+
     //MARK: Gesture related
     private var longGestureCannHappen = false
     private var longPressCompleted = false
@@ -72,17 +91,18 @@ class MainGameVC: UIViewController{
     private var collectionView: UICollectionView!
     
     //MARK: Inherited and required
-    required init(viewModelFactory: ViewModelFactory, dictionary: DictionariesEntity, selectedOrder: DictionariesSettings.CardOrder, hideTransaltion: Bool, selectedNumber: Int, selectedTime: Int? = nil) {
+    required init(viewModelFactory: ViewModelFactory, dictionary: DictionariesEntity, selectedOrder: DictionariesSettings.CardOrder, isOneSideModeOn: Bool, selectedNumber: Int, selectedTime: Int? = nil, isFirstLaunch: Bool) {
         self.viewModelFactory = viewModelFactory
         self.viewModel = viewModelFactory.configureGameViewmModel(
             dictionary: dictionary,
             selectedOrder: selectedOrder,
-            isTwoSidesModeOn: hideTransaltion,
+            isOneSideMode: isOneSideModeOn,
             selectedNumber: selectedNumber,
             selectedTime: selectedTime)
         self.selectedTime = selectedTime
-        self.isOneSidesMode = hideTransaltion
+        self.isOneSidesMode = isOneSideModeOn
         self.currentDictionaryHash = dictionary.id
+        self.isFirstLaunch = isFirstLaunch
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -98,8 +118,14 @@ class MainGameVC: UIViewController{
         configureCollectionView()
         
         configureTimerView()
+//        setupGestures()
+        
+        checkForTheTutorial()
+        
+//        gestureHandler = GameGestureHandler(collectionView: collectionView, animator: animator)
+//        gestureHandler.delegate = self
+
     }
-    
     //Updates log data with spent time.
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
@@ -131,6 +157,19 @@ class MainGameVC: UIViewController{
     }
     
     
+    private func checkForTheTutorial(){
+        if isFirstLaunch{
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                let vc = GameTutorialVC()
+                self.modalPresentationStyle = .pageSheet
+
+                self.present(vc, animated: true)
+
+            }
+        }
+    }
+    
+    
     //MARK: - Controller SetUp
     func bind(){
         viewModel?.output
@@ -142,10 +181,21 @@ class MainGameVC: UIViewController{
                     self?.configureLabels()
                 case .shouldUpdateFont:
                     self?.reloadFont()
+                case .shouldPop:
+                    self?.navigationController?.popToRootViewController(animated: true)
+                case .shouldUpdateTimer(let state):
+                    switch state {
+                    case .shouldResume:
+                        self?.timerView.resumeCountdown()
+                    case .shouldStop:
+                        self?.timerView.stopCountdown()
+                    }
                 }
             })
             .store(in: &cancellable)
     }
+    
+
     
     
     //MARK: Subviews SetUp
@@ -166,11 +216,15 @@ class MainGameVC: UIViewController{
         ])
         
         collectionView.dataSource = dataSourceCustomization()
+        animator = GameAnimator(collectionView: collectionView, delegate: self)
     }
     
     private func configureTimerView(){
         let button = UIBarButtonItem(customView: timerView)
-        navigationItem.setRightBarButton(button, animated: true)
+
+        let flipButton = UIBarButtonItem(image: UIImage(systemName: "arrow.trianglehead.2.counterclockwise.rotate.90") ?? UIImage(systemName: "arrow.2.circlepath"), style: .done, target: self, action: #selector(flipCard(sender: )))
+        
+        navigationItem.setRightBarButtonItems([button, flipButton], animated: true)
 
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(showPopover))
         timerView.addGestureRecognizer(tapGesture)
@@ -185,11 +239,18 @@ class MainGameVC: UIViewController{
     //MARK: - Cell SetUp
     private func prepareCells(){
         self.mainCell = UICollectionView.CellRegistration<CollectionViewCell, HashableWordsEntity> { cell, indexPath, data in
-            cell.configure(with: data, oneSideMode: self.isOneSidesMode)
+            cell.configure(with: self.transformer(wordEntity: data), oneSideMode: self.isOneSidesMode)
         }
         self.lastCell = UICollectionView.CellRegistration<CollectionViewLastCell, DataForLastCell> { cell, indexPath, data in
             cell.configure(with: data)
         }
+    }
+    
+    func transformer(wordEntity: HashableWordsEntity) -> HashableWordsEntity {
+        var transformedEntity = wordEntity
+        transformedEntity.globalyFliped = isFlippedGlobally
+        return transformedEntity
+        
     }
     
     //MARK: - DataSource SetUp
@@ -198,20 +259,33 @@ class MainGameVC: UIViewController{
 
             guard let self = self else { return UICollectionViewCell() }
             
-            if let item = item as? HashableWordsEntity{
+            
+            switch item {
+            case .mainCellData(let data):
                 let cell = collectionView.dequeueConfiguredReusableCell(using: self.mainCell,
                                                                         for: indexPath,
-                                                                        item: item)
+                                                                        item: data)
                 cell.addGestureRecognizer(self.longGestureCustomization())
                 return cell
-            } else if let item = item as? DataForLastCell{
-                let cell = collectionView.dequeueConfiguredReusableCell(using: self.lastCell,
-                                                                        for: indexPath,
-                                                                        item: item)
+            case .lastCellData(let data):
+                let cell = collectionView.dequeueConfiguredReusableCell(using: self.lastCell, for: indexPath, item: data)
                 cell.addGestureRecognizer(self.longGestureCustomization())
                 return cell
             }
-            return nil
+//            if let item = item as? HashableWordsEntity{
+//                let cell = collectionView.dequeueConfiguredReusableCell(using: self.mainCell,
+//                                                                        for: indexPath,
+//                                                                        item: item)
+//                cell.addGestureRecognizer(self.longGestureCustomization())
+//                return cell
+//            } else if let item = item as? DataForLastCell{
+//                let cell = collectionView.dequeueConfiguredReusableCell(using: self.lastCell,
+//                                                                        for: indexPath,
+//                                                                        item: item)
+//                cell.addGestureRecognizer(self.longGestureCustomization())
+//                return cell
+//            }
+//            return nil
         }
         
         guard let viewModel = viewModel else { return dataSource }
@@ -222,147 +296,16 @@ class MainGameVC: UIViewController{
         if self.selectedTime != nil {
             snapshot.appendItems(viewModel.dataForDiffableDataSource(), toSection: .cards)
         } else {
-            snapshot.appendItems([
-                DataForLastCell(score: viewModel.configureCompletionPercent(), delegate: self)
-            ], toSection: .cards)
+            snapshot.appendItems(
+                viewModel.dataForTheLastCell(),
+                toSection: .cards)
         }
         dataSource.apply(snapshot, animatingDifferences: true)
         let _ = scrolledCards.insert(snapshot.itemIdentifiers.first)
         return dataSource
     }
     
-    //MARK: Animations
-    ///Animationg cell on-tap shrink.
-    private func shrinkCellIn(cell: CollectionViewCell, completion: @escaping () -> (Void)){
-        UIView.animate(withDuration: 0.2, delay: 0, options: .curveEaseInOut) {
-            cell.transform = cell.transform.scaledBy(x: 0.95, y: 0.95)
-        } completion: { _ in
-            DispatchQueue.main.asyncAfter(deadline: .now(), execute: completion)
-        }
-    }
-    ///Applying deselect animation for a cell.
-    private func shrinkCellOut(cell: CollectionViewCell){
-        UIView.animate(withDuration: 0.2, delay: 0, options: .curveEaseInOut) {
-            cell.transform = .identity
-        }
-    }
-    
-    //Flipping cell for 180 degree to reveal the infromation on the back side. Returning 'error' animation in ceses, when there is nothing to reveal.
-    ///1. Adjusting Transform3D property of cell's contnent view layer.
-    ///2. Changing text label visibility.
-    func animateCellFlip(cell: CollectionViewCell, frontToBack: Bool) {
-        guard cell.isAccessable else {
-            UIView.animate(withDuration: 1) {
-                let shakingAnimation = CAKeyframeAnimation.shakingAnimation()
-                cell.layer.add(shakingAnimation, forKey: "animation")
-            }
-            return
 
-        }
-        
-        self.collectionView.isUserInteractionEnabled = false
-
-        let duration = 0.3
-        var perspective = CATransform3DIdentity
-        perspective.m34 = -1.0 / 5000.0
-        
-        let liftTransform = CATransform3DTranslate(perspective, 0, -50, 0)
-        let initialTransfrom = CATransform3DTranslate(perspective, 0, 0, 0)
-        
-        let halfwayClockwiseTransform  = CATransform3DRotate(perspective, .pi / 2, 0, 1, 0)
-        let finalClockwiseTransform    = CATransform3DRotate(perspective, .pi, 0, 1, 0)
-        
-        let opositeHalfwayTransform = CATransform3DRotate(perspective, .pi / 2, 0, 1, 0)
-        let opositeFinalTransform   = CATransform3DRotate(perspective, 0, 0, 1, 0)
-
-                
-        let animation = UIViewPropertyAnimator(duration: duration, curve: .linear) {
-            if frontToBack {
-                UIView.animate(withDuration: duration / 2, animations: {
-                    cell.cardView.layer.transform = CATransform3DConcat(halfwayClockwiseTransform, liftTransform)
-                    
-                }) { _ in
-                    UIView.animate(withDuration: duration / 2) {
-                        cell.cardView.layer.transform = CATransform3DConcat(finalClockwiseTransform, initialTransfrom)
-                    }
-                }
-            } else {
-                UIView.animate(withDuration: duration / 2, animations: {
-                    cell.cardView.layer.transform = CATransform3DConcat(opositeHalfwayTransform, liftTransform)
-
-                    
-                }) { _ in
-                    UIView.animate(withDuration: duration / 2) {
-                        cell.cardView.layer.transform = CATransform3DConcat(opositeFinalTransform, initialTransfrom)
-                    }
-                }
-            }
-            cell.isFlipped.toggle()
-        }
-        animation.addCompletion { _ in
-            cell.word.isHidden = frontToBack
-            cell.imageView.isHidden = frontToBack
-            cell.translationBacksideLabel.alpha = frontToBack ? 1 : 0
-            self.collectionView.isUserInteractionEnabled = true
-        }
-        animation.startAnimation()
-    }
-
-    ///Create a transition from passed cell to a ViewController by animating cells repositioning and presenting new VC.
-    private func animateCellTransition(from cell: CollectionViewCell, to controller: UIViewController){
-        //Ensure, that user can't trigger cell flip while aniamtion persist
-        collectionView.isUserInteractionEnabled = false
-        
-        //Applying flip(rotate) animation
-        let rotationAnimation = CABasicAnimation.rotationAnimation()
-        cell.layer.add(rotationAnimation, forKey: "rotation")
-        
-        //Raise the cell end hide cell's content
-        let slide = UIViewPropertyAnimator(duration: 0.3, curve: .easeInOut){
-            cell.transform = cell.transform.translatedBy(x: 0, y: -50)
-            cell.cardShadowView.layer.shadowOpacity = 0
-            cell.cardView.subviews.forEach { view in
-                view.alpha = 0
-            }
-        }
-        //Scale cell to the view's bounds and sliding it down.
-        slide.addCompletion { _ in
-            let neededScale: CGFloat
-            let neededLength = self.view.bounds.height
-
-            //Preparation for the future support.
-            if UIDevice.current.userInterfaceIdiom == .pad {
-                if self.traitCollection.isRegularWidth {
-                    neededScale = self.view.bounds.width / cell.bounds.width / 2
-                } else {
-                    neededScale = self.view.bounds.width / cell.bounds.width
-                }
-            } else {
-                neededScale = self.view.bounds.width / cell.bounds.width
-            }
-            
-            let scaleAndSlide = UIViewPropertyAnimator(duration: 0.5, curve: .easeInOut) { //0.6
-                let scaleTransform = CGAffineTransform(scaleX: neededScale, y: neededScale)
-                let slideTransform = CGAffineTransform.identity.translatedBy(x: 0, y: neededLength )
-                cell.transform = scaleTransform.concatenating(slideTransform)
-            }
-
-
-            //Adding a background flip.
-            scaleAndSlide.addCompletion { _ in
-                cell.layer.removeAllAnimations()
-                rotationAnimation.fromValue = Double.pi
-                rotationAnimation.toValue = 0
-                cell.layer.add(rotationAnimation, forKey: "animation")
-                
-            }
-            scaleAndSlide.startAnimation()
-            
-            self.present(controller, animated: UIDevice.isIPadDevice ? true : false)
-        }
-        
-        slide.startAnimation()
-    }
     
 
 
@@ -454,7 +397,7 @@ class MainGameVC: UIViewController{
             return
         }
         if cell.isFlipped == true {
-            animateCellFlip(cell: cell, frontToBack: false)
+            animator.flip(cell: cell, frontToBack: false)
         }
         collectionView.reloadData()
     }
@@ -492,7 +435,7 @@ extension MainGameVC {
         if let cell = sender.view as? CollectionViewLastCell,
            let indexPath = collectionView.indexPath(for: cell) {
             tappedToScrollCell = indexPath
-            centerLastCell(at: indexPath, cell: cell)
+            animator.centerLastCell(at: indexPath, cell: cell)
         }
         return nil
     }
@@ -511,7 +454,7 @@ extension MainGameVC {
         
         if indexPath == centerIndexPath {
             selectedCell = indexPath
-            shrinkCellIn(cell: cell) {
+            animator.shrinkIn(cell: cell) {
                 if sender.state == .began {
                     impactGenerator.impactOccurred()
                     self.longGestureCannHappen = true
@@ -535,16 +478,19 @@ extension MainGameVC {
         if cell.bounds.contains(point) {
             if longGestureCannHappen || longPressCompleted {
                 impactGenerator.impactOccurred()
-                if let item = dataSource.itemIdentifier(for: indexPath) as? HashableWordsEntity {
-                    let controller = configureDetailedVCFor(cell: item)
-                    animateCellTransition(from: cell, to: controller)
+                
+                if let item = dataSource.itemIdentifier(for: indexPath), let data = item.data as? HashableWordsEntity {
+                        let controller = configureDetailedVCFor(cell: data)
+                        animator.transition(from: cell, to: controller, in: self)
+//                    let controller = configureDetailedVCFor(cell: item)
+//                    animator.transition(from: cell, to: controller, in: self)
                 }
             } else {
-                animateCellFlip(cell: cell, frontToBack: !cell.isFlipped)
-                shrinkCellOut(cell: cell)
+                animator.flip(cell: cell, frontToBack: !cell.isFlipped)
+                animator.shrinkOut(cell: cell)
             }
         } else {
-            shrinkCellOut(cell: cell)
+            animator.shrinkOut(cell: cell)
             selectedCell = nil
         }
     }
@@ -587,6 +533,26 @@ extension MainGameVC {
         
         self.popUpTimeView = popOverView
         popUpTimeView?.present()
+    }
+    
+    @objc func flipCard(sender: Any) {
+        isFlippedGlobally.toggle()
+        
+        let visibleIndexPaths = collectionView.loadedCellsIndeces().sorted()
+        
+        for indexPath in visibleIndexPaths {
+            guard let cell = collectionView.cellForItem(at: indexPath) as? CollectionViewCell else { continue }
+            
+            
+            animator.flip(cell: cell, frontToBack: cell.isFlipped, swapTextOnly: true)
+//            if cell.isFlipped {
+//                animator.flip(cell: cell, frontToBack: true, swapTextOnly: true)
+//            } else {
+//                animator.flip(cell: cell, frontToBack: false, swapTextOnly: true)
+//
+//            }
+            
+        }
     }
     
     @objc private func dismisPopUp(){
@@ -636,7 +602,8 @@ extension MainGameVC: MainGameVCDelegate {
 
             guard let self = self, let index = selectedCell, let item = dataSource.itemIdentifier(for: index) else { return }
             var snapshot = self.dataSource.snapshot()
-            guard let hashableInstance = item as? HashableWordsEntity else { return }
+            guard let hashableInstance = item.data as? HashableWordsEntity else { return }
+            
             self.viewModel?.deleteWord(word: hashableInstance.wordEntity)
             snapshot.deleteItems([item])
             
@@ -655,7 +622,7 @@ extension MainGameVC: MainGameVCDelegate {
     func updateCardCell(){
         let animation = restoreAnimation()
         
-        guard let index = selectedCell, let hashableInstance = self.dataSource.itemIdentifier(for: index) as? HashableWordsEntity else {
+        guard let index = selectedCell, let item = self.dataSource.itemIdentifier(for: index), let data = item.data as? HashableWordsEntity else {
             let alert = UIAlertController
                 .alertWithAction(
                     alertTitle: "unknownGameError.title".localized,
@@ -667,11 +634,11 @@ extension MainGameVC: MainGameVCDelegate {
             self.present(alert, animated: true)
             return
         }
-        let wordEntity = hashableInstance.wordEntity
+        let wordEntity = data.wordEntity
         
         ///Ensures, that if cell was edited, it will flip to it's initial appearence.
         if let cell = collectionView.cellForItem(at: index) as? CollectionViewCell, cell.isFlipped {
-            animateCellFlip(cell: cell, frontToBack: false)
+            animator.flip(cell: cell, frontToBack: false)
         }
 
         animation.addCompletion { [weak self] _ in
@@ -681,7 +648,7 @@ extension MainGameVC: MainGameVCDelegate {
             wordEntity.word = wordEntity.word
             wordEntity.meaning = wordEntity.meaning
             
-            snapshot.reloadItems([hashableInstance])
+            snapshot.reloadItems([CellDataWrapper.mainCellData(data)])
             
             self.dataSource.apply(snapshot, animatingDifferences: true)
             self.selectedCell = nil
@@ -727,7 +694,7 @@ extension MainGameVC: UIScrollViewDelegate{
             
             if let selectedCell = selectedCell, let cardCell = collectionView.cellForItem(at: selectedCell) as? CollectionViewCell  {
                 guard !cardCell.isFlipped else {
-                    animateCellFlip(cell: cardCell, frontToBack: !cardCell.isFlipped)
+                    animator.flip(cell: cardCell, frontToBack: !cardCell.isFlipped)
                     return
                 }
             }
@@ -741,10 +708,10 @@ extension MainGameVC: UIScrollViewDelegate{
                 let longGesture = cardCell.gestureRecognizers?.first(where: { $0 is UILongPressGestureRecognizer })
                 longGesture?.state = .cancelled
                 
-                shrinkCellOut(cell: cardCell)
+                animator.shrinkOut(cell: cardCell)
                 
                 guard !cardCell.isFlipped else {
-                    animateCellFlip(cell: cardCell, frontToBack: !cardCell.isFlipped)
+                    animator.flip(cell: cardCell, frontToBack: !cardCell.isFlipped)
                     return
                 }
             }
@@ -758,7 +725,7 @@ extension MainGameVC: UIScrollViewDelegate{
         let center = CGPoint(x: centerX, y: centerY)
         
         if let index = collectionView.indexPathForItem(at: center){
-            guard dataSource.itemIdentifier(for: index) as? HashableWordsEntity != nil else { return }
+            guard let item = dataSource.itemIdentifier(for: index), let _ = item.data as? HashableWordsEntity else { return }
             let _ = self.scrolledCards.insert(dataSource.itemIdentifier(for: index))
         }
             
@@ -795,6 +762,7 @@ extension MainGameVC: UIGestureRecognizerDelegate {
     
 }
 
+
 //MARK: CountdownTimerDelegate
 extension MainGameVC: CountdownTimerDelegate {
     func timerDidFire() {
@@ -822,6 +790,23 @@ extension MainGameVC: PopUpTimerViewDelegate {
         popUpTimeView = nil
         self.timerView.resumeCountdown()
     }
-    
-    
 }
+extension MainGameVC: GameAnimatorDelegate {
+    func requiresDetailsSession(for cell: CollectionViewLastCell) {
+        self.presentLearningSessionData(for: cell)
+    }
+}
+
+//extension MainGameVC: GameGestureHandlerDelegate {
+//    func gestureHandler(_ handler: GameGestureHandler, didShortTap cell: UICollectionViewCell) {
+//        animator.flip(cell: cell, toBack: true)
+//    }
+//
+//    func gestureHandler(_ handler: GameGestureHandler, didLongPress cell: UICollectionViewCell) {
+//        guard let indexPath = collectionView.indexPath(for: cell) else { return }
+//        let item = viewModel.item(at: indexPath)
+//        
+//        coordinator.presentDetails(for: item)
+//    }
+//}
+

@@ -4,6 +4,8 @@
 //
 //  Created by Star Lord on 13/08/2023.
 //
+//TODO: Polish
+
 
 import Foundation
 import UIKit
@@ -35,6 +37,7 @@ protocol UserSettingsStorageProtocol{
     var manager: UserSettingsManagerProtocol        { get }
     var helper: UserSettingsUpdateHelper            { get }
     var appLaunchStatus: AppLaunchStatus            { get set }
+    var appTutorialStatus: AppTutorialStatus        { get set }
     var appTheme: AppTheme                          { get set }
     var appFont: AppFont                            { get set }
     var appLanguage : AppLanguage                   { get set }
@@ -68,6 +71,14 @@ class UserSettings: UserSettingsStorageProtocol{
         }
         set {
             manager.update(newValue, forKey: AppLaunchStatus.key)
+        }
+    }
+    var appTutorialStatus: AppTutorialStatus{
+         get {
+            manager.load(AppTutorialStatus.self, forKey: AppTutorialStatus.key) ?? .isFirst
+        }
+        set {
+            manager.update(newValue, forKey: AppTutorialStatus.key)
         }
     }
     var appTheme: AppTheme{
@@ -164,6 +175,8 @@ class UserSettings: UserSettingsStorageProtocol{
             self.appExceptions = exeptions
         case .lauchStatus(let status):
             self.appLaunchStatus = status
+        case .tutorialStatus(let status):
+            self.appTutorialStatus = status
         case .sectionHeader(_):
             break
         }
@@ -191,7 +204,7 @@ class SettingsUpdateHelper: UserSettingsUpdateHelper{
             NotificationCenter.default.post(name: .appSearchBarPositionDidChange, object: nil)
         case .separators(_):
             NotificationCenter.default.post(name: .appSeparatorDidChange, object: nil)
-        case .sectionHeader(_), .lauchStatus(_), .exceptions(_):
+        case .sectionHeader(_), .lauchStatus(_), .exceptions(_), .tutorialStatus(_):
             break
         }
     }
@@ -242,13 +255,25 @@ enum SettingsOptions: Codable{
     case searchBarPosition(AppSearchBarPosition)
     case separators(AppPairSeparators)
     case exceptions(AppExceptions)
+    case tutorialStatus(AppTutorialStatus)
 }
 
-enum AppLaunchStatus: Codable{
+enum AppLaunchStatus: Codable {
     static let key = "isFirstLaunch"
     case isFirst, isNotFirst
     
     var isFirstLaunch: Bool {
+        switch self{
+        case .isFirst: return true
+        case .isNotFirst: return false
+        }
+    }
+}
+enum AppTutorialStatus: Codable {
+    static let key = "isTutorialShown"
+    case isFirst, isNotFirst
+    
+    var isFirstAccess: Bool {
         switch self{
         case .isFirst: return true
         case .isNotFirst: return false

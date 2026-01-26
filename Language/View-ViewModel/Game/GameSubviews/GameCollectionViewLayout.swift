@@ -4,7 +4,7 @@
 //
 //  Created by Star Lord on 27/01/2025.
 //
-//  REFACTORING STATE: CHECKED
+//TODO: Polish
 
 import Foundation
 import UIKit

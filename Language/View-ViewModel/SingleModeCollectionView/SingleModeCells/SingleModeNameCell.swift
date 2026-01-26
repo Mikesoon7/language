@@ -4,6 +4,7 @@
 //
 //  Created by Star Lord on 21/04/2025.
 //
+//TODO: Polished
 
 import UIKit
 
@@ -43,33 +44,26 @@ class SingleModeNameCell: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        configureCell()
         configureNameInputView()
     }
-    func configureCellWith(name: String, delegate: SingleModeNameDelegate){
-        self.nameInputField.text = name
-        self.delegate = delegate
-    }
-    
-    
-    deinit { NotificationCenter.default.removeObserver(self) }
-
     required init?(coder: NSCoder) {
         fatalError("coder wasn't imported")
     }
-    
-    private func configureCell() {
-        self.addCenterShadows()
-    }
 
+    //MARK: Configure Cell
+    func configureCellWith(name: String, delegate: SingleModeNameDelegate){
+        self.nameInputField.text = name
+        self.delegate = delegate
+        
+        configureFont()
+        configureLabel()
+    }
+    
+    
     private func configureNameInputView(){
         contentView.addSubview(nameView)
         nameView.addSubviews(nameLabel, nameInputField)
         
-        nameLabel.text = "dictionaryName".localized
-
-        nameInputField.placeholder = "fieldPlaceholder".localized
-
         NSLayoutConstraint.activate([
             nameView.topAnchor.constraint(
                 equalTo: topAnchor),
@@ -93,20 +87,38 @@ class SingleModeNameCell: UICollectionViewCell {
         ])
         //Action
         nameView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(nonAccurateNameFieldTap(sender:))))
+        nameInputField.addTarget(self, action: #selector(textDidChange), for: .editingChanged)
     }
 
+    func configureLabel() {
+        self.nameInputField.placeholder = "fieldPlaceholder".localized
+        self.nameLabel.text = "dictionaryName".localized
+    }
+    
+    func configureFont() {
+        self.nameLabel.font = .selectedFont.withSize(.bodyTextSize)
+        self.nameInputField.font = .selectedFont.withSize(.assosiatedTextSize)
+    }
+
+    //MARK: Actions
     @objc func nonAccurateNameFieldTap(sender: Any){
         nameInputField.becomeFirstResponder()
     }
-
 }
 
+//MARK: TextField Delegate
 extension SingleModeNameCell: UITextFieldDelegate {
     func textFieldDidEndEditing(_ textField: UITextField) {
-        if let text = textField.text {
-            delegate?.didTypeName(text: text)
-        }
+        delegate?.nameFieldDidEndEditing()
     }
+    
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        delegate?.nameFieldDidBeginEditing()
+    }
+    @objc func textDidChange(_ textField: UITextField) {
+        delegate?.didTypeName(text: textField.text ?? "")
+    }
+
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         let maxLength = 15
         let currentString = (textField.text ?? "") as NSString

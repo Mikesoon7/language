@@ -1,2 +1,4 @@
-"NSCameraUsageDescription" = "An access to camera is purely optional and required only for uploading images directly from your camera.";
+"NSCameraUsageDescription" = "Access to camera is optional and required only for uploading images directly from your camera.";
+"NSPhotoLibraryAddUsageDescription" = "We need permission to save images you export from the app to your photo library.";
+"NSPhotoLibraryUsageDescription" = "Access to your photo library is optional and used only when you choose to upload images. No uploaded data is collected or stored by the app.";
 

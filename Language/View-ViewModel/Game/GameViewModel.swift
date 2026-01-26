@@ -4,17 +4,23 @@
 //
 //  Created by Star Lord on 22/08/2023.
 //
-//  REFACTORING STATE: CHECKED
+//TODO: Polish
 
 import Foundation
 import Combine
 import UIKit
+
+internal enum TimerState {
+    case shouldStop
+    case shouldResume
+}
 
 struct HashableWordsEntity: Hashable{
     var identifier = UUID()
     var wordEntity: WordsEntity
     
     var image: UIImage?
+    var globalyFliped = false
     
     init(wordEntity: WordsEntity) {
         self.wordEntity = wordEntity
@@ -33,11 +39,14 @@ class GameViewModel{
         case updateLables
         case shouldUpdateFont
         case error(Error)
+        case shouldPop
+        case shouldUpdateTimer(TimerState)
     }
     
     //MARK: Properties
     private var dataModel: DictionaryFullAccess
-    private lazy var updateManager: DataUpdateManager = DataUpdateManager(dataModel: dataModel)
+    private var settingsModel: UserSettingsStorageProtocol
+    private lazy var updateManager: DataUpdateManager = DataUpdateManager(dataModel: dataModel, settings: settingsModel )
     
     private var dictionary: DictionariesEntity
     private var words: [WordsEntity] = []
@@ -48,12 +57,14 @@ class GameViewModel{
     private lazy var selectedNumberOfWords: Int64 = dictionary.numberOfCards
     
     private var selectedTime: Int?
+    private var appliationEnteredBackground: Bool = false
     
     var output = PassthroughSubject<Output, Never>()
     private var cancellable = Set<AnyCancellable>()
     //MARK: Inherited
     init(dataModel: DictionaryFullAccess, settingsModel: UserSettingsStorageProtocol, dictionary: DictionariesEntity, selectedOrder: DictionariesSettings.CardOrder, isOneSideMode: Bool, selectedNumber: Int, selectedTime: Int?){
         self.dataModel = dataModel
+        self.settingsModel = settingsModel
         self.dictionary = dictionary
         self.selectedCardsOrder = selectedOrder
         self.isOneSideMode = isOneSideMode
@@ -63,10 +74,24 @@ class GameViewModel{
         self.initialNumberOfCards = dictionary.numberOfCards
         configureData()
         
-        NotificationCenter.default.addObserver(self, selector: #selector(languageDidUpdate(sender:)), name: .appLanguageDidChange, object: nil
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(languageDidUpdate(sender:)),
+            name: .appLanguageDidChange, object: nil
         )
-        NotificationCenter.default.addObserver(self, selector: #selector(fontDidChange(sender:)), name: .appFontDidChange, object: nil
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(fontDidChange(sender:)),
+            name: .appFontDidChange, object: nil
         )
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(willEnterBackground(sender: )),
+            name: UIApplication.didEnterBackgroundNotification , object: nil
+        )
+        
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(willBecomeActive(sender: )),
+            name: UIApplication.didBecomeActiveNotification , object: nil
+        )
+
 
     }
     deinit { NotificationCenter.default.removeObserver(self)    }
@@ -76,9 +101,17 @@ class GameViewModel{
         Float(selectedNumberOfWords) / Float(initialNumberOfCards) * 100.0
     }
     
-    func dataForDiffableDataSource() -> [HashableWordsEntity]{
-        let words = words.map { HashableWordsEntity(wordEntity: $0) }
+    func dataForDiffableDataSource() -> [CellDataWrapper]{
+        let words = words.map {
+            let data = HashableWordsEntity(wordEntity: $0)
+            return CellDataWrapper.mainCellData(data)
+        }
+//            CellDataWrapper(mainCellData(HashableWordsEntity(wordEntity: $0) )) }
         return words
+    }
+    func dataForTheLastCell() -> [CellDataWrapper]{
+        let number = Float(selectedNumberOfWords) / Float(initialNumberOfCards) * 100.0
+        return [CellDataWrapper.lastCellData(DataForLastCell(score: number, delegate: self))]
     }
     
     func updateLogWith(time: Int, cardsChecked: Int){
@@ -139,5 +172,23 @@ class GameViewModel{
     @objc func fontDidChange(sender: Any){
         self.output.send(.shouldUpdateFont)
     }
+    
+    @objc func willEnterBackground(sender: Any){
+        self.appliationEnteredBackground = true
+        self.output.send(.shouldUpdateTimer(.shouldStop))
+    }
+    @objc func willBecomeActive(sender: Any){
+        if self.appliationEnteredBackground {
+            self.output.send(.shouldUpdateTimer(.shouldResume))
+            self.appliationEnteredBackground.toggle()
+        }
+    }
 
+
+}
+
+extension GameViewModel: CustomCellDelegate {
+    func finishButtonTap() {
+        output.send(.shouldPop)
+    }
 }

@@ -49,10 +49,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     
     //MARK: TabBar SetUp
-    private func setUpTabBarController(viewModelFactory: ViewModelFactory ) -> UITabBarController{
+    private func setUpTabBarController(viewModelFactory: ViewModelFactory ) -> CustomTabBarController{
         
-        let tabBarController: UITabBarController = {
-            let controller = UITabBarController()
+        let tabBarController: CustomTabBarController = {
+            let controller = CustomTabBarController()
             controller.tabBar.tintColor = .label
             controller.tabBar.backgroundColor = .systemBackground
             controller.tabBar.isTranslucent = false
@@ -121,7 +121,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     private func validateFirstLaunch(settings: UserSettingsStorageProtocol, dataModel: DictionaryManaging){
         if settings.appLaunchStatus.isFirstLaunch {
             do {
-                try dataModel.createDictionary(language: "tutorial.card.name".localized, text: "tutorial.card.title".localized + settings.appSeparators.value + "tutorial.card.message".localized)
+                try dataModel.createTutorialDictionary()
             } catch {
                 print("This is for the developers. It seems, that author checked to the inch, but failed at the very begining")
             }

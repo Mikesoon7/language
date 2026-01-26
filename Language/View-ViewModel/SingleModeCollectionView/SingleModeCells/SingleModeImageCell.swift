@@ -4,6 +4,7 @@
 //
 //  Created by Star Lord on 21/04/2025.
 //
+//TODO: Polished
 
 import UIKit
 
@@ -15,19 +16,18 @@ class SingleModeImageCell: UICollectionViewCell {
         static let overlayPoints: CGFloat = 2
         static let actionViewMultiplier: CGFloat = 0.2
     }
-
+    
     static var identifier = "SingleModeImage"
     
     //MARK: Properties
-    var delegate: SingleModeImageDelegate?
+    var delegate: SingleModeTextDelegate?
     var actionDelegate: SingleModeCellActionDelegate?
     
     private var direction: Direction = .right
     private var isActionActive: Bool = false
     private var isActionLooped: Bool = false
-
-    var index: IndexPath!
     
+    private var displayedID: UUID!
     
     //MARK: Views
     lazy var mainView : UIView = {
@@ -77,12 +77,10 @@ class SingleModeImageCell: UICollectionViewCell {
         
     }()
     
-    
     var imageSmallLayout: [NSLayoutConstraint] = []
     var imageLargeLayout: [NSLayoutConstraint] = []
     
     //MARK: Action related properties
-    
     private var actionGestureView = TransperentView()
     
     lazy var deleteView: UIView = configureCustomActions(
@@ -91,35 +89,21 @@ class SingleModeImageCell: UICollectionViewCell {
     
     var contentViewWidth: CGFloat = 0
     var contentViewHeight: CGFloat = 0
-
+    
     var mainViewLeadingAnchor: NSLayoutConstraint = .init()
     var mainViewInitital: CGFloat = 0
     var mainViewCurrent: CGFloat = 0
     var mainViewFinal: CGFloat = 0
-
+    
     var deleteViewLeadingAnchor: NSLayoutConstraint = .init()
     var currentDeleteConstant: CGFloat = 0
     var finalDeleteConstant: CGFloat = 0
     var deleteViewFinalConstant: NSLayoutConstraint = .init()
-
-
-    private lazy var temporaryRecognizer: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(cellDidTap(sender: )))
-
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        
-        deleteView.layer.mask = UIView().configureActionMaskWith(size: CGSize(
-            width: contentViewWidth + ViewConstants.overlayPoints,
-            height: contentView.frame.height), cornerRadius: .cornerRadius)
-        
-//        contentViewWidth = contentView.bounds.width
-
-        mainViewFinal = -(contentViewWidth - ViewConstants.cornerRadius)
     
-        deleteViewFinalConstant = deleteView.leadingAnchor.constraint(equalTo: mainView.trailingAnchor, constant: -ViewConstants.cornerRadius)
-
-    }
-
+    
+    private lazy var temporaryRecognizer: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(cellDidTap(sender: )))
+    
+    
     //MARK: - Inherited Methods
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -137,6 +121,18 @@ class SingleModeImageCell: UICollectionViewCell {
         fatalError("coder wasn't imported")
     }
     
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        deleteView.layer.mask = UIView().configureActionMaskWith(size: CGSize(
+            width: contentViewWidth + ViewConstants.overlayPoints,
+            height: contentView.frame.height), cornerRadius: .cornerRadius)
+        
+        mainViewFinal = -(contentViewWidth - ViewConstants.cornerRadius)
+        
+//        deleteViewFinalConstant = deleteView.leadingAnchor.constraint(equalTo: mainView.trailingAnchor, constant: -ViewConstants.cornerRadius)
+    }
+    
     override func prepareForReuse() {
         super.prepareForReuse()
         
@@ -144,16 +140,14 @@ class SingleModeImageCell: UICollectionViewCell {
             activate(false)
             return
         }
-
+        self.displayedID = nil
         self.addPhoto(imageDetails: nil)
     }
     
-    
-    deinit { NotificationCenter.default.removeObserver(self) }
-    
+        
     
     //MARK: Subviews SetUp
-    func configureCellWith(data: SingleModeCellData, delegate: SingleModeImageDelegate, actionDelegate: SingleModeCellActionDelegate, index: IndexPath) {
+    func configureCellWith(data: SingleModeCellData, delegate: SingleModeTextDelegate, actionDelegate: SingleModeCellActionDelegate) {
         
         self.frontSideTextView.assignText(text: data.word)
         self.backSideTextView.assignText(text: data.definition)
@@ -162,24 +156,25 @@ class SingleModeImageCell: UICollectionViewCell {
         
         self.delegate = delegate
         self.actionDelegate = actionDelegate
-        self.index = index
+        self.displayedID = data.identifier
+        
+        self.configureLabels()
     }
     
-    func configureView(){
+    private func configureView(){
         contentView.clipsToBounds = true
         contentView.layer.cornerRadius = .cornerRadius
     }
     
     private func configureHolderView(){
         contentView.frame = self.bounds
-
+        
         contentView.backgroundColor = .clear
         
         contentView.addSubviews( mainView, deleteView/*, actionGestureView*/)
-
+        
         contentViewWidth = .genericButtonHeight + .innerSpacer * 2
-//        initialActionConstant = -ViewConstants.cornerRadius
-
+        
         //Related to the holder
         mainViewFinal = -(contentViewWidth - ViewConstants.cornerRadius )
         mainViewLeadingAnchor = mainView.leadingAnchor.constraint(
@@ -191,7 +186,9 @@ class SingleModeImageCell: UICollectionViewCell {
         deleteViewLeadingAnchor = deleteView.leadingAnchor.constraint(
             equalTo: mainView.trailingAnchor, constant: .cornerRadius)
         
-                
+        deleteViewFinalConstant = deleteView.leadingAnchor.constraint(equalTo: mainView.trailingAnchor, constant: -ViewConstants.cornerRadius)
+
+        
         NSLayoutConstraint.activate([
             mainView.topAnchor.constraint(
                 equalTo: contentView.topAnchor),
@@ -201,20 +198,18 @@ class SingleModeImageCell: UICollectionViewCell {
                 equalTo: contentView.widthAnchor),
             mainViewLeadingAnchor,
             
-                        
+            
             deleteView.topAnchor.constraint(
                 equalTo: mainView.topAnchor),
             deleteView.bottomAnchor.constraint(
                 equalTo: mainView.bottomAnchor),
             deleteView.widthAnchor.constraint(
                 equalToConstant: contentViewWidth),
-//                multiplier: ViewConstants.actionViewMultiplier),
-            deleteViewLeadingAnchor,
-                        
-            ])
+            deleteViewLeadingAnchor
+        ])
     }
-
-    func configureSubviews() {
+    
+    private func configureSubviews() {
         self.mainView.addSubviews(button)
         
         imageSmallLayout.append(contentsOf: [
@@ -239,20 +234,12 @@ class SingleModeImageCell: UICollectionViewCell {
             
         ])
         
-//        NSLayoutConstraint.activate([
-//            
-//            mainView.topAnchor.constraint(equalTo: topAnchor),
-//            mainView.leadingAnchor.constraint(equalTo: leadingAnchor),
-//            mainView.trailingAnchor.constraint(equalTo: trailingAnchor),
-//            mainView.bottomAnchor.constraint(equalTo: bottomAnchor),
-//        ])
-        
         NSLayoutConstraint.activate(imageSmallLayout)
         
         button.addTarget(self, action: #selector(addImageButtonDidTap(sender:)), for: .touchUpInside)
     }
     
-    func configureTextViews(){
+    private func configureTextViews(){
         self.mainView.addSubviews(frontSideTextView, backSideTextView, actionGestureView)
         
         NSLayoutConstraint.activate([
@@ -283,15 +270,45 @@ class SingleModeImageCell: UICollectionViewCell {
                 equalTo: mainView.trailingAnchor),
             actionGestureView.bottomAnchor.constraint(
                 equalTo: mainView.bottomAnchor),
-            
-
-
-            
         ])
-//        mainView.addSubview(actionGestureView)
-
     }
     
+    func configureLabels() {
+        frontSideTextView.updatePlaceholder()
+        backSideTextView.updatePlaceholder()
+    }
+    
+    //MARK: Gesture SetUp    
+    private func configurePanGesture(){
+        let pan = UIPanGestureRecognizer(target: self, action: #selector(viewDidPan(sender:)))
+        pan.delegate = actionGestureView
+        actionGestureView.addGestureRecognizer(pan)
+    }
+    
+    private func configureTapGesture(){
+        let deleteTap = UITapGestureRecognizer(target: self, action: #selector(deleteViewDidTap(sender: )))
+        temporaryRecognizer.delegate = actionGestureView
+        actionGestureView.addGestureRecognizer(temporaryRecognizer)
+        deleteView.addGestureRecognizer(deleteTap)
+    }
+    //MARK: Animation
+    //Animation for swipe transition
+    func activate(_ activate: Bool){
+        let animation = UIViewPropertyAnimator(duration: 0.5, curve: .easeOut){
+            self.mainViewLeadingAnchor.constant = activate ? self.mainViewFinal : self.mainViewInitital
+            self.layoutIfNeeded()
+        }
+                
+        deleteView.isUserInteractionEnabled = activate ? true : false
+             
+        animation.startAnimation()
+        
+        isActionActive = activate
+        mainViewCurrent = mainViewLeadingAnchor.constant
+        currentDeleteConstant = deleteViewLeadingAnchor.constant
+    }
+    
+    //MARK: Changes Response
     func addPhoto(imageDetails: ImageDetailsCheck?){
         if let imageDetails = imageDetails, let image = imageDetails.image {
             let processedImage = imageDetails.filterValue.original ? image : image.applyBlackAndWhiteFilter()
@@ -300,8 +317,8 @@ class SingleModeImageCell: UICollectionViewCell {
             self.button.imageView?.contentMode = imageDetails.contentMode.uiViewContentMode
             
             UIView.animate(withDuration: 0.3) {
-                NSLayoutConstraint.activate(self.imageLargeLayout)
                 NSLayoutConstraint.deactivate(self.imageSmallLayout)
+                NSLayoutConstraint.activate(self.imageLargeLayout)
             }
             self.layoutIfNeeded()
         } else {
@@ -311,27 +328,28 @@ class SingleModeImageCell: UICollectionViewCell {
                 self.button.imageView?.contentMode = .scaleAspectFill
                 
                 UIView.animate(withDuration: 0.3) {
-                    NSLayoutConstraint.activate(self.imageSmallLayout)
                     NSLayoutConstraint.deactivate(self.imageLargeLayout)
+                    NSLayoutConstraint.activate(self.imageSmallLayout)
                     self.layoutIfNeeded()
                 }
                 return
             }
         }
     }
+}
+    //MARK: - Actions
+extension SingleModeImageCell {
     @objc func addImageButtonDidTap(sender: Any){
-        if frontSideTextView.textView.isFirstResponder {
-            frontSideTextView.textView.resignFirstResponder()
-//            delegate?.wordDidType(index: index, text: frontSideTextView.textView.text)
-        } else if backSideTextView.textView.isFirstResponder {
-            backSideTextView.textView.resignFirstResponder()
-//            delegate?.definitionDidTye(index: index, text: backSideTextView.textView.text)
+        if frontSideTextView.isFirstResponder() {
+           _ = frontSideTextView.resignFirstResponder()
+        } else if backSideTextView.isFirstResponder() {
+           _ = backSideTextView.resignFirstResponder()
         }
-        delegate?.didTapAddImage(cell: self, index: index)
+        delegate?.didTapAddImage(id: displayedID)
     }
     
     @objc func deleteViewDidTap(sender: Any){
-        actionDelegate?.deleteButtonDidTap(for: self)
+        actionDelegate?.deleteButtonDidTap(for: self, id: displayedID)
     }
     
     //Rather less sufficitent but cant come up with another option.
@@ -344,92 +362,14 @@ class SingleModeImageCell: UICollectionViewCell {
         let point = sender.location(in: sender.view)
         
         if frontSideTextView.frame.contains(point) {
-            frontSideTextView.textView.becomeFirstResponder()
-//            actionGestureView.isUserInteractionEnabled = false
+            _ = frontSideTextView.becomeFirstResponder()
         } else if backSideTextView.frame.contains(point) {
-            backSideTextView.textView.becomeFirstResponder()
-//            actionGestureView.isUserInteractionEnabled = false
+            _ = backSideTextView.becomeFirstResponder()
         } else if button.frame.contains(point){
             addImageButtonDidTap(sender: button)
         }
-//        activate(false)
     }
     
-    
-    
-    func configureCustomActions(imageName: String, colour: UIColor) -> UIView{
-        let actionView: UIView = {
-            let view = UIView()
-            view.backgroundColor = colour
-            view.translatesAutoresizingMaskIntoConstraints = false
-            return view
-        }()
-        let imageView: UIImageView = {
-            let view = UIImageView()
-            view.image = UIImage(systemName: imageName)
-            view.translatesAutoresizingMaskIntoConstraints = false
-            view.tintColor = .label
-            view.contentMode = .center
-            return view
-        }()
-        
-        actionView.addSubview(imageView)
-        
-        imageView.centerXAnchor.constraint(equalTo: actionView.centerXAnchor, constant: .cornerRadius / 2).isActive = true
-        imageView.centerYAnchor.constraint(equalTo: actionView.centerYAnchor).isActive = true
-        
-        return actionView
-    }
-    
-    func configurePanGesture(){
-        let pan = UIPanGestureRecognizer(target: self, action: #selector(viewDidPan(sender:)))
-        pan.delegate = actionGestureView
-        actionGestureView.addGestureRecognizer(pan)
-    }
-    
-    func configureTapGesture(){
-        let deleteTap = UITapGestureRecognizer(target: self, action: #selector(deleteViewDidTap(sender: )))
-        temporaryRecognizer.delegate = actionGestureView
-        actionGestureView.addGestureRecognizer(temporaryRecognizer)
-        deleteView.addGestureRecognizer(deleteTap)
-    }
-
-//    func deactivateConstraints(){
-//        NSLayoutConstraint.deactivate([
-//            self.deleteViewLeadingAnchor
-//        ])
-//        NSLayoutConstraint.activate([
-//            self.deleteViewFinalConstant
-//        ])
-//    }
-    
-    //Animation for swipe transition
-    func activate(_ activate: Bool){
-        let animation = UIViewPropertyAnimator(duration: 0.5, curve: .easeOut){
-//            self.mainViewLeadingAnchor.constant = activate ? self.mainViewFinal : 0
-//            self.deleteViewLeadingAnchor.constant = /*activate ? self.finalDeleteConstant : */-.cornerRadius
-//            self.editViewLeadingAnchor.constant = activate ? self.finalEditConstant : self.initialActionConstant
-            self.mainViewLeadingAnchor.constant = activate ? self.mainViewFinal : self.mainViewInitital
-            self.layoutIfNeeded()
-        }
-        
-//        if activate {
-//            actionGestureView.addGestureRecognizer(temporaryRecognizer)
-//        } else {
-//            actionGestureView.removeGestureRecognizer(temporaryRecognizer)
-//        }
-        
-        
-        deleteView.isUserInteractionEnabled = activate ? true : false
-             
-        animation.startAnimation()
-        
-        isActionActive = activate
-        mainViewCurrent = mainViewLeadingAnchor.constant
-        currentDeleteConstant = deleteViewLeadingAnchor.constant
-    }
-
-    //MARK: - Actions
     //Panning
     @objc func viewDidPan(sender: UIPanGestureRecognizer){
         let translation = sender.translation(in: actionGestureView).x
@@ -484,26 +424,28 @@ class SingleModeImageCell: UICollectionViewCell {
         }
     }
 }
-     
 
+//MARK: TextView delegate
 extension SingleModeImageCell: PlaceholderTextViewDelegate {
     func textViewDidBeginEditing(sender: UITextView) { 
         self.actionGestureView.isUserInteractionEnabled = false
+        self.actionDelegate?.didBeginEditing(cell: self)
+        self.delegate?.textViewDidBeginEditing()
     }
     
     func textViewDidEndEditing(sender: UITextView) {
-        if sender.tag == 0 {
-            delegate?.wordDidType(index: index, text: frontSideTextView.textView.text)
-        } else {
-            delegate?.definitionDidTye(index: index, text: backSideTextView.textView.text)
-        }
+        delegate?.textViewDidEndEditing()
         self.actionGestureView.isUserInteractionEnabled = true
         
     }
     
-    func textViewDidChange(sender: UITextView) {  }
-    
-    func currentSeparatorSymbol() -> String?    { nil }
+    func textViewDidChange(sender: UITextView) {
+        if sender.tag == 0 {
+            delegate?.wordDidType(id: displayedID, text: frontSideTextView.currentText())
+        } else {
+            delegate?.definitionDidType(id: displayedID, text: backSideTextView.currentText())
+        }
+    }
     
     //Since its the only place where one class is being ad delegate to two textView's, the correct return defined by the tag.
     func configurePlaceholderText(sender: UITextView) -> String?  {
@@ -512,54 +454,12 @@ extension SingleModeImageCell: PlaceholderTextViewDelegate {
         } else {
             return "backSide".localized
         }
-        
     }
     
+    func currentSeparatorSymbol() -> String?    { nil }
     func presentErrorAlert(alert: UIAlertController) { }
-    
-    
 }
 
-//extension SingleModeImageCell: UIGestureRecognizerDelegate {
-//    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-////        if let gesture = otherGestureRecognizer as? UITapGestureRecognizer {
-////            return false
-////        }
-////        if let gesture = otherGestureRecognizer as? UILongPressGestureRecognizer {
-////            return false
-////        }
-//        return true
-//    }
-//    override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-//        if let panGestureRecognizer = gestureRecognizer as? UIPanGestureRecognizer {
-//            let velocity = panGestureRecognizer.velocity(in: actionGestureView)
-//            print(velocity)
-//            print(panGestureRecognizer.translation(in: actionGestureView ))
-//            
-//        
-////            guard velocity > 0.1 || velocity < -0.1 else {
-////                return false
-////            }
-//        
-//            return abs(velocity.y) < abs(velocity.x)
-//        }
-//        
-//        return false
-//    }
-//    override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-//        if let panGestureRecognizer = gestureRecognizer as? UIPanGestureRecognizer {
-//            let velocity = panGestureRecognizer.velocity(in: actionGestureView)
-//            return abs(velocity.y) < abs(velocity.x)
-//        }
-//        return true
-//    }
-
-//    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
-//            // Optional: if you want to disable gesture for some views (e.g. scrollable textViews), you can filter here
-//            return true
-//        }
-
-//}
 
 class TransperentView: UIView, UIGestureRecognizerDelegate{
     
@@ -585,8 +485,8 @@ class TransperentView: UIView, UIGestureRecognizerDelegate{
     
     
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-    
-        return true
+        
+        return false
     }
 }
 

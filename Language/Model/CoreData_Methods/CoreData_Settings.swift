@@ -4,6 +4,7 @@
 //
 //  Created by Star Lord on 29/08/2024.
 //
+//TODO: Polish
 
 import Foundation
 import CoreData

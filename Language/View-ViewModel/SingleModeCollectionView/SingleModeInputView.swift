@@ -4,32 +4,24 @@
 //
 //  Created by Star Lord on 21/04/2025.
 //
+//TODO: Polished
 
 import UIKit
 
-protocol SingleModeViewDelegate: SingleModeImageDelegate, AddImageDelegate {
-    
-    func numberOfCells() -> Int
-    func dataForCellAt(index: IndexPath) -> SingleModeCellData
-    
-    func deleteCell(index: IndexPath)
-}
 
 class SingleModeInputView: UIView {
     
-    private var delegate: SingleModeViewDelegate?
-    private var addDelegate: SingleModeAddDelegate?
-    private var nameDelegate: SingleModeNameDelegate?
+    private var cellAdapter: CollectionViewAdapter?
     
     private var menuAccessedForCell: IndexPath?
+    private var activeCell: IndexPath?
 
     private var layout = UICollectionViewFlowLayout()
     private var contentInset: UIEdgeInsets
     
-    lazy var collectionView: UICollectionView = {
+    private lazy var collectionView: UICollectionView = {
         let view = UICollectionView(frame: .zero, collectionViewLayout: layout)
         view.delegate = self
-        view.dataSource = self
         view.contentInset = contentInset
         view.backgroundColor = .clear
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -37,51 +29,70 @@ class SingleModeInputView: UIView {
         view.showsVerticalScrollIndicator = false
         view.register(SingleModeImageCell.self, forCellWithReuseIdentifier: SingleModeImageCell.identifier)
         view.register(SingleModeNameCell.self, forCellWithReuseIdentifier: SingleModeNameCell.identifier)
-        view.register(SingleModeAddCell.self, forCellWithReuseIdentifier: SingleModeAddCell.identifier)
         
         return view
     }()
     
     // MARK: - Initialization
-    init(frame: CGRect, delegate: SingleModeViewDelegate, addDelegate: SingleModeAddDelegate, nameDelegate: SingleModeNameDelegate?, contentInsets: UIEdgeInsets){
-        self.delegate = delegate
-        self.addDelegate = addDelegate
-        self.nameDelegate = nameDelegate
+    init(frame: CGRect, contentInsets: UIEdgeInsets, adapter: CollectionViewAdapter) {
         self.contentInset = contentInsets
         super.init(frame: frame)
-        print(frame)
+
+        self.cellAdapter = adapter
+        self.cellAdapter?.actionDelegate = self
+        
         configureCollectionView()
-        addObservers()
+        cellAdapter?.configureDataSource(for: collectionView)
     }
+    
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func addObservers() {
-        
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(keyboardWillShow),
-                                               name: UIResponder.keyboardWillShowNotification,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(keyboardWillHide),
-                                               name: UIResponder.keyboardWillHideNotification,
-                                               object: nil)
-    }
     
+    //MARK: Changes response
+    func applyColourAdjustment(traitCollection: UITraitCollection){
+        collectionView.subviews.forEach { section in
+            section.layer.shadowColor = (traitCollection.userInterfaceStyle == .dark
+                                         ? shadowColorForDarkIdiom
+                                         : shadowColorForLightIdiom)
+        }
+    }
+
     func adjustLayoutForSizeClass() {
-        let itemWidth = ((self.bounds.width - (.outerSpacer * 2)))
-        
-        layout.itemSize = CGSize(width: itemWidth, height: .largeButtonHeight)
         layout.minimumLineSpacing = .outerSpacer
         layout.invalidateLayout()
     }
+    private func itemWidth(for collectionView: UICollectionView) -> CGFloat {
+        collectionView.bounds.width - (.outerSpacer * 2)
+    }
 
-    // MARK: - Setu
+    
+    func adjustLayoutForKeyboard(isVisible: Bool, duration: TimeInterval, intersectingHeight: CGFloat){
+            UIView.animate(withDuration: duration) { [weak self] in
+                guard let self = self else { return }
+
+                if isVisible {
+                    collectionView.contentInset = UIEdgeInsets(top: contentInset.top, left: contentInset.left, bottom: intersectingHeight + .outerSpacer, right: contentInset.right)
+                    collectionView.scrollIndicatorInsets = collectionView.contentInset
+                    if let activeCell = self.activeCell {
+                        collectionView.scrollToItem(at: activeCell, at: .top, animated: true)
+                    }
+                } else {
+                    collectionView.contentInset = contentInset
+                    collectionView.scrollIndicatorInsets =   collectionView.contentInset
+                }
+        }
+    }
+    
+    func adjustForLangugageAndFontChange(){
+        self.collectionView.reloadData()
+    }
+
+    // MARK: - Setup
     private func configureCollectionView() {
         self.addSubview(collectionView)
-        
         // Constraints
         NSLayoutConstraint.activate([
             collectionView.topAnchor.constraint(equalTo: topAnchor),
@@ -90,133 +101,109 @@ class SingleModeInputView: UIView {
             collectionView.trailingAnchor.constraint(equalTo: trailingAnchor)
         ])
     }
-    
-    
-    private func scrollToActiveTextView() {
-        if let firstResponder = findFirstResponder(in: collectionView) {
-            if let cell = firstResponder.superview(of: UICollectionViewCell.self),
-               let indexPath = collectionView.indexPath(for: cell) {
-                collectionView.scrollToItem(at: indexPath, at: .top, animated: true)
-            }
-        }
-    }
-    
-    func findFirstResponder(in view: UIView) -> UIView? {
-        if view.isFirstResponder {
-            return view
-        }
-        for subview in view.subviews {
-            if let responder = findFirstResponder(in: subview) {
-                return responder
-            }
-        }
-        return nil
-    }
-    
 }
 
-//Actions
-extension SingleModeInputView {
-    @objc func keyboardWillShow(sender: Notification){
-        
-        if let userInfo = sender.userInfo,
-           let keyboardFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect,
-           let duration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval {
-               let keyboardHeight = keyboardFrame.height
-               print("trying to adjust offset")
-            print(duration)
-               UIView.animate(withDuration: duration) { [weak self] in
-                   guard let self = self else { return }
-                   collectionView.contentInset = UIEdgeInsets(top: contentInset.top, left: contentInset.left, bottom: keyboardHeight, right: contentInset.right)
-                   collectionView.scrollIndicatorInsets = collectionView.contentInset
-               } completion: { _ in
-                   
-                   self.scrollToActiveTextView()
-               }
-           }
-        
-    }
-    
-    @objc func keyboardWillHide(sender: Notification){
-        collectionView.contentInset = contentInset
-        
-        collectionView.scrollIndicatorInsets =   collectionView.contentInset
+//MARK: CollectionViewDelegate
+extension SingleModeInputView: UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
 
-    }
-
-}
-extension SingleModeInputView: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
-    
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        guard let delegate = delegate else { return 0 }
-        return delegate.numberOfCells() + (nameDelegate != nil ? 2 : 1)
-//        return number
-        
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let delegate = delegate, let addDelegate = addDelegate else {
-            return UICollectionViewCell()
-        }
-        
-        if indexPath.item == collectionView.numberOfItems(inSection: indexPath.section) - 1 {
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SingleModeAddCell.identifier, for: indexPath) as? SingleModeAddCell
-            cell?.configureCellWith(delegate: addDelegate)
-            return cell ?? UICollectionViewCell()
-        } else {
-            if nameDelegate != nil && indexPath.item == collectionView.numberOfItems(inSection: indexPath.section) - 2 {
-                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SingleModeNameCell.identifier, for: indexPath) as! SingleModeNameCell
-                cell.configureCellWith(name: nameDelegate!.name(),
-                                       delegate: nameDelegate!)
-                return cell
-
-            } else {
-                let data = delegate.dataForCellAt(index: indexPath)
-                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SingleModeImageCell.identifier, for: indexPath) as! SingleModeImageCell
-                cell.configureCellWith(data: data, delegate: delegate, actionDelegate: self, index: indexPath)
-                cell.addCenterShadows()
-                return cell
-            }
-        }
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, didHighlightItemAt indexPath: IndexPath) {
-        if indexPath.item == collectionView.numberOfItems(inSection: indexPath.section) - 1,
-           let cell = collectionView.cellForItem(at: indexPath) {
-            UIView.animate(withDuration: 0.1, delay: 0, options: .curveEaseIn, animations: {
-                cell.transform = CGAffineTransform(scaleX: 0.97, y: 0.97)
-            })
-        } else {
-            collectionView.scrollToItem(at: indexPath, at: .top, animated: true)
-        }
-        
-    }
     func collectionView(_ collectionView: UICollectionView, didUnhighlightItemAt indexPath: IndexPath) {
-        if indexPath.item == collectionView.numberOfItems(inSection: indexPath.section) - 1, let cell = collectionView.cellForItem(at: indexPath) {
-            UIView.animate(withDuration: 0.1, delay: 0, options: .curveEaseOut, animations: {
-                cell.transform = CGAffineTransform.identity
-            })
+        let item = cellAdapter?.item(at: indexPath)
+        if let cell = collectionView.cellForItem(at: indexPath) {
+            switch item {
+            case .entry(_):
+                UIView.animate(withDuration: 0.1, delay: 0, options: .curveEaseOut, animations: {
+                    cell.transform = CGAffineTransform.identity
+                })
+            case .name(_):
+                break
+            case .none:
+                break
+            }
+        }
+    }
+    func collectionView(_ collectionView: UICollectionView, didHighlightItemAt indexPath: IndexPath) {
+        let item = cellAdapter?.item(at: indexPath)
+        if let cell = collectionView.cellForItem(at: indexPath) {
+            switch item {
+            case .entry(_):
+                UIView.animate(withDuration: 0.1, delay: 0, options: .curveEaseIn, animations: {
+                    cell.transform = CGAffineTransform(scaleX: 0.97, y: 0.97)
+                })
+            case .name(_):
+                break
+            case .none:
+                break
+            }
         }
     }
     
-    func collectionView(_ collectionView: UICollectionView,
-                        layout collectionViewLayout: UICollectionViewLayout,
-                        sizeForItemAt indexPath: IndexPath) -> CGSize {
-        
-        let width = layout.itemSize.width
-        print(layout.itemSize, "inCollection")
-        
-        if indexPath.item == collectionView.numberOfItems(inSection: 0) - 1 || (nameDelegate != nil && indexPath.item == collectionView.numberOfItems(inSection: 0) - 2 ) {
-            // Add or name button cell
-            return CGSize(width: width, height: .genericButtonHeight)
-        } else {
-            // Regular chunk cells
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        sizeForItemAt indexPath: IndexPath
+    ) -> CGSize {
+
+        let width = itemWidth(for: collectionView)
+
+        guard let item = cellAdapter?.item(at: indexPath) else {
+            return .zero
+        }
+
+        switch item {
+        case .entry:
             return CGSize(width: width, height: .largeButtonHeight * 2)
+
+        case .name:
+            return CGSize(width: width, height: .genericButtonHeight)
         }
     }
+
+        func collectionView(
+            _ collectionView: UICollectionView,
+            layout collectionViewLayout: UICollectionViewLayout,
+            insetForSectionAt section: Int
+        ) -> UIEdgeInsets {
+            guard let sectionType = cellAdapter?
+                .dataSource
+                .snapshot()
+                .sectionIdentifiers[section]
+            else {
+                return .zero
+            }
+
+            switch sectionType {
+            case .main:
+                return UIEdgeInsets(
+                    top: 0,
+                    left: .outerSpacer,
+                    bottom: .outerSpacer,
+                    right: .outerSpacer
+                )
+
+            case .name:
+                return UIEdgeInsets(
+                    top: 0,
+                    left: .outerSpacer,
+                    bottom: 0,              
+                    right: .outerSpacer
+                )
+            }
+        }
 }
 
+//MARK: CollectionView Action Delegate
 extension SingleModeInputView: SingleModeCellActionDelegate {
+    func requestedScrollToItem(at index: IndexPath) {
+        collectionView.scrollToItem(at: index, at: .bottom, animated: true)
+    }
+    
+    func didBeginEditing(cell: UICollectionViewCell) {
+        guard let index = collectionView.indexPath(for: cell) else { return }
+        
+        collectionView.scrollToItem(at: index, at: .top, animated: true)
+        self.activeCell = index
+    }
+    
     func panningBegan(for cell: UICollectionViewCell){
         let index = collectionView.indexPath(for: cell)
         //Dismiss another swiped cell.
@@ -236,10 +223,9 @@ extension SingleModeInputView: SingleModeCellActionDelegate {
             return
         }
     }
-    func deleteButtonDidTap(for cell: UICollectionViewCell) {
+    
+    func deleteButtonDidTap(for cell: UICollectionViewCell, id: UUID) {
         menuAccessedForCell = nil
-        guard let index = collectionView.indexPath(for: cell) else { return }
-        delegate?.deleteCell(index: index)
-        collectionView.deleteItems(at: [index])
+        cellAdapter?.requestedDeleteCell(id: id)
     }
 }

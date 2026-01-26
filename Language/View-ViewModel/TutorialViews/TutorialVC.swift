@@ -4,7 +4,7 @@
 //
 //  Created by Star Lord on 11/02/2025.
 //
-//REFACTORING STATE: CHECKED
+//TODO: Polished
 
 import UIKit
 
@@ -16,6 +16,11 @@ class TutorialVC: UIViewController {
     
     private weak var delegate: TutorialModifier?
     private var isTutorialAnimated: Bool = false
+    
+    private var cellInActivatedMode: Bool = false
+    private var currentDisplayedPage: Int = 0
+    private var currentLayoutContext: CustomLayoutContext?
+
     
     //MARK: Base view's
     let tutorialLabel: UILabel = {
@@ -219,11 +224,11 @@ class TutorialVC: UIViewController {
     //MARK: Inherited
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupCollectionView()
+        configureCollectionView()
         configureContainerView()
-        setUpNewLineView()
-        setupScrollView()
-        setupStackView()
+        configureNewLineView()
+        configureScrollView()
+        configureStackView()
         setupTutorialViews()
         
         delegate = self
@@ -232,7 +237,7 @@ class TutorialVC: UIViewController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        adjustLayoutForSizeClass()
+        updateLayoutIfNeeded()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -251,22 +256,21 @@ class TutorialVC: UIViewController {
                                              : shadowColorForLightIdiom)
             }
         }
-        if previousTraitCollection?.horizontalSizeClass != traitCollection.horizontalSizeClass {
-            adjustLayoutForSizeClass()
-        }
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
-        coordinator.animate { context in
-            UIView.animate(withDuration: 0.3) {
-                self.view.layoutIfNeeded()
-            }
-        }
+        updateLayoutIfNeeded(width: size.width)
+        
+        //making sure, that the page is displayed with a correct positioning.
+        coordinator.animate(alongsideTransition: { _ in
+            self.didChangeCurrentPage(manually: true, with: self.currentDisplayedPage)
+            self.view.layoutIfNeeded()
+        })
     }
     
     //MARK: Base view's SetUp
-    private func setupCollectionView() {
+    private func configureCollectionView() {
         view.addSubviews(tutorialLabel, collectionView)
         
         NSLayoutConstraint.activate([
@@ -326,7 +330,7 @@ class TutorialVC: UIViewController {
             containerViewTopAnchor,
         ])
     }
-    private func setUpNewLineView(){
+    private func configureNewLineView(){
         containerView.addSubviews(newLineButton, separatorButton, translateButton, cardView)
         cardView.addSubview(exampleTextView)
         NSLayoutConstraint.activate([
@@ -377,7 +381,7 @@ class TutorialVC: UIViewController {
                 equalTo: cardView.bottomAnchor, constant: -.innerSpacer),
         ])
     }
-    private func setupScrollView() {
+    private func configureScrollView() {
         scrollView.delegate = self
         containerView.addSubviews(accessView, scrollView)
         
@@ -405,16 +409,56 @@ class TutorialVC: UIViewController {
         ])
         
     }
-    private func setupStackView() {
+    private func configureStackView() {
         scrollView.addSubview(stackView)
+
+        let contentGuide = scrollView.contentLayoutGuide
+        let frameGuide   = scrollView.frameLayoutGuide
+
         NSLayoutConstraint.activate([
-            stackView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
-            stackView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
-            stackView.topAnchor.constraint(equalTo: scrollView.topAnchor),
-            stackView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            stackView.leadingAnchor.constraint(equalTo: contentGuide.leadingAnchor),
+            stackView.trailingAnchor.constraint(equalTo: contentGuide.trailingAnchor),
+            stackView.topAnchor.constraint(equalTo: contentGuide.topAnchor),
+            stackView.bottomAnchor.constraint(equalTo: contentGuide.bottomAnchor),
+
+            stackView.heightAnchor.constraint(equalTo: frameGuide.heightAnchor),
+            stackView.widthAnchor.constraint(
+                equalTo: frameGuide.widthAnchor,
+                multiplier: CGFloat(tutorialPageViews.count)
+            )
         ])
     }
     
+    //MARK: Layout
+    private func updateLayoutIfNeeded(width: CGFloat? = nil) {
+        if width != nil {
+            let newContext = view.layoutContext(width: width)
+            currentLayoutContext = newContext
+            adjustLayoutFor(context: newContext, width: width)
+        } else {
+            let newContext = view.layoutContext()
+            guard newContext != currentLayoutContext else { return }
+            
+            currentLayoutContext = newContext
+            adjustLayoutFor(context: newContext)
+        }
+    }
+
+    
+    private func adjustLayoutFor(context: CustomLayoutContext, width: CGFloat? = nil) {
+        let isCompact = context == .compact
+        let numberOfColumns: CGFloat = isCompact ? 1 : 2
+        let width = width ?? self.view.bounds.width
+        
+        let itemWidth = ((width - (.outerSpacer * 2)) / numberOfColumns) - (isCompact ? 0 : 10)
+        
+        layout.itemSize = CGSize(width: itemWidth, height: .largeButtonHeight)
+        layout.minimumLineSpacing = .outerSpacer
+        layout.invalidateLayout()
+    }
+    
+    
+
     //MARK: System
     private func setupTutorialViews() {
         for view in tutorialPageViews {
@@ -427,13 +471,6 @@ class TutorialVC: UIViewController {
         }
     }
     
-    private func adjustLayoutForSizeClass() {
-        let itemWidth = ((self.view.bounds.width - (.outerSpacer * 2)))
-        
-        layout.itemSize = CGSize(width: itemWidth, height: .largeButtonHeight)
-        layout.minimumLineSpacing = .outerSpacer
-        layout.invalidateLayout()
-    }
     
     private func attributedText(stage: Int) -> NSAttributedString{
         let word = "Education"
@@ -574,17 +611,22 @@ extension TutorialVC: AccessViewDelegate {
                 return
             }
             
+            self.currentDisplayedPage = pointerOn
+
             let nextOffset = CGPoint(x: scrollView.frame.width * CGFloat(pointerOn), y: 0)
             UIView.animate(withDuration: 0.5, delay: 0.0) {
                 self.scrollView.contentOffset = nextOffset
             }
         }
+        self.currentDisplayedPage = pointerOn
         
         switch pointerOn {
         case 0:
             delegate?.displayCellActionView(activate: false)
             self.containerActiveSecondStage.isActive = false
             self.containerActiveTopAnchor.isActive = true
+
+            self.cellInActivatedMode = false
 
             UIView.animate(withDuration: 0.5) {
                 self.view.layoutIfNeeded()
@@ -595,6 +637,8 @@ extension TutorialVC: AccessViewDelegate {
             self.containerActiveTopAnchor.isActive = false
             self.containerActiveThirdStage.isActive = false
             self.containerActiveSecondStage.isActive = true
+        
+            self.cellInActivatedMode = true
             
             UIView.animate(withDuration: 0.5) {
                 self.view.layoutIfNeeded()
@@ -609,6 +653,8 @@ extension TutorialVC: AccessViewDelegate {
             self.scrollViewTopAnchor.isActive = true
 
             self.containerActiveThirdStage.isActive = true
+            
+            self.cellInActivatedMode = false
 
             UIView.animate(withDuration: 0.5) {
                 self.view.layoutIfNeeded()
@@ -677,9 +723,6 @@ extension TutorialVC: AccessViewDelegate {
 //MARK: ScrollView delegate
 //Handle user's actions if swipe was prefered over button
 extension TutorialVC: UIScrollViewDelegate{
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        scrollView.contentOffset.y = 0
-    }
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         let pageIndex = round(self.scrollView.contentOffset.x / view.frame.width)
         accessView.pageDidChange(updatedIndex: Int(pageIndex))

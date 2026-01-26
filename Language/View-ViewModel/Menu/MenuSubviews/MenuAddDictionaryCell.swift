@@ -4,7 +4,7 @@
 //
 //  Created by Star Lord on 15/02/2023.
 //
-//  REFACTORING STATE: CHECKED
+//TODO: Polished
 
 import UIKit
 
@@ -51,15 +51,11 @@ class MenuAddDictionaryCVCell: UICollectionViewCell {
     required init?(coder: NSCoder) {
         fatalError("coder wasn't imported")
     }
-    deinit { NotificationCenter.default.removeObserver(self) }
 
     //MARK: Configuring views properties.
     func configureCellView(){
         self.backgroundColor = .selectedColourPalette.primaryBackgroundColour
         self.layer.cornerRadius = .cornerRadius
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(languageDidChange(sender:)), name: .appLanguageDidChange, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(fontDidChange(sender:)), name: .appFontDidChange, object: nil)
     }
     
     func configureCellWith(delegate: MenuAddCellDelegate) {
@@ -97,11 +93,4 @@ class MenuAddDictionaryCVCell: UICollectionViewCell {
                 ofSize: .subtitleSize)
     }
     
-    @objc func languageDidChange(sender: Any){
-        configureLabels()
-    }
-    @objc func fontDidChange(sender: Any){
-        importLabel.font = .selectedFont.withSize(.subtitleSize)
-        addButton.setImage(UIImage(systemName: "square.and.arrow.down", withConfiguration: UIImage.SymbolConfiguration(weight: UIFont.selectedFont.fontWeight.symbolWeight())), for: .normal)
-    }
 }

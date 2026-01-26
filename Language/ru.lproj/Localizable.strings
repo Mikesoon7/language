@@ -68,15 +68,22 @@
 "frontSide" = "Лицевая сторона";
 "backSide" = "Обратная сторона";
 //Alerts
-"textAlert" = "Введите текст";
-"nameAlert" = "Укажите имя";
-"textInfo" = "Пожалуйста, используйте как минимум одну пару слов.";
-"nameInfo" = "Осталось назвать ваш словарь.";
-"addWords.contentSaving.title" = "Содержимое не было сохранено";
-"addWords.contentSaving.text" = "Вы хотите сохранить новые слова?";
-"addWords.contentSaving.image" = "Вы хотите сохранить новое изображение?";
+"addWords.contentSaving.title" = "Содержимое не сохранено";
+"addWords.contentSaving.text" = "Сохранить добавленные слова?";
+"addWords.contentSaving.image" = "Сохранить добавленное изображение?";
 "addWords.contentSaving.save" = "Сохранить";
 "addWords.contentSaving.clear" = "Очистить";
+"addWords.emptyName.title" = "Название словаря";
+"addWords.emptyName.message" = "Почти готово! Добавьте название, чтобы сохранить словарь.";
+"addWords.emptyText.title" = "Добавьте текст";
+"addWords.emptyText.message" = "Чтобы сохранить словарь, добавьте хотя бы одно слово.";
+"addWords.emptyCells.title" = "Добавьте содержимое";
+"addWords.emptyCells.message" = "Чтобы сохранить словарь, добавьте хотя бы один элемент — текст или изображение.";
+"addWords.croppedText.title" = "Не удалось сохранить содержимое";
+"addWords.croppedText.message" = "После применения выбранных символов-исключений текст оказался пустым. Проверьте настройки и попробуйте снова.";
+//Information
+"addDict.lineMode" = "Вы используете режим “Построчно”.\n\n В этом режиме текст автоматически разбивается на карточки: каждый абзац становится отдельной карточкой. Это удобный способ быстро добавить много карточек сразу.";
+"addDict.singleMode" = "Вы используете режим “По одной”. \n\nЗдесь вы создаёте карточки вручную — это дает больше контроля над результатом и позволяет добавлять изображения.";
 
 //MARK: - System
 "system.cancel" = "Отменить";
@@ -101,6 +108,7 @@
 "system.continue" = "Продолжить";
 "system.finish" = "Завершить";
 "system.checked" = "Проверено";
+"system.image" = "\"Изображение\"";
 
 //MARK: - DetailsVC
 "details.title" = "Подробности";
@@ -113,6 +121,7 @@
 "details.cardsOrder.reverse" = "Обратный";
 "details.addWords" = "Добавить слова";
 "details.start" = "Начать";
+"details.flipTheCard" = "Flip the card";
 
 //MARK: - GameVC
 "game.title" = "Карточки";
@@ -202,6 +211,9 @@
 "edit.emptyField.message" = "Пожалуйста, введите от 1 до 15 символов в качестве названия для словаря";
 "edit.emptyText.title" = "Отредактированный текст не содержит символов";
 "edit.emptyText.message" = "Если сохранить словарь пустым, он будет удален";
+
+"edit.unsavedAlert.title" = "Правки остались без сохранения";
+"edit.unsavedAlert.message" = "Сохранить внесенные изменеия?";
 //MARK: - Tutorial
 "tutorial" = "Обучение";
 //FirstView
@@ -222,6 +234,14 @@
 "tutorial.card.name" = "Привет";
 "tutorial.card.title" = "Мы рады быть частью вашего образовательного пути! ";
 "tutorial.card.message" = " P.S. Мы всегда стараемся становиться лучше. Если вам нравится Learny, пожалуйста, оцените нас в App Store. \r\r Удачи вам в учебе!";
+//MARK: In Game Tutorial
+"game.tutorial.title" = "И ещё кое-что...";
+"game.tutorial.subtitle" = "Мы знаем, что длинные туториалы утомляют... но обещаем — этот точно последний!";
+"game.tutorial.tap" = "Нажмите на карточку, чтобы перевернуть её и увидеть обратную сторону (если она есть).";
+"game.tutorial.press" = "Хотите что-то изменить? Удерживайте карточку, чтобы перейти в режим редактирования.";
+"game.tutorial.timer" = "Следите за своим прогрессом — просто нажмите на кнопку таймера.";
+"game.tutorial.flip" = "Чувствуете уверенность? Нажмите кнопку смены стороны и учите карточки наоборот!";
+
 //MARK: Exceptions
 "exception.title" = "Символы для исключения";
 "exception.firstPart" = "Укажите символы, которые следует игнорировать в начале и в конце текстовых блоков.";

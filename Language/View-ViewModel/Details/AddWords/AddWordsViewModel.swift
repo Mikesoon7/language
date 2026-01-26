@@ -4,28 +4,31 @@
 //
 //  Created by Star Lord on 19/07/2023.
 //
-//  REFACTORING STATE: CHECKED
+//TODO: Polished
 
 import Foundation
 import Combine
 import UIKit
 
 class AddWordsViewModel {
-    
     enum Output {
         case shouldPresentError(Error)
         case shouldHighlightError(String)
+        case shouldPresentAlert(AlertType)
         case shouldPop
         case shouldUpdatePlaceholder
+        case shouldReflectModeSwitch(DataInputMode)
     }
     enum CollectionViewOutput {
-        case shouldPresent(UIViewController)
-        case shouldAddCellAt(IndexPath)
+        case shouldPresentAddImageView(SingleModeCellData)
+        case shouldInsert(SingleModeCellData)
+        case shouldUpdateResult([SingleModeCellData])
     }
     
     private let dataModel: DictionaryFullAccess
     private let settingsModel: UserSettingsStorageProtocol
-    private lazy var updateManager: DataUpdateManager = DataUpdateManager(dataModel: dataModel)
+    private lazy var dataUpdateManager: DataUpdateManager = DataUpdateManager(
+        dataModel: dataModel, settings: settingsModel)
 
     private let dictionary: DictionariesEntity
     private var newArray: [WordsEntity] = []
@@ -35,6 +38,15 @@ class AddWordsViewModel {
     
     var output = PassthroughSubject<Output, Never>()
     var singleOutput = PassthroughSubject<CollectionViewOutput, Never>()
+    
+    
+    private(set) var inputMode: DataInputMode = .regular {
+        didSet {
+            output.send(.shouldReflectModeSwitch(inputMode))
+        }
+    }
+
+    private(set) var requiresUpdate: Bool = false
 
     init(dataModel: DictionaryFullAccess, settingsModel: UserSettingsStorageProtocol, dictionary: DictionariesEntity){
         self.dictionary = dictionary
@@ -45,98 +57,38 @@ class AddWordsViewModel {
     }
     
     deinit { NotificationCenter.default.removeObserver(self) }
-    
-
-    
-    //MARK: Single Mode related
-    func splitTheText(text: String, final: Bool = false) {
-        currentText = text
         
-        let trimmedText = text.trimmingCharacters(in: .whitespacesAndNewlines)
-        let lines = trimmedText.split(separator: "\n", omittingEmptySubsequences: true)
-            
-        let numberOfPairs = currentWords.count
-        var numberOfLines = 0
-        for (index, line) in lines.enumerated() {
-            guard line != "\r" else { break }
-            
-            print(line)
-            var newWord = String()
-            var newDefinition = String()
-            var trimmedText = String()
-
-            let exceptions = settingsModel.appExceptions.availableExceptionsInString
-
-            trimmedText = line.trimmingCharacters(in: CharacterSet(charactersIn: exceptions + exceptions.uppercased()))
-            let parts = trimmedText.split(separator: settingsModel.appSeparators.value).map { $0.trimmingCharacters(in: .whitespacesAndNewlines)}
-
-            guard !trimmedText.isEmpty, !parts.isEmpty else { break }
-
-//                //Validating line
-            newWord = parts[0]
-            
-            if parts.count == 2{
-                newDefinition = String(parts[1]).trimmingCharacters(in: .whitespacesAndNewlines)
-            } else if parts.count > 1{
-                newDefinition = parts[1...].joined(separator: " \(settingsModel.appSeparators.value) ").trimmingCharacters(in: .whitespacesAndNewlines)
-            }
-            
-            newWord = {
-                if let firstCharachter = newWord.first{
-                    let restOfTheString = newWord.dropFirst()
-                    return String(firstCharachter).capitalized + restOfTheString
-                } else {
-                    return newWord
-                }
-            }()
-            if numberOfPairs >= index + 1 {
-                currentWords[index].word = newWord
-                currentWords[index].definition = newDefinition
-            } else {
-                currentWords.append(.init(word: newWord, definition: newDefinition, imageDetails: .init()))
-            }
-            numberOfLines = index + 1
+    
+    //MARK: System
+    func preselectInputMode(mode: DataInputMode) {
+        switch mode {
+        case .regular:
+            inputMode = .regular
+        case .single:
+            prepareModeSwitch()
         }
-        let numberOfCells = currentWords.count
-        if currentWords.isEmpty {
-            if final != true {
-                addEmptyCell()
-            }
-        } else if numberOfCells > numberOfLines {
-            for number in numberOfLines...numberOfCells - 1{
-                currentWords[number].word = ""
-                currentWords[number].definition = ""
-            }
-        }
-        
     }
     
-    func uniteTheText() -> String{
-        var textByLines: [String] = []
-        for cellData in currentWords {
-            if (cellData.word + cellData.definition).isEmpty {
-                
-            } else {
-                let line = cellData.word.trimmingCharacters(in: .whitespacesAndNewlines) + " \(settingsModel.appSeparators.value) " + cellData.definition.trimmingCharacters(in: .whitespacesAndNewlines)
-                let singleLine = line.split(separator: "\n")
-                textByLines.append(singleLine.joined(separator: "\r"))
-            }
-        }
-        currentText = textByLines.joined(separator: "\n")
-        return currentText
+    func prepareModeSwitch(){
+        self.splitTheText(text: currentText)
     }
     
-    func addEmptyCell(){
-        currentWords.append(.init(word: "", definition: "", imageDetails: .init()))
-    }
-
-    func imageDidAdd(imageDetails: ImageDetailsCheck, index: IndexPath){
-        if index.item <= currentWords.count {
-            currentWords[index.item].imageDetails = imageDetails
+    func viewRequestToClose(){
+        if requiresUpdate {
+            output.send(.shouldPresentAlert(.saveAlert))
+        } else {
+            self.requiresUpdate = false
+            self.output.send(.shouldPop)
         }
     }
+    
+    func userPermitedToClose(){
+        self.requiresUpdate = false
+        self.output.send(.shouldPop)
+    }
 
-    //MARK: Text input view related
+
+    //MARK: RegularInput related
     func configureTextPlaceholder() -> String{
         return "viewPlaceholderWord".localized + " \(settingsModel.appSeparators.value) " + "viewPlaceholderMeaning".localized
     }
@@ -144,50 +96,118 @@ class AddWordsViewModel {
         settingsModel.appSeparators.value
     }
     
-
-    //MARK: Dictionary update
-    func extendDictionaryWithSingleData() {
-        splitTheText(text: currentText)
-
-        do {
-            try updateManager.addNewWordsFor(dictionary, from: currentWords)
-            output.send(.shouldPop)
-        } catch {
-            if let emptyLineError = error as? WordsErrorType {
-                switch emptyLineError {
-                case .failedToAssignEmptyString(let word):
-                    output.send(.shouldHighlightError(word))
-                    output.send(.shouldPresentError(error))
-                    return
-                default:
-                    output.send(.shouldPresentError(error))
-                    break
-                }
-            } else {
-                output.send(.shouldPresentError(error))
-            }
+    func updateText(text: String) {
+        self.currentText = text
+        if !text.isEmpty {
+            self.requiresUpdate = true
+        } else {
+            self.requiresUpdate = false
         }
     }
+    
+    func splitTheText(text: String) {
+        
+        let singleModeData = dataUpdateManager.splitTheText(text: text, trimExceptions: false)
+        
+        currentWords = singleModeData
+        currentText = text
+        inputMode = .single
+        
+//        print(currentWords.isEmpty)
+        if currentWords.isEmpty {
+//            print("was called")
+//            self.addEmptyCell()
+            let newEntity = SingleModeCellData(word: "", definition: "", imageDetails: .init())
+            currentWords.append(newEntity)
+        }
+//        else {
+            singleOutput.send(.shouldUpdateResult(currentWords))
+//        }
+    }
 
-    func extendDictionaryWith(_ text: String){
-        do {
-            try updateManager.addNewWordsFor(dictionary, from: text)
-            output.send(.shouldPop)
-        } catch {
-            if let emptyLineError = error as? WordsErrorType {
-                switch emptyLineError {
-                case .failedToAssignEmptyString(let word):
-                    output.send(.shouldHighlightError(word))
-                    output.send(.shouldPresentError(error))
-                    return
-                default: 
-                    output.send(.shouldPresentError(error))
-                    break
-                }
-            } else {
+    //MARK: Dictionary update
+    func extendDictionary(){
+        var data: VerificationResult
+        
+        switch  inputMode{
+        case .regular:
+            data = dataUpdateManager.verifyTextData(data: currentText, name: dictionary.language)
+        case .single:
+            data = dataUpdateManager.verifySingleCellData(data: currentWords, name: dictionary.language)
+        }
+        
+        switch data {
+        case .success(let singleData, _):
+            do {
+                try dataUpdateManager.addNewWordsFor(dictionary, from: singleData)
+                requiresUpdate = false
+                output.send(.shouldPop)
+            } catch {
                 output.send(.shouldPresentError(error))
             }
+        case .emptyName:
+            output.send(.shouldPresentAlert(.emptyName))
+        case .emptyText:
+            output.send(.shouldPresentAlert(.emptyText))
+        case .croppedText:
+            output.send(.shouldPresentAlert(.invalidContent))
+        case .emptyArray:
+            output.send(.shouldPresentAlert(.emptyArray))
         }
+    }
+    
+    
+    //MARK: SingleInput Related
+    func wordDidType(id: UUID, text: String) {
+        guard let pairIndex = currentWords.firstIndex(where: { $0.identifier == id }) else { return }
+
+        currentWords[pairIndex].word = text
+        requiresUpdate = true
+    }
+    
+    func definitionDidType(id: UUID, text: String) {
+        guard let pairIndex = currentWords.firstIndex(where: { $0.identifier == id }) else { return }
+        
+            currentWords[pairIndex].definition = text
+            requiresUpdate = true
+        
+    }
+
+    func enteredEditingMode() { }
+    
+    func exitedEditingMode()  { }
+    
+    func nameDidType(text: String) { }
+
+
+    func requestedDeletion(id: UUID) {
+        currentWords.removeAll(where: {$0.identifier == id})
+        
+        singleOutput.send(.shouldUpdateResult(currentWords))
+        requiresUpdate = true
+    }
+    
+    
+    func addEmptyCell(){
+        let newEntity = SingleModeCellData(word: "", definition: "", imageDetails: .init())
+        currentWords.append(newEntity)
+        
+        singleOutput.send(.shouldInsert(newEntity))
+        
+    }
+    
+    func imageDidAdd(imageDetails: ImageDetailsCheck, data: SingleModeCellData){
+        guard let pair = currentWords.first(where: {$0.identifier == data.identifier}), let pairIndex = currentWords.firstIndex(where: {$0 == pair}) else { return }
+        
+        currentWords[pairIndex].imageDetails = imageDetails
+        
+        singleOutput.send(.shouldUpdateResult(currentWords))
+    }
+    
+    func requestAddImage(id: UUID){
+        guard let pair = currentWords.first(where: { $0.identifier == id }) else { return }
+        
+        singleOutput.send(.shouldPresentAddImageView(pair))
     }
     
     //MARK: Action
@@ -196,47 +216,4 @@ class AddWordsViewModel {
     }
 }
 
-//MARK: Single Mode Input delegate
-extension AddWordsViewModel: SingleModeViewDelegate{
-    func didSelectAnImage(imageDetails: ImageDetailsCheck, cell: SingleModeImageCell, index: IndexPath) {
-        
-        cell.addPhoto(imageDetails: imageDetails)
-        imageDidAdd(imageDetails: imageDetails, index: index)
-    }
-    
-    func deleteCell(index: IndexPath) {
-        currentWords.remove(at: index.item)
-    }
-    
-    func definitionDidTye(index: IndexPath, text: String) {
-        if index.item <= currentWords.count {
-            currentWords[index.item].definition = text
-        }
-    }
-    
-    func wordDidType(index: IndexPath, text: String) {
-        if index.item <= currentWords.count {
-            currentWords[index.item].word = text
-        }
-    }
-        
-    func didTapAddImage(cell: SingleModeImageCell, index: IndexPath) {
-        let pair = currentWords[index.item]
-        let vc = AddImageController(data: pair, delegate: self, cell: cell, index: index)
 
-        singleOutput.send(.shouldPresent(vc))
-    }
-
-
-    func numberOfCells() -> Int {
-        return currentWords.count
-    }
-    
-    func dataForCellAt(index: IndexPath) -> SingleModeCellData{
-        guard index.item <= currentWords.count - 1 else { return SingleModeCellData(word: "", definition: "", imageDetails: .init()) }
-        let pair = currentWords[index.item]
-        
-        return pair
-    }
-
-}

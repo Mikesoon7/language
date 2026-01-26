@@ -4,7 +4,7 @@
 //
 //  Created by Star Lord on 07/07/2023.
 //
-//  REFACTORING STATE: CHECKED
+//TODO: Polished
 
 import UIKit
 import CoreData
@@ -34,6 +34,8 @@ class MenuView: UIViewController {
     private var menuAccessedForCell: IndexPath?
     private var isUpdateNeeded: Bool = false
     
+    private var currentLayoutContext: CustomLayoutContext?
+    
     lazy var collectionView: UICollectionView = {
         let view = UICollectionView(frame: .zero, collectionViewLayout: layout)
         view.delegate = self
@@ -49,12 +51,6 @@ class MenuView: UIViewController {
     }()
     
     lazy private var layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
-//    {
-//        let layout = UICollectionViewFlowLayout()
-//        layout.minimumLineSpacing = .innerSpacer
-//        return layout
-//    }()
-    
     
     //MARK: Inherited
     required init(factory: ViewModelFactory){
@@ -67,25 +63,48 @@ class MenuView: UIViewController {
         fatalError("init?(coder: NSCoder) wasn'r imported")
     }
     
-    //MARK: - Inherited Methods
+    //MARK: - Inherited Methods (Ovverides)
     override func viewDidLoad() {
         super.viewDidLoad()
         bind()
         configureNavBar()
         setupCollectionView()
-        configureLabels()
+        applyLocalization()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         if isUpdateNeeded {
             self.collectionView.reloadData()
+            self.isUpdateNeeded = false
         }
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        _ = becomeFirstResponder()
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        updateLayoutIfNeeded()
+        print("traitCollectionLayoutChange", view.bounds.size)
+
     }
     
     override var canBecomeFirstResponder: Bool {
         return true
     }
+    
+    //Dictionary restores
+    override func motionEnded(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
+        if motion == .motionShake {
+            if viewModel.canUndo() {
+                undoActionWasDetected()
+            }
+        }
+    }
+
     
     //MARK: - StyleChange Responding
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -97,63 +116,12 @@ class MenuView: UIViewController {
                                              : shadowColorForLightIdiom)
             }
         }
-        if previousTraitCollection?.horizontalSizeClass != traitCollection.horizontalSizeClass {
-            adjustLayoutForSizeClass()
-        }
     }
-    
-    //MARK: - Binding View and ViewModel
-    private func bind(){
-        viewModel.output
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] output in
-                switch output{
-                case .needReload:
-                    self?.collectionView.reloadData()
-                case .needDelete(let item):
-                    self?.collectionView.deleteItems(at: [IndexPath(item: item, section: 0)])
-                case .needUpdate(_):
-                    self?.isUpdateNeeded = true
-                case .shouldPresentAddView:
-                    self?.pushAddDictionaryVC()
-                case .shouldPresentDetailsView(let dict):
-                    self?.pushDetailsVCFor(dict)
-                case .shouldPresentEditView(let dict):
-                    self?.pushEditVCFor(dict)
-                case .shouldPresentInspectView(let dict):
-                    self?.pushInspectEditVCFor(dict)
-                case .shouldPresentTutorialView:
-                    self?.pushTutorialVC()
-                case .shouldUpdateLabels:
-                    self?.configureLabels()
-                case .shouldUpdateFont:
-                    self?.configurefont()
-                    self?.collectionView.reloadData()
-                case .error(let error):
-                    self?.presentError(error, sourceView: self?.view)
-                }
-            }
-            .store(in: &cancellables)
-    }
-    
-    //Dictionary restores
-    override func motionEnded(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
-        if motion == .motionShake {
-            if viewModel.canUndo() {
-                undoActionWasDetected()
-            }
-        }
-    }
-    
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        adjustLayoutForSizeClass()
-    }
-
     //Ensures that accessed menu will deactivate on transitions.
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
         
+        updateLayoutIfNeeded(width: size.width)
         guard self.menuAccessedForCell == nil else {
             if let activeCell = collectionView.cellForItem(at: menuAccessedForCell!) as? MenuDictionaryCVCell {
                 coordinator.animate(alongsideTransition: { context in
@@ -166,9 +134,71 @@ class MenuView: UIViewController {
             return
         }
     }
+
+    
+    //MARK: - Binding View and ViewModel
+    private func bind(){
+        viewModel.output
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] output in
+                guard let self = self else { return }
+                switch output{
+                case .shouldPresentAddView:
+                    self.pushAddDictionaryVC()
+                case .shouldPresentDetailsView(let dict):
+                    self.pushDetailsVCFor(dict)
+                case .shouldPresentEditView(let dict):
+                    self.pushEditVCFor(dict)
+                case .shouldPresentInspectView(let dict):
+                    self.pushInspectVCFor(dict)
+                case .shouldPresentGameTutorialView(let dict):
+                    self.pushGameTutorialVC(for: dict)
+                case .shouldPresentTutorialView:
+                    self.pushTutorialVC()
+                case .shouldUpdateLabels:
+                    self.applyLocalization()
+                    self.collectionView.reloadData()
+                case .shouldUpdateFont:
+                    self.configurefont()
+                    self.collectionView.reloadData()
+                case .error(let error):
+                    self.presentError(error, sourceView: self.view)
+                }
+            }
+            .store(in: &cancellables)
+        viewModel.collectionOutput
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] output in
+                guard let self = self else { return }
+                switch output {
+                case .needReload:
+                    self.collectionView.reloadData()
+                case .needDelete(let item):
+                    self.collectionView.deleteItems(at: [IndexPath(item: item, section: 0)])
+                case .needUpdate(_):
+                    self.isUpdateNeeded = true
+                }
+            }
+            .store(in: &cancellables)
+
+    }
+    
     
     
     //MARK: CollectionView setUp
+    
+    private func configureNavBar(){
+        navigationItem.title = "menu.title".localized
+
+        //Statisctic BarButton
+        let rightButton = UIBarButtonItem(
+            image: UIImage(systemName: "chart.bar"),
+            style: .plain,
+            target: self,
+            action: #selector(statButtonDidTap(sender:)))
+        self.navigationItem.setRightBarButton(rightButton, animated: true)
+    }
+    
     private func setupCollectionView() {
         view.addSubview(collectionView)
         
@@ -185,45 +215,35 @@ class MenuView: UIViewController {
     }
     
     
-    private func adjustLayoutForSizeClass() {
-//        let layout = collectionView.collectionViewLayout
-        let isCompact = traitCollection.horizontalSizeClass == .compact
+    
+    //MARK:  Layout
+    private func updateLayoutIfNeeded(width: CGFloat? = nil) {
+        if width != nil {
+            let newContext = view.layoutContext(width: width)
+            currentLayoutContext = newContext
+            adjustLayoutFor(context: newContext, width: width)
+        } else {
+            let newContext = view.layoutContext()
+            guard newContext != currentLayoutContext else { return }
+            
+            currentLayoutContext = newContext
+            adjustLayoutFor(context: newContext)
+        }
+    }
+
+    
+    private func adjustLayoutFor(context: CustomLayoutContext, width: CGFloat? = nil) {
+        let isCompact = context == .compact
         let numberOfColumns: CGFloat = isCompact ? 1 : 2
+        let width = width ?? self.view.bounds.width
         
-        let itemWidth = ((self.view.bounds.width - (.outerSpacer * 2)) / numberOfColumns) - (isCompact ? 0 : 10)
+        let itemWidth = ((width - (.outerSpacer * 2)) / numberOfColumns) - (isCompact ? 0 : 10)
         
         layout.itemSize = CGSize(width: itemWidth, height: .largeButtonHeight)
         layout.minimumLineSpacing = .outerSpacer
         layout.invalidateLayout()
     }
-
-        
-    private func configureNavBar(){
-        //Statisctic BarButton
-        let rightButton = UIBarButtonItem(
-            image: UIImage(systemName: "chart.bar"),
-            style: .plain,
-            target: self,
-            action: #selector(statButtonDidTap(sender:)))
-        self.navigationItem.setRightBarButton(rightButton, animated: true)
-    }
     
-    private func configureLabels(){
-        navigationItem.title = "menu.title".localized
-    }
-    private func configurefont(){
-        let rightButton = UIBarButtonItem(
-            
-            image: UIImage(systemName: "chart.bar")?.withConfiguration(UIImage.SymbolConfiguration(weight: UIFont.selectedFont.fontWeight.symbolWeight())),
-            style: .plain,
-            target: self,
-            action: #selector(statButtonDidTap(sender:)))
-        self.navigationItem.setRightBarButton(rightButton, animated: true)
-        
-    }
-    private func undoLastDeletion() {
-        viewModel.undoLastDeletion()
-    }
     
 
     //MARK: Configuring and presenting VC's
@@ -242,10 +262,9 @@ class MenuView: UIViewController {
                           oneByOne: true)
         self.navigationController?.pushViewController(vc, animated: true)
     }
-    func pushInspectEditVCFor(_ dictionary: DictionariesEntity){
-        let vc = EditView(dictionary: dictionary,
-                          factory: self.viewModelFactory,
-                          oneByOne: false)
+    func pushInspectVCFor(_ dictionary: DictionariesEntity){
+        let vc = InspectView(dictionary: dictionary,
+                          factory: self.viewModelFactory)
         self.navigationController?.pushViewController(vc, animated: true)
 
     }
@@ -254,8 +273,31 @@ class MenuView: UIViewController {
         
         self.navigationController?.present(vc, animated: true)
     }
+    func pushGameTutorialVC(for dict: DictionariesEntity){
+        let vc = MainGameVC(
+            viewModelFactory: self.viewModelFactory,
+            dictionary: dict,
+            selectedOrder: .normal,
+            isOneSideModeOn: false,
+            selectedNumber: Int(dict.numberOfCards),
+            isFirstLaunch: true)
+        self.navigationController?.pushViewController(vc, animated: true)
+    }
         
     //MARK: - System
+    private func applyLocalization(){
+        navigationItem.title = "menu.title".localized
+    }
+    private func configurefont(){
+        let rightButton = UIBarButtonItem(
+            
+            image: UIImage(systemName: "chart.bar")?.withConfiguration(UIImage.SymbolConfiguration(weight: UIFont.selectedFont.fontWeight.symbolWeight())),
+            style: .plain,
+            target: self,
+            action: #selector(statButtonDidTap(sender:)))
+        self.navigationItem.setRightBarButton(rightButton, animated: true)
+    }
+
     //If available, will suggest user to restore deleted entity.
     private func undoActionWasDetected(){
         let alertController = UIAlertController
@@ -271,6 +313,10 @@ class MenuView: UIViewController {
         restoreAction.setValue(UIColor.label, forKey: "titleTextColor")
         alertController.addAction(restoreAction)
         self.present(alertController, animated: true)
+    }
+    
+    private func undoLastDeletion() {
+        viewModel.undoLastDeletion()
     }
     
     //MARK: - Actions
@@ -289,7 +335,7 @@ class MenuView: UIViewController {
 extension MenuView: UICollectionViewDataSource, UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        viewModel.didSelectTableRowAt(item: indexPath.item)
+        viewModel.didSelectCell(at : indexPath.item)
     }
         
     func collectionView(_ collectionView: UICollectionView, didHighlightItemAt indexPath: IndexPath) {
@@ -307,11 +353,11 @@ extension MenuView: UICollectionViewDataSource, UICollectionViewDelegate {
         }
     }
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        viewModel.numberOfSectionsInTableView()
+        viewModel.numberOfCells()
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let data = viewModel.dataForTableCellAt(item: indexPath.item) else {
+        guard let data = viewModel.dataForCell(at: indexPath.item) else {
             let cell = collectionView.dequeueReusableCell(
                 withReuseIdentifier: MenuAddDictionaryCVCell.identifier,
                 for: indexPath) as? MenuAddDictionaryCVCell
@@ -356,7 +402,7 @@ extension MenuView: MenuCellDelegate {
         let completion = { [weak self] cell in
             self?.menuAccessedForCell = nil
             guard let index = self?.collectionView.indexPath(for: cell) else { return }
-            self?.viewModel.deleteDictionary(at: index)
+            self?.viewModel.deleteDictionary(at: index.item)
         }
         
         guard let sourceView = self.view,
@@ -382,13 +428,13 @@ extension MenuView: MenuCellDelegate {
     func editButtonDidTap(for cell: UICollectionViewCell){
         menuAccessedForCell = nil
         guard let index = collectionView.indexPath(for: cell) else { return }
-        viewModel.editDictionary(at: index)
+        viewModel.editDictionary(at: index.item)
     }
     
     func inspectButtonDidTap(for cell: UICollectionViewCell) {
         menuAccessedForCell = nil
         guard let index = collectionView.indexPath(for: cell) else { return }
-        viewModel.inspectDictionary(at: index)
+        viewModel.inspectDictionary(at: index.item)
     }
     
     func shareButtonDidTap(for cell: UICollectionViewCell) {

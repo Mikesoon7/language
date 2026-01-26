@@ -3,7 +3,7 @@
 //
 //  Created by Star Lord on 21/03/2023.
 //
-//  REFACTORING STATE: CHECKED
+//TODO: Polish
 
 import UIKit
 
@@ -189,9 +189,14 @@ class CollectionViewCell: UICollectionViewCell {
         
         // Set the visibility based on whether there is a meaning to display
         if !data.wordEntity.meaning.isEmpty {
-            translationBacksideLabel.text = data.wordEntity.meaning
-            translation.text = data.wordEntity.meaning
-        
+            if data.globalyFliped {
+                translationBacksideLabel.text = data.wordEntity.word
+                translation.text = data.wordEntity.word
+                word.text = data.wordEntity.meaning
+            } else {
+                translationBacksideLabel.text = data.wordEntity.meaning
+                translation.text = data.wordEntity.meaning
+            }
             isAccessable = true
             translation.isHidden = false
             translationBacksideLabel.isHidden = false

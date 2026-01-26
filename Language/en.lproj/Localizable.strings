@@ -68,15 +68,22 @@
 "frontSide" = "Front side";
 "backSide" = "Back side";
 //Alerts
-"textAlert" = "Enter the text";
-"nameAlert" = "Enter the name";
-"textInfo" = "Please, enter at least 1 pair of words.";
-"nameInfo" = "Almost done. Please, name your dictionary";
 "addWords.contentSaving.title" = "Content wasn't saved";
 "addWords.contentSaving.text" = "Would you like to save your new words?";
 "addWords.contentSaving.image" = "Would you like to save you new image?";
 "addWords.contentSaving.save" = "Save";
 "addWords.contentSaving.clear" = "Clear";
+"addWords.emptyName.title" = "Name your dictionary";
+"addWords.emptyName.message" = "Almost done! Add a name to finish saving.";
+"addWords.emptyText.title" = "Add some text";
+"addWords.emptyText.message" = "Please enter at least one word to save the dictionary.";
+"addWords.emptyCells.title" = "Add content";
+"addWords.emptyCells.message" = "To save the dictionary, add at least one item — text or an image is enough.";
+"addWords.croppedText.title" = "Content couldn’t be saved";
+"addWords.croppedText.message" = "The text became empty after selected exception characters were removed. Please check settings and try again.";
+//Information
+"addDict.lineMode" = "You are in Line-by-Line mode. \n\n This mode automatically splits your text into cards, with each paragraph becoming a separate card. It’s the fastest and most efficient way to add multiple cards at once.";
+"addDict.singleMode" = "You are in One-by-One mode. \n\n This mode lets you create each card individually, giving you full control over the content and allowing you to add images when needed.";
 
 //MARK: - System
 "system.cancel" = "Cancel";
@@ -101,18 +108,20 @@
 "system.continue" = "Continue";
 "system.finish" = "Finish";
 "system.checked" = "Checked";
+"system.image" = "\"Graphic content\"";
 
 //MARK: - DetailsVC
 "details.title" = "Details";
 "details.randomize" = "Randomize cards";
 "details.goal" = "Set the goal";
-"details.showTranslation" = "Display translation";
+"details.showTranslation" = "One side mode";
 "details.cardsOrder" = "Cards order:";
 "details.cardsOrder.noraml" = "Normal";
 "details.cardsOrder.random" = "Random";
 "details.cardsOrder.reverse" = "Reverse";
 "details.addWords" = "Add new words";
 "details.start" = "Start";
+"details.flipTheCard" = "Display";
 
 //MARK: - GameVC
 "game.title" = "Cards";
@@ -202,6 +211,8 @@
 "edit.emptyField.message" = "Please, provide at least one charachter for a dictionary name";
 "edit.emptyText.title" = "The edit text is empty";
 "edit.emptyText.message" = "Saving dictionary in this state will cause it's deletion. \nAre you sure?";
+"edit.unsavedAlert.title" = "Your changes weren't saved";
+"edit.unsavedAlert.message" = "Would you like to save your adjustments?";
 //MARK: - Tutorial
 "tutorial" = "Tutorial";
 //FirstView
@@ -222,6 +233,13 @@
 "tutorial.card.name" = "Hello";
 "tutorial.card.title" = "We're thrilled to be part of your learning journey! ";
 "tutorial.card.message" = " \r\rP.S. We're always \rstriving for improvement. \rIf you like Learny, please \rrate us on the App Store. \r\rGood luck with your studies!";
+//MARK: In Game Tutorial
+"game.tutorial.title" = "One more thing...";
+"game.tutorial.subtitle" = "We know tutorials can be tiring... but we promise — this one’s the last!";
+"game.tutorial.tap" = "Tap a card to flip it and reveal the other side when available.";
+"game.tutorial.press" = "Need to make a change? Press and hold a card to enter edit mode.";
+"game.tutorial.timer" = "Track your progress anytime — just tap the timer button.";
+"game.tutorial.flip" = "Feeling confident? Tap the revert button and learn your cards in reverse!";
 
 //MARK: Exceptions
 "exception.title" = "Exclusion Symbols";

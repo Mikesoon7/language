@@ -4,7 +4,7 @@
 //
 //  Created by Star Lord on 07/07/2023.
 //
-//  REFACTORING STATE: CHECKED
+//TODO: Polished
 
 import UIKit
 import CoreData
@@ -13,41 +13,46 @@ import Combine
 
 final class MenuViewModel{
     enum Output{
-        case needReload
-        case needDelete(Int)
-        case needUpdate(Int)
         case shouldPresentAddView
         case shouldPresentDetailsView(DictionariesEntity)
         case shouldPresentEditView(DictionariesEntity)
         case shouldPresentInspectView(DictionariesEntity)
+        case shouldPresentGameTutorialView(DictionariesEntity)
         case shouldPresentTutorialView
         case shouldUpdateLabels
         case shouldUpdateFont
         case error(Error)
     }
-
+    enum CollectionOutput {
+        case needReload
+        case needDelete(Int)
+        case needUpdate(Int)
+    }
+    
     private let model: Dictionary_Words_LogsManager
     private let settingsModel: UserSettingsStorageProtocol
     private var cancellables = Set<AnyCancellable>()
     var dictionaries: [DictionariesEntity] = []
-        
-    @Published var output = PassthroughSubject<Output, Never>()
+    
+    var output = PassthroughSubject<Output, Never>()
+    var collectionOutput = PassthroughSubject<CollectionOutput, Never>()
     
     init(model: Dictionary_Words_LogsManager, settingsModel: UserSettingsStorageProtocol) {
         self.model = model
         self.settingsModel = settingsModel
         model.dictionaryDidChange
             .sink { [weak self] type in
+                guard let self = self else { return }
                 switch type {
                 case .wasDeleted(let item):
-                    self?.fetch()
-                    self?.output.send(.needDelete(item))
+                    self.fetch()
+                    self.collectionOutput.send(.needDelete(item))
                 case .wasAdded:
-                    self?.fetch()
-                    self?.output.send(.needReload)
+                    self.fetch()
+                    self.collectionOutput.send(.needReload)
                 case .wasUpdated(let section):
-                    self?.fetch()
-                    self?.output.send(.needUpdate(section))
+                    self.fetch()
+                    self.collectionOutput.send(.needUpdate(section))
                 }
             }
             .store(in: &cancellables)
@@ -64,7 +69,7 @@ final class MenuViewModel{
     }
     
     deinit { NotificationCenter.default.removeObserver(self)}
-
+    
     //MARK: Fetch and update local dictionary variable.
     func fetch(){
         do {
@@ -73,6 +78,7 @@ final class MenuViewModel{
             output.send(.error(error))
         }
     }
+    
     //MARK: Deleted dictionary restoring
     ///Asks model is restore available
     func canUndo() -> Bool {
@@ -82,29 +88,24 @@ final class MenuViewModel{
     func undoLastDeletion(){
         model.undoDeletion()
     }
-    func currentFont() -> UIFont {
-        let font = settingsModel.appFont.selectedFont
-        
-        return font.withSize(23)
-    }
-    
+
     //MARK: Cell swipe actions related.
     //Delete dictioanary action was tapped.
-    func deleteDictionary(at index: IndexPath) {
-        let dictionary = dictionaries[index.item]
+    func deleteDictionary(at item: Int) {
+        let dictionary = dictionaries[item]
         do {
-            try model.delete(dictionary: dictionary)
+            try model.deleteDictionary(dictionary)
         } catch {
             output.send(.error(error))
         }
     }
     //Edit dictionary action was tapped.
-    func editDictionary(at index: IndexPath) {
-        let dictionary = dictionaries[index.item]
+    func editDictionary(at item: Int) {
+        let dictionary = dictionaries[item]
         output.send(.shouldPresentEditView(dictionary))
     }
-    func inspectDictionary(at index: IndexPath) {
-        let dictionary = dictionaries[index.item]
+    func inspectDictionary(at item: Int) {
+        let dictionary = dictionaries[item]
         output.send(.shouldPresentInspectView(dictionary))
     }
     
@@ -123,8 +124,8 @@ final class MenuViewModel{
         return words
     }
     
-    //MARK: TableView Related
-    func dataForTableCellAt(item: Int) -> DataForMenuCell? {
+    //MARK: Collection Related
+    func dataForCell(at item: Int) -> DataForMenuCell? {
         guard item != dictionaries.count else {
             return nil
         }
@@ -132,25 +133,32 @@ final class MenuViewModel{
         return DataForMenuCell(name: dictionary.language, numberOfCards: dictionary.numberOfCards)
     }
     
-    func numberOfSectionsInTableView() -> Int{
+    func numberOfCells() -> Int{
         return dictionaries.count + 1
     }
     
-    func didSelectTableRowAt(item: Int){
+    func didSelectCell(at item: Int){
         guard item != dictionaries.count else {
             output.send(.shouldPresentAddView)
             return
         }
-        let dictionary = dictionaries[item]
-        output.send(.shouldPresentDetailsView(dictionary))
+        let dictionary = dictionaries[ item]
+        if (dictionary.id == AppLinks.tutorialUUID && settingsModel.appTutorialStatus.isFirstAccess) || settingsModel.appTutorialStatus.isFirstAccess {
+            settingsModel.reload(newValue:  .tutorialStatus(.isNotFirst))
+            output.send(.shouldPresentGameTutorialView(dictionary))
+        } else {
+            output.send(.shouldPresentDetailsView(dictionary))
+        }
     }
-    
+
+    //MARK: Actions
     @objc func languageDidChange(sender: Any){
         output.send(.shouldUpdateLabels)
     }
     @objc func fontDidChange(sender: Any){
         output.send(.shouldUpdateFont)
     }
+    
     @objc func validateLaunchStatus(sender: Notification){
         let isFirst = settingsModel.appLaunchStatus.isFirstLaunch
         if isFirst {

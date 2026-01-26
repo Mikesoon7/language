@@ -4,6 +4,7 @@
 //
 //  Created by Star Lord on 24/04/2025.
 //
+//TODO: Polish
 
 import UIKit
 
@@ -34,12 +35,13 @@ protocol InfoViewDelegate: AnyObject {
         //MARK: Lablels
         let informationLabel: UILabel = {
             let label = UILabel()
-            label.font = .selectedFont.withSize(.bodyTextSize)
+            label.font = .selectedFont.withSize(.subtitleSize)
             label.textColor = .label
             label.translatesAutoresizingMaskIntoConstraints = false
             label.numberOfLines = 0
             label.contentMode = .top
             label.textAlignment = .center
+            
             label.lineBreakMode = .byWordWrapping
             return label
         }()
@@ -97,12 +99,12 @@ protocol InfoViewDelegate: AnyObject {
             
             
             NSLayoutConstraint.activate([
+                informationLabel.centerXAnchor.constraint(
+                    equalTo: popover.centerXAnchor),
                 informationLabel.topAnchor.constraint(
-                    equalTo: popover.topAnchor, constant: .longInnerSpacer),
-                informationLabel.leadingAnchor.constraint(
-                    equalTo: popover.leadingAnchor, constant: .longInnerSpacer),
-                informationLabel.trailingAnchor.constraint(equalTo: popover.trailingAnchor, constant: -.longInnerSpacer),
-                informationLabel.bottomAnchor.constraint(equalTo: popover.bottomAnchor, constant: -.outerSpacer)
+                    equalTo: popover.topAnchor),
+                informationLabel.widthAnchor.constraint(equalTo: popover.widthAnchor, constant: -.longOuterSpacer),
+                informationLabel.heightAnchor.constraint(equalTo: popover.heightAnchor, constant: -.longOuterSpacer )
                 
             ])
         }

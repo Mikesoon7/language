@@ -4,6 +4,8 @@
 //
 //  Created by Star Lord on 23/08/2023.
 //
+//TODO: Polish
+
 
 import Foundation
 import UIKit
@@ -30,7 +32,7 @@ final class ViewModelFactory{
         AddWordsViewModel(dataModel: dataModel, settingsModel: settingsModel, dictionary: dictionary)
     }
     func configureDetailsViewModel(dictionary: DictionariesEntity) -> DetailsViewModel{
-        DetailsViewModel(model: dataModel, dictionary: dictionary)
+        DetailsViewModel(model: dataModel, settings: settingsModel,  dictionary: dictionary)
     }
     func configureSearchViewModel() -> SearchViewModel{
         SearchViewModel(model: dataModel, settingModel: settingsModel)
@@ -44,23 +46,23 @@ final class ViewModelFactory{
     func configureNotificationsModel() -> NotificationViewModel{
         NotificationViewModel(settingsModel: settingsModel)
     }
-//    func configureStatisticModel(dictionary: DictionariesEntity) -> StatisticCellViewModel{
-//        StatisticCellViewModel(dataModel: dataModel,
-//                               settingModel: settingsModel,
-//                               dictionary: dictionary)
-//    }
+    func configureInspectModel(dictionary: DictionariesEntity) -> InspectViewModel{
+        InspectViewModel(dataModel: dataModel,
+                         settingsModel: settingsModel,
+                         dictionary: dictionary)
+    }
     func configureStatisticViewModel() -> StatisticViewModel{
         StatisticViewModel(dataModel: dataModel, settingsModel: settingsModel)
     }
     func configureExceptionViewModel() -> ExceptioonsViewModel{
         ExceptioonsViewModel(settingsModel: settingsModel)
     }
-    func configureGameViewmModel(dictionary: DictionariesEntity, selectedOrder: DictionariesSettings.CardOrder, isTwoSidesModeOn: Bool, selectedNumber: Int, selectedTime: Int?) -> GameViewModel{
+    func configureGameViewmModel(dictionary: DictionariesEntity, selectedOrder: DictionariesSettings.CardOrder, isOneSideMode: Bool, selectedNumber: Int, selectedTime: Int?) -> GameViewModel{
         GameViewModel(dataModel: dataModel,
                       settingsModel: settingsModel,
                       dictionary: dictionary,
                       selectedOrder: selectedOrder,
-                      isOneSideMode: isTwoSidesModeOn,
+                      isOneSideMode: isOneSideMode,
                       selectedNumber: selectedNumber,
                       selectedTime: selectedTime
         )

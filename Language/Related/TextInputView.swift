@@ -4,7 +4,7 @@
 //
 //  Created by Star Lord on 12/08/2023.
 //
-//  REFACTORING STATE: CHECKED
+//TODO: Polish
 
 import UIKit
 
@@ -25,7 +25,7 @@ final class TextInputView: UIView {
     private var textContainerInsets: UIEdgeInsets
     private var textContainer   = NSTextContainer()
     private let textStorage     = NSTextStorage()
-
+    
     lazy var layoutManager = HighlightLayoutManager(textInsets: self.textContainerInsets)
     private weak var delegate: PlaceholderTextViewDelegate?
     
@@ -35,7 +35,7 @@ final class TextInputView: UIView {
     private let placeholderLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .timesNewRoman.withSize(.assosiatedTextSize)
+        label.font = .selectedFont.withSize(.assosiatedTextSize)
         label.textColor = .lightGray
         label.numberOfLines = 0
         return label
@@ -59,18 +59,8 @@ final class TextInputView: UIView {
     
     //MARK: AccessoryView
     var customAccessoryView : UIView = UIView()
-//    var customPlaceholderText: String? {
-//        get {
-//            return delegate?.configurePlaceholderText(sender: UITextView)
-//        }
-//        set {
-//            self.placeholderLabel.text = newValue
-//            self.updatePlaceholderVisability()
-//        }
-//    }
-    
     private let customAccessoryViewHeight : CGFloat = .accessoryViewHeight
-
+    
     private let newLineButton: UIButton = {
         let button = UIButton()
         button.setUpAccessoryViewButton(image: nil, title: "system.newLine".localized)
@@ -90,7 +80,6 @@ final class TextInputView: UIView {
         button.setUpAccessoryViewButton(image: .init(systemName: "character.phonetic"))
         button.layer.cornerRadius = 3
         button.layer.masksToBounds = true
-//        button.backgroundColor = .systemGray2
         button.translatesAutoresizingMaskIntoConstraints = true
         button.frame.size = CGSize(width: 40, height: 40)
         return button
@@ -115,7 +104,7 @@ final class TextInputView: UIView {
         return buttonGroup
     }()
     
-
+    
     //MARK: Inherited
     convenience init(delegate: PlaceholderTextViewDelegate, tag: Int = 0){
         self.init(frame: .zero, delegate: delegate, tag: tag)
@@ -129,7 +118,7 @@ final class TextInputView: UIView {
         self.textContainerInsets = textContainerInsets!
         super.init(frame: frame)
         configureView()
-        configureTableView()
+        configureTextView()
         
         textView.tag = tag
         
@@ -162,25 +151,35 @@ final class TextInputView: UIView {
             self.layer.shadowColor = UIColor.shadowColour.cgColor
         }
     }
+    override func resignFirstResponder() -> Bool {
+        self.textView.resignFirstResponder()
+    }
+    
+    override func becomeFirstResponder() -> Bool {
+        self.textView.becomeFirstResponder()
+    }
+    
     deinit { NotificationCenter.default.removeObserver(self) }
-
+    
     //MARK: View SetUp
     private func configureView(){
         self.layer.cornerRadius = .cornerRadius
-
+        
         self.addCenterShadows()
         self.backgroundColor = .selectedColourPalette.primaryBackgroundColour
         self.translatesAutoresizingMaskIntoConstraints = false
     }
     
     //MARK: Subviews SetUp
-    private func configureTableView() {
+    private func configureTextView() {
         layoutManager.addTextContainer(textContainer)
         
         textStorage.addLayoutManager(layoutManager)
         
         textView.delegate = self
-
+        
+        self.keyboardLayoutGuide.followsUndockedKeyboard = false
+        
         self.addSubviews(placeholderLabel, textView)
         
         NSLayoutConstraint.activate([
@@ -199,7 +198,7 @@ final class TextInputView: UIView {
     private func configureAccessoryView(){
         newLineButton.addTarget(self, action: #selector(softReturnDidPress), for: .touchUpInside)
         scanButton.addAction(UIAction.captureTextFromCamera(responder: textView, identifier: .paste), for: .touchUpInside)
-//        scanButton.addTarget(self, action: #selector(appScanDidTap), for: .touchUpInside)
+        //        scanButton.addTarget(self, action: #selector(appScanDidTap), for: .touchUpInside)
         translateButton.addTarget(self, action: #selector(translationButtonDidPress), for: .touchUpInside)
         pasteButton.addTarget(self, action: #selector(pasteButtonDidPress), for: .touchUpInside)
         separatorButton.addTarget(self, action: #selector(separatorButtonDidPress), for: .touchUpInside)
@@ -222,7 +221,7 @@ final class TextInputView: UIView {
                                                 pasteButton: pasteButton,
                                                 translateButton: translateButton,
                                                 separateButton: separatorButton,
-                                                frame: CGRect(origin: .zero, 
+                                                frame: CGRect(origin: .zero,
                                                               size: .init(width: 200,
                                                                           height: customAccessoryViewHeight))
             )
@@ -256,13 +255,13 @@ final class TextInputView: UIView {
     // MARK: Translation Logic
     private func removeTranslationButton(){
         textView.inputAssistantItem.trailingBarButtonGroups.removeAll(where: {$0 == translationAccessoryItemGroup})
-
+        
         if let view = customAccessoryView as? CustomInputAccessoryView {
             // Use the built-in Translate feature (by showing UIReferenceLibraryViewController)
             view.removeTranslationButton()
         }
     }
-
+    
     private func dispalayTranslationButton() {
         textView.inputAssistantItem.trailingBarButtonGroups.append(translationAccessoryItemGroup)
         
@@ -270,7 +269,7 @@ final class TextInputView: UIView {
             view.dispalayTranslationButton()
         }
     }
-
+    
     func clearTextView(){
         self.textView.text = ""
         self.textViewDidChange(textView)
@@ -295,13 +294,13 @@ final class TextInputView: UIView {
                                                                      action1Style: .cancel,
                                                                      sourceView: self,
                                                                      sourceRect: nil)
-
+            
             delegate?.presentErrorAlert(alert: insertTextAllert)
             return nil
         }
         return text
     }
-
+    
     
     //MARK: Action
     @objc func appDidEnterBackground(sender: Notification){
@@ -320,13 +319,13 @@ final class TextInputView: UIView {
         let impactGenerator = UIImpactFeedbackGenerator(style: .medium)
         impactGenerator.prepare()
         impactGenerator.impactOccurred()
-
+        
     }
     @objc func appScanDidTap(sender: Any){
         buttonTouchResponse()
         UIAction.captureTextFromCamera(responder: textView, identifier: .paste)
     }
-
+    
     @objc private func softReturnDidPress() {
         if let selectedRange = textView.selectedTextRange {
             textView.replace(selectedRange, withText: "\r") // Insert soft return
@@ -361,7 +360,7 @@ final class TextInputView: UIView {
     }
     @objc private func separatorButtonDidPress(){
         guard let separator = delegate?.currentSeparatorSymbol() else { return }
-
+        
         let attributes = self.textView.typingAttributes
         let selectedRange = textView.selectedRange
         let attributedString = NSAttributedString(string: " \(separator) ", attributes: attributes)
@@ -371,7 +370,7 @@ final class TextInputView: UIView {
         } else {
             textView.textStorage.insert(attributedString, at: selectedRange.location)
         }
-
+        
         textView.selectedRange = NSRange(location: selectedRange.location + separator.count + 2, length: 0)
         textView.delegate?.textViewDidChange?(textView)
         
@@ -385,9 +384,9 @@ final class TextInputView: UIView {
         
         let errorAnimation: CAKeyframeAnimation = .shakingAnimation()
         
-        guard let wordRange = wordRange, 
+        guard let wordRange = wordRange,
                 let word = textView.text(in: wordRange),
-                let parentVC = self.nearestViewController() else {
+              let parentVC = self.nearestViewController() else {
             self.textView.layer.add(errorAnimation, forKey: "animation")
             return
         }
@@ -396,6 +395,29 @@ final class TextInputView: UIView {
         parentVC.present(refVC, animated: true)
     }
     
+    //MARK: TextView direct comunication
+    func updateText(text: String) {
+        self.textView.text = text
+        self.updatePlaceholderVisability()
+    }
+    func updateAttributedText(text: NSAttributedString){
+        self.textView.attributedText = text
+        self.updatePlaceholderVisability()
+    }
+    
+    func currentText() -> String {
+        self.textView.text
+    }
+    
+    func isFirstResponder() -> Bool {
+        return textView.isFirstResponder
+    }
+    
+    
+    func updateFont(font: UIFont){
+        self.textView.font = font
+    }
+
 }
 
 //MARK: - TextView Delegate

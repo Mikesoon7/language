@@ -4,6 +4,7 @@
 //
 //  Created by Star Lord on 19/07/2023.
 //
+//TODO: Polish
 
 import Foundation
 

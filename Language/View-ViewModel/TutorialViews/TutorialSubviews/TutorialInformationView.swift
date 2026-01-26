@@ -4,7 +4,7 @@
 //
 //  Created by Star Lord on 29/09/2023.
 //
-//  REFACTORING STATE: CHECKED
+//TODO: Polished
 
 import UIKit
 
@@ -17,7 +17,7 @@ class TutorialInformationView: UIView {
     // Charter
     private let topLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: "Charter-Bold", size: .titleSize)
+        label.font = .selectedFont.withSize(.titleSize)
         label.tintColor = .label
         label.translatesAutoresizingMaskIntoConstraints = false
         label.numberOfLines = 0
@@ -27,7 +27,7 @@ class TutorialInformationView: UIView {
     
     private let middleLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: "Charter-Roman", size: .subtitleSize)
+        label.font = .selectedFont.withSize(.bodyTextSize)
         label.translatesAutoresizingMaskIntoConstraints = false
         label.tintColor = .label
         label.textAlignment = .center
@@ -35,6 +35,7 @@ class TutorialInformationView: UIView {
         label.adjustsFontSizeToFitWidth = true
         return label
     }()
+    
     private let textStack: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .vertical

@@ -52,6 +52,7 @@ class CustomSearchBar: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    
     //MARK: - Views properties setUp
     private func configureView(){
         self.backgroundColor = .systemBackground
@@ -106,14 +107,15 @@ class CustomSearchBar: UIView {
     
     func animateTransitionTo(isActivated: Bool, time: TimeInterval){
         UIView.animate(withDuration: time) { [ unowned self ] in
-            if isActivated {
-                self.cancelButtonTrailingAnchor.isActive = true
-                self.cancelButtonLeadingAnchor.isActive = false
-            } else {
-                self.cancelButtonLeadingAnchor.isActive = true
-                self.cancelButtonTrailingAnchor.isActive = false
-            }
-             self.layoutIfNeeded()
+            NSLayoutConstraint.deactivate([isActivated
+                                          ? self.cancelButtonLeadingAnchor
+                                          : self.cancelButtonTrailingAnchor
+            ])
+            NSLayoutConstraint.activate([isActivated
+                                        ? self.cancelButtonTrailingAnchor
+                                        : self.cancelButtonLeadingAnchor
+            ])
+            self.layoutIfNeeded()
         }
     }
     

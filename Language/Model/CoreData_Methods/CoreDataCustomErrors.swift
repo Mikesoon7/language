@@ -4,6 +4,7 @@
 //
 //  Created by Star Lord on 19/07/2023.
 //
+//TODO: Polish
 
 import Foundation
 
@@ -21,7 +22,8 @@ enum WordsErrorType: Error {
     case failedToAssignEmptyString(String)
     case fetchFailed(String)
     case deleteFailed(String)
-    case imageUpdateFailed(String)
+    case imageUpdateFailed(SingleModeCellData?, WordsEntity?)
+//    case failedToAssignEmptyCell(SingleModeCellData)
 }
 
 enum LogsErrorType: Error {

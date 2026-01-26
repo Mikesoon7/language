@@ -4,6 +4,7 @@
 //
 //  Created by Star's MacBook Air on 29.11.2023.
 //
+//TODO: Polish
 
 
 import Foundation
@@ -48,10 +49,13 @@ extension UIViewController{
             case .failedToAssignEmptyString(let word):
                 title = "coreDataError.words.emptyWord".localized + " '\(word)'"
                 message = "coreDataError.words.emptyWord.message".localized
-            case .imageUpdateFailed(let word):
-                //NOTE: Finish
-                title = "coreDataError.words.emptyWord".localized + " '\(word)'"
+            case .imageUpdateFailed(let data, let entity):
+                //MARK: FINISH
+                title = "coreDataError.words.emptyWord".localized
                 message = "coreDataError.words.emptyWord.message".localized
+                //            case .failedToAssignEmptyCell(_):
+                //                title = "Empty cells cannot be created ".localized
+                //                message = "Would you like to delete them and save".localized
             }
         case let error as LogsErrorType:
             switch error {
@@ -80,7 +84,71 @@ extension UIViewController{
                 action1Title: "system.agreeFormal".localized,
                 action1Style: .cancel,
                 sourceView: sourceView
-        )
+            )
         self.present(alert, animated: true, completion: nil)
     }
 }
+
+//    func presentCreationError(_ error: VerificationResult) -> UIAlertController {
+//        var alertController = UIAlertController()
+////        var title = String()
+////        var message = String()
+////        var actionTitle = String()
+//        
+//
+//        switch error {
+//        case .emptyName:
+//            alertController = UIAlertController.alertWithAction(
+//                alertTitle: "nameAlert".localized,
+//                alertMessage: "nameInfo".localized,
+//                alertStyle: .actionSheet,
+//                action1Title: "system.continue".localized,
+//                action1Style: .cancel)
+//            
+//            //                title = "nameAlert".localized
+//            //                message = "nameInfo".localized
+//        case .emptyText:
+//            alertController = UIAlertController.alertWithAction(
+//                alertTitle: "Entry the text",
+//                alertMessage: "To save dictionary, please add at least one word",
+//                alertStyle: .actionSheet,
+//                action1Title: "system.edit".localized,
+//                action1Handler: nil,
+//                action1Style: .cancel,
+//                action2Title: "system.delete".localized,
+//                action2Handler: nil,
+//                action2Style: .destructive,
+//                sourceView: self.view,
+//                sourceRect: self.view.bounds )
+//        case .emptyArray:
+//            alertController = UIAlertController.alertWithAction(
+//                alertTitle: "Entry the content",
+//                alertMessage: "To save dictionary, please add at least one cell with information. Image would also work",
+//                alertStyle: .actionSheet,
+//                action1Title: "system.edit".localized,
+//                action1Handler: nil,
+//                action1Style: .cancel,
+//                action2Title: "system.delete".localized,
+//                action2Handler: nil,
+//                action2Style: .destructive,
+//                sourceView: self.view,
+//                sourceRect: self.view.bounds )
+//
+//        case .croppedText:
+//            alertController = UIAlertController.alertWithAction(
+//                alertTitle: "The dictionary content is empty",
+//                alertMessage: "It seems that exception symbols cropped the text. Please check your settings and try again",
+//                alertStyle: .actionSheet,
+//                action1Title: "system.continue".localized,
+//                action1Handler: nil,
+//                action1Style: .cancel,
+//                action2Title: "system.delete".localized,
+//                action2Handler: nil,
+//                action2Style: .destructive,
+//                sourceView: self.view,
+//                sourceRect: self.view.bounds )
+//        }
+//        return alertController
+//        
+//    }
+//}

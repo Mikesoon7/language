@@ -4,14 +4,14 @@
 //
 //  Created by Star Lord on 21/02/2023.
 //
-//  REFACTORING STATE: CHECKED
+//TODO: Polished
 
 
 import UIKit
 import Combine
 
-protocol Presenter{
-    func startTheGame(vc: UIViewController)
+protocol GameViewPresenter{
+    func presentGameControllerWithCustomParameter(selectedTime: Int)
 }
 //MARK: - Custom Segment control with adjustable corner radius
 class UICustomSegmentedControl: UISegmentedControl {
@@ -33,15 +33,28 @@ class UICustomSegmentedControl: UISegmentedControl {
     }
 }
 
+
 class DetailsView: UIViewController {
     
+    enum EditState {
+        case idle
+        case editingText
+    }
+
     //MARK: - ViewModel related
     private var dictionary: DictionariesEntity
-    private var viewModel: DetailsViewModel?
-    private var addWordsViewModel: AddWordsViewModel?
+    private var viewModel: DetailsViewModel
+    
     private var viewModelFactory: ViewModelFactory
     private var cancellable = Set<AnyCancellable>()
     
+    private var alertCoordinator: AlertCoordinator = AlertCoordinator()
+    private var keyboardListener: KeyboardListener!
+    
+    private var horizontalSizeClass: CustomLayoutContext!
+    private var viewEditState: EditState = .idle
+
+
     //MARK: - Subviews
     //SHADOWS
     private let settingsShadowView: UIView = {
@@ -82,7 +95,7 @@ class DetailsView: UIViewController {
     lazy var textInputView: TextInputView = {
         let view = TextInputView(delegate: self)
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.textView.layer.borderColor = UIColor.clear.cgColor
+        view.layer.borderColor = UIColor.clear.cgColor
         view.layer.shadowOffset = .zero
         view.layer.shadowColor = UIColor.clear.cgColor
         view.layer.shadowOpacity = 0
@@ -192,8 +205,9 @@ class DetailsView: UIViewController {
     
     
     //MARK: Constraints.
-    private var regularWidthClassConstraints: [NSLayoutConstraint] = []
-    private var compactWidthClassConstraints: [NSLayoutConstraint] = []
+    private var generalConstraints:           [NSLayoutConstraint] = [] //Permanent
+    private var regularWidthClassConstraints: [NSLayoutConstraint] = [] //Wide screen
+    private var compactWidthClassConstraints: [NSLayoutConstraint] = [] //Small screen
     
     private var regularWidthClassTextViewActiveConstraints: [NSLayoutConstraint] = []
     private var regularWidthClassTextViewConstraints:       [NSLayoutConstraint] = []
@@ -204,7 +218,6 @@ class DetailsView: UIViewController {
         self.viewModelFactory = factory
         self.dictionary = dictionary
         self.viewModel = factory.configureDetailsViewModel(dictionary: dictionary)
-        self.addWordsViewModel = factory.configureAddWordsViewModel(dictionary: dictionary)
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -215,89 +228,129 @@ class DetailsView: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         bind()
-        configureView()
+        bindViewHelpers()
+        
+        configureController()
         configureShadowViews()
         configureStartButton()
-        
-        applyConstraints(for: self.traitCollection)
         
         configureSettingsView()
         configureTextView()
         configureGoalView()
-        
-        configureLabels()
+    
+        updateForLanguageChange()
         retrieveDetailsData()
+        
+        NSLayoutConstraint.activate(generalConstraints)
+//        viewModel.performInitialSetUp(selectedMode: layoutMode(for: view.bounds.width))
+        applyLayout(for: view.bounds.size)
+        
+//        updateNavBar(state: viewModel.primaryAction)
+
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        textInputView.textView.resignFirstResponder()
+        _ = textInputView.resignFirstResponder()
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        //Ensuring that the size is correct.
+        applyLayout(for: view.bounds.size)
     }
     
     //MARK: - StyleChange Responding
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
-        if previousTraitCollection?.horizontalSizeClass != traitCollection.horizontalSizeClass {
-            applyConstraints(for: traitCollection)
-        }
         
         if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
-            if traitCollection.userInterfaceStyle == .dark {
-                view.subviews.forEach { view in
-                    view.layer.shadowColor = shadowColorForDarkIdiom
-                }
-                textInputView.layer.shadowColor = shadowColorForDarkIdiom
-            } else {
-                view.subviews.forEach { view in
-                    view.layer.shadowColor = shadowColorForLightIdiom
-                }
-                textInputView.layer.shadowColor = shadowColorForLightIdiom
+            let interfaceStyle = traitCollection.userInterfaceStyle
+            view.subviews.forEach { view in
+                view.layer.shadowColor = interfaceStyle == .dark ? shadowColorForDarkIdiom : shadowColorForLightIdiom
             }
         }
     }
+    override func viewWillTransition(to size: CGSize, with coordinator: any UIViewControllerTransitionCoordinator) {
+        applyLayout(for: size)
+    }
     
+        
     //MARK: - ViewModel bind
     func bind(){
-        viewModel?.output
+        viewModel.output
             .receive(on: DispatchQueue.main)
             .sink { [weak self] output in
                 guard let self = self else {return}
                 switch output{
                 case .shouldUpdateLangauge:
-                    configureLabels()
+                    updateForLanguageChange()
                     textInputView.updatePlaceholder()
                 case .shouldUpdateFont:
-                    configureFont()
-                case .error(let error):
-                    presentError(error, sourceView: view)
+                    updateForFontChange()
+                    textInputView.updatePlaceholder()
                 case .shouldUpdatePicker:
                     goalPicker.reloadAllComponents()
-                    goalPicker.selectRow(viewModel?.selectedRowForPicker() ?? 1, inComponent: 0, animated: true)
+                    goalPicker.selectRow(viewModel.selectedRowForPicker(), inComponent: 0, animated: true)
+                case .shouldUpdatePlaceholder:
+                    textInputView.updatePlaceholder()
                 }
             }
             .store(in: &cancellable)
-        addWordsViewModel?.output
+        viewModel.editOutput
             .receive(on: DispatchQueue.main)
             .sink { [weak self] output in
+                guard let self = self else {return}
                 switch output {
+                case .presentModalEditor(let mode, let text):
+                    self.textInputView.clearTextView()
+                    presentAddWordsController(with: text, mode: mode)
+                case .shouldPresentAlert(let alertType):
+                    self.presentAlert(for: alertType)
                 case .shouldPresentError(let error):
-                    self?.presentError(error, sourceView: self?.view)
-                case .shouldUpdatePlaceholder:
-                    self?.textInputView.updatePlaceholder()
-                case .shouldHighlightError(let word):
-                    self?.highlightErrorFor(word)
-                case .shouldPop:
-                    self?.textInputView.clearTextView()
+                    self.presentError(error, sourceView: self.view)
+                case .editFinishedSuccessfully:
+                    self.textInputView.clearTextView()
                 }
+            }
+            .store(in: &cancellable)
+
+    }
+    
+    func bindViewHelpers() {
+        keyboardListener = KeyboardListener(view: self.view)
+        
+        keyboardListener.events
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] event in
+                self?.handleKeyboard(event)
+            }
+            .store(in: &cancellable)
+        
+        alertCoordinator.action
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] output in
+                    switch output {
+                    case .save:
+                        self?.viewModel.extendDictionary()
+                    case .delete:
+                        self?.navigationController?.popViewController(animated: true)
+                    case .edit:
+                        fallthrough
+                    case .cancel:
+                        break
+                    }
             }
             .store(in: &cancellable)
     }
     
     //MARK: - Subviews SetUp
-    private func configureView() {
+    private func configureController() {
         self.view.backgroundColor = .systemBackground
-        self.navigationItem.rightBarButtonItems = [switchModeButton]
+        
+//        navigationController?.interactivePopGestureRecognizer?.delegate = self
     }
+    
     
     //MARK: Shadow view's setUp
     // Shadow views takes a role of view holder, which helps to optimize the code.
@@ -321,29 +374,23 @@ class DetailsView: UIViewController {
         regularWidthClassTextViewActiveConstraints.append(contentsOf: [
             textViewShadowView.topAnchor.constraint(
                 equalTo: view.safeAreaLayoutGuide.topAnchor),
-            textViewShadowView.trailingAnchor.constraint(
-                equalTo: view.trailingAnchor),
+            textViewShadowView.leadingAnchor.constraint(
+                equalTo: view.leadingAnchor),
+            textViewShadowView.widthAnchor.constraint(
+                equalTo: view.widthAnchor),
             textViewShadowView.bottomAnchor.constraint(
                 equalTo: view.keyboardLayoutGuide.topAnchor),
             textViewShadowView.bottomAnchor.constraint(
                 lessThanOrEqualTo: beginBut.topAnchor,
                 constant: -.longInnerSpacer),
-            textViewShadowView.leadingAnchor.constraint(
-                equalTo: view.leadingAnchor),
         ])
         
-        
-        regularWidthClassConstraints.append(contentsOf: [
+        generalConstraints.append(contentsOf: [
             settingsShadowView.topAnchor.constraint(
                 equalTo: view.safeAreaLayoutGuide.topAnchor, constant: .longOuterSpacer),
-            settingsShadowView.trailingAnchor.constraint(
-                equalTo: textViewShadowView.leadingAnchor, constant: -.innerSpacer),
             settingsShadowView.heightAnchor.constraint(
                 equalToConstant: .textViewGenericSize),
-            
-            settingsShadowView.widthAnchor.constraint(
-                equalTo: view.widthAnchor, multiplier: 0.5,  constant: -.longInnerSpacer - .longInnerSpacer / 2),
-            
+
             goalShadowView.topAnchor.constraint(
                 equalTo: settingsShadowView.bottomAnchor, constant: .longInnerSpacer),
             goalShadowView.trailingAnchor.constraint(
@@ -354,18 +401,15 @@ class DetailsView: UIViewController {
                 equalToConstant: .genericButtonHeight)
         ])
         
+        regularWidthClassConstraints.append(contentsOf: [
+            settingsShadowView.trailingAnchor.constraint(
+                equalTo: textViewShadowView.leadingAnchor, constant: -.innerSpacer),
+            settingsShadowView.widthAnchor.constraint(
+                equalTo: view.widthAnchor, multiplier: 0.5,  constant: -.longInnerSpacer - .longInnerSpacer / 2),
+        ])
+        
         
         compactWidthClassConstraints.append(contentsOf:[
-            settingsShadowView.topAnchor.constraint(
-                equalTo: view.safeAreaLayoutGuide.topAnchor, constant: .longOuterSpacer),
-            settingsShadowView.trailingAnchor.constraint(
-                equalTo: view.trailingAnchor, constant: -.longInnerSpacer),
-            settingsShadowView.leadingAnchor.constraint(
-                equalTo: view.leadingAnchor, constant: .longInnerSpacer),
-            settingsShadowView.heightAnchor.constraint(
-                equalToConstant: .textViewGenericSize),
-            
-            
             textViewShadowView.topAnchor.constraint(
                 equalTo: view.safeAreaLayoutGuide.topAnchor, constant: .longOuterSpacer),
             textViewShadowView.leadingAnchor.constraint(
@@ -377,23 +421,17 @@ class DetailsView: UIViewController {
             textViewShadowView.heightAnchor.constraint(
                 equalToConstant: .textViewGenericSize),
             
-            
-            goalShadowView.topAnchor.constraint(
-                equalTo: settingsShadowView.bottomAnchor,
-                constant: .longInnerSpacer),
-            goalShadowView.leadingAnchor.constraint(
-                equalTo: view.leadingAnchor, constant: .longInnerSpacer),
-            goalShadowView.trailingAnchor.constraint(
+            settingsShadowView.trailingAnchor.constraint(
                 equalTo: view.trailingAnchor, constant: -.longInnerSpacer),
-            goalShadowView.heightAnchor.constraint(
-                equalToConstant: .genericButtonHeight)
+            settingsShadowView.leadingAnchor.constraint(
+                equalTo: view.leadingAnchor, constant: .longInnerSpacer),
         ])
     }
     //MARK: - View's SetUp
     private func configureTextView() {
         textViewShadowView.addSubview(textInputView)
         
-        NSLayoutConstraint.activate([
+        generalConstraints.append(contentsOf: [
             textInputView.topAnchor.constraint(
                 equalTo: textViewShadowView.topAnchor) ,
             textInputView.leadingAnchor.constraint(
@@ -410,7 +448,7 @@ class DetailsView: UIViewController {
         settingView.addSubviews(orderOptionsLabel, orderOptionSegmentedControl)
         settingView.addSubviews( isOneSideModeLabel, isOneSideModeSwitch)
         
-        NSLayoutConstraint.activate([
+        generalConstraints.append(contentsOf: [
             settingView.topAnchor.constraint(
                 equalTo: settingsShadowView.topAnchor),
             settingView.leadingAnchor.constraint(
@@ -463,7 +501,7 @@ class DetailsView: UIViewController {
         goalPicker.translatesAutoresizingMaskIntoConstraints = false
         goalView.addSubviews(goalLabel, goalPicker)
         
-        NSLayoutConstraint.activate([
+        generalConstraints.append(contentsOf: [
             goalView.topAnchor.constraint(
                 equalTo: goalShadowView.topAnchor) ,
             goalView.leadingAnchor.constraint(
@@ -491,17 +529,15 @@ class DetailsView: UIViewController {
     private func configureStartButton(){
         view.addSubviews(timedButton, beginBut)
         
-        regularWidthClassConstraints.append(contentsOf: [
+        generalConstraints.append(contentsOf: [
             timedButton.bottomAnchor.constraint(
                 equalTo: view.safeAreaLayoutGuide.bottomAnchor,
                 constant: -.longInnerSpacer),
             timedButton.trailingAnchor.constraint(
-                equalTo: view.trailingAnchor, constant: -.longInnerSpacer),
-            timedButton.widthAnchor.constraint(
-                equalTo: view.widthAnchor, multiplier: 0.2),
+                equalTo: view.trailingAnchor,
+                constant: -.longInnerSpacer),
             timedButton.heightAnchor.constraint(
                 equalToConstant: .genericButtonHeight),
-            
             
             beginBut.bottomAnchor.constraint(
                 equalTo: view.safeAreaLayoutGuide.bottomAnchor,
@@ -516,161 +552,148 @@ class DetailsView: UIViewController {
                 equalToConstant: .genericButtonHeight)
         ])
         
+        regularWidthClassConstraints.append(contentsOf: [
+            timedButton.widthAnchor.constraint(
+                equalTo: view.widthAnchor, multiplier: 0.2),
+        ])
+        
         compactWidthClassConstraints.append(contentsOf: [
-            timedButton.bottomAnchor.constraint(
-                equalTo: view.safeAreaLayoutGuide.bottomAnchor,
-                constant: -.longInnerSpacer),
-            timedButton.trailingAnchor.constraint(
-                equalTo: view.trailingAnchor,
-                constant: -.longInnerSpacer),
             timedButton.widthAnchor.constraint(
                 equalToConstant: .genericButtonHeight),
-            timedButton.heightAnchor.constraint(
-                equalToConstant: .genericButtonHeight),
-            
-            
-            beginBut.bottomAnchor.constraint(
-                equalTo: view.safeAreaLayoutGuide.bottomAnchor,
-                constant: -.longInnerSpacer),
-            beginBut.leadingAnchor.constraint(
-                equalTo: view.leadingAnchor,
-                constant: .longInnerSpacer),
-            beginBut.trailingAnchor.constraint(
-                equalTo: timedButton.leadingAnchor, constant: -.innerSpacer),
-            beginBut.heightAnchor.constraint(
-                equalToConstant: .genericButtonHeight)
         ])
     }
     
-    
-    
     //MARK: - Load details data.
     private func retrieveDetailsData(){
-        let selectedOrder = viewModel?.selectedCardsOrder() ?? .normal
+        let selectedOrder = viewModel.selectedCardsOrder()
         
         self.orderOptionSegmentedControl.selectedSegmentIndex = Int(selectedOrder.rawValue)
-        self.isOneSideModeSwitch.isOn = viewModel?.isHideTranslationOn() ?? false
-        goalPicker.selectRow(viewModel?.selectedRowForPicker() ?? 1, inComponent: 0, animated: true)
+        self.isOneSideModeSwitch.isOn = viewModel.isHideTranslationOn()
+        goalPicker.selectRow(viewModel.selectedRowForPicker(), inComponent: 0, animated: true)
     }
     
-    //MARK: Layout adjust methods.
-    ///Update textView layout and handles save button display
-    private func updateTextViewConstraits(keyboardIsVisable: Bool){
-        let isRegularWidth = self.traitCollection.horizontalSizeClass == .regular
+    
+    //MARK: Layout and animation
+    private func applyLayout(for size: CGSize) {
+        let newMode = view.layoutContext()
+        guard newMode != horizontalSizeClass else { return }
         
-        UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseOut) { [weak self] in
-            guard let self = self else {return}
-            if isRegularWidth {
-                NSLayoutConstraint.deactivate(keyboardIsVisable
-                                              ? regularWidthClassTextViewConstraints
-                                              : regularWidthClassTextViewActiveConstraints)
-                
-                NSLayoutConstraint.activate(keyboardIsVisable
-                                            ? regularWidthClassTextViewActiveConstraints
-                                            : regularWidthClassTextViewConstraints)
-            }
-            textInputView.layer.cornerRadius = keyboardIsVisable ? 0 : .cornerRadius
-            textInputView.backgroundColor = keyboardIsVisable ? .systemBackground : .selectedColourPalette.primaryBackgroundColour
-            textViewShadowView.layer.shadowOpacity = keyboardIsVisable ? 0 : 0.8
-            
-            view.layoutIfNeeded()
-        }
+        horizontalSizeClass = newMode
+        updateLayout(for: newMode)
+        recomputePrimaryAction()
+        
+        viewModel.layoutDidChange(to: newMode)
+
     }
     
-    ///Updating the constraints depending on the orientation and first responder status.
-    private func applyConstraints(for traitCollection: UITraitCollection) {
-        NSLayoutConstraint.deactivate(regularWidthClassConstraints)
-        NSLayoutConstraint.deactivate(compactWidthClassConstraints)
-        
-        let isTextViewActive = textInputView.textView.isFirstResponder
-        let text = textInputView.textView.text
-        
-        if isTextViewActive || text?.isEmpty != true {
-            textInputView.clearTextView()
-            changeSaveButtonState(active: false)
-            let vc = AddWordsPartitialController(factory: self.viewModelFactory,
-                                                 dictionary: viewModel?.dictionary ?? dictionary,
-                                                 text: text,
-                                                 regularMode: true
-            )
-            present(vc, animated: true)
-        }
-        
-        if traitCollection.horizontalSizeClass == .regular {
-            navigationItem.rightBarButtonItems?.removeAll(where: { button in
-                button == self.addNewWordsButton
-            })
-            
+    private func updateLayout(for sizeClass: CustomLayoutContext){
+        switch sizeClass {
+        case .compact:
+            NSLayoutConstraint.deactivate(regularWidthClassConstraints)
+            NSLayoutConstraint.deactivate(regularWidthClassTextViewConstraints)
+            NSLayoutConstraint.activate(compactWidthClassConstraints)
+        case .regular:
+            NSLayoutConstraint.deactivate(compactWidthClassConstraints)
             NSLayoutConstraint.activate(regularWidthClassTextViewConstraints)
             NSLayoutConstraint.activate(regularWidthClassConstraints)
-            guard let bar = navigationItem.rightBarButtonItems, bar.contains(where: { button in
-                button == switchModeButton }) else {
-                navigationItem.rightBarButtonItems?.append(switchModeButton)
-                return
-            }
-        } else {
-            if navigationItem.rightBarButtonItems == nil {
-                navigationItem.setRightBarButton(self.addNewWordsButton, animated: true)
-            } else {
-                navigationItem.rightBarButtonItems?.removeAll(where: { button in
-                    button == self.switchModeButton
-                })
-                navigationItem.rightBarButtonItems?.append(self.addNewWordsButton)
-            }
-            
-            NSLayoutConstraint.deactivate(isTextViewActive
-                                          ? regularWidthClassTextViewActiveConstraints
-                                          : regularWidthClassTextViewConstraints)
-            NSLayoutConstraint.activate(compactWidthClassConstraints)
         }
         view.layoutIfNeeded()
     }
+
+    //MARK: TextViewLayout
+        
+    private func updateTextViewLayoutForState(state: KeyboardListener.KeyboardVisibility){
+        let isVisible = state == .visible
+        NSLayoutConstraint.deactivate(
+            isVisible
+            ? regularWidthClassTextViewConstraints
+            : regularWidthClassTextViewActiveConstraints)
+        NSLayoutConstraint.activate(
+            isVisible
+            ? regularWidthClassTextViewActiveConstraints
+            : regularWidthClassTextViewConstraints
+        )
+        self.textInputView.layer.cornerRadius = (
+            isVisible ? 0 : .cornerRadius)
+        self.textInputView.backgroundColor = (
+            isVisible
+            ? .systemBackground
+            : .selectedColourPalette.primaryBackgroundColour)
+        self.textViewShadowView.layer.shadowOpacity = (
+            isVisible ? 0 : 0.8)
+    }
+    
+    
+    private func handleKeyboard(_ event: KeyboardListener.Event) {
+        UIView.animate(
+            withDuration: event.duration,
+            delay: 0,
+            options: event.curve
+        ) {
+            switch event.presence {
+            case .hidden, .accessoryOnly:
+                self.updateTextViewLayoutForState(state: .hidden)
+            case .full:
+                self.updateTextViewLayoutForState(state: .visible)
+            }
+            self.view.layoutIfNeeded()
+        }
+    }
+    private func recomputePrimaryAction() {
+        let isEmpty = textInputView.currentText().isEmpty
+
+        let newAction: DetailsViewPrimaryActions = {
+            switch viewEditState {
+            case .editingText:
+                return isEmpty ? .doneAndSwitch : .saveAndSwitch
+            case .idle:
+                switch horizontalSizeClass {
+                case .compact:
+                    return .addButton
+                case .regular:
+                    return isEmpty ? .switchButton : .saveAndSwitch
+                case .none:
+                    return .undefined
+                }
+            }
+        }()
+        updateNavBar(state: newAction)
+    }
+
+
     
     //MARK: - System
     ///Adding save button to navigation bar.
-    private func changeSaveButtonState(active: Bool){
-        guard UIDevice.isIPadDevice else { return }
-        if active {
-            if let text = textInputView.textView.text, text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                guard let bar = navigationItem.rightBarButtonItems, bar.contains(where: {$0 == doneButton}) else {
-                    navigationItem.rightBarButtonItems?.removeAll(where: { button in
-                        button == self.saveButton
-                    })
-
-                    navigationItem.rightBarButtonItems?.append(self.doneButton)
-                    return
-                }
-            } else {
-                guard let bar = navigationItem.rightBarButtonItems, bar.contains(where: {$0 == saveButton}) else {
-                    navigationItem.rightBarButtonItems?.removeAll(where: { button in
-                        button == self.doneButton
-                    })
-
-                    navigationItem.rightBarButtonItems?.append(self.saveButton)
-                    return
-                }
-            }
-        } else {
-            if textInputView.textView.text.isEmpty {
-                navigationItem.rightBarButtonItems?.removeAll(where: { button in
-                    button == self.saveButton || button == self.doneButton
-                })
-            }
-        }
-    }
-    
-    private func highlightErrorFor(_ word: String){
-        guard let text = self.textInputView.textView.text, let range = text.range(of: word, options: .caseInsensitive, range: word.startIndex..<text.endIndex) else {
+    private func updateNavBar(state: DetailsViewPrimaryActions) {
+        guard UIDevice.isIPadDevice else {
+            navigationItem.rightBarButtonItems = [addNewWordsButton]
             return
         }
-        
-        let NSRAnge = NSRange(range, in: text)
-        self.textInputView.highlightError(NSRAnge)
+        switch state {
+        case .saveAndSwitch:
+            navigationItem.rightBarButtonItems = [saveButton, switchModeButton]
+        case .doneAndSwitch:
+            navigationItem.rightBarButtonItems = [doneButton, switchModeButton]
+        case .addButton:
+            navigationItem.rightBarButtonItems = [addNewWordsButton]
+        case .switchButton:
+            navigationItem.rightBarButtonItems = [switchModeButton]
+        case .undefined:
+            break
+        }
     }
     
+    func presentAlert(for alert: AlertType) {
+        let alert = self.alertCoordinator.makeAlert(alertType: alert)
+        self.present(alert, animated: true)
+    }
     
+//    func layoutMode(for width: CGFloat) -> DetailsLayoutMode {
+//        width >= 900 ? .expanded : .compact
+//    }
+
     //Assigning text on initializing and if language changes
-    private func configureLabels(){
+    private func updateForLanguageChange(){
         self.navigationItem.title = "details.title".localized
         self.isOneSideModeLabel.text = "details.showTranslation".localized
         self.orderOptionsLabel.text = "details.cardsOrder".localized
@@ -686,11 +709,11 @@ class DetailsView: UIViewController {
         configureButtons()
     }
     
-    private func configureFont(){
+    private func updateForFontChange(){
         isOneSideModeLabel.font = .selectedFont.withSize(.bodyTextSize)
         orderOptionsLabel.font = .selectedFont.withSize(.bodyTextSize)
         goalLabel.font = .selectedFont.withSize(.bodyTextSize)
-        textInputView.textView.font = .selectedFont.withSize(.subBodyTextSize)
+        textInputView.updateFont(font: .selectedFont.withSize(.subBodyTextSize))
         
         configureButtons()
     }
@@ -705,90 +728,76 @@ class DetailsView: UIViewController {
         )
         saveButton.title = "system.save".localized
     }
+    
+    //MARK: View Presenters
+    private func presentAddWordsController(with text: String? = nil, mode: DataInputMode ){
+        let vc = AddWordsPartitialController(
+            factory:        self.viewModelFactory,
+            dictionary:     viewModel.dictionary,
+            text:           text,
+            inputMode:      mode
+        )
+        vc.modalPresentationStyle = .pageSheet
+        vc.sheetPresentationController?.detents = [.large()]
+
+        self.navigationController?.present(vc, animated: true)
+    }
+    private func presentTimedDetailsController(){
+        let vc = TimedDetailView(delegate: self,
+                                 timeIntervalUpTo:  60)
+        vc.modalPresentationStyle = .formSheet
+        if let sheet = vc.sheetPresentationController {
+            sheet.detents = [.medium()]
+        }
+        self.navigationController?.present(vc, animated: true)
+    }
+    private func presentGameController(selectedTime: Int? = nil){
+        let vc = MainGameVC(viewModelFactory:   viewModelFactory,
+                            dictionary:         viewModel.dictionary,
+                            selectedOrder:      viewModel.selectedCardsOrder(),
+                            isOneSideModeOn:    viewModel.isHideTranslationOn(),
+                            selectedNumber:     viewModel.selectedNumberOfCards(),
+                            selectedTime:       selectedTime,
+                            isFirstLaunch: false)
+        self.navigationController?.pushViewController(vc, animated: true)
+    }
 }
 //MARK: - Actions
 extension DetailsView{
     //MARK: PRESENT ADD WORDS
     @objc func addNavButtonTap(sender: UIBarButtonItem){
-        let vc = AddWordsPartitialController(factory:       self.viewModelFactory,
-                                             dictionary:    viewModel?.dictionary ?? dictionary,
-                                             text:          textInputView.textView.text,
-                                             regularMode:   true
-        )
-        vc.modalPresentationStyle = .pageSheet
-        vc.sheetPresentationController?.detents = [.large()]
-
-        self.navigationController?.present(vc, animated: true)
+        viewModel.userTappedAdd()
     }
     
     @objc func sigleModeWasEngaged(sender: UIButton) {
-        if textInputView.textView.isFirstResponder {
-            textInputView.textView.resignFirstResponder()
-        }
-        let vc = AddWordsPartitialController(factory:       self.viewModelFactory,
-                                             dictionary:    viewModel?.dictionary ?? dictionary,
-                                             text:          textInputView.textView.text,
-                                             regularMode:   false
-        )
-        vc.modalPresentationStyle = .pageSheet
-        vc.sheetPresentationController?.detents = [.large()]
-
-        self.navigationController?.present(vc, animated: true)
-
+        viewModel.userTappedSingleAdd()
     }
 
-
-    //MARK: PRESENT TIME DETAILS
     @objc func clockedSession(sender: UIBarButtonItem){
-        let vc = TimedDetailView(viewModelFactory:  self.viewModelFactory,
-                                 viewModel:         self.viewModel,
-                                 delegate:          self,
-                                 timeIntervalUpTo:  60
-        )
-        vc.modalPresentationStyle = .formSheet
-        if let sheet = vc.sheetPresentationController {
-            if self.traitCollection.horizontalSizeClass == .regular {
-                    sheet.detents = [.large()]
-                } else {
-                    sheet.detents = [.medium()]
-                }
-            }
-        self.navigationController?.present(vc, animated: true)
+        presentTimedDetailsController()
     }
     
-    //MARK: PRESENT GAME
     @objc func startButtonTap(sender: UIButton){
-        guard let viewModel = viewModel else {
-            return
-        }
-        
-        let vc = MainGameVC(viewModelFactory:   viewModelFactory,
-                            dictionary:         viewModel.dictionary,
-                            selectedOrder:      viewModel.selectedCardsOrder(),
-                            hideTransaltion:    viewModel.isHideTranslationOn(),
-                            selectedNumber:     viewModel.selectedNumberOfCards())
-        
-        self.navigationController?.pushViewController(vc, animated: true)
+        presentGameController()
     }
 
     @objc func orderSegwayToggle(sender: UISegmentedControl){
-        viewModel?.cardOrderDidChange(order: DictionariesSettings.CardOrder(rawValue: Int64(sender.selectedSegmentIndex)) ?? .normal)
+        viewModel.cardOrderDidChange(order: DictionariesSettings.CardOrder(rawValue: Int64(sender.selectedSegmentIndex)) ?? .normal)
     }
     
     @objc func doneButtonDidTap(sender: Any){
-        textInputView.textView.resignFirstResponder()
+       _ = textInputView.resignFirstResponder()
     }
 
-    @objc func saveButtonDidTap(sender: Any){
-        guard let text = textInputView.validateText() else { return }
-        addWordsViewModel?.extendDictionaryWith(text)
+    @objc func saveButtonDidTap(sender: Any) {
+        viewModel.extendDictionary()
     }
 
     @objc func hideTransaltionSwitchToggle(sender: UISwitch){
-        viewModel?.hideTranslationDidChange(on: sender.isOn)
+        viewModel.hideTranslationDidChange(on: sender.isOn)
     }
-
 }
+
 
 //MARK: - UPPicker delegate & dataSource
 extension DetailsView: UIPickerViewDelegate, UIPickerViewDataSource{
@@ -797,49 +806,62 @@ extension DetailsView: UIPickerViewDelegate, UIPickerViewDataSource{
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        viewModel?.didSelectPickerRow(row: row)
+        viewModel.didSelectPickerRow(row: row)
     }
     
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        viewModel?.numberOfRowsInComponent() ?? 0
+        viewModel.numberOfRowsInComponent()
     }
     
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        viewModel?.titleForPickerAt(row: row) ?? ""
+        viewModel.titleForPickerAt(row: row)
      }
 }
 
 //MARK: - TextView Placeholder Delegate
 extension DetailsView: PlaceholderTextViewDelegate{
     func textViewDidBeginEditing(sender: UITextView)  {
-        updateTextViewConstraits(keyboardIsVisable: true)
-        changeSaveButtonState(active: true)
+        self.viewEditState = .editingText
+        self.recomputePrimaryAction()
+        
+        viewModel.userBeganEditing()
     }
     
     func textViewDidEndEditing(sender: UITextView)    {
-        updateTextViewConstraits(keyboardIsVisable: false)
-        changeSaveButtonState(active: false)
+        self.viewEditState = .idle
+        self.recomputePrimaryAction()
+        
+        viewModel.userFinishedEditing()
+
     }
     func presentErrorAlert(alert: UIAlertController) {
         self.presentErrorAlert(alert: alert)
     }
     
     func textViewDidChange(sender: UITextView)        {
-        changeSaveButtonState(active: true)
+        self.recomputePrimaryAction()
+
+        viewModel.userDidType(text: sender.text)
     }
     
     func configurePlaceholderText(sender: UITextView) -> String? {
-        addWordsViewModel?.configureTextPlaceholder()
+        viewModel.configureTextPlaceholder()
     }
     
     func currentSeparatorSymbol() -> String? {
-        addWordsViewModel?.textSeparator()
+        viewModel.textSeparator()
     }
 }
 
 //MARK: - Presenter Delegate
-extension DetailsView: Presenter {
-    func startTheGame(vc: UIViewController) {
-        self.navigationController?.pushViewController(vc, animated: true)
+extension DetailsView: GameViewPresenter {
+    func presentGameControllerWithCustomParameter(selectedTime: Int) {
+        self.presentGameController(selectedTime: selectedTime)
     }
 }
+
+//extension DetailsView: UIGestureRecognizerDelegate {
+//    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+//        return true
+//    }
+//}

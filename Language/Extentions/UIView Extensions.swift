@@ -4,11 +4,32 @@
 //
 //  Created by Star Lord on 22/07/2023.
 //
+//TODO: Polish
 
 import Foundation
 import UIKit
 
+enum CustomLayoutContext {
+    case compact
+    case regular
+}
+
+
 extension UIView {
+    func layoutContext(width: CGFloat? = nil) -> CustomLayoutContext {
+        if width != nil {
+            return width! >= 900 ? .regular : .compact
+        } else {
+            return bounds.size.width >= 900 ? .regular : .compact
+        }
+    }
+
+    
+    func changeViewsVisibility(visible: Bool){
+            self.alpha = visible ? 1 : 0
+            self.isUserInteractionEnabled = visible
+            self.accessibilityElementsHidden = !visible
+    }
     //MARK: Method to add multiple subviews.
     func addSubviews(_ views: UIView...){
         for i in views{
@@ -68,6 +89,20 @@ extension UIView {
         mask.path = path.cgPath
         return mask
     }
+    
+    
+    func pinToEdges(of superView: UIView) {
+        translatesAutoresizingMaskIntoConstraints = false
+        superView.addSubview(self)
+        NSLayoutConstraint.activate([
+            topAnchor.constraint(equalTo: superView.topAnchor),
+            leadingAnchor.constraint(equalTo: superView.leadingAnchor),
+            trailingAnchor.constraint(equalTo: superView.trailingAnchor),
+            bottomAnchor.constraint(equalTo: superView.bottomAnchor)
+        ])
+    }
+
+
     //MARK: - Method to add rounded corners and gray colour.
     func setUpCustomView(){
         self.layer.cornerRadius = 9
@@ -94,6 +129,7 @@ extension UIView {
         )
         topStroke.name = "Stroke top"
 
+        topStroke.frame = vc.navigationController?.navigationBar.bounds ?? .zero
         topStroke.path = path.cgPath
         topStroke.lineWidth = 1
         topStroke.strokeColor = UIColor.label.cgColor
@@ -202,7 +238,31 @@ extension UIView {
             return self.superview?.superview(of: T.self)
         }
     }
-    
+
+    func configureCustomActions(imageName: String, colour: UIColor) -> UIView{
+        let actionView: UIView = {
+            let view = UIView()
+            view.backgroundColor = colour
+            view.translatesAutoresizingMaskIntoConstraints = false
+            return view
+        }()
+        let imageView: UIImageView = {
+            let view = UIImageView()
+            view.image = UIImage(systemName: imageName)
+            view.translatesAutoresizingMaskIntoConstraints = false
+            view.tintColor = .label
+            view.contentMode = .center
+            return view
+        }()
+        
+        actionView.addSubview(imageView)
+        
+        imageView.centerXAnchor.constraint(equalTo: actionView.centerXAnchor, constant: .cornerRadius / 2).isActive = true
+        imageView.centerYAnchor.constraint(equalTo: actionView.centerYAnchor).isActive = true
+        
+        return actionView
+    }
+
 }
 
 extension UIStackView{

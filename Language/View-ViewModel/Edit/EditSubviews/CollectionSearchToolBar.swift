@@ -4,18 +4,22 @@
 //
 //  Created by Star Lord on 02/05/2025.
 //
+//TODO: Polish
 
 import Foundation
 import UIKit
 
+protocol CollectionSearchToolBarEventHandler: AnyObject {
+    func searchQueryDidChange(_ text: String)
+    func searchDidBegin()
+    func searchDidEnd(_ query: String)
+    func searchDidCancel()
+}
+
 class CollectionSearchToolBar: UIView {
     
-    weak var delegate: UISearchBarDelegate?{
-        didSet {
-            self.searchBar.delegate = delegate
-        }
-    }
-
+    weak var coordinator: CollectionSearchToolBarEventHandler?
+    
     //MARK: - Views.
     let searchBar: UISearchBar = {
         let searchBar = UISearchBar()
@@ -39,14 +43,16 @@ class CollectionSearchToolBar: UIView {
     private var cancelButtonTrailingAnchor: NSLayoutConstraint = .init()
     
     //MARK: - Inherited
-    convenience init(){
+    convenience init(coordinator: CollectionSearchToolBarEventHandler){
         self.init(frame: .zero)
+        self.coordinator = coordinator
     }
-    override init(frame: CGRect) {
+    override private init(frame: CGRect) {
         super.init(frame: frame)
         configureView()
         configureLabels()
         configureSubviews()
+        searchBar.delegate = self
     }
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -58,20 +64,6 @@ class CollectionSearchToolBar: UIView {
         self.translatesAutoresizingMaskIntoConstraints = false
     }
     
-    //MARK: Strokes SetUp
-//    func configureStrokes(){
-//        if topStroke.superlayer == nil {
-//            let path = UIBezierPath()
-//            path.move(to: CGPoint(x: 0, y: 0))
-//            let bounds = UIWindow().bounds
-//            path.addLine(to: CGPoint(x: max(bounds.width, bounds.height) , y: 0))
-//            
-//            topStroke.lineWidth = 0.7
-//            topStroke.path = path.cgPath
-//            topStroke.strokeColor = UIColor.label.cgColor
-//            self.layer.addSublayer(topStroke)
-//        }
-//    }
     //MARK: Settings up contraints and related variables
     private func configureSubviews(){
         self.addSubviews(searchBar, cancelButton)
@@ -82,6 +74,7 @@ class CollectionSearchToolBar: UIView {
         NSLayoutConstraint.activate([
             cancelButton.topAnchor.constraint(equalTo: topAnchor),
             cancelButton.bottomAnchor.constraint(equalTo: bottomAnchor),
+            cancelButton.heightAnchor.constraint(equalTo: heightAnchor),
             cancelButtonLeadingAnchor,
         
             searchBar.topAnchor.constraint(equalTo: topAnchor),
@@ -104,47 +97,66 @@ class CollectionSearchToolBar: UIView {
                 ofSize: .subBodyTextSize), for: .normal)
     }
     
-//    override func becomeFirstResponder() -> Bool {
-//        super.becomeFirstResponder()
-//        animateTransitionTo(isActivated: true, time: 0.3)
-//        UIView.animate(withDuration: 0.3, animations: {
-//            self.alpha = 1
-//        })
-//        return true
-//    }
-//    override func resignFirstResponder() -> Bool {
-//        super.resignFirstResponder()
-//        animateTransitionTo(isActivated: false, time: 0.3)
-////        UIView.animate(withDuration: 0.3, animations: {
-////            self.alpha = 0
-////        })
-//        return true
-//        
-//    }
-//    func changeSearchState(activate: Bool, time: TimeInterval){
-//        animateTransitionTo(isActivated: activate, time: time)
-//        
-////        searchBar.becomeFirstResponder()
-//    }
-    func animateTransitionTo(isActivated: Bool, time: TimeInterval){
-        UIView.animate(withDuration: time) { [ unowned self ] in
-            if isActivated {
-                self.cancelButtonTrailingAnchor.isActive = true
-                self.cancelButtonLeadingAnchor.isActive = false
-            } else {
-                self.cancelButtonLeadingAnchor.isActive = true
-                self.cancelButtonTrailingAnchor.isActive = false
-            }
-             self.layoutIfNeeded()
+    func enterBackgroundState(){
+        self.searchBar.resignFirstResponder()
+    }
+    func isFirstResponder() -> Bool{
+        return searchBar.isFirstResponder
+    }
+    
+    func activateSearchView() {
+        self.searchBar.becomeFirstResponder()
+        self.animateTransitionTo(isActivated: true)
+    }
+    
+    func deactivateSearchView() {
+        self.searchBar.resignFirstResponder()
+        self.animateTransitionTo(isActivated: false)
+    }
+
+    
+    
+    private func animateTransitionTo(isActivated: Bool, time: TimeInterval = 0.3){
+        UIView.animate(withDuration: time) { [ weak self ] in
+            guard let self = self else { return }
+            NSLayoutConstraint.deactivate([isActivated
+                                          ? self.cancelButtonLeadingAnchor
+                                          : self.cancelButtonTrailingAnchor
+            ])
+            NSLayoutConstraint.activate([isActivated
+                                        ? self.cancelButtonTrailingAnchor
+                                        : self.cancelButtonLeadingAnchor
+            ])
+            self.layoutIfNeeded()
         }
     }
     
-    @objc func cancelButtonDidTap(sender: UIButton){
-        searchBar.resignFirstResponder()
+    @objc private func cancelButtonDidTap(sender: UIButton){
         searchBar.text = nil
+        searchBar.resignFirstResponder()
+        coordinator?.searchDidCancel()
+    }
+    
+    
+}
 
-        self.animateTransitionTo(isActivated: false, time: 0.3)
+extension CollectionSearchToolBar: UISearchBarDelegate {
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        animateTransitionTo(isActivated: true)
+        coordinator?.searchDidBegin()
+    }
 
-        searchBar.delegate?.searchBarTextDidEndEditing?(searchBar)
+    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+        animateTransitionTo(isActivated: false)
+        coordinator?.searchDidEnd(searchBar.text ?? "")
+    }
+
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        coordinator?.searchQueryDidChange(searchText)
+    }
+    
+
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.resignFirstResponder()
     }
 }

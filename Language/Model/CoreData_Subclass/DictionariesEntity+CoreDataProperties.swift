@@ -23,6 +23,7 @@ extension DictionariesEntity {
     @NSManaged public var accessLogs: NSSet?
     @NSManaged public var words: NSSet?
     @NSManaged public var settings: NSSet?
+    @NSManaged public var lastIndex: Int64
     @NSManaged public var id: UUID
 
 }

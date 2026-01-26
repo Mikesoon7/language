@@ -4,7 +4,7 @@
 //
 //  Created by Star Lord on 07/11/2024.
 //
-//  REFACTORING STATE: CHECKED
+//TODO: Polish
 
 
 import UIKit
@@ -14,9 +14,7 @@ class TimedDetailView: UIViewController {
     private let key = "selectedTimerDurationInSec"
     private let minuteOptions: Int
 
-    private var viewModelFactory: ViewModelFactory
-    private var viewModel: DetailsViewModel?
-    private var delegate: Presenter
+    private var delegate: GameViewPresenter
     
     //MARK: - Views
     private let timePicker: UIPickerView = {
@@ -37,34 +35,33 @@ class TimedDetailView: UIViewController {
 
     private let fiveMinButton: UIButton = {
         let button = UIButton()
+        button.setUpCustomButton()
         button.backgroundColor = .popoverSubviewsBackgroundColour
         button.setTitle("5" + " " + "system.min.shortned".localized, for: .normal)
         button.setTitleColor(.label, for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.layer.masksToBounds = true
         button.layer.cornerRadius = .cornerRadius
         button.tag = 5
         return button
     }()
     private let tenMinButton: UIButton = {
         let button = UIButton()
+        button.setUpCustomButton()
         button.backgroundColor = .popoverSubviewsBackgroundColour
         button.setTitle("10" + " " + "system.min.shortned".localized, for: .normal)
         button.setTitleColor(.label, for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.layer.masksToBounds = true
         button.layer.cornerRadius = .cornerRadius
         button.tag = 10
         return button
     }()
     private let fifteenMinButton: UIButton = {
         let button = UIButton()
+        button.setUpCustomButton()
         button.backgroundColor = .popoverSubviewsBackgroundColour
-
         button.setTitle("15" + " " + "system.min.shortned".localized, for: .normal)
         button.setTitleColor(.label, for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.layer.masksToBounds = true
         button.layer.cornerRadius = .cornerRadius
         button.tag = 15
         return button
@@ -84,9 +81,7 @@ class TimedDetailView: UIViewController {
     }()
     
     //MARK: - Inherited
-    required init(viewModelFactory: ViewModelFactory, viewModel: DetailsViewModel?, delegate: Presenter, timeIntervalUpTo: Int){
-        self.viewModel = viewModel
-        self.viewModelFactory = viewModelFactory
+    required init(delegate: GameViewPresenter, timeIntervalUpTo: Int){
         self.delegate = delegate
         self.minuteOptions = timeIntervalUpTo
         super.init(nibName: nil, bundle: nil)
@@ -107,10 +102,10 @@ class TimedDetailView: UIViewController {
         super.traitCollectionDidChange(previousTraitCollection)
 
         if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
-            startButton.layer.shadowColor = (traitCollection.userInterfaceStyle == .dark  
-                                             ? shadowColorForDarkIdiom
-                                             : shadowColorForLightIdiom
-            )
+            let shadowColour = (traitCollection.userInterfaceStyle == .dark
+                                ? shadowColorForDarkIdiom
+                                : shadowColorForLightIdiom )
+            [startButton, fiveMinButton, tenMinButton, fifteenMinButton].forEach({ $0.layer.shadowColor = shadowColour})
         }
     }
     
@@ -176,37 +171,26 @@ class TimedDetailView: UIViewController {
     }
     //MARK: - Actions
     @objc func timeButtonDidTap(sender: UIButton){
-        var selectedTime: Int = 0
-        guard let viewModel = viewModel else { return }
-        switch sender.tag {
-        case 5: selectedTime = 5
-        case 10: selectedTime = 10
-        case 15: selectedTime = 15
-        default: return
-        }
-        let vc = MainGameVC(viewModelFactory: self.viewModelFactory,
-                            dictionary: viewModel.dictionary,
-                            selectedOrder: viewModel.selectedCardsOrder(),
-                            hideTransaltion: viewModel.isHideTranslationOn(),
-                            selectedNumber: viewModel.selectedNumberOfCards(),
-                            selectedTime: selectedTime * 60)
+        var selectedTime: Int = {
+            switch sender.tag {
+            case 5:     return 5
+            case 10:    return 10
+            case 15:    return 15
+            default:    return 0
+            }
+        }()
+        var timeInSeconds = selectedTime * 60
+
         self.dismiss(animated:  true)
-        delegate.startTheGame(vc: vc)
+        delegate.presentGameControllerWithCustomParameter(selectedTime: timeInSeconds)
 
     }
     @objc func startButtonDidTap(sender: Any) {
-        guard let viewModel = viewModel else { return }
         let timeInSeconds = (timePicker.selectedRow(inComponent: 0) + 1) * 60 + timePicker.selectedRow(inComponent: 1)
         UserDefaults.standard.setValue(timeInSeconds, forKey: key)
         
-        let vc = MainGameVC(viewModelFactory: self.viewModelFactory,
-                            dictionary: viewModel.dictionary,
-                            selectedOrder: viewModel.selectedCardsOrder(),
-                            hideTransaltion: viewModel.isHideTranslationOn(),
-                            selectedNumber: viewModel.selectedNumberOfCards(),
-                            selectedTime: timeInSeconds)
         self.dismiss(animated:  true)
-        delegate.startTheGame(vc: vc)
+        delegate.presentGameControllerWithCustomParameter(selectedTime: timeInSeconds)
     }
 }
 

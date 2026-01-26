@@ -4,6 +4,7 @@
 //
 //  Created by Star Lord on 22/04/2023.
 //
+//TODO: Polish
 
 import Foundation
 import CoreData
@@ -48,13 +49,6 @@ class CoreDataHelper {
         let request = NSFetchRequest<DictionariesEntity>(entityName: "DictionariesEntity")
         let dictionaries = try context.fetch(request)
         return Int64(dictionaries.count)
-    }
-    // Create dicitoanry entity
-    internal func createNewDictionary(language: String) -> DictionariesEntity? {
-        let newDictionary = DictionariesEntity(context: context)
-        newDictionary.language = language
-        newDictionary.id = UUID()
-        return newDictionary
     }
     
     // Save context shortcut

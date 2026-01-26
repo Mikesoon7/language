@@ -4,7 +4,7 @@
 //
 //  Created by Star Lord on 25/07/2023.
 //
-//  REFACTORING STATE: CHECKED
+//TODO: Polish
 
 import Combine
 import UIKit
@@ -24,9 +24,10 @@ class SearchViewModel {
     
     enum Output{
         case shouldUpdateResults
-        case shouldReloadView
+//        case shouldReloadView
         case shouldUpdateLabels
-        case shouldReplaceSearchBarOnTop(Bool)
+//        case shouldReplaceSearchBarOnTop(Bool)
+        case reflectSearchPositionChange(AppSearchBarPosition)
         case shouldUpdateFonts
         case shouldReloadCell(IndexPath)
         case error(Error)
@@ -36,7 +37,7 @@ class SearchViewModel {
     private var model: DictionaryFullAccess
     private var settingModel: UserSettingsStorageProtocol
     
-    private lazy var updateManager: DataUpdateManager = DataUpdateManager(dataModel: model)
+    private lazy var updateManager: DataUpdateManager = DataUpdateManager(dataModel: model, settings: settingModel)
 
     private var cancellable = Set<AnyCancellable>()
     
@@ -44,20 +45,25 @@ class SearchViewModel {
     private var filteredDictionaries: [Dictionaries] = []
     private var allWords: [WordsEntity] = []
     private var filteredWords: [WordsEntity] = []
-     
+    
     var output: PassthroughSubject<Output, Never> = .init()
+    
+    var searchBarPosition: AppSearchBarPosition {
+        settingModel.appSearchBarPosition
+    }
     
     private var searchPromt = ""
     
     init(model: DictionaryFullAccess, settingModel: UserSettingsStorageProtocol){
         self.model = model
         self.settingModel = settingModel
-        
+
         model.dictionaryDidChange
             .sink { changeType in
                 self.fetchWords()
             }
             .store(in: &cancellable)
+        
         fetchWords()
         
         NotificationCenter.default.addObserver(
@@ -218,8 +224,7 @@ class SearchViewModel {
         output.send(.shouldUpdateLabels)
     }
     @objc func searchBarPositionDidChange(sender: Notification){
-        let onTop = (settingModel.appSearchBarPosition == .onTop) ? true : false
-        output.send(.shouldReplaceSearchBarOnTop(onTop))
+        output.send(.reflectSearchPositionChange(self.searchBarPosition))
     }
     @objc func appFontDidChange(sender: Any) {
         output.send(.shouldUpdateFonts)

@@ -4,11 +4,12 @@
 //
 //  Created by Star Lord on 18/01/2025.
 //
+//TODO: Polish
 
 import Foundation
 import UIKit
 
-struct ImageDetailsCheck: Codable {
+struct ImageDetailsCheck: Codable, Equatable {
     
     private var imageData: Data?
     
@@ -73,12 +74,31 @@ enum ImageFilterMode: Codable {
     }
 }
 
+enum VerificationResult {
+    case emptyName
+    case emptyArray
+    case emptyText
+    case croppedText
+    case success([SingleModeCellData], String)
+}
+
+enum DictionaryCreationError {
+    case emptyName
+    case emptyArray
+    case emptyText
+    case croppedText
+}
+
 
 class DataUpdateManager{
-    private var dataModel: DictionaryFullAccess
     
-    init(dataModel: DictionaryFullAccess) {
+    
+    private var dataModel: DictionaryFullAccess
+    private var settingsModel: UserSettingsStorageProtocol
+    
+    init(dataModel: DictionaryFullAccess, settings: UserSettingsStorageProtocol) {
         self.dataModel = dataModel
+        self.settingsModel = settings
     }
     
     func settingsDidChangeFor(_ dictionary: DictionariesEntity?,
@@ -88,10 +108,10 @@ class DataUpdateManager{
         guard let dictionary = dictionary else { return }
         let currentSettings = dataModel.fetchSettings(for: dictionary)
         do {
-           try dataModel.accessSettings(for: dictionary,
-                                     selectedCardsOrder: cardsOrderSelection ?? currentSettings?.cardOrder ?? .normal,
-                                     selectedNumberOfCards: selectedDisplayNumber ?? currentSettings?.selectedNumber ?? dictionary.numberOfCards,
-                                     isOneSideMode: isOneSideMode ?? currentSettings?.isOneSideMode ?? false)
+            try dataModel.accessSettings(for: dictionary,
+                                         selectedCardsOrder: cardsOrderSelection ?? currentSettings?.cardOrder ?? .normal,
+                                         selectedNumberOfCards: selectedDisplayNumber ?? currentSettings?.selectedNumber ?? dictionary.numberOfCards,
+                                         isOneSideMode: isOneSideMode ?? currentSettings?.isOneSideMode ?? false)
             
         } catch {
             throw error
@@ -113,7 +133,7 @@ class DataUpdateManager{
         } catch {
             throw error
         }
-
+        
     }
     func logsDidChangeFor(_ dictionary: DictionariesEntity?, sessionTime: Int64, checkedCards: Int64) throws {
         guard let dictionary = dictionary else { return }
@@ -123,19 +143,50 @@ class DataUpdateManager{
             throw error
         }
     }
+    
+//    func createDictionary(_ name: String, content: String ) throws {
+//        let dictionary = dataModel.createNewDictionary(name: name)
+//        do {
+//            let wordsCollection = try dataModel.createWordsFromText(for: dictionary, text: content)
+//            
+//            try dataModel.fillNewDictionary(dictionary: dictionary, with: wordsCollection)
+//        } catch {
+//            throw error
+//        }
+//    }
+    func createDictionary(_ name: String, content: [SingleModeCellData]) throws {
+        let dictionary = dataModel.createNewDictionary(name: name)
+        var wordsCollection: [WordsEntity] = []
         
+        do {
+            for (index, cellData) in content.enumerated() {
+                do {
+                    let wordsEnity = try dataModel.createWordWithImage(for: dictionary, data: cellData, index: index, id: UUID())
+                    wordsCollection.append(wordsEnity)
+                } catch {
+                    throw error
+                }
+            }
+            try dataModel.fillNewDictionary(dictionary: dictionary, with: wordsCollection)
+        } catch {
+            throw error
+        }
+    }
+    
     func addNewWordsFor(_ dictionary: DictionariesEntity, from text: String) throws {
         let currentSettings = dataModel.fetchSettings(for: dictionary)
         let currentSelectedNumber = currentSettings?.selectedNumber ?? dictionary.numberOfCards
+        let currentLastIndex = dictionary.lastIndex
         let currentTotalNumber = dictionary.numberOfCards
         do {
             let words = try dataModel.createWordsFromText(for: dictionary, text: text)
-            try dataModel.addWordsTo(dictionary: dictionary, words: words)
+            print(currentTotalNumber, words, "AddNewWords, update manager")
+            try dataModel.extendDictionary(dictionary, words: words)
             
             if currentSelectedNumber == currentTotalNumber {
                 try settingsDidChangeFor(dictionary, selectedDisplayNumber: currentSelectedNumber + Int64(words.count))
             } else {
-
+                
                 dataModel.settingsDidChange.send(true)
             }
             
@@ -147,21 +198,25 @@ class DataUpdateManager{
         let currentSettings = dataModel.fetchSettings(for: dictionary)
         let currentSelectedNumber = currentSettings?.selectedNumber ?? dictionary.numberOfCards
         var words: [WordsEntity] = []
-        let currentTotalNumber = dictionary.numberOfCards
+        let currentWordsNumber = dictionary.numberOfCards
+        let currentLastIndex = dictionary.lastIndex
         do {
             for (index, pair) in pairs.enumerated() {
-                let word = dataModel.createWordWithImage(for: dictionary, data: pair, index: index + Int(currentTotalNumber), id: UUID())
-
-                words.append(word)
+                do {
+                    let word = try dataModel.createWordWithImage(for: dictionary, data: pair, index: index + Int(currentLastIndex), id: UUID())
+                    
+                    words.append(word)
+                } catch {
+                    throw error
+                }
             }
             
-//            let words = try dataModel.createWordsFromText(for: dictionary, text: text)
-            try dataModel.addWordsTo(dictionary: dictionary, words: words)
+            try dataModel.extendDictionary(dictionary, words: words)
             
-            if currentSelectedNumber == currentTotalNumber {
+            if currentSelectedNumber == currentWordsNumber {
                 try settingsDidChangeFor(dictionary, selectedDisplayNumber: currentSelectedNumber + Int64(words.count))
             } else {
-
+                
                 dataModel.settingsDidChange.send(true)
             }
             
@@ -169,58 +224,27 @@ class DataUpdateManager{
             throw error
         }
     }
-//    func createWordsFromText(for dictionary : DictionariesEntity, text: String) throws -> [WordsEntity] {
-//        var results = [WordsEntity]()
-//        let currentNumberOfCards = Int(dictionary.numberOfCards)
-//        let trimmedText = text.trimmingCharacters(in: .whitespacesAndNewlines)
-//        let lines = trimmedText.split(separator: "\n", omittingEmptySubsequences: true)
-//                
-//        for (index, line) in lines.enumerated() {
-//            guard line != "\r" else { break }
-//            do {
-//                //Validating line
-//                let newWord = try createWordFromLine(for: dictionary, text: String(line), index:  index + currentNumberOfCards)
-//                results.append(newWord)
-//            } catch {
-//                if let _ = error as? WordsErrorType {
-//                    continue
-//                } else {
-//                    context.rollback()
-//                    throw error
-//                }
-//            }
-//        }
-//        if results.isEmpty {
-//            context.rollback()
-//            throw WordsErrorType.failedToAssignEmptyString(text.prefix(20) + (text.count > 20 ? "..." : ""))
-//        }
-//
-//        return results
-//    }
-
-
     
-    func updateExistingDictionary(dictionary: DictionariesEntity, with words: [WordsEntity], name: String?) throws {
+    func updateDictionary(dictionary: DictionariesEntity, with data: [SingleModeCellData], name: String) throws {
         let currentSettings = dataModel.fetchSettings(for: dictionary)
         let currentNumberOfCards = dictionary.numberOfCards
         let currentSelectedNumber = currentSettings?.selectedNumber
-
-        do {
-            try dataModel.update(dictionary: dictionary, words: words, name: name)
-            if currentSettings == nil || currentNumberOfCards == currentSelectedNumber || words.count < currentSelectedNumber!{
-                try settingsDidChangeFor(dictionary, selectedDisplayNumber: Int64(words.count))
+        let currentLastIndex = dictionary.lastIndex
+        
+        var words: [WordsEntity] = []
+        
+        for (index, pair) in data.enumerated() {
+            do {
+                let word = try dataModel.createWordWithImage(for: dictionary, data: pair, index: index + Int(currentLastIndex), id: UUID())
+                
+                words.append(word)
+            } catch {
+                throw error
             }
-        } catch {
-            throw error
         }
-    }
-    func updateExistingDictionary(dictionary: DictionariesEntity, with words: [SingleModeCellData], name: String?) throws {
-        let currentSettings = dataModel.fetchSettings(for: dictionary)
-        let currentNumberOfCards = dictionary.numberOfCards
-        let currentSelectedNumber = currentSettings?.selectedNumber
-
+        
         do {
-            try dataModel.updateOneByOne(dictionary: dictionary, words: words, name: name)
+            try dataModel.updateDictionary(dictionary, words: words, name: name)
             
             if currentSettings == nil || currentNumberOfCards == currentSelectedNumber || words.count < currentSelectedNumber!{
                 try settingsDidChangeFor(dictionary, selectedDisplayNumber: Int64(words.count))
@@ -229,5 +253,90 @@ class DataUpdateManager{
             throw error
         }
     }
-
+    func splitTheText(text: String, trimExceptions: Bool) -> [SingleModeCellData]{
+        let trimmedText = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        let lines = trimmedText.split(separator: "\n", omittingEmptySubsequences: true)
+        
+        var data: [SingleModeCellData] = []
+        
+        //        var numberOfLines = 0
+        for (index, line) in lines.enumerated() {
+            guard line != "\r" else { break }
+            
+            print(line)
+            var newWord = String()
+            var newDefinition = String()
+            var trimmedText = String()
+            
+            let exceptions = settingsModel.appExceptions.availableExceptionsInString
+            
+            if trimExceptions {
+                trimmedText = line.trimmingCharacters(in: CharacterSet(charactersIn: exceptions + exceptions.uppercased()))
+            } else {
+                trimmedText = String(line)
+            }
+            let parts = trimmedText.split(separator: settingsModel.appSeparators.value).map { $0.trimmingCharacters(in: .whitespacesAndNewlines)}
+            
+            guard !trimmedText.isEmpty, !parts.isEmpty else { break }
+            
+            ///Validating line
+            newWord = parts[0]
+            
+            if parts.count == 2{
+                newDefinition = String(parts[1]).trimmingCharacters(in: .whitespacesAndNewlines)
+            } else if parts.count > 1{
+                newDefinition = parts[1...].joined(separator: " \(settingsModel.appSeparators.value) ").trimmingCharacters(in: .whitespacesAndNewlines)
+            }
+            
+            newWord = {
+                if let firstCharachter = newWord.first{
+                    let restOfTheString = newWord.dropFirst()
+                    return String(firstCharachter).capitalized + restOfTheString
+                } else {
+                    return newWord
+                }
+                
+            }()
+            
+            data.append(.init(word: newWord, definition: newDefinition, imageDetails: .init()))
+        }
+        print(data, "in split")
+        return data
+    }
+    
+    func verifySingleCellData(data: [SingleModeCellData], name: String?) -> VerificationResult {
+        guard let name = name, !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            return .emptyName
+        }
+        
+        let validData = data.filter { $0.isValid }
+        
+        guard !validData.isEmpty else {
+            return .emptyArray
+        }
+        
+        return .success(validData, name)
+    }
+    
+    func verifyTextData(data: String?, name: String?) -> VerificationResult {
+        guard let name = name, !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            return .emptyName
+        }
+        
+        guard let text = data, !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            return .emptyText
+        }
+        
+        let singleData = self.splitTheText(text: text, trimExceptions: true)
+        let validData = singleData.filter { $0.isValid }
+        
+        guard !validData.isEmpty else {
+            return .croppedText
+        }
+        
+        return .success(validData, name)
+    }
+    
 }
+
+

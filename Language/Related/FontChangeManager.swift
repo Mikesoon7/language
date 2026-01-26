@@ -4,6 +4,7 @@
 //
 //  Created by Star Lord on 01/03/2024.
 //
+//TODO: Polish
 
 import Foundation
 import UIKit
@@ -13,7 +14,7 @@ class FontChangeManager {
     static let fontKey = "AppFont"
     
     private var font: UIFont {
-        let fontName = UserDefaults.standard.string(forKey: FontChangeManager.fontKey) ?? "Georgia-BoldItalic"
+        let fontName = UserDefaults.standard.string(forKey: FontChangeManager.fontKey) ?? "Georgia-Italic"
         return UIFont(name: fontName, size: 1) ?? UIFont()
     }
     

@@ -4,7 +4,7 @@
 //
 //  Created by Star Lord on 14/05/2023.
 //
-//  REFACTORING STATE: CHECKED
+//TODO: Polish
 
 import UIKit
 import Combine
@@ -41,12 +41,12 @@ class GameDetailsVC: UIViewController {
     lazy var textInputView: TextInputView = {
         let view = TextInputView(delegate: self)
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.textView.layer.borderColor = UIColor.clear.cgColor
+        view.layer.borderColor = UIColor.clear.cgColor
         view.layer.shadowOffset = .zero
         view.layer.shadowColor = UIColor.clear.cgColor
         view.layer.shadowOpacity = 0
         view.backgroundColor = .clear
-        view.textView.font = .helveticaNeueMedium.withSize(.subBodyTextSize)
+        view.updateFont(font: .helveticaNeueMedium.withSize(.subBodyTextSize))
 
         view.textView.isEditable = false
         view.textView.isSelectable = false
@@ -141,10 +141,10 @@ class GameDetailsVC: UIViewController {
                 case .shouldPresentAlert(let alert):
                     self?.present(alert, animated: true)
                 case .shouldProcceedEditing:
-                    self?.textInputView.textView.text = self?.configureTextFor(editing: true)
+                    self?.textInputView.updateText(text: self?.configureTextFor(editing: true) ?? "")
                     self?.textInputView.updatePlaceholderVisability()
                 case .shouldEndEditing:
-                    self?.textInputView.textView.text = self?.configureTextFor(editing: false)
+                    self?.textInputView.updateText(text: self?.configureTextFor(editing: false) ?? "")
                     self?.transitionToEditing(activate: false)
                 case .shouldDismissView:
                     self?.animateViewDismiss()
@@ -199,7 +199,7 @@ class GameDetailsVC: UIViewController {
 
     private func configureTextView(){
         containerView.addSubviews(textInputView)
-        textInputView.textView.text = configureTextFor(editing: false)
+        textInputView.updateText(text: configureTextFor(editing: false))
         
         textInputView.updatePlaceholderVisability()
 
@@ -333,9 +333,9 @@ class GameDetailsVC: UIViewController {
         textInputView.textView.isEditable = activate
         changeDoneButtonState(activate: activate)
         if activate{
-            textInputView.textView.becomeFirstResponder()
+            textInputView.becomeFirstResponder()
         } else {
-            textInputView.textView.resignFirstResponder()
+            textInputView.resignFirstResponder()
         }
     }
     ///Changes bottom anchor of container, updaing layout of subviews if required
@@ -469,7 +469,7 @@ extension GameDetailsVC {
 
     //MARK: Buttons actions
     @objc func editButtonDidTap(sender: UIButton){
-        textInputView.textView.text = configureTextFor(editing: true)
+        textInputView.updateText(text: configureTextFor(editing: true))
         transitionToEditing(activate: true)
     }
     
@@ -483,14 +483,12 @@ extension GameDetailsVC {
             return
         }
         let view = AddImageController(data: data,
-                                      delegate: self,
-                                      cell: SingleModeImageCell(),
-                                      index: IndexPath(index: 0))
+                                      delegate: self)
         self.present(view, animated: true)
     }
 
     @objc func doneButtonDidTap(sender: UIButton){
-        viewModel?.editWord(with: textInputView.textView.text, view: self.view)
+        viewModel?.editWord(with: textInputView.currentText(), view: self.view)
     }
     
     @objc func informationButtonDidTap(sender: UIButton){
@@ -525,9 +523,14 @@ extension GameDetailsVC: PlaceholderTextViewDelegate{
 }
 
 extension GameDetailsVC: AddImageDelegate {
-    func didSelectAnImage(imageDetails: ImageDetailsCheck, cell: SingleModeImageCell, index: IndexPath) {
+    
+    func didSelectAnImage(imageDetails: ImageDetailsCheck, data: SingleModeCellData) {
         viewModel?.editImage(imageDetails: imageDetails)
     }
+    
+//    func didSelectAnImage(imageDetails: ImageDetailsCheck, cell: SingleModeImageCell, index: IndexPath) {
+//        viewModel?.editImage(imageDetails: imageDetails)
+//    }
     
 //    func didSelectAnImage(image: UIImage?, index: IndexPath) {
 //        viewModel?.editImage(with: image)
@@ -550,7 +553,7 @@ class GameDetailsIPadVC: UIViewController {
         let view = TextInputView(delegate: self)
         
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.textView.layer.borderColor = UIColor.clear.cgColor
+        view.layer.borderColor = UIColor.clear.cgColor
         view.layer.shadowOffset = .zero
         view.layer.shadowColor = UIColor.clear.cgColor
         view.layer.shadowOpacity = 0
@@ -622,19 +625,20 @@ class GameDetailsIPadVC: UIViewController {
         guard let output = viewModel?.output else { return }
         output
             .sink(receiveValue: { [weak self] output in
+                guard let self = self else { return }
                 switch output {
                 case .error(let error):
-                    self?.presentError(error, sourceView: self?.view)
+                    self.presentError(error, sourceView: self.view)
                 case .shouldPresentAlert(let alert):
-                    self?.present(alert, animated: true)
+                    self.present(alert, animated: true)
                 case .shouldProcceedEditing:
-                    self?.textInputView.updatePlaceholderVisability()
-                    self?.textInputView.textView.text = self?.configureTextFor(editing: true)
+                    self.textInputView.updatePlaceholderVisability()
+                    self.textInputView.updateText(text: self.configureTextFor(editing: true))
                 case .shouldEndEditing:
-                    self?.textInputView.textView.text = self?.configureTextFor(editing: false)
-                    self?.transitionToEditing(activate: false)
+                    self.textInputView.updateText(text: self.configureTextFor(editing: false))
+                    self.transitionToEditing(activate: false)
                 case .shouldDismissView:
-                    self?.dismiss(animated: true)
+                    self.dismiss(animated: true)
                 }
             })
             .store(in: &cancellable)
@@ -667,8 +671,8 @@ class GameDetailsIPadVC: UIViewController {
     private func configureTextView(){
         view.addSubviews(textInputView)
 
-        textInputView.textView.text = configureTextFor(editing: false)
-        
+        self.textInputView.updateText(text: self.configureTextFor(editing: false))
+
         textInputView.updatePlaceholderVisability()
 
         textViewBottomToContainer = textInputView.bottomAnchor.constraint(equalTo: editButton.topAnchor, constant: -.longInnerSpacer)
@@ -775,9 +779,9 @@ class GameDetailsIPadVC: UIViewController {
         textInputView.textView.isEditable = activate
         changeDoneButtonState(activate: activate)
         if activate{
-            textInputView.textView.becomeFirstResponder()
+            textInputView.becomeFirstResponder()
         } else {
-            textInputView.textView.resignFirstResponder()
+            textInputView.resignFirstResponder()
         }
     }
     //MARK: Gestures
@@ -834,8 +838,8 @@ extension GameDetailsIPadVC {
     
     //MARK: Buttons actions
     @objc func editButtonDidTap(sender: UIButton){
-        textInputView.textView.text = configureTextFor(editing: true)
-        
+        self.textInputView.updateText(text: self.configureTextFor(editing: true))
+
         transitionToEditing(activate: true)
     }
     
@@ -850,9 +854,7 @@ extension GameDetailsIPadVC {
             return
         }
         let view = AddImageController(data: data,
-                                      delegate: self,
-                                      cell: SingleModeImageCell(),
-                                      index: IndexPath(index: 0))
+                                      delegate: self)
         self.present(view, animated: true)
     }
 
@@ -889,8 +891,9 @@ extension GameDetailsIPadVC: PlaceholderTextViewDelegate{
 }
 
 extension GameDetailsIPadVC: AddImageDelegate {
-    func didSelectAnImage(imageDetails: ImageDetailsCheck, cell: SingleModeImageCell, index: IndexPath) {
+    func didSelectAnImage(imageDetails: ImageDetailsCheck, data: SingleModeCellData) {
         viewModel?.editImage(imageDetails: imageDetails)
+
     }
     
 //    func didSelectAnImage(image: UIImage?, index: IndexPath) {

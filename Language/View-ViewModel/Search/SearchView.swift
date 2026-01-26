@@ -10,29 +10,31 @@ import UIKit
 import CoreData
 import Combine
 
+enum CustomStrokePosition {
+    case top, bottom, undefined
+}
+
 class SearchView: UIViewController {
-    
-    private var searchBarOnTop: Bool {
-        viewModel.searchBarPositionIsOnTop()
-    }
-    private var searchBarDidChanged = false
-    private var isLayoutRequired = true
     
     private let viewModelFactory: ViewModelFactory
     private let viewModel: SearchViewModel
     private var cancellable = Set<AnyCancellable>()
     private let input =  PassthroughSubject<SearchViewModel.Input, Never>()
     
-    var popoverView: SearchCellExpandedView?
+    private var keyboardListener: KeyboardListener?
     
-    var selectedIndexPath: IndexPath? = nil
+    private var popoverView: SearchCellExpandedView?
+    private var selectedIndexPath: IndexPath? = nil
+    
+    private var currentLayoutContext: CustomLayoutContext?
+    private var currentStrokePosition: CustomStrokePosition?
     
     //MARK: - Views
     private lazy var collectionView: UICollectionView = {
         let view = UICollectionView(frame: .zero, collectionViewLayout: layout)
         view.delegate = self
         view.dataSource = self
-        view.contentInset = .init(top: .longInnerSpacer, left: .innerSpacer, bottom: .longInnerSpacer, right: .innerSpacer)
+        view.contentInset = collectionContentInset
         view.backgroundColor = .systemBackground
         view.translatesAutoresizingMaskIntoConstraints = false
         view.alwaysBounceVertical = true
@@ -59,15 +61,16 @@ class SearchView: UIViewController {
     private var bottomStroke = CAShapeLayer()
     
     //MARK: Constrait related properties
-    private var collectionViewBottomAnchor: NSLayoutConstraint =    .init()
-    private var searchBarWidthAnchor: NSLayoutConstraint =          .init()
     private var cancelButtonLeadingAnchor: NSLayoutConstraint =     .init()
-    
     private let searchControllerHeight: CGFloat = 50
+    private let collectionContentInset: UIEdgeInsets = .init(
+        top: .longInnerSpacer, left: .innerSpacer,
+        bottom: .longOuterSpacer, right: .innerSpacer)
     
     required init(factory: ViewModelFactory){
         self.viewModelFactory = factory
         self.viewModel = factory.configureSearchViewModel()
+        
         super.init(nibName: nil, bundle: nil)
     }
     required init?(coder: NSCoder) {
@@ -78,32 +81,32 @@ class SearchView: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         bind()
+        bindViewhelpers()
+        
         configureController()
         configureCollectionView()
         configureNavBar()
-        configureSearchBar()
+        configureBottomSearchView()
         configureLabels()
+        
+        applySearchBarPosition(viewModel.searchBarPosition)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         input.send(.viewWillAppear)
-        if searchBarDidChanged{
-            configureSearchBar()
-            view.layoutSubviews()
-        }
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        configureStrokes()
+        updateLayoutIfNeeded()
+        updateStrokesIfNeeded()
         bottomSearchView.configureStrokes()
-        adjustLayoutForSizeClass()
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        adjustLayoutForSizeClass()
+        updateLayoutIfNeeded(width: size.width)
         dismissPopover()
     }
     
@@ -138,15 +141,13 @@ class SearchView: UIViewController {
                     self.collectionView.reloadData()
                 case .error(let error):
                     self.navigationController?.presentError(error, sourceView: self.view)
-                case .shouldReloadView:
-                    self.refreshSearchBars()
                 case .shouldUpdateLabels:
                     self.configureLabels()
                     self.bottomSearchView.configureLabels()
                 case .shouldUpdateFonts:
                     self.configureFont()
-                case .shouldReplaceSearchBarOnTop(_):
-                    self.prepeareForNewPosition()
+                case .reflectSearchPositionChange(let position):
+                    self.applySearchBarPosition(position)
                 case .shouldReloadCell(let cellIndex):
                     self.collectionView.reloadItems(at: [cellIndex])
                 }
@@ -154,54 +155,48 @@ class SearchView: UIViewController {
             .store(in: &cancellable)
     }
     
-    //MARK: - Controller SetUp
-    private func configureController(){
-        view.backgroundColor = .systemBackground
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+    func bindViewhelpers() {
+        self.keyboardListener = KeyboardListener(view: self.view)
+        
+        keyboardListener?.events
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] event in
+                guard let self = self else {return}
+                handleKeyboard(event)
+            }
+            .store(in: &cancellable)
     }
     
+    //MARK: - SetUp Subviews
+    private func configureController(){
+        view.backgroundColor = .systemBackground
+    }
     
-    //MARK:  NavBar SetUp
     private func configureNavBar(){
         navigationController?.navigationBar.titleTextAttributes = FontChangeManager.shared.VCTitleAttributes()
         
     }
     
-    //MARK: CollectionView + Layout setUp
     private func configureCollectionView() {
         view.addSubview(collectionView)
-        
-        collectionViewBottomAnchor = collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: searchBarOnTop ? 0 : -searchControllerHeight)
-        
+                
         NSLayoutConstraint.activate([
-            collectionView.topAnchor.constraint(equalTo: view.topAnchor),
-            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            collectionViewBottomAnchor
+            collectionView.topAnchor.constraint(
+                equalTo: view.topAnchor),
+            collectionView.leadingAnchor.constraint(
+                equalTo: view.leadingAnchor),
+            collectionView.trailingAnchor.constraint(
+                equalTo: view.trailingAnchor),
+            collectionView.bottomAnchor.constraint(
+                equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         ])
     }
-    
-    private func adjustLayoutForSizeClass() {
-        let collectionWidth = collectionView.bounds.width
-        let itemWidth: CGFloat = (traitCollection.isRegularWidth
-                                  ? (collectionWidth - (.innerSpacer * 2 + .longInnerSpacer * 2)) / 3
-                                  : (collectionWidth - (.innerSpacer * 2 + .longInnerSpacer)) / 2
-        )
         
-        layout.itemSize = CGSize(width: itemWidth, height: .genericButtonHeight)
-        layout.minimumLineSpacing = .longInnerSpacer
-        layout.sectionInset = UIEdgeInsets(top: .zero, left: .zero, bottom: .longOuterSpacer, right: .zero)
-        layout.headerReferenceSize = CGSize(width: collectionView.bounds.width, height: .genericButtonHeight) // Header height
-        
-        layout.invalidateLayout()
-    }
-    
-    //MARK: ContainerForBottomSearchBar SetUp
     private func configureBottomSearchView() {
         view.addSubview(bottomSearchView)
         
         bottomSearchView.delegate = self
+        bottomSearchView.isHidden = true
         
         NSLayoutConstraint.activate([
             bottomSearchView.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor),
@@ -210,45 +205,8 @@ class SearchView: UIViewController {
             bottomSearchView.heightAnchor.constraint(equalToConstant: searchControllerHeight),
         ])
     }
-    //MARK: Strokes
-    private func configureStrokes(){
-        if topStroke.superlayer == nil && bottomStroke.superlayer == nil {
-            topStroke = UIView().addTopStroke(vc: self)
-            bottomStroke = UIView().addBottomStroke(vc: self)
-            
-            if searchBarOnTop {
-                self.tabBarController?.tabBar.layer.addSublayer(bottomStroke)
-            } else {
-                self.navigationController?.navigationBar.layer.addSublayer(topStroke)
-            }
-        }
-    }
-    
-    //MARK: Configure SearchBars
-    private func configureSearchBar() {
-        if searchBarOnTop {
-            navigationItem.searchController = topSearchController
-            collectionViewBottomAnchor.constant = 0
-        } else {
-            if !view.subviews.contains(bottomSearchView){
-                configureBottomSearchView()
-            } else {
-                bottomSearchView.isHidden = false
-            }
-            
-            collectionViewBottomAnchor.constant = -searchControllerHeight
-        }
-    }
     
     //MARK: Refreshing SearchBars.
-    private func refreshSearchBars(){
-        if searchBarOnTop{
-            refreshTopSearchBar()
-        } else {
-            refreshBottomSearchBar()
-        }
-    }
-    
     //If searchBar contain text( that mean in search stage) we clearing it, resigning and updating tableView, by manualy calling didEndEditing.
     private func refreshTopSearchBar(){
         if topSearchController.searchBar.text != nil{
@@ -267,23 +225,119 @@ class SearchView: UIViewController {
         }
     }
     
-    //MARK: Prepairing view by vanishing current searchBar
-    private func prepeareForNewPosition(){
-        if searchBarOnTop {
-            self.tabBarController?.tabBar.layer.addSublayer(bottomStroke)
-            topStroke.removeFromSuperlayer()
-            refreshBottomSearchBar()
-            bottomSearchView.isHidden = true
-        } else {
-            bottomStroke.removeFromSuperlayer()
-            refreshTopSearchBar()
-            
-            navigationItem.searchController = nil
-            
-            self.navigationController?.navigationBar.layer.addSublayer(topStroke)
+//    MARK: State Change
+    private func applySearchBarPosition(_ position: AppSearchBarPosition) {
+        UIView.animate(withDuration: 0.3) { [weak self]  in
+            guard let self = self else {return}
+            switch position {
+            case .onTop:
+                refreshBottomSearchBar()
+                bottomSearchView.isHidden = true
+                navigationItem.searchController?.isActive = false
+                navigationItem.searchController = topSearchController
+            case .atTheBottom:
+                refreshTopSearchBar()
+                bottomSearchView.isHidden = false
+                navigationItem.searchController = nil
+            }
+            view.setNeedsDisplay()
         }
-        searchBarDidChanged = true
     }
+
+    //MARK: Layout
+    private func updateLayoutIfNeeded(width: CGFloat? = nil) {
+        if width != nil {
+            let newContext = view.layoutContext(width: width)
+            currentLayoutContext = newContext
+            adjustLayoutFor(context: newContext, width: width)
+        } else {
+            let newContext = view.layoutContext()
+            guard newContext != currentLayoutContext else { return }
+            
+            currentLayoutContext = newContext
+            adjustLayoutFor(context: newContext)
+        }
+    }
+
+    private func updateStrokesIfNeeded(){
+        switch viewModel.searchBarPosition {
+        case .onTop:
+            guard currentStrokePosition == .bottom else {
+                topStroke.removeFromSuperlayer()
+                bottomStroke.removeFromSuperlayer()
+
+                bottomStroke = UIView().addBottomStroke(vc: self)
+                self.tabBarController?.tabBar.layer.addSublayer(bottomStroke)
+
+                currentStrokePosition = .bottom
+                return
+            }
+        case .atTheBottom:
+            let navFrame = navigationController?.navigationBar.layer.bounds
+
+            guard currentStrokePosition == .top  && navFrame == topStroke.bounds else {
+                topStroke.removeFromSuperlayer()
+                bottomStroke.removeFromSuperlayer()
+                
+                topStroke = UIView().addTopStroke(vc: self)
+                self.navigationController?.navigationBar.layer.addSublayer(topStroke)
+
+                currentStrokePosition = .top
+                return
+            }
+
+        }
+    }
+    
+    private func adjustLayoutFor(context: CustomLayoutContext, width: CGFloat? = nil) {
+        let isCompact = context == .compact
+        let numberOfColumns: CGFloat = isCompact ? 2 : 3
+        let width = width ?? self.view.bounds.width
+        
+        let itemWidth = ((width - (.longInnerSpacer * (numberOfColumns + 1))) / numberOfColumns)
+        
+        layout.itemSize = CGSize(width: itemWidth, height: .genericButtonHeight)
+        
+        layout.minimumLineSpacing = .longInnerSpacer
+        
+        layout.sectionInset = UIEdgeInsets(
+            top: .zero, left: .zero,
+            bottom: .longOuterSpacer, right: .zero)
+        layout.headerReferenceSize = CGSize(
+            width: collectionView.bounds.width,
+            height: .genericButtonHeight)
+        layout.invalidateLayout()
+    }
+    
+    
+    private func handleKeyboard(_ event: KeyboardListener.Event) {
+        UIView.animate(
+            withDuration: event.duration,
+            delay: 0,
+            options: event.curve
+        ) {
+            switch event.presence {
+            case .hidden, .accessoryOnly:
+                self.updateCollectionViewForState(isVisible: false, duration: event.duration, intersectingHeight: event.intersection.height)
+            case .full:
+                self.updateCollectionViewForState(isVisible: true, duration: event.duration, intersectingHeight: event.intersection.height)
+            }
+            self.view.layoutIfNeeded()
+        }
+    }
+    
+    private func updateCollectionViewForState(isVisible: Bool, duration: TimeInterval, intersectingHeight: CGFloat){
+        if isVisible {
+            collectionView.contentInset = UIEdgeInsets(
+                top: .longInnerSpacer, left: .innerSpacer,
+                bottom: intersectingHeight + collectionContentInset.bottom, right: .innerSpacer)
+        } else {
+            collectionView.contentInset = collectionContentInset
+        }
+        collectionView.scrollIndicatorInsets = collectionView.contentInset
+    }
+
+
     
     //MARK: Text values setUp or Update.
     private func configureLabels(){
@@ -296,74 +350,39 @@ class SearchView: UIViewController {
         collectionView.reloadData()
     }
     
+
     //MARK: - Actions
-    //These methods will trigger only if the view uses custom bottm searcHBar. We need in to animate appearence of cancel button and shrinking the searchBar field.
-    @objc func keyboardWillShow(notification: Notification) {
-        guard !searchBarOnTop else { return }
-        guard let userInfo = notification.userInfo,
-              let animationDuration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval,
-              let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect
-        else { return }
-        
-        bottomSearchView.animateTransitionTo(isActivated: true, time: animationDuration)
-        
-        let keyboardHeight = keyboardFrame.height
-        collectionView.contentInset = UIEdgeInsets(top: .longInnerSpacer, left: .innerSpacer,
-                                                   bottom: keyboardHeight, right: .innerSpacer)
-        collectionView.scrollIndicatorInsets = collectionView.contentInset
-        
-        
-    }
-    
-    @objc func keyboardWillHide(notification: Notification) {
-        guard !searchBarOnTop else { return }
-        guard let userInfo = notification.userInfo,
-              let animationDuration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval
-        else { return }
-        
-        collectionView.contentInset = UIEdgeInsets(top: .longInnerSpacer, left: .innerSpacer,
-                                                   bottom: -.longInnerSpacer, right: .innerSpacer)
-        
-        collectionView.scrollIndicatorInsets =   collectionView.contentInset
-        //Here we checking if searchBar contain text. If contains, that means search button was tapped.
-        if bottomSearchView.searchBar.text == nil {
-            bottomSearchView.animateTransitionTo(isActivated: false, time: animationDuration)
-        }
-    }
     @objc func dismissPopover() {
         popoverView?.dismissPopOver(closure: self.popOverDidDismiss )
-    }
-}
-
-//MARK: - SearchResults updating.
-extension SearchView: UISearchResultsUpdating{
-    
-    func updateSearchResults(for searchController: UISearchController?){
-        let text = {
-            if searchBarOnTop{
-                guard let text = topSearchController.searchBar.text else { return String() }
-                return text
-            } else {
-                guard let text = bottomSearchView.searchBar.text else { return String() }
-                return text
-            }
-        }()
-        input.send(.reciveText(text))
     }
 }
 
 //MARK: - SearchBar delegate.
 //Since i havent found a way to implement custom bottomSearchBar with controller, i should trigger custom search results updater ecery time the customSearchBar calls its delegate.
 extension SearchView: UISearchBarDelegate{
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        if viewModel.searchBarPosition == .atTheBottom {
+            bottomSearchView.animateTransitionTo(isActivated: true, time: 0.3)
+        }
+    }
+    
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        updateSearchResults(for: nil)
+        let text = searchBar.text ?? ""
+        input.send(.reciveText(text))
     }
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
-        updateSearchResults(for: nil)
+        if viewModel.searchBarPosition == .atTheBottom {
+            bottomSearchView.animateTransitionTo(isActivated: false, time: 0.3)
+        }
         
+        let text = searchBar.text ?? ""
+        input.send(.reciveText(text))
+
     }
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        updateSearchResults(for: nil)
+        let text = searchBar.text ?? ""
+        input.send(.reciveText(text))
+        
         if searchBar.tag == 2 {
             bottomSearchView.searchBar.resignFirstResponder()
         }
@@ -433,7 +452,7 @@ extension SearchView: UICollectionViewDataSource, UICollectionViewDelegate {
             topSearchController.searchBar.resignFirstResponder()
         }
         
-        let numberOfColumns = traitCollection.isRegularWidth ? 3 : 2
+        let numberOfColumns = currentLayoutContext == .compact ? 2 : 3
         
         let viewToAttach = view.window ?? view ?? collectionView
         
@@ -482,7 +501,6 @@ extension SearchView: SearchViewDeleteDelegate{
 
     }
     func popOverDidDismiss() {
-//        self.popoverView?.dismiss(animated: false)
         self.popoverView = nil
         self.selectedIndexPath = nil
     }
