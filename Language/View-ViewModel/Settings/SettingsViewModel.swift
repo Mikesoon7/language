@@ -9,9 +9,13 @@
 import UIKit
 import Combine
 
+enum SettingsPicker{
+    case theme
+    case language
+}
 class SettingsViewModel{
     enum Output{
-        case needPresentAlertWith([UIAlertAction], IndexPath)
+        case needPresentPicker(SettingsPicker, IndexPath)
         case needPresentSeparatorsView
         case needUpdateLanguage
         case needUpdateFont
@@ -81,7 +85,6 @@ class SettingsViewModel{
         case .separators(_): return IndexPath(row: 1 , section: 2)
         case .exceptions(_): return IndexPath(row: 2, section: 2)
         case .lauchStatus(_): return IndexPath(row: 3, section: 2)
-//        case .duplicates(_): return IndexPath(row: 2 , section: 2)
         default: return IndexPath()
         }
     }
@@ -136,19 +139,9 @@ class SettingsViewModel{
         var alertOptions = [UIAlertAction]()
         switch subject{
         case .theme(_):
-            for option in AppTheme.allCases{
-                alertOptions.append(UIAlertAction(title: option.value, style: .default, handler: { [weak self]_ in
-                    self?.handleValueUpdateFor(newValue: .theme(option))
-                }))
-            }
-            output.send(.needPresentAlertWith(alertOptions, indexPath))
+            output.send(.needPresentPicker(.theme, indexPath))
         case .language(_):
-            for option in AppLanguage.allCases{
-                alertOptions.append(UIAlertAction(title: option.value, style: .default, handler: { [weak self]_ in
-                    self?.handleValueUpdateFor(newValue: .language(option))
-                }))
-            }
-            output.send(.needPresentAlertWith(alertOptions, indexPath))
+            output.send(.needPresentPicker(.language, indexPath))
         case .font(_):
             output.send(.needPresentFontView)
         case .exceptions(_):
@@ -166,7 +159,6 @@ class SettingsViewModel{
     //MARK: Updating model and local settings reference.
     //Since we use cell, which automaticaly responce on user touches, we dont need to update searchBarPosition row.
     func updateSelectedFont(font: UIFontDescriptor) {
-        //        settingModel.reload(newValue: .font())
         let font = UIFont(descriptor: font, size: .bodyTextSize)
         settingsModel.reload(newValue: .font(.init(selectedFontName: font.fontName)))
         configureSettingsStructure()

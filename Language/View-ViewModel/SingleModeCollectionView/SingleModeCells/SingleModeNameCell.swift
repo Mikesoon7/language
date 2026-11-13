@@ -12,7 +12,7 @@ class SingleModeNameCell: UICollectionViewCell {
    
     static var identifier = "SingleModeName"
     
-    var delegate: SingleModeNameDelegate?
+    weak var delegate: SingleModeNameDelegate?
     
     private let nameView : UIView = {
         var view = UIView()

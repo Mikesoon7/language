@@ -1,0 +1,45 @@
+--- a/Extentions/Extensions.swift
++++ b/Extentions/Extensions.swift
+@@ -288,6 +288,31 @@
+ }
+ 
+ extension UIImage {
++    /// Longest side (in pixels) of any photo stored in a card.
++    /// 1600 px is sharp on every iPhone/iPad card and keeps a JPEG around 200-400 KB.
++    static let maxStoredDimension: CGFloat = 1600
++
++    /// Returns a copy whose longest side is at most `maxDimension` pixels.
++    /// It always redraws, so the EXIF orientation is baked into the pixels (the result is `.up`).
++    func downscaled(toMaxDimension maxDimension: CGFloat = UIImage.maxStoredDimension) -> UIImage {
++        let pixelWidth = size.width * scale
++        let pixelHeight = size.height * scale
++        let longestSide = max(pixelWidth, pixelHeight)
++        guard longestSide > 0 else { return self }
++
++        // Never upscale: a small photo keeps its size.
++        let ratio = min(1, maxDimension / longestSide)
++        let targetSize = CGSize(width: (pixelWidth * ratio).rounded(),
++                                height: (pixelHeight * ratio).rounded())
++
++        let format = UIGraphicsImageRendererFormat.default()
++        format.scale = 1          // targetSize is already in pixels
++        format.opaque = true      // JPEG has no alpha channel
++        return UIGraphicsImageRenderer(size: targetSize, format: format).image { _ in
++            self.draw(in: CGRect(origin: .zero, size: targetSize))
++        }
++    }
++
+     func resize(to size: CGSize) -> UIImage? {
+         let renderer = UIGraphicsImageRenderer(size: size)
+         return renderer.image { _ in
+--- a/Related/DataUpdateManager.swift
++++ b/Related/DataUpdateManager.swift
+@@ -42,7 +42,7 @@
+     }
+     
+     init(image: UIImage?, contentMode: ImageContentMode, filterValue: ImageFilterMode) {
+-        self.imageData = image != nil ? image!.jpegData(compressionQuality: 0.5) : nil
++        self.imageData = image?.downscaled().jpegData(compressionQuality: 0.8)
+         self.contentMode = contentMode
+         self.filterValue = filterValue
+     }

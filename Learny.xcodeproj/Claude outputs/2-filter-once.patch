@@ -1,0 +1,49 @@
+--- a/Extentions/Extensions.swift
++++ b/Extentions/Extensions.swift
+@@ -252,15 +252,18 @@
+ }
+ 
+ extension UIImage {
++    /// One shared context: creating a CIContext is expensive (it sets up GPU state),
++    /// so it is created once and reused by every filter call.
++    private static let filterContext = CIContext()
++
+     func applyBlackAndWhiteFilter() -> UIImage? {
+         guard let ciImage = CIImage(image: self) else { return nil }
+ 
+         let filter = CIFilter(name: "CIPhotoEffectMono")
+         filter?.setValue(ciImage, forKey: kCIInputImageKey)
+ 
+-        let context = CIContext()
+         if let output = filter?.outputImage,
+-           let cgImage = context.createCGImage(output, from: output.extent) {
++           let cgImage = UIImage.filterContext.createCGImage(output, from: output.extent) {
+             
+             // Recreate UIImage with original orientation
+             return UIImage(cgImage: cgImage, scale: self.scale, orientation: self.imageOrientation)
+--- a/View-ViewModel/Game/GameSubviews/CollectionViewCell.swift
++++ b/View-ViewModel/Game/GameSubviews/CollectionViewCell.swift
+@@ -207,8 +207,7 @@
+     func loadImageLazily() {
+         guard let imageData = imageData else { return }
+         if let imageDetails = try? JSONDecoder().decode(ImageDetailsCheck.self, from: imageData), let image = imageDetails.image {
+-            let processedImage = imageDetails.filterValue.original ? image : image.applyBlackAndWhiteFilter()
+-            imageView.image = processedImage
++            imageView.image = image   // `image` is already filtered according to filterValue
+             imageView.contentMode = imageDetails.contentMode.uiViewContentMode
+         }
+     }
+--- a/View-ViewModel/SingleModeCollectionView/SingleModeCells/SingleModeImageCell.swift
++++ b/View-ViewModel/SingleModeCollectionView/SingleModeCells/SingleModeImageCell.swift
+@@ -311,9 +311,8 @@
+     //MARK: Changes Response
+     func addPhoto(imageDetails: ImageDetailsCheck?){
+         if let imageDetails = imageDetails, let image = imageDetails.image {
+-            let processedImage = imageDetails.filterValue.original ? image : image.applyBlackAndWhiteFilter()
+-            
+-            self.button.setImage(processedImage, for: .normal)
++            // `image` is already filtered according to filterValue
++            self.button.setImage(image, for: .normal)
+             self.button.imageView?.contentMode = imageDetails.contentMode.uiViewContentMode
+             
+             UIView.animate(withDuration: 0.3) {

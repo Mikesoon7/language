@@ -80,7 +80,7 @@
 "addWords.emptyCells.title" = "Add content";
 "addWords.emptyCells.message" = "To save the dictionary, add at least one item — text or an image is enough.";
 "addWords.croppedText.title" = "Content couldn’t be saved";
-"addWords.croppedText.message" = "The text became empty after selected exception characters were removed. Please check settings and try again.";
+"addWords.croppedText.message" = "All characters were removed based on your current settings. Please check exceptions settings and try again.";
 //Information
 "addDict.lineMode" = "You are in Line-by-Line mode. \n\n This mode automatically splits your text into cards, with each paragraph becoming a separate card. It’s the fastest and most efficient way to add multiple cards at once.";
 "addDict.singleMode" = "You are in One-by-One mode. \n\n This mode lets you create each card individually, giving you full control over the content and allowing you to add images when needed.";
@@ -129,8 +129,8 @@
 "game.lastCell.checked" = "You've checked:";
 "game.lastCell.spending" = "Spending:";
 "game.lastCell.bestResult" = "Best result so far !";
-"game.lastCell.avarageResult.firstPart" = "You've done it ";
-"game.lastCell.avarageResult.secondPart" = " previous time";
+"game.lastCell.averageResult.firstPart" = "You've done it ";
+"game.lastCell.averageResult.secondPart" = " previous time";
 "game.lastCell.slower" = "slower than";
 "game.lastCell.faster" = "faster than";
 "game.lastCell.same" = "as fast as";
@@ -168,6 +168,11 @@
 "searchVCTitle" = "Search";
 "yourWord" = "Insert your text";
 "copied" = "Copied";
+
+"searchView.saveError" = "We couldn’t save your changes. Please try again.";
+"searchView.emptyText.message" = "The text can’t be empty.";
+"searchView.incorrectInput.message" = "All characters were removed based on your current settings.";
+
 //MARK: - SeparatorsVC
 "separators.addChar" = "Add Character";
 "separators.placeholder" = "Enter Text";

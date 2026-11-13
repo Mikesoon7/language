@@ -27,10 +27,11 @@ class GameDetailsViewModel{
     }
     
     //MARK: Properties
-    private let dataModel: Dictionary_WordsManager
+    private let dataModel: DictionaryFullAccess
     private let settingsModel: UserSettingsStorageProtocol
+    private lazy var dataUpdateManager = DataUpdateManager(dataModel: dataModel, settings: settingsModel)
     
-    var delegate: MainGameVCDelegate?
+    weak var delegate: MainGameVCDelegate?
     
     private var selectedDictionary: DictionariesEntity
     private var selectedWord: WordsEntity
@@ -43,7 +44,7 @@ class GameDetailsViewModel{
     private var cancellable = Set<AnyCancellable>()
     
     
-    init(dataModel: Dictionary_WordsManager, settingsModel: UserSettingsStorageProtocol, dictionary: DictionariesEntity, word: WordsEntity, delegate: MainGameVCDelegate){
+    init(dataModel: DictionaryFullAccess, settingsModel: UserSettingsStorageProtocol, dictionary: DictionariesEntity, word: WordsEntity, delegate: MainGameVCDelegate){
         self.dataModel = dataModel
         self.settingsModel = settingsModel
         self.selectedDictionary = dictionary
@@ -96,18 +97,28 @@ class GameDetailsViewModel{
             output.send(.shouldEndEditing)
             return
         }
-        guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+        let verificationResult = dataUpdateManager.verifySingleEntryTextData(data: text)
+//        guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+//            configureAlert(forDeletion: false, view: view)
+//            return
+//        }
+        switch verificationResult {
+        case .success(let data, let _):
+            
+            do {
+                try dataUpdateManager.updateSingleEntry(entry: selectedWord, data: data[0])
+                self.currentText = text
+                self.cardState = .wasUpdated
+                output.send(.shouldEndEditing)
+            } catch {
+                output.send(.error(error))
+            }
+        case .croppedText:
+            //MARK: FINISH here
             configureAlert(forDeletion: false, view: view)
-            return
-        }
-        
-        do {
-            try dataModel.reassignWordsProperties(for: selectedWord, from: text)
-            self.currentText = text
-            self.cardState = .wasUpdated
-            output.send(.shouldEndEditing)
-        } catch {
-            output.send(.error(error))
+        case .emptyText:
+            configureAlert(forDeletion: false, view: view)
+        default: break
         }
     }
     func editImage(imageDetails: ImageDetailsCheck){

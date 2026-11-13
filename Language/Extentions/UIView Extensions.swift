@@ -129,7 +129,7 @@ extension UIView {
         )
         topStroke.name = "Stroke top"
 
-        topStroke.frame = vc.navigationController?.navigationBar.bounds ?? .zero
+//        topStroke.frame = vc.navigationController?.navigationBar.bounds ?? .zero
         topStroke.path = path.cgPath
         topStroke.lineWidth = 1
         topStroke.strokeColor = UIColor.label.cgColor

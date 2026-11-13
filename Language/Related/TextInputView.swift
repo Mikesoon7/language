@@ -284,22 +284,22 @@ final class TextInputView: UIView {
         }
     }
     
-    func validateText() -> String?{
-        guard let text = self.textView.text, !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-            let insertTextAllert = UIAlertController.alertWithAction(alertTitle: "textAlert".localized,
-                                                                     alertMessage: "textInfo".localized,
-                                                                     alertStyle: .actionSheet,
-                                                                     action1Title: "system.agreeInformal".localized,
-                                                                     action1Handler: { _ in self.textView.becomeFirstResponder() },
-                                                                     action1Style: .cancel,
-                                                                     sourceView: self,
-                                                                     sourceRect: nil)
-            
-            delegate?.presentErrorAlert(alert: insertTextAllert)
-            return nil
-        }
-        return text
-    }
+//    func validateText() -> String?{
+//        guard let text = self.textView.text, !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+//            let insertTextAllert = UIAlertController.alertWithAction(alertTitle: "textAlert".localized,
+//                                                                     alertMessage: "textInfo".localized,
+//                                                                     alertStyle: .actionSheet,
+//                                                                     action1Title: "system.agreeInformal".localized,
+//                                                                     action1Handler: { _ in self.textView.becomeFirstResponder() },
+//                                                                     action1Style: .cancel,
+//                                                                     sourceView: self,
+//                                                                     sourceRect: nil)
+//            
+//            delegate?.presentErrorAlert(alert: insertTextAllert)
+//            return nil
+//        }
+//        return text
+//    }
     
     
     //MARK: Action

@@ -704,14 +704,19 @@ class GameDetailsIPadVC: UIViewController {
                 equalTo: view.widthAnchor, multiplier: 0.3),
             deleteButton.bottomAnchor.constraint(
                 equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -.longInnerSpacer ),
+            deleteButton.heightAnchor.constraint(
+                equalToConstant: .systemButtonSize),
 
             editButton.trailingAnchor.constraint(
                 equalTo: view.trailingAnchor, constant: -.longInnerSpacer),
             editButton.widthAnchor.constraint(
                 equalTo: view.widthAnchor, multiplier: 0.3),
             editButton.bottomAnchor.constraint(
-                equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -.longInnerSpacer),
-            
+                equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -.longInnerSpacer ),
+            editButton.heightAnchor.constraint(
+                equalToConstant: .systemButtonSize),
+
+
             imageButton.centerXAnchor.constraint(
                 equalTo: view.centerXAnchor),
             imageButton.widthAnchor.constraint(
@@ -860,8 +865,7 @@ extension GameDetailsIPadVC {
 
     
     @objc func doneButtonDidTap(sender: UIButton){
-        guard let text = textInputView.validateText() else { return }
-        viewModel?.editWord(with: text, view: self.view)
+        viewModel?.editWord(with: textInputView.currentText(), view: self.view)
     }
     
     @objc func informationButtonDidTap(sender: UIButton){

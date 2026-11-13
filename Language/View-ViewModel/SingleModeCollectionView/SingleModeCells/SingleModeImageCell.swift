@@ -20,8 +20,8 @@ class SingleModeImageCell: UICollectionViewCell {
     static var identifier = "SingleModeImage"
     
     //MARK: Properties
-    var delegate: SingleModeTextDelegate?
-    var actionDelegate: SingleModeCellActionDelegate?
+    weak var delegate: SingleModeTextDelegate?
+    weak var actionDelegate: SingleModeCellActionDelegate?
     
     private var direction: Direction = .right
     private var isActionActive: Bool = false

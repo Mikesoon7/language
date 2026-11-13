@@ -554,6 +554,7 @@ class AddWordsPartitialController: UIViewController {
             }
             self.view.layoutIfNeeded()
         }
+
     }
 }
 

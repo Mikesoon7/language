@@ -1,0 +1,212 @@
+--- a/Model/CoreData_Methods/CoreData_Words.swift
++++ b/Model/CoreData_Methods/CoreData_Words.swift
+@@ -83,12 +83,7 @@
+         newWord.dictionary = dictionary
+         
+         
+-        do {
+-            let image = try JSONEncoder().encode(data.imageDetails)
+-            newWord.image = image
+-        } catch {
+-            throw WordsErrorType.imageUpdateFailed(data, nil)
+-        }
++        newWord.setImageDetails(data.imageDetails)
+         
+         newWord.word = data.word
+         newWord.meaning = data.definition
+@@ -152,7 +147,7 @@
+     func updateWordsImage(for word: WordsEntity, imageDetails: ImageDetailsCheck) throws {
+         
+         do {
+-            word.image = try? JSONEncoder().encode(imageDetails)
++            word.setImageDetails(imageDetails)
+ 
+             try saveContext()
+         } catch {
+--- a/Model/CoreData_Subclass/LearnyLocal.xcdatamodeld/LearnyLocalV2.xcdatamodel/contents
++++ b/Model/CoreData_Subclass/LearnyLocal.xcdatamodeld/LearnyLocalV2.xcdatamodel/contents
+@@ -26,7 +26,9 @@
+     </entity>
+     <entity name="WordsEntity" representedClassName="WordsEntity" syncable="YES">
+         <attribute name="identifier" attributeType="UUID" usesScalarValueType="NO"/>
+-        <attribute name="image" optional="YES" attributeType="Binary"/>
++        <attribute name="image" optional="YES" attributeType="Binary" allowsExternalBinaryDataStorage="YES"/>
++        <attribute name="imageContentMode" attributeType="Integer 16" defaultValueString="1" usesScalarValueType="YES"/>
++        <attribute name="imageFilter" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+         <attribute name="meaning" attributeType="String"/>
+         <attribute name="order" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+         <attribute name="word" attributeType="String"/>
+--- a/Model/CoreData_Subclass/WordsEntity+CoreDataClass.swift
++++ b/Model/CoreData_Subclass/WordsEntity+CoreDataClass.swift
+@@ -13,3 +13,21 @@
+ public class WordsEntity: NSManagedObject {
+ 
+ }
++
++extension WordsEntity {
++    /// Photo of the card, or nil when the card has none.
++    var imageDetails: ImageDetailsCheck? {
++        guard let image else { return nil }
++        return ImageDetailsCheck(
++            imageData: image,
++            contentMode: ImageContentMode(rawValue: Int(imageContentMode)) ?? .fill,
++            filterValue: ImageFilterMode(rawValue: Int(imageFilter)) ?? .original)
++    }
++
++    /// Single place that knows how a photo is laid out in the three attributes.
++    func setImageDetails(_ details: ImageDetailsCheck?) {
++        image = details?.imageData
++        imageContentMode = Int16(details?.contentMode.rawValue ?? ImageContentMode.fill.rawValue)
++        imageFilter = Int16(details?.filterValue.rawValue ?? ImageFilterMode.original.rawValue)
++    }
++}
+--- a/Model/CoreData_Subclass/WordsEntity+CoreDataProperties.swift
++++ b/Model/CoreData_Subclass/WordsEntity+CoreDataProperties.swift
+@@ -21,6 +21,8 @@
+     @NSManaged public var order: Int64
+     @NSManaged public var word: String
+     @NSManaged public var image: Data?
++    @NSManaged public var imageContentMode: Int16
++    @NSManaged public var imageFilter: Int16
+     @NSManaged public var dictionary: DictionariesEntity?
+ 
+ }
+--- a/Related/DataUpdateManager.swift
++++ b/Related/DataUpdateManager.swift
+@@ -9,9 +9,13 @@
+ import Foundation
+ import UIKit
+ 
+-struct ImageDetailsCheck: Codable, Equatable {
++/// In-memory description of a card photo. It is NOT encoded anywhere any more:
++/// the JPEG bytes go straight into `WordsEntity.image`, the two options into
++/// `WordsEntity.imageContentMode` / `imageFilter` (see `WordsEntity.imageDetails`).
++struct ImageDetailsCheck: Equatable {
+     
+-    private var imageData: Data?
++    /// JPEG bytes (already downscaled), exactly what is stored in Core Data.
++    private(set) var imageData: Data?
+     
+     var originalImage: UIImage?{
+         get {
+@@ -41,6 +45,14 @@
+         self.filterValue = .original
+     }
+     
++    /// Used when reading from Core Data: the bytes are already JPEG, nothing to convert.
++    init(imageData: Data?, contentMode: ImageContentMode, filterValue: ImageFilterMode) {
++        self.imageData = imageData
++        self.contentMode = contentMode
++        self.filterValue = filterValue
++    }
++    
++    /// Used when the user picks a new photo: downscales and compresses it once.
+     init(image: UIImage?, contentMode: ImageContentMode, filterValue: ImageFilterMode) {
+         self.imageData = image?.downscaled().jpegData(compressionQuality: 0.8)
+         self.contentMode = contentMode
+@@ -60,7 +72,7 @@
+     }
+ }
+ 
+-enum ImageFilterMode: Codable {
++enum ImageFilterMode: Int {
+     case original
+     case blackAndWhite
+     
+--- a/View-ViewModel/Edit/EditViewModel.swift
++++ b/View-ViewModel/Edit/EditViewModel.swift
+@@ -84,11 +84,7 @@
+         do {
+             words = try model.fetchWords(for: dictionary)
+             for word in self.words {
+-                var imageDetails: ImageDetailsCheck? = nil
+-                if let imageData = word.image {
+-                    imageDetails = try? JSONDecoder().decode(ImageDetailsCheck.self, from: imageData)
+-                }
+-                self.currentWords.append(SingleModeCellData(word: word.word, definition: word.meaning, imageDetails: imageDetails))
++                self.currentWords.append(SingleModeCellData(word: word.word, definition: word.meaning, imageDetails: word.imageDetails))
+             }
+             self.filteredWords = self.currentWords
+             
+--- a/View-ViewModel/Game/GameDetails/GameDetailsViewModel.swift
++++ b/View-ViewModel/Game/GameDetails/GameDetailsViewModel.swift
+@@ -70,13 +70,9 @@
+     }
+     
+     func getCellData() -> SingleModeCellData {
+-        if let imageData = selectedWord.image,
+-           let imageDetails = try? JSONDecoder().decode(ImageDetailsCheck.self, from: imageData) {
+-            return .init(word: selectedWord.word, definition: selectedWord.meaning, imageDetails: imageDetails)
+-        } else {
+-            return .init(word: selectedWord.word, definition: selectedWord.meaning, imageDetails: .init())
+-
+-        }
++        return .init(word: selectedWord.word,
++                     definition: selectedWord.meaning,
++                     imageDetails: selectedWord.imageDetails ?? .init())
+     }
+     ///Presenting alert to submit deletion.
+     func deleteWord(view: UIView?){
+--- a/View-ViewModel/Game/GameSubviews/CollectionViewCell.swift
++++ b/View-ViewModel/Game/GameSubviews/CollectionViewCell.swift
+@@ -21,7 +21,7 @@
+     var isOneSideMode = false
+     var shadowOpacity: Float = 0.1
+     
+-    var imageData: Data?
++    var imageDetails: ImageDetailsCheck?
+     
+     //MARK: Views
+     let cardView : UIView = {
+@@ -158,7 +158,7 @@
+         translation.isHidden = true
+         translationBacksideLabel.isHidden = true
+         imageView.image = nil
+-        imageData = nil
++        imageDetails = nil
+         
+         word.layer.backgroundColor = nil
+         translationBacksideLabel.layer.backgroundColor = nil
+@@ -177,9 +177,7 @@
+         word.font = .selectedFont.withSize(.subtitleSize)
+         translation.font = .selectedFont.withSize(.bodyTextSize)
+         
+-        if let image = data.wordEntity.image {
+-            self.imageData = image
+-        }
++        self.imageDetails = data.wordEntity.imageDetails
+         
+         
+         // Set the visibility based on whether there is a meaning to display
+@@ -205,8 +203,7 @@
+     }
+     
+     func loadImageLazily() {
+-        guard let imageData = imageData else { return }
+-        if let imageDetails = try? JSONDecoder().decode(ImageDetailsCheck.self, from: imageData), let image = imageDetails.image {
++        if let imageDetails = imageDetails, let image = imageDetails.image {
+             imageView.image = image   // `image` is already filtered according to filterValue
+             imageView.contentMode = imageDetails.contentMode.uiViewContentMode
+         }
+@@ -233,7 +230,7 @@
+         }
+     }
+     private func configureTextAppearance() {
+-        if imageData != nil {
++        if imageDetails != nil {
+             if isOneSideMode {
+                 stackView.backgroundColor = UIColor.systemBackground.withAlphaComponent(0.6)
+             } else {
+--- a/View-ViewModel/Inspect/InspectViewModel.swift
++++ b/View-ViewModel/Inspect/InspectViewModel.swift
+@@ -70,9 +70,7 @@
+ 
+             // MARK: image-only card
+             if pair.word.isEmpty && pair.meaning.isEmpty,
+-               let data = pair.image,
+-               let details = try? JSONDecoder().decode(ImageDetailsCheck.self, from: data),
+-               let image = details.originalImage,
++               let image = pair.imageDetails?.originalImage,
+                let resized = image.resize(to: CGSize(width: 25, height: 25))
+             {
+                 let attachment = NSTextAttachment()

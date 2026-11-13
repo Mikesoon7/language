@@ -20,7 +20,7 @@ class AddImageController: UIViewController {
     var isFirstLaunch: Bool = true
     
     //MARK: Properties
-    var delegate: AddImageDelegate?
+    weak var delegate: AddImageDelegate?
     var data: SingleModeCellData
     
     var originalImage: UIImage? = nil

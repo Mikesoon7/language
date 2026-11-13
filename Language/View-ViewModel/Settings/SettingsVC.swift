@@ -55,6 +55,12 @@ class SettingsVC: UIViewController {
         setUpTransparentFooterView()
         
     }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        foorLinkView.applyLayoutIfNeeded()
+    }
         
     //MARK: - StyleChange Responding
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -73,26 +79,27 @@ class SettingsVC: UIViewController {
         viewModel.output
             .receive(on: DispatchQueue.main)
             .sink { [weak self] output in
+                guard let self = self else { return }
                 switch output{
-                case .needPresentAlertWith(let actions, let index):
-                    self?.presentAlertWith(action: actions, indexPath: index)
+                case .needPresentPicker(let alertType, let index):
+                    self.presentPickerFor(alertType: alertType, indexPath: index)
                 case .needUpdateRowAt(let index):
-                    self?.tableView.reloadRows(at: [index], with: .fade)
+                    self.tableView.reloadRows(at: [index], with: .fade)
                 case .needUpdateFont:
-                    self?.tableView.reloadData()
+                    self.tableView.reloadData()
                 case .needUpdateLanguage:
-                    self?.configureLabels()
-                    self?.tableView.reloadData()
+                    self.configureLabels()
+                    self.tableView.reloadData()
                 case .needPresentFontView:
-                    self?.presentFontVC()
+                    self.presentFontVC()
                 case .needPresentNotificationView:
-                    self?.presentNotificationVC()
+                    self.presentNotificationVC()
                 case .needPresentSeparatorsView:
-                    self?.presentSeparatorVC()
+                    self.presentSeparatorVC()
                 case .needPresentExceptionsView:
-                    self?.presentExceptionVC()
+                    self.presentExceptionVC()
                 case .needPresentTutorialView:
-                    self?.presentTutorialVC()
+                    self.presentTutorialVC()
                 }
             }
             .store(in: &cancellable)
@@ -124,8 +131,9 @@ class SettingsVC: UIViewController {
                 equalToConstant: SettingsTableLinkView.footerHeight),
         ])
         //There was a naughty error i couldnt solve. So i triggering item layout straight from the superview.
-        foorLinkView.applyLayout()
+        foorLinkView.applyLayoutIfNeeded()
     }
+    
     func setUpTransparentFooterView(){
         let view = UIView(frame: CGRect(origin: .zero, size: CGSize(width: view.bounds.width, height: SettingsTableLinkView.footerHeight)))
         view.backgroundColor = .clear
@@ -157,12 +165,34 @@ class SettingsVC: UIViewController {
         let vc = TutorialVC()
         self.navigationController?.present(vc, animated: true)
     }
+    
+    
     //Attaching cancel action to passed action.
-    private func presentAlertWith(action: [UIAlertAction], indexPath: IndexPath) {
+    private func presentPickerFor(alertType: SettingsPicker, indexPath: IndexPath) {
         let alertMessage = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         let cancelAction = UIAlertAction(title: "system.cancel".localized, style: .cancel)
-        action.forEach { alertMessage.addAction($0) }
+        
+        var alertOptions: [UIAlertAction] = []
+        switch alertType {
+        case .theme:
+            for option in AppTheme.allCases{
+                alertOptions.append(UIAlertAction(title: option.value, style: .default, handler: { [weak self]_ in
+                    guard let self = self else {return}
+                    viewModel.handleValueUpdateFor(newValue: .theme(option))
+                }))
+            }
+        case .language:
+            for option in AppLanguage.allCases{
+                alertOptions.append(UIAlertAction(title: option.value, style: .default, handler: { [weak self]_ in
+                    guard let self = self else {return}
+                    viewModel.handleValueUpdateFor(newValue: .language(option))
+                }))
+            }
+        }
+        
+        alertOptions.forEach { alertMessage.addAction($0) }
         alertMessage.addAction(cancelAction)
+
 
         guard let cell = tableView.cellForRow(at: indexPath),
               let cellFrame = cell.superview?.convert(cell.frame, to: self.view) else {

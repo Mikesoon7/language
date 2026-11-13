@@ -13,8 +13,6 @@ import UIKit
 struct DataForNotificationTextCell{
     var label: String
     var value: String?
-    
-    var delegate: NotificationsStateDelegate?
 }
 
 class NotificationTextCell: UITableViewCell {

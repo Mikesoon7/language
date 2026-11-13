@@ -99,7 +99,7 @@ class PieChartView: UIView {
     //MARK: Properties
     private var data: ChartEntityDataSet? = nil
 
-    var delegate: PieChartViewDelegate?
+    weak var delegate: PieChartViewDelegate?
     var entities: [ChartEntityData] {
         get {
             return data?.chartData.reversed() ?? []

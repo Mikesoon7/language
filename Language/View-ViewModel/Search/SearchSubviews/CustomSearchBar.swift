@@ -8,13 +8,16 @@
 
 import UIKit
 
-class CustomSearchBar: UIView {
+protocol CustomSearchBarDelegate: AnyObject {
+    func customSearchBarDidBeginEditing(_ searchBar: UISearchBar)
+    func customSearchBarDidEndEditing(_ searchBar: UISearchBar)
+    func customSearchBar(_ searchBar: UISearchBar, didChangeText text: String)
+    func customSearchBarSearchButtonTapped(_ searchBar: UISearchBar)
+}
+
+class CustomSearchBarView: UIView {
     
-    weak var delegate: UISearchBarDelegate?{
-        didSet {
-            self.searchBar.delegate = delegate
-        }
-    }
+    weak var delegate: CustomSearchBarDelegate?
 
     //MARK: - Views.
     let searchBar: UISearchBar = {
@@ -32,7 +35,7 @@ class CustomSearchBar: UIView {
         return button
     }()
     
-    var topStroke = CAShapeLayer()
+    private var topStroke = CAShapeLayer()
     
     //MARK: Constraints and releated
     private var cancelButtonLeadingAnchor: NSLayoutConstraint = .init()
@@ -44,12 +47,18 @@ class CustomSearchBar: UIView {
     }
     override init(frame: CGRect) {
         super.init(frame: frame)
+        searchBar.delegate = self
         configureView()
         configureLabels()
         configureSubviews()
     }
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func resignFirstResponder() -> Bool {
+        super.resignFirstResponder()
+        return searchBar.resignFirstResponder()
     }
     
     
@@ -73,7 +82,7 @@ class CustomSearchBar: UIView {
             self.layer.addSublayer(topStroke)
         }
     }
-    //MARK: Settings up contraints and related variables
+    //MARK: Subviews setUp
     private func configureSubviews(){
         self.addSubviews(searchBar, cancelButton)
         
@@ -95,9 +104,9 @@ class CustomSearchBar: UIView {
         
         cancelButton.addTarget(self, action: #selector(cancelButtonDidTap(sender:)), for: .touchUpInside)
     }
-    //MARK: String values setUp
+
     //Called on init and when language changes by parant view.
-    func configureLabels(){
+    private func configureLabels(){
         self.searchBar.placeholder = "yourWord".localized
         cancelButton.setAttributedTitle( .attributedString(
                 string: "system.cancel".localized,
@@ -105,7 +114,7 @@ class CustomSearchBar: UIView {
                 ofSize: .subBodyTextSize), for: .normal)
     }
     
-    func animateTransitionTo(isActivated: Bool, time: TimeInterval){
+    private func animateTransitionTo(isActivated: Bool, time: TimeInterval){
         UIView.animate(withDuration: time) { [ unowned self ] in
             NSLayoutConstraint.deactivate([isActivated
                                           ? self.cancelButtonLeadingAnchor
@@ -119,12 +128,44 @@ class CustomSearchBar: UIView {
         }
     }
     
-    @objc func cancelButtonDidTap(sender: UIButton){
-        searchBar.resignFirstResponder()
+    //Response
+    func updateForThemeChange(){
+        self.topStroke.strokeColor = UIColor.label.cgColor
+    }
+    func updateForLanguageChange(){
+        self.configureLabels()
+    }
+    
+    func refreshSearchBar() {
         searchBar.text = nil
+        searchBar.resignFirstResponder()
+    }
+    
+    //MARK: Actions
+    @objc private func cancelButtonDidTap(sender: UIButton){
+        refreshSearchBar()
+    }
+    
+}
 
-        self.animateTransitionTo(isActivated: false, time: 0.3)
+//MARK: - SearchBarDelegate
+extension CustomSearchBarView: UISearchBarDelegate {
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        animateTransitionTo(isActivated: true, time: 0.3)
+        delegate?.customSearchBarDidBeginEditing(searchBar)
+    }
 
-        searchBar.delegate?.searchBarTextDidEndEditing?(searchBar)
+    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+        animateTransitionTo(isActivated: false, time: 0.3)
+        delegate?.customSearchBarDidEndEditing(searchBar)
+    }
+
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        delegate?.customSearchBar(searchBar, didChangeText: searchText)
+    }
+
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        _ = self.resignFirstResponder()
+        delegate?.customSearchBarSearchButtonTapped(searchBar)
     }
 }

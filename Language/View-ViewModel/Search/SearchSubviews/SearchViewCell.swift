@@ -9,6 +9,7 @@
 import UIKit
 
 struct DataForSearchCell{
+    
     var word: String
     var description: String
     

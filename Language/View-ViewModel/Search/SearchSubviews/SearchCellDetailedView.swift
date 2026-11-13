@@ -7,6 +7,13 @@
 //  REFACTORING STATE: CHECKED
 
 import UIKit
+import Combine
+
+protocol SearchCellInteractionDelegate: AnyObject {
+    func didRequestDelete()
+    func didCommitEdit(updatedText: String)
+    func didDismissSelection()
+}
 
 enum Position {
     case leading
@@ -14,26 +21,34 @@ enum Position {
     case trailing
 }
 
-protocol SearchViewDeleteDelegate: AnyObject {
-    func shouldDeleteCell(at index: IndexPath)
-    func shouldSaveCell(at index: IndexPath, text: String)
-    func popOverDidDismiss()
+enum CellState {
+    case colapsed
+    case expanded
+}
+
+struct ExpandedCellContext {
+    var cellPosition: Position
+    var sourceViewFrame: CGRect
+    
+    var word: String
+    var description: String
+    var selectedSeparator: String
+    
+    var placeholder: String
 }
 
 class SearchCellExpandedView: UIViewController {
     //MARK: Properties
-    private var selectedIndex: IndexPath
-    private var delegate: SearchViewDeleteDelegate
+    private var cellContext: ExpandedCellContext
+    private var delegate: SearchCellInteractionDelegate?
     
-    private var windowView: UIView
-    private var cellPosition: Position
+    private var cancellable = Set<AnyCancellable>()
+    private var keyboardListener: KeyboardListener!
     
-    private var sourceViewFrame: CGRect
-    private var wordText: String
-    private var descriptionText: String
+    private var cellLayoutState: CellState = .colapsed
+    private var isInEditMode: Bool = false
     
-    private var separator: String
-    private var placeholder: String
+    private var displayedTextCopy: String?
     
     //MARK: Views
     private var cellView: UIView = {
@@ -65,7 +80,6 @@ class SearchCellExpandedView: UIViewController {
         button.setUpCustomButton()
         button.layer.cornerRadius = 6
         
-        button.alpha = 0
         button.setTitle("system.delete".localized, for: .normal)
         return button
     }()
@@ -103,32 +117,19 @@ class SearchCellExpandedView: UIViewController {
     }()
 
     //MARK: Constants and constraints
-    private var height: NSLayoutConstraint = .init()
-    private var width: NSLayoutConstraint = .init()
-    private var centerY: NSLayoutConstraint = .init()
-    private var cellEditStateBottomAnchor: NSLayoutConstraint = .init()
+    private var cellColapsedConstraints:        [NSLayoutConstraint] = []
+    private var cellExpandedConstraitns:        [NSLayoutConstraint] = []
     
-    private var textTopAnchor: NSLayoutConstraint = .init()
-    private var textLeadingAnchor: NSLayoutConstraint = .init()
-    private var textTrailingAnchor: NSLayoutConstraint = .init()
-    private var textBottomAnchor: NSLayoutConstraint = .init()
-    private var textBottomToButton: NSLayoutConstraint = .init()
+    private var textViewColapsedConstraints:    [NSLayoutConstraint] = []
+    private var textViewExpandedConstraints:    [NSLayoutConstraint] = []
     
+    private var cellKeyboardActiveAnchor: NSLayoutConstraint   = .init()
 
     //MARK: Inherited
-    init(windowView: UIView, shadowPosition: Position, sourceViewFrame: CGRect, word: String, description: String, delegate: SearchViewDeleteDelegate, selectedIndex: IndexPath, selectedSeparator: String, placeholder: String ){
+    init(cellContext: ExpandedCellContext,
+         delegate: SearchCellInteractionDelegate){
         self.delegate = delegate
-        self.selectedIndex = selectedIndex
-        
-        self.windowView = windowView
-        self.cellPosition = shadowPosition
-        
-        self.sourceViewFrame = sourceViewFrame
-        self.wordText = word
-        self.descriptionText = description
-        
-        self.separator = selectedSeparator
-        self.placeholder = placeholder
+        self.cellContext = cellContext
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -138,84 +139,137 @@ class SearchCellExpandedView: UIViewController {
 
     
     override func viewDidLoad() {
+        bindViewHelpers()
+        
         configureView()
         configureCellView()
+        configureCellButtons()
         configureTextView()
+
+        updateCellLayout(for: self.cellLayoutState)
     }
 
-    deinit { NotificationCenter.default.removeObserver(self) }
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
 
+        delegate?.didDismissSelection()
+    }
+
+    
+    //MARK: Bind
+    private func bindViewHelpers() {
+        self.keyboardListener = KeyboardListener(view: self.view)
+        
+        keyboardListener.events
+            .sink { event in
+                self.handleKeyboard(event)
+            }
+            .store(in: &cancellable)
+    }
+    
+    
+    //MARK: Subviews SetUp
     private func configureView() {
         self.view.backgroundColor = .clear
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dimsissPopOverOnTap(sender:)))
         self.view.addGestureRecognizer(tapGesture)
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
     
     private func configureCellView(){
         view.addSubviews(cellView)
         
-        self.height = cellView.heightAnchor.constraint(equalToConstant: sourceViewFrame.height )
-        self.width  = cellView.widthAnchor.constraint(equalToConstant: sourceViewFrame.width )
-        self.centerY = cellView.centerYAnchor.constraint(equalTo: view.topAnchor, constant: sourceViewFrame.midY)
+        let sourceFrame = cellContext.sourceViewFrame
         
-        self.cellEditStateBottomAnchor = cellView.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor, constant: -(.longInnerSpacer + 50))
-        
-        UIKit.NSLayoutConstraint.activate([
-            centerY,
-            height,
-            width
+        let cellMainAnchor = {
+            switch cellContext.cellPosition {
+            case .center: return
+                cellView.centerXAnchor.constraint(
+                    equalTo: view.leadingAnchor, constant: sourceFrame.midX)
+            case .leading: return
+                cellView.leadingAnchor.constraint(
+                    equalTo: view.leadingAnchor, constant: .innerSpacer)
+            case .trailing: return
+                cellView.trailingAnchor.constraint(
+                    equalTo: view.trailingAnchor, constant: -.innerSpacer)
+            }
+        }()
+
+        cellColapsedConstraints.append(contentsOf: [
+            cellView.heightAnchor.constraint(
+                equalToConstant: sourceFrame.height),
+            cellView.widthAnchor.constraint(
+                equalToConstant: sourceFrame.width),
+            cellView.centerYAnchor.constraint(
+                lessThanOrEqualTo: view.topAnchor,
+                constant: sourceFrame.midY),
+            cellMainAnchor
         ])
         
-        if cellPosition == .trailing {
-            cellView.trailingAnchor.constraint(
-                equalTo: view.trailingAnchor, constant: -.innerSpacer).isActive = true
-        } else if cellPosition == .leading {
-            cellView.leadingAnchor.constraint(
-                equalTo: view.leadingAnchor, constant: sourceViewFrame.minX).isActive = true
-        } else {
-            cellView.centerXAnchor.constraint(
-                equalTo: view.leadingAnchor, constant: sourceViewFrame.midX).isActive = true
-        }
+        cellExpandedConstraitns.append(contentsOf: [
+            cellView.heightAnchor.constraint(
+                equalToConstant: (sourceFrame.height * 2) + .longInnerSpacer),
+            cellView.widthAnchor.constraint(
+                equalToConstant: (sourceFrame.width * 2) + (.nestedSpacer * 2)),
+            cellView.centerYAnchor.constraint(
+                lessThanOrEqualTo: view.topAnchor,
+                constant: sourceFrame.midY + .longInnerSpacer),
+            cellMainAnchor
+        ])
+        
+        self.cellKeyboardActiveAnchor = cellView.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor, constant: -(.longInnerSpacer))
+
         
         UIBlurEffect.addBlurBackground(to: self.cellView, style: .systemThickMaterial)
     }
     
     private func configureTextView(){
-        cellView.addSubviews(copyButton, editButton, copiedLabel, deleteButton, saveButton, textInputView)
+        cellView.addSubview(textInputView)
         
         //Assigning text Attributes to recreate the collectionView cell appearence.
         let firstAttributes: [NSAttributedString.Key: Any] =    [.font: UIFont.selectedFont.withSize(.assosiatedTextSize), .foregroundColor: UIColor.label]
         let secondAttributes: [NSAttributedString.Key: Any] =   [.font: UIFont.selectedFont.withSize(.captionTextSize), .foregroundColor: UIColor.label]
         
-        let firstAttributedString = NSAttributedString(string: wordText , attributes: firstAttributes)
-        let secondAttributedString = NSAttributedString(string: "\n" + "\n" + descriptionText, attributes: secondAttributes)
+        let firstAttributedString = NSAttributedString(string: cellContext.word , attributes: firstAttributes)
+        let secondAttributedString = NSAttributedString(string: "\n" + "\n" + cellContext.description, attributes: secondAttributes)
         
         let finalAttributedString = NSMutableAttributedString()
         finalAttributedString.append(firstAttributedString)
         finalAttributedString.append(secondAttributedString)
         
+        displayedTextCopy = cellContext.word + " " + cellContext.selectedSeparator + " " + cellContext.description
         textInputView.updateAttributedText(text: finalAttributedString)
         
         //Constraints for changing view's dimensions.
-        textTopAnchor = textInputView.topAnchor.constraint(
-            equalTo: cellView.topAnchor)
-        textLeadingAnchor = textInputView.leadingAnchor.constraint(
-            equalTo: cellView.leadingAnchor)
-        textTrailingAnchor = textInputView.trailingAnchor.constraint(
-            equalTo: cellView.trailingAnchor)
-        textBottomAnchor = textInputView.bottomAnchor.constraint(
-            equalTo: cellView.bottomAnchor)
-        textBottomToButton = textInputView.bottomAnchor.constraint(
-            equalTo: deleteButton.topAnchor, constant: -.nestedSpacer)
+        textViewColapsedConstraints.append(contentsOf: [
+            textInputView.topAnchor.constraint(
+                equalTo: cellView.topAnchor),
+            textInputView.leadingAnchor.constraint(
+                equalTo: cellView.leadingAnchor),
+            textInputView.trailingAnchor.constraint(
+                equalTo: cellView.trailingAnchor),
+            textInputView.bottomAnchor.constraint(
+                equalTo: cellView.bottomAnchor)
+        ])
         
+        textViewExpandedConstraints.append(contentsOf: [
+            textInputView.topAnchor.constraint(
+                equalTo: cellView.topAnchor, constant: .nestedSpacer),
+            textInputView.leadingAnchor.constraint(
+                equalTo: cellView.leadingAnchor, constant: .nestedSpacer),
+            textInputView.trailingAnchor.constraint(
+                equalTo: cellView.trailingAnchor, constant: -.nestedSpacer),
+            textInputView.bottomAnchor.constraint(
+                equalTo: deleteButton.topAnchor, constant: -.nestedSpacer)
+        ])
+    }
+    
+    func configureCellButtons(){
+        cellView.addSubviews(copyButton, editButton, copiedLabel, deleteButton, saveButton)
+
         
-        UIKit.NSLayoutConstraint.activate([
-            
+        NSLayoutConstraint.activate([
             copyButton.bottomAnchor.constraint(
                 equalTo: cellView.bottomAnchor, constant: -.nestedSpacer),
             copyButton.leadingAnchor.constraint(
@@ -262,119 +316,128 @@ class SearchCellExpandedView: UIViewController {
                 equalToConstant: .systemButtonSize),
             saveButton.widthAnchor.constraint(
                 equalToConstant: .systemButtonSize * 5),
-            
-            
-            textTopAnchor,
-            textLeadingAnchor,
-            textTrailingAnchor,
-            textBottomAnchor
         ])
         
         deleteButton.addTarget(self, action: #selector(deleteButtonDidTap(sender: )), for: .touchUpInside)
         saveButton.addTarget(self, action: #selector(saveButtonDidTap(sender: )), for: .touchUpInside)
         copyButton.addTarget(self, action: #selector(copyButtonDidTap(sender: )), for: .touchUpInside)
         editButton.addTarget(self, action: #selector(editButtonDidTap(sender: )), for: .touchUpInside)
-        
     }
     
     
-    
+    //MARK: Animations
     func presentPopOver(){
         UIView.animate(withDuration: 0.1, animations: {
             self.cellView.alpha = 1
         }) { _ in
-            self.changePopOverState(activate: true, closure: { } )
+            self.updateCellLayoutState(.expanded, closure: { })
+            
         }
     }
     
-    func dismissPopOver(closure: @escaping() -> ()){
-        changePopOverState(activate: false) {
-            UIView.animate(withDuration: 0.3, animations:  {
+    func dismissPopOver() {
+        updateCellLayoutState(.colapsed) {
+            UIView.animate(withDuration: 0.3) {
                 self.cellView.alpha = 0
-            }) { _ in
+            } completion: { _ in
                 self.dismiss(animated: false)
-                closure()
             }
         }
     }
+
     
-    private func changePopOverState(activate: Bool, closure: @escaping() -> ()) {
+    //MARK: Layout
+    private func updateCellLayout(for state: CellState, animated: Bool = false){
+        
+        switch state {
+        case .colapsed:
+            NSLayoutConstraint.deactivate(
+                textViewExpandedConstraints + cellExpandedConstraitns)
+            NSLayoutConstraint.activate(
+                textViewColapsedConstraints + cellColapsedConstraints)
+        case .expanded:
+            NSLayoutConstraint.deactivate(
+                textViewColapsedConstraints + cellColapsedConstraints)
+            NSLayoutConstraint.activate(
+                textViewExpandedConstraints + cellExpandedConstraitns)
+        }
+    }
+
+    private func updateCellLayoutState(_ state: CellState, closure: @escaping() -> ()) {
         UIView.animate(withDuration: 0.3, animations: {
-            self.view.backgroundColor = activate ? .black.withAlphaComponent(0.2) : .clear
-            
-            if !activate && self.textInputView.isFirstResponder() {
-                self.chagneEditState(activate: false)
+            switch state{
+            case .colapsed:
+                self.view.backgroundColor = .clear
+                self.updateCellEditState(isActive: false)
+                self.updateLayoutForStateChange(isActive: false)
+            case .expanded:
+                self.view.backgroundColor = .black.withAlphaComponent(0.2)
             }
-            self.deleteButton.alpha =  activate ? 1 : 0
+                    
+            self.updateCellLayout(for: state)
             
-            
-            if activate {
-                self.textTopAnchor.constant += .nestedSpacer
-                self.textLeadingAnchor.constant += .nestedSpacer
-                self.textTrailingAnchor.constant -= .nestedSpacer
-                
-                self.centerY.constant += .longInnerSpacer
-                self.width.constant += self.sourceViewFrame.width + .longInnerSpacer
-                self.height.constant += self.sourceViewFrame.height + .longInnerSpacer
-                
-                self.textBottomAnchor.isActive = false
-                self.textBottomToButton.isActive = true
-
-            } else {
-                self.textTopAnchor.constant -= .nestedSpacer
-                self.textLeadingAnchor.constant -= .nestedSpacer
-                self.textTrailingAnchor.constant += .nestedSpacer
-                
-                self.centerY.constant -= .longInnerSpacer
-                self.width.constant = self.sourceViewFrame.width
-                self.height.constant = self.sourceViewFrame.height
-                
-                self.textBottomToButton.isActive = false
-                self.textBottomAnchor.isActive = true
-
-            }
             self.view.layoutIfNeeded()
         }) { _ in
             closure()
         }
     }
-        
-    private func chagneEditState(activate: Bool, duration: Double? = 0){
-        self.saveButton.alpha = activate ? 1 : 0
-        self.deleteButton.alpha = !activate ? 1 : 0
-        self.textInputView.textView.isEditable = activate
-        self.textInputView.textView.isFindInteractionEnabled = activate
-        self.textInputView.textView.isSelectable = activate
-        
-        self.centerY.isActive = activate ? false : true
-        self.cellEditStateBottomAnchor.isActive = activate ? true : false
-
-        if activate {
-            let attributedText = NSAttributedString(
-                string: wordText + " " + separator + " " + descriptionText,
-                attributes: [
-                    .font: UIFont.selectedFont.withSize(.assosiatedTextSize),
-                    .foregroundColor: UIColor.label
-                ]
-            )
-
-
-            self.textInputView.updateAttributedText(text: attributedText)
-            self.textInputView.becomeFirstResponder()
-            self.centerY.isActive = false
-            self.cellEditStateBottomAnchor.isActive = true
-
-        } else {
+    
+    private func updateCellEditState(isActive: Bool, duration: Double = 0.3){
+        UIView.animate(withDuration: duration) {
+            self.saveButton.alpha = isActive ? 1 : 0
+            self.deleteButton.alpha = !isActive ? 1 : 0
             
-            self.cellEditStateBottomAnchor.isActive = false
-            self.centerY.isActive = true
-            self.textInputView.resignFirstResponder()
+            self.textInputView.textView.isEditable = isActive
+            self.textInputView.textView.isFindInteractionEnabled = isActive
+            self.textInputView.textView.isSelectable = isActive
+
+            if isActive {
+                let attributedText = NSAttributedString(
+                    string: self.cellContext.word + " " + self.cellContext.selectedSeparator + " " + self.cellContext.description,
+                    attributes: [
+                        .font: UIFont.selectedFont.withSize(.assosiatedTextSize),
+                        .foregroundColor: UIColor.label
+                    ]
+                )
+
+
+                self.textInputView.updateAttributedText(text: attributedText)
+                _ = self.textInputView.becomeFirstResponder()
+            } else {
+                _ = self.textInputView.resignFirstResponder()
+            }
+            
+            
+            self.view.layoutIfNeeded()
         }
         
-        UIView.animate(withDuration: duration ?? 0.3) {
+        self.displayedTextCopy = textInputView.currentText()
+    }
+    
+    //MARK: Keyboard handling
+    private func handleKeyboard(_ event: KeyboardListener.Event) {
+        UIView.animate(
+            withDuration: event.duration,
+            delay: 0,
+            options: event.curve
+        ) {
+            switch event.presence {
+            case .hidden, .accessoryOnly:
+                self.updateLayoutForStateChange(isActive: false)
+            case .full:
+                self.updateLayoutForStateChange(isActive: true)
+            }
+        }
+    }
+
+    private func updateLayoutForStateChange(isActive: Bool, duration: Double = 0.3){
+        UIView.animate(withDuration: duration) {
+            self.cellKeyboardActiveAnchor.isActive = isActive ? true : false
             self.view.layoutIfNeeded()
         }
     }
+
+    
     
     //MARK: Actions
     @objc func deleteButtonDidTap(sender: Any) {
@@ -386,9 +449,8 @@ class SearchCellExpandedView: UIViewController {
             )
         
         let confirm = UIAlertAction(title: "system.delete".localized, style: .destructive) { _ in
-            self.dismissPopOver(closure: {
-                self.delegate.shouldDeleteCell(at: self.selectedIndex)
-            })
+            self.delegate?.didRequestDelete()
+            self.dismissPopOver()
         }
         
         let cancel = UIAlertAction(title: "system.cancel".localized, style: .cancel)
@@ -401,27 +463,24 @@ class SearchCellExpandedView: UIViewController {
 
     
     @objc func editButtonDidTap(sender: Any) {
-        textInputView.textView.isEditable = true
-        if textInputView.isFirstResponder() {
-            textInputView.resignFirstResponder()
-        } else {
-            textInputView.becomeFirstResponder()
-        }
+        isInEditMode.toggle()
+        updateCellEditState(isActive: isInEditMode)
     }
 
     @objc func saveButtonDidTap(sender: Any) {
-        guard let text = textInputView.validateText() else { return }
-        self.dismissPopOver(closure: {
-            self.delegate.shouldSaveCell(at: self.selectedIndex, text: text)
-        })
+        guard let delegate = delegate else { return }
+        delegate.didCommitEdit(updatedText: self.textInputView.currentText())
         
+        self.dismissPopOver()
     }
+    
     @objc func dimsissPopOverOnTap(sender: UITapGestureRecognizer){
-        self.dismissPopOver(closure: self.delegate.popOverDidDismiss)
+        self.dismissPopOver()
     }
     
     @objc func copyButtonDidTap(sender: Any) {
-        UIPasteboard.general.string = wordText + " " + descriptionText
+        //it might coppy the old value
+        UIPasteboard.general.string = cellContext.word + " " + cellContext.word
         UIView.animate(withDuration: 0.2, animations: {
             self.copiedLabel.alpha = 1
         }) { _ in
@@ -431,22 +490,6 @@ class SearchCellExpandedView: UIViewController {
         }
     }
     
-    @objc private func keyboardWillShow(notification: Notification) {
-        guard let userInfo = notification.userInfo,
-              let animationDuration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval
-        else { return }
-
-        chagneEditState(activate: true, duration: animationDuration)
-    }
-    
-    @objc private func keyboardWillHide(notification: Notification) {
-        guard let userInfo = notification.userInfo,
-              let animationDuration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval
-        else { return }
-
-        chagneEditState(activate: false, duration: animationDuration)
-    }
-
 }
 
 extension SearchCellExpandedView: PlaceholderTextViewDelegate {
@@ -457,11 +500,11 @@ extension SearchCellExpandedView: PlaceholderTextViewDelegate {
     func textViewDidChange(sender: UITextView) { }
     
     func currentSeparatorSymbol() -> String? {
-        self.separator
+        self.cellContext.selectedSeparator
     }
     
     func configurePlaceholderText(sender: UITextView) -> String? {
-        self.placeholder
+        self.cellContext.placeholder
     }
     
     func presentErrorAlert(alert: UIAlertController) {

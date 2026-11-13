@@ -24,19 +24,6 @@ struct DataForDetailsView {
     var word: WordsEntity
 }
 
-enum CellDataWrapper: Hashable {
-    case mainCellData(HashableWordsEntity)
-    case lastCellData(DataForLastCell)
-    
-    var data: any Hashable  {
-        switch self{
-        case .mainCellData(let data):
-            return data
-        case .lastCellData(let data):
-            return data
-        }
-    }
-}
 ///Quick overview: Each contentView's cell has a long press gesture recognizer that supports two types of taps:
 /// 1. A short tap to flip the cell, revealing information on its back.
 /// 2. A long tap to present a new controller with more detailed information and functionality.
@@ -56,16 +43,34 @@ class MainGameVC: UIViewController{
     
     //MARK: Coordinators
     private var animator: GameAnimator!
-//    private var gestureHandler: GameGestureHandler!
+    private lazy var gameCoordinator: GameInteractionCoordinator = {
+        let coordinator = GameInteractionCoordinator(
+//            collectionView: collectionView,
+//            animator: animator,
+//            adapter: collectionAdapter,
+            isOneSideMode: isOneSidesMode
+        )
+        
+//        coordinator.delegate = self
+
+        return coordinator
+    }()
+
     //MARK: Properties.
     private var viewModel: GameViewModel?
     private var viewModelFactory: ViewModelFactory
     
+    private lazy var collectionAdapter: GameDataAdapter = {
+        let adapter = GameDataAdapter(isOneSideMode: isOneSidesMode, interactioncoordinator: gameCoordinator)
+
+        return adapter
+    }()
+
     private var cancellable = Set<AnyCancellable>()
     
-    private var mainCell : MainCell!
-    private var lastCell : LastCell!
-    private var dataSource : DataSource!
+//    private var mainCell : MainCell!
+//    private var lastCell : LastCell!
+//    private var dataSource : DataSource!
     
     private var selectedCell: IndexPath?
     private var tappedToScrollCell: IndexPath?
@@ -73,10 +78,10 @@ class MainGameVC: UIViewController{
     private var selectedTime: Int?
     private var isOneSidesMode: Bool
     
-    private var scrolledCards: Set<AnyHashable> = []
+//    private var scrolledCards: Set<AnyHashable> = []
     private var currentDictionaryHash: UUID
     
-    private var isFlippedGlobally: Bool = false
+//    private var isFlippedGlobally: Bool = false
     private var isFirstLaunch: Bool = false
 
     //MARK: Gesture related
@@ -113,24 +118,32 @@ class MainGameVC: UIViewController{
     override func viewDidLoad() {
         super.viewDidLoad()
         bind()
-        prepareCells()
         configureLabels()
+
         configureCollectionView()
+
         
         configureTimerView()
-//        setupGestures()
         
         checkForTheTutorial()
         
-//        gestureHandler = GameGestureHandler(collectionView: collectionView, animator: animator)
-//        gestureHandler.delegate = self
 
+        viewModel?.viewIsReadyForTheDataDisplay()
+        
+//        gameCoordinator.delegate = self
     }
+    
+//    override func viewDidAppear(_ animated: Bool) {
+//        super.viewDidAppear(animated)
+//        gameCoordinator.configureGesture()
+//    }
+    
     //Updates log data with spent time.
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         timerView.kill()
-        viewModel?.updateLogWith(time: timerView.timeSpent(), cardsChecked: scrolledCards.count)
+        print( viewModel)
+        viewModel?.updateLogWith(time: timerView.timeSpent(), cardsChecked: 1/*gameCoordinator.scrolledCardNumber()*/)
     
     }
     
@@ -174,26 +187,73 @@ class MainGameVC: UIViewController{
     func bind(){
         viewModel?.output
             .sink(receiveValue: { [weak self] output in
+                guard let self = self else { return }
                 switch output{
+//                case .dataReadyForDisplay:
+//                    self?.applySnapshot()
                 case .error(let error):
-                    self?.presentError(error, sourceView: self?.view)
+                    self.presentError(error, sourceView: self.view)
                 case .updateLables:
-                    self?.configureLabels()
+                    self.configureLabels()
                 case .shouldUpdateFont:
-                    self?.reloadFont()
+                    self.reloadFont()
                 case .shouldPop:
-                    self?.navigationController?.popToRootViewController(animated: true)
+                    self.navigationController?.popToRootViewController(animated: true)
                 case .shouldUpdateTimer(let state):
                     switch state {
                     case .shouldResume:
-                        self?.timerView.resumeCountdown()
+                        self.timerView.resumeCountdown()
                     case .shouldStop:
-                        self?.timerView.stopCountdown()
+                        self.timerView.stopCountdown()
                     }
+                    
+                }
+                
+            })
+            .store(in: &cancellable)
+        viewModel?.collectionOutput
+            .sink(receiveValue: { [weak self] output in
+                guard let self = self else { return }
+                switch output {
+                    
+                case .shouldUpdateResult(let results):
+                    var entries: [CellDataWrapper] = []
+                    var lastCell: [CellDataWrapper] = []
+                    
+                    results.forEach { result in
+                        switch result {
+                        case .mainCellData(let data):
+                            entries.append(.mainCellData(data))
+                        case .lastCellData(let data):
+                            lastCell.append(.lastCellData(data))
+                        }
+                    }
+                    collectionAdapter.apply(entries: entries, lastCellData: lastCell)
+//                    gameCoordinator.configureGesture()
+
+                case .shouldInsert(_):
+                    print("insert")
                 }
             })
             .store(in: &cancellable)
-    }
+        gameCoordinator.events
+            .sink(receiveValue: { [weak self] output in
+                guard let self = self else { return }
+                switch output {
+                    
+                case .showDetails(let indexPath, let cell):
+                    guard let word = collectionAdapter.word(at: indexPath) else { return }
+                    let controller = configureDetailedVCFor(cell: word)
+                    animator.transition(from: cell, to: controller, in: self)
+//                    animator.shrinkOut(cell: cell)
+
+                case .cancelInteraction:
+                    print("canceled")
+                }
+            })
+                    .store(in: &cancellable)
+
+        }
     
 
     
@@ -214,9 +274,14 @@ class MainGameVC: UIViewController{
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         ])
-        
-        collectionView.dataSource = dataSourceCustomization()
+        collectionAdapter.configureDataSource(for: collectionView)
+//        collectionView.dataSource = dataSource
         animator = GameAnimator(collectionView: collectionView, delegate: self)
+        
+        gameCoordinator.collectionView = collectionView
+        gameCoordinator.animator = animator
+        collectionView.addGestureRecognizer(gameCoordinator.configureGesture())
+
     }
     
     private func configureTimerView(){
@@ -236,87 +301,12 @@ class MainGameVC: UIViewController{
 
     
     
-    //MARK: - Cell SetUp
-    private func prepareCells(){
-        self.mainCell = UICollectionView.CellRegistration<CollectionViewCell, HashableWordsEntity> { cell, indexPath, data in
-            cell.configure(with: self.transformer(wordEntity: data), oneSideMode: self.isOneSidesMode)
-        }
-        self.lastCell = UICollectionView.CellRegistration<CollectionViewLastCell, DataForLastCell> { cell, indexPath, data in
-            cell.configure(with: data)
-        }
-    }
-    
-    func transformer(wordEntity: HashableWordsEntity) -> HashableWordsEntity {
-        var transformedEntity = wordEntity
-        transformedEntity.globalyFliped = isFlippedGlobally
-        return transformedEntity
-        
-    }
-    
-    //MARK: - DataSource SetUp
-    private func dataSourceCustomization() -> DataSource{
-        self.dataSource = DataSource(collectionView: collectionView) { [ weak self ] (collectionView,indexPath,item) -> UICollectionViewCell? in
-
-            guard let self = self else { return UICollectionViewCell() }
-            
-            
-            switch item {
-            case .mainCellData(let data):
-                let cell = collectionView.dequeueConfiguredReusableCell(using: self.mainCell,
-                                                                        for: indexPath,
-                                                                        item: data)
-                cell.addGestureRecognizer(self.longGestureCustomization())
-                return cell
-            case .lastCellData(let data):
-                let cell = collectionView.dequeueConfiguredReusableCell(using: self.lastCell, for: indexPath, item: data)
-                cell.addGestureRecognizer(self.longGestureCustomization())
-                return cell
-            }
-//            if let item = item as? HashableWordsEntity{
-//                let cell = collectionView.dequeueConfiguredReusableCell(using: self.mainCell,
-//                                                                        for: indexPath,
-//                                                                        item: item)
-//                cell.addGestureRecognizer(self.longGestureCustomization())
-//                return cell
-//            } else if let item = item as? DataForLastCell{
-//                let cell = collectionView.dequeueConfiguredReusableCell(using: self.lastCell,
-//                                                                        for: indexPath,
-//                                                                        item: item)
-//                cell.addGestureRecognizer(self.longGestureCustomization())
-//                return cell
-//            }
-//            return nil
-        }
-        
-        guard let viewModel = viewModel else { return dataSource }
-        
-        var snapshot = Snapshot()
-        snapshot.appendSections([.cards])
-        snapshot.appendItems(viewModel.dataForDiffableDataSource(), toSection: .cards)
-        if self.selectedTime != nil {
-            snapshot.appendItems(viewModel.dataForDiffableDataSource(), toSection: .cards)
-        } else {
-            snapshot.appendItems(
-                viewModel.dataForTheLastCell(),
-                toSection: .cards)
-        }
-        dataSource.apply(snapshot, animatingDifferences: true)
-        let _ = scrolledCards.insert(snapshot.itemIdentifiers.first)
-        return dataSource
-    }
-    
-
-    
-
-
-
-
     
     //MARK: Others
     private func configureDetailedVCFor(cell: HashableWordsEntity) -> UIViewController{
         guard let data = viewModel?.didSelectCellAt(cell: cell ) else { return UIViewController() }
         let vm = viewModelFactory.configureGameDetailsViewModel(dictionary: data.dictionary, word: data.word, delegate: self)
-
+        
         var viewController = UIViewController()
         
         if UIDevice.isIPadDevice {
@@ -332,12 +322,12 @@ class MainGameVC: UIViewController{
         return viewController
     }
     
-    private func longGestureCustomization() -> UILongPressGestureRecognizer {
-        let gesture = UILongPressGestureRecognizer(target: self, action: #selector(longGestureDidPress(sender: )))
-        gesture.minimumPressDuration = 0.01
-        gesture.delegate = self
-        return gesture
-    }
+//    private func longGestureCustomization() -> UILongPressGestureRecognizer {
+//        let gesture = UILongPressGestureRecognizer(target: self, action: #selector(longGestureDidPress(sender: )))
+//        gesture.minimumPressDuration = 0.01
+//        gesture.delegate = self
+//        return gesture
+//    }
     
     
     private func centerCellManually(at indexPath: IndexPath) {
@@ -351,7 +341,7 @@ class MainGameVC: UIViewController{
             
         })
     }
-
+    
     private func centerLastCell(at indexPath: IndexPath, cell: CollectionViewLastCell){
         self.collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3, execute: { [weak self] in
@@ -370,15 +360,16 @@ class MainGameVC: UIViewController{
         timerView.stopCountdown()
         timerView.isUserInteractionEnabled = false
         let timeSpentInSec = timerView.timeSpent()
+        let totalCardsScrolled = 1 /*gameCoordinator.scrolledCardNumber()*/
 
-        let timePerCard: Double = Double(timeSpentInSec) / Double(scrolledCards.count)
+        let timePerCard: Double = Double(timeSpentInSec) / Double(totalCardsScrolled)
         var twoSessionDifference: Double? = nil
         if let previousSessionTimePerCard = UserDefaults.standard.value(forKey: currentDictionaryHash.uuidString ) as? Double {
             twoSessionDifference = (previousSessionTimePerCard - timePerCard) / previousSessionTimePerCard * 100
         }
         UserDefaults.standard.setValue(timePerCard, forKey: currentDictionaryHash.uuidString )
 
-        cell.flipTheCell(numberOfCards: self.scrolledCards.count,
+        cell.flipTheCell(numberOfCards: totalCardsScrolled,
                          timeSpent: String.timeString(from: timeSpentInSec),
                          amount: twoSessionDifference)
     }
@@ -428,7 +419,7 @@ extension MainGameVC {
         }
     }
     
-    private func resolveCell(from sender: UILongPressGestureRecognizer) -> UICollectionViewCell? {
+    private func resolveCell(from sender: UIGestureRecognizer) -> UICollectionViewCell? {
         if let cell = sender.view as? CollectionViewCell {
             return cell
         }
@@ -482,8 +473,6 @@ extension MainGameVC {
                 if let item = dataSource.itemIdentifier(for: indexPath), let data = item.data as? HashableWordsEntity {
                         let controller = configureDetailedVCFor(cell: data)
                         animator.transition(from: cell, to: controller, in: self)
-//                    let controller = configureDetailedVCFor(cell: item)
-//                    animator.transition(from: cell, to: controller, in: self)
                 }
             } else {
                 animator.flip(cell: cell, frontToBack: !cell.isFlipped)
@@ -518,7 +507,7 @@ extension MainGameVC {
             return
         }
         
-        let popOverView = PopUpTimerView(frame: view.frame, safeAreaInsets: view.safeAreaInsets, number: scrolledCards.count, delegate: self)
+        let popOverView = PopUpTimerView(frame: view.frame, safeAreaInsets: view.safeAreaInsets, number: 1 /*gameCoordinator.scrolledCardNumber()*/, delegate: self)
         if let window = view.window {
             window.addSubview(popOverView)
             NSLayoutConstraint.activate([
@@ -536,7 +525,9 @@ extension MainGameVC {
     }
     
     @objc func flipCard(sender: Any) {
-        isFlippedGlobally.toggle()
+//        isFlippedGlobally.toggle()
+        
+        collectionAdapter.flipGlobaly()
         
         let visibleIndexPaths = collectionView.loadedCellsIndeces().sorted()
         
@@ -545,12 +536,6 @@ extension MainGameVC {
             
             
             animator.flip(cell: cell, frontToBack: cell.isFlipped, swapTextOnly: true)
-//            if cell.isFlipped {
-//                animator.flip(cell: cell, frontToBack: true, swapTextOnly: true)
-//            } else {
-//                animator.flip(cell: cell, frontToBack: false, swapTextOnly: true)
-//
-//            }
             
         }
     }
@@ -566,61 +551,63 @@ extension MainGameVC {
 //MARK: - DELEGATES
 //MARK: MainGameVCDelegate
 extension MainGameVC: MainGameVCDelegate {
-    func restoreAnimation() -> UIViewPropertyAnimator{
-        guard let index = selectedCell,
-              let cell = collectionView.cellForItem(at: index) as? CollectionViewCell
-        else {
-            return UIViewPropertyAnimator()
-        }
-        
-        let dimming = UIViewPropertyAnimator(duration: 0.3, curve: .easeOut){
-            cell.transform = .identity
-            cell.cardView.subviews.forEach { view in
-                view.alpha = 1
-            }
-            cell.translationBacksideLabel.alpha = cell.isFlipped ? 1 : 0
-            cell.cardShadowView.layer.shadowOpacity = cell.shadowOpacity
-        }
-        dimming.addCompletion { _ in
-            cell.layer.removeAllAnimations()
-            self.collectionView.isUserInteractionEnabled = true
-        }
-        return dimming
-    }
-
+//    func restoreAnimation() -> UIViewPropertyAnimator{
+//        guard let index = selectedCell,
+//              let cell = collectionView.cellForItem(at: index) as? CollectionViewCell
+//        else {
+//            return UIViewPropertyAnimator()
+//        }
+//        
+//        let dimming = UIViewPropertyAnimator(duration: 0.3, curve: .easeOut){
+//            cell.transform = .identity
+//            cell.cardView.subviews.forEach { view in
+//                view.alpha = 1
+//            }
+//            cell.translationBacksideLabel.alpha = cell.isFlipped ? 1 : 0
+//            cell.cardShadowView.layer.shadowOpacity = cell.shadowOpacity
+//        }
+//        dimming.addCompletion { _ in
+//            cell.layer.removeAllAnimations()
+//            self.collectionView.isUserInteractionEnabled = true
+//        }
+//        return dimming
+//    }
+//
     func restoreCardCell() {
-        let animation = restoreAnimation()
-        animation.addCompletion { _ in
-            self.selectedCell = nil
-        }
-        animation.startAnimation()
+        gameCoordinator.restoreCell()
+//        let animation = restoreAnimation()
+//        animation.addCompletion { _ in
+//            self.selectedCell = nil
+//        }
+//        animation.startAnimation()
     }
     
     func deleteCardCell() {
-        let animation = restoreAnimation()
-        animation.addCompletion { [ weak self ] _ in
+//        let animation = restoreAnimation()
+//        animation.addCompletion { [ weak self ] _ in
 
-            guard let self = self, let index = selectedCell, let item = dataSource.itemIdentifier(for: index) else { return }
-            var snapshot = self.dataSource.snapshot()
-            guard let hashableInstance = item.data as? HashableWordsEntity else { return }
-            
-            self.viewModel?.deleteWord(word: hashableInstance.wordEntity)
-            snapshot.deleteItems([item])
-            
-            self.dataSource.apply(snapshot, animatingDifferences: true)
-            self.selectedCell = nil
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: { [weak self] in
-                if snapshot.numberOfItems == 1 {
-                    self?.navigationController?.popToRootViewController(animated: true)
-                }
-            })
-        }
-        animation.startAnimation()
+//            guard let self = self, let index = selectedCell, let item = dataSource.itemIdentifier(for: index) else { return }
+//            var snapshot = self.dataSource.snapshot()
+//            guard let hashableInstance = item.data as? HashableWordsEntity else { return }
+//            
+//            self.viewModel?.deleteWord(word: hashableInstance.wordEntity)
+//            snapshot.deleteItems([item])
+//            
+//            self.dataSource.apply(snapshot, animatingDifferences: true)
+//            self.selectedCell = nil
+//            
+//            DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: { [weak self] in
+//                if snapshot.numberOfItems == 1 {
+//                    self?.navigationController?.popToRootViewController(animated: true)
+//                }
+//            })
+        
+        gameCoordinator.restoreCell()
+//        animation.startAnimation()
 
     }
     func updateCardCell(){
-        let animation = restoreAnimation()
+//        let animation = restoreAnimation()
         
         guard let index = selectedCell, let item = self.dataSource.itemIdentifier(for: index), let data = item.data as? HashableWordsEntity else {
             let alert = UIAlertController
@@ -630,7 +617,8 @@ extension MainGameVC: MainGameVCDelegate {
                     alertStyle: .alert,
                     action1Title: "system.agreeFormal".localized
                 )
-            animation.startAnimation()
+            gameCoordinator.restoreCell()
+//            animation.startAnimation()
             self.present(alert, animated: true)
             return
         }
@@ -641,8 +629,8 @@ extension MainGameVC: MainGameVCDelegate {
             animator.flip(cell: cell, frontToBack: false)
         }
 
-        animation.addCompletion { [weak self] _ in
-            guard let self = self else { return }
+//        animation.addCompletion { [weak self] _ in
+//            guard let self = self else { return }
                                     
             var snapshot = self.dataSource.snapshot()
             wordEntity.word = wordEntity.word
@@ -652,9 +640,10 @@ extension MainGameVC: MainGameVCDelegate {
             
             self.dataSource.apply(snapshot, animatingDifferences: true)
             self.selectedCell = nil
-        }
+//        }
         
-        animation.startAnimation()
+//        animation.startAnimation()
+        gameCoordinator.restoreCell()
     }
 }
 //MARK: - CustomCellDelegate
@@ -682,52 +671,60 @@ extension MainGameVC: UIScrollViewDelegate{
             self.presentLearningSessionData(for: cell)
         }
     }
-    
+
     
     ///Ensures, that before reuse all cells will have default, non altered appearence.
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        guard tappedToScrollCell == nil else {
-            let cell = collectionView.cellForItem(at: tappedToScrollCell!)
-            let longGesture = cell?.gestureRecognizers?.first(where: { $0 is UILongPressGestureRecognizer })
-            longGesture?.state = .cancelled
-            
-            
-            if let selectedCell = selectedCell, let cardCell = collectionView.cellForItem(at: selectedCell) as? CollectionViewCell  {
-                guard !cardCell.isFlipped else {
-                    animator.flip(cell: cardCell, frontToBack: !cardCell.isFlipped)
-                    return
-                }
-            }
-            tappedToScrollCell = nil
-            return
-        }
+        gameCoordinator.viewDidSceroll()
+//        print(selectedCell == nil ? "Selected is Empty" : "selected is not empty", tappedToScrollCell == nil ? "Tapped is empty" : "Tapped is not empty")
         
-        guard selectedCell == nil else {
-            if let cardCell = collectionView.cellForItem(at: selectedCell!) as? CollectionViewCell  {
-                
-                let longGesture = cardCell.gestureRecognizers?.first(where: { $0 is UILongPressGestureRecognizer })
-                longGesture?.state = .cancelled
-                
-                animator.shrinkOut(cell: cardCell)
-                
-                guard !cardCell.isFlipped else {
-                    animator.flip(cell: cardCell, frontToBack: !cardCell.isFlipped)
-                    return
-                }
-            }
-            selectedCell = nil
-            return
-        }
-        
+//        guard tappedToScrollCell == nil else {
+//            let cell = collectionView.cellForItem(at: tappedToScrollCell!)
+//            let longGesture = cell?.gestureRecognizers?.first(where: { $0 is UILongPressGestureRecognizer })
+//            longGesture?.state = .cancelled
+//            
+//            
+//            if let selectedCell = selectedCell, let cardCell = collectionView.cellForItem(at: selectedCell) as? CollectionViewCell  {
+//                guard !cardCell.isFlipped else {
+//                    animator.flip(cell: cardCell, frontToBack: !cardCell.isFlipped)
+//                    tappedToScrollCell = nil
+//                    self.selectedCell = nil
+//                    return
+//                }
+//            }
+//            tappedToScrollCell = nil
+//            self.selectedCell = nil
+//
+//            return
+//        }
+//        
+//        guard selectedCell == nil else {
+//            if let cardCell = collectionView.cellForItem(at: selectedCell!) as? CollectionViewCell  {
+//                
+//                let longGesture = cardCell.gestureRecognizers?.first(where: { $0 is UILongPressGestureRecognizer })
+//                longGesture?.state = .cancelled
+//                
+//                animator.shrinkOut(cell: cardCell)
+//                
+//                guard !cardCell.isFlipped else {
+//                    animator.flip(cell: cardCell, frontToBack: !cardCell.isFlipped)
+//                    selectedCell = nil
+//                    return
+//                }
+//            }
+//            selectedCell = nil
+//            return
+//        }
+//        
 
         let centerX = collectionView.contentOffset.x + collectionView.bounds.width / 2
         let centerY = collectionView.bounds.height / 2
         let center = CGPoint(x: centerX, y: centerY)
-        
-        if let index = collectionView.indexPathForItem(at: center){
-            guard let item = dataSource.itemIdentifier(for: index), let _ = item.data as? HashableWordsEntity else { return }
-            let _ = self.scrolledCards.insert(dataSource.itemIdentifier(for: index))
-        }
+//        
+//        if let index = collectionView.indexPathForItem(at: center){
+//            guard let item = dataSource.itemIdentifier(for: index), let _ = item.data as? HashableWordsEntity else { return }
+//            let _ = self.scrolledCards.insert(dataSource.itemIdentifier(for: index))
+//        }
             
         
         guard selectedTime == nil else {
@@ -747,20 +744,20 @@ extension MainGameVC: UIScrollViewDelegate{
 }
 
 
-//MARK: - Gestures delegate
-extension MainGameVC: UIGestureRecognizerDelegate {
-    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRequireFailureOf otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-        return false
-    }
-    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-        if otherGestureRecognizer == self.collectionView.panGestureRecognizer,
-           self.collectionView.isDragging || self.collectionView.isDecelerating {
-            return false
-        }
-        return true
-    }
-    
-}
+////MARK: - Gestures delegate
+//extension MainGameVC: UIGestureRecognizerDelegate {
+//    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRequireFailureOf otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+//        return false
+//    }
+//    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+//        if otherGestureRecognizer == self.collectionView.panGestureRecognizer,
+//           self.collectionView.isDragging || self.collectionView.isDecelerating {
+//            return false
+//        }
+//        return true
+//    }
+//    
+//}
 
 
 //MARK: CountdownTimerDelegate
@@ -797,16 +794,19 @@ extension MainGameVC: GameAnimatorDelegate {
     }
 }
 
-//extension MainGameVC: GameGestureHandlerDelegate {
-//    func gestureHandler(_ handler: GameGestureHandler, didShortTap cell: UICollectionViewCell) {
-//        animator.flip(cell: cell, toBack: true)
+//extension MainGameVC: GameInteractionCoordinatorDelegate {
+//
+//    func requestCentering(at indexPath: IndexPath) {
+//        centerCellManually(at: indexPath)
 //    }
 //
-//    func gestureHandler(_ handler: GameGestureHandler, didLongPress cell: UICollectionViewCell) {
-//        guard let indexPath = collectionView.indexPath(for: cell) else { return }
-//        let item = viewModel.item(at: indexPath)
-//        
-//        coordinator.presentDetails(for: item)
+//    func requestDetailsPresentation(
+//        for indexPath: IndexPath,
+//        from cell: CollectionViewCell
+//    ) {
+//        guard let word = collectionAdapter.word(at: indexPath) else { return }
+//        let controller = configureDetailedVCFor(cell: word)
+//        animator.transition(from: cell, to: controller, in: self)
 //    }
 //}
 

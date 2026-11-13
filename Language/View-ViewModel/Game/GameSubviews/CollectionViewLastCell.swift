@@ -278,7 +278,7 @@ class CollectionViewLastCell: UICollectionViewCell {
         var summaryLabelText = String()
         if let amount = amount {
             
-            summaryLabelText = "game.lastCell.avarageResult.firstPart".localized
+            summaryLabelText = "game.lastCell.averageResult.firstPart".localized
             
             if amount == 0 {
                 summaryLabelText += "game.lastCell.same".localized
@@ -288,7 +288,7 @@ class CollectionViewLastCell: UICollectionViewCell {
                 summaryLabelText += "\((abs(amount.binade)))%" + " " +  "game.lastCell.slower".localized
             }
 
-            summaryLabelText += "game.lastCell.avarageResult.secondPart".localized
+            summaryLabelText += "game.lastCell.averageResult.secondPart".localized
         } else {
             summaryLabelText = "game.lastCell.bestResult".localized
         }

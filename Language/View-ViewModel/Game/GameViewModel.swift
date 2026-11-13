@@ -15,24 +15,6 @@ internal enum TimerState {
     case shouldResume
 }
 
-struct HashableWordsEntity: Hashable{
-    var identifier = UUID()
-    var wordEntity: WordsEntity
-    
-    var image: UIImage?
-    var globalyFliped = false
-    
-    init(wordEntity: WordsEntity) {
-        self.wordEntity = wordEntity
-    }
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(identifier)
-    }
-    
-    static func == (lhs: HashableWordsEntity, rhs: HashableWordsEntity) -> Bool{
-        lhs.identifier == rhs.identifier
-    }
-}
 class GameViewModel{
     
     enum Output{
@@ -41,8 +23,13 @@ class GameViewModel{
         case error(Error)
         case shouldPop
         case shouldUpdateTimer(TimerState)
+//        case dataReadyForDisplay
     }
-    
+    enum CollectionViewOutput {
+        case shouldUpdateResult([CellDataWrapper])
+        case shouldInsert(CellDataWrapper)
+    }
+
     //MARK: Properties
     private var dataModel: DictionaryFullAccess
     private var settingsModel: UserSettingsStorageProtocol
@@ -53,6 +40,7 @@ class GameViewModel{
     
     private var selectedCardsOrder: DictionariesSettings.CardOrder = .normal
     private var isOneSideMode: Bool = true
+    
     private lazy var initialNumberOfCards: Int64 = dictionary.numberOfCards
     private lazy var selectedNumberOfWords: Int64 = dictionary.numberOfCards
     
@@ -60,6 +48,8 @@ class GameViewModel{
     private var appliationEnteredBackground: Bool = false
     
     var output = PassthroughSubject<Output, Never>()
+    var collectionOutput = PassthroughSubject<CollectionViewOutput, Never>()
+
     private var cancellable = Set<AnyCancellable>()
     //MARK: Inherited
     init(dataModel: DictionaryFullAccess, settingsModel: UserSettingsStorageProtocol, dictionary: DictionariesEntity, selectedOrder: DictionariesSettings.CardOrder, isOneSideMode: Bool, selectedNumber: Int, selectedTime: Int?){
@@ -73,6 +63,7 @@ class GameViewModel{
         
         self.initialNumberOfCards = dictionary.numberOfCards
         configureData()
+        
         
         NotificationCenter.default.addObserver(
             self, selector: #selector(languageDidUpdate(sender:)),
@@ -106,10 +97,10 @@ class GameViewModel{
             let data = HashableWordsEntity(wordEntity: $0)
             return CellDataWrapper.mainCellData(data)
         }
-//            CellDataWrapper(mainCellData(HashableWordsEntity(wordEntity: $0) )) }
         return words
     }
-    func dataForTheLastCell() -> [CellDataWrapper]{
+    func dataForTheLastCell() -> [CellDataWrapper]?{
+        guard selectedTime == nil else { return nil }
         let number = Float(selectedNumberOfWords) / Float(initialNumberOfCards) * 100.0
         return [CellDataWrapper.lastCellData(DataForLastCell(score: number, delegate: self))]
     }
@@ -147,7 +138,14 @@ class GameViewModel{
         }
 
         self.words = prepareWords(words: words, selectedOrder: selectedCardsOrder, restrictBy: Int(selectedNumberOfWords))
+//        self.output.send(.dataReadyForDisplay)
     }
+    func viewIsReadyForTheDataDisplay() {
+        var data = self.dataForDiffableDataSource()
+        data.append(contentsOf: dataForTheLastCell() ?? [])
+        self.collectionOutput.send(.shouldUpdateResult(data))
+    }
+
 //
 //    private func wordsHashableWrapper(word: WordsEntity ) -> HashableWordsEntity {
 //        return HashableWordsEntity(wordEntity: word)

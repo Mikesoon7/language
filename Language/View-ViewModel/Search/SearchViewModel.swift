@@ -24,19 +24,18 @@ class SearchViewModel {
     
     enum Output{
         case shouldUpdateResults
-//        case shouldReloadView
         case shouldUpdateLabels
-//        case shouldReplaceSearchBarOnTop(Bool)
-        case reflectSearchPositionChange(AppSearchBarPosition)
         case shouldUpdateFonts
         case shouldReloadCell(IndexPath)
-        case error(Error)
+        case shouldPresentError(Error)
+        case shouldPresentAlert(SingleEntryEditAlertType)
+        
+        case reflectSearchPositionChange(AppSearchBarPosition)
     }
     
     
     private var model: DictionaryFullAccess
     private var settingModel: UserSettingsStorageProtocol
-    
     private lazy var updateManager: DataUpdateManager = DataUpdateManager(dataModel: model, settings: settingModel)
 
     private var cancellable = Set<AnyCancellable>()
@@ -106,7 +105,7 @@ class SearchViewModel {
         do {
             dictionaries = try model.fetchDictionaries()
         } catch {
-            output.send(.error(error))
+            output.send(.shouldPresentError(error))
         }
         return dictionaries
     }
@@ -123,43 +122,25 @@ class SearchViewModel {
             filteredDictionaries = allDictionaries
             filter(for: searchPromt)
         } catch {
-            output.send(.error(error))
+            output.send(.shouldPresentError(error))
         }
     }
-    //Filtering array of existing pairs to match promt.
-    //If user types text, we filtering results from previous result. If text is smaller than previous filter promt, filter ftom all data.
     private func filter(for text: String){
         if text.isEmpty {
             filteredDictionaries = allDictionaries
         } else {
-            if text.count > searchPromt.count {
-                var filteredArray: [Dictionaries] = []
-                
-                filteredDictionaries.forEach { dictionary in
-                     let filteredWords = dictionary.words.filter { word in
-                        word.word.lowercased().contains(text.lowercased()) ||
-                        word.meaning.lowercased().contains(text.lowercased())
-                    }
-                    if filteredWords.count != 0 {
-                        filteredArray.append(.init(words: filteredWords, dictionary: dictionary.dictionary))
-                    }
+            var filteredArray: [Dictionaries] = []
+            
+            allDictionaries.forEach { dictionary in
+                let filteredWords = dictionary.words.filter { word in
+                    word.word.lowercased().contains(text.lowercased()) ||
+                    word.meaning.lowercased().contains(text.lowercased())
                 }
-                filteredDictionaries = filteredArray
-
-            } else if text.count <= searchPromt.count {
-                var filteredArray: [Dictionaries] = []
-                
-                allDictionaries.forEach { dictionary in
-                     let filteredWords = dictionary.words.filter { word in
-                        word.word.lowercased().contains(text.lowercased()) ||
-                        word.meaning.lowercased().contains(text.lowercased())
-                    }
-                    if filteredWords.count != 0 {
-                        filteredArray.append(.init(words: filteredWords, dictionary: dictionary.dictionary))
-                    }
+                if filteredWords.count != 0 {
+                    filteredArray.append(.init( words: filteredWords, dictionary: dictionary.dictionary))
                 }
-                filteredDictionaries = filteredArray
             }
+            filteredDictionaries = filteredArray
         }
         searchPromt = text
         output.send(.shouldUpdateResults)
@@ -181,20 +162,33 @@ class SearchViewModel {
         do {
             try updateManager.wordDidDeleteFor(dictionary.dictionary, word: pair)
         } catch {
-            output.send(.error(error))
+            output.send(.shouldPresentError(error))
         }
     }
     ///Validate text and saving it dataModel.
     func editWord(with text: String, index: IndexPath){
-        let dictionary = filteredDictionaries[index.section]
-        let pair = dictionary.words[index.item]
+        let verificationResult = updateManager.verifySingleEntryTextData(data: text)
 
-        do {
-            try model.reassignWordsProperties(for: pair, from: text)
-            self.output.send(.shouldReloadCell(index))
-        } catch {
-            output.send(.error(error))
+        let dictionary = filteredDictionaries[index.section]
+        let entry = dictionary.words[index.item]
+
+        switch verificationResult {
+        case .success(let data, _):
+            let singleData = data[0]
+            do {
+                try updateManager.updateSingleEntry(entry: entry, data: singleData)
+                output.send(.shouldReloadCell(index))
+            } catch {
+                output.send(.shouldPresentError(error))
+            }
+        case .emptyText:
+            output.send(.shouldPresentAlert(.emptyText))
+        case .croppedText:
+            output.send(.shouldPresentAlert(.invalidContent))
+        default:
+            break
         }
+
     }
 
     //MARK: - Methods for tableView
@@ -220,6 +214,7 @@ class SearchViewModel {
         return filteredDictionaries.count
     }
     
+    //MARK: Actions
     @objc func appLanguageDidChange(sender: Any){
         output.send(.shouldUpdateLabels)
     }
