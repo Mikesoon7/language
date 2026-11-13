@@ -26,6 +26,7 @@ class SearchView: UIViewController {
     private var popoverView: SearchCellExpandedView?
     private var selectedIndexPath: IndexPath? = nil
     
+    private var firstlaunch = true
     private var currentLayoutContext: CustomLayoutContext?
     private var currentStrokePosition: CustomStrokePosition?
     
@@ -89,6 +90,16 @@ class SearchView: UIViewController {
         configureBottomSearchView()
         configureLabels()
         
+        
+//        topSearchController.obscuresBackgroundDuringPresentation = false
+//        topSearchController.hidesNavigationBarDuringPresentation = true
+//        definesPresentationContext = true
+        topSearchController.hidesNavigationBarDuringPresentation = false
+        
+        navigationItem.hidesSearchBarWhenScrolling = false
+        navigationItem.searchController = topSearchController
+
+        
         applySearchBarPosition(viewModel.searchBarPosition)
     }
     
@@ -100,14 +111,17 @@ class SearchView: UIViewController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+        
         updateLayoutIfNeeded()
         updateStrokesIfNeeded()
         bottomSearchView.configureStrokes()
+        
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         updateLayoutIfNeeded(width: size.width)
         dismissPopover()
+        
     }
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -174,7 +188,9 @@ class SearchView: UIViewController {
     
     private func configureNavBar(){
         navigationController?.navigationBar.titleTextAttributes = FontChangeManager.shared.VCTitleAttributes()
-        
+        navigationItem.hidesSearchBarWhenScrolling = false
+        navigationItem.searchController = topSearchController
+
     }
     
     private func configureCollectionView() {
@@ -225,29 +241,59 @@ class SearchView: UIViewController {
         }
     }
     
+    private func hideTopSearchBar() {
+        let searchBar = topSearchController.searchBar
+
+        navigationItem.searchController = nil
+        searchBar.isUserInteractionEnabled = false
+        searchBar.alpha = 0
+        searchBar.frame.size.height = 0
+        
+    }
+
+    private func showTopSearchBar() {
+        let searchBar = topSearchController.searchBar
+        navigationItem.searchController = topSearchController
+        searchBar.isUserInteractionEnabled = true
+        searchBar.alpha = 1
+        searchBar.frame.size.height = 56 // system default
+    }
+    
 //    MARK: State Change
     private func applySearchBarPosition(_ position: AppSearchBarPosition) {
-        UIView.animate(withDuration: 0.3) { [weak self]  in
-            guard let self = self else {return}
+//        UIView.animate(withDuration: 0.3) { [weak self]  in
+//            guard let self = self else {return}
             switch position {
             case .onTop:
                 refreshBottomSearchBar()
                 bottomSearchView.isHidden = true
-                navigationItem.searchController?.isActive = false
-                navigationItem.searchController = topSearchController
+//                showTopSearchBar()
+//                topSearchController.
+//                navigationItem.searchController?.isActive = false
+//                navigationItem.searchController = topSearchController
+//                navigationItem.searchController?.isActive = true
+                showTopSearchBar()
             case .atTheBottom:
                 refreshTopSearchBar()
                 bottomSearchView.isHidden = false
-                navigationItem.searchController = nil
+                hideTopSearchBar()
+//                navigationItem.searchController?.isActive = false
+
+//                hideTopSearchBar()
+//                if navigationItem.searchController != nil {
+//                    navigationItem.searchController = nil
+//                }
             }
-            view.setNeedsDisplay()
-        }
+//            view.setNeedsDisplay()
+//        }
     }
 
     //MARK: Layout
     private func updateLayoutIfNeeded(width: CGFloat? = nil) {
         if width != nil {
             let newContext = view.layoutContext(width: width)
+//            guard newContext != currentLayoutContext else { return }
+
             currentLayoutContext = newContext
             adjustLayoutFor(context: newContext, width: width)
         } else {
@@ -260,6 +306,8 @@ class SearchView: UIViewController {
     }
 
     private func updateStrokesIfNeeded(){
+//        guard !isTransitioning else { return }
+
         switch viewModel.searchBarPosition {
         case .onTop:
             guard currentStrokePosition == .bottom else {
@@ -267,15 +315,17 @@ class SearchView: UIViewController {
                 bottomStroke.removeFromSuperlayer()
 
                 bottomStroke = UIView().addBottomStroke(vc: self)
+                topStroke = UIView().addTopStroke(vc: self)
                 self.tabBarController?.tabBar.layer.addSublayer(bottomStroke)
+                self.navigationController?.navigationBar.layer.addSublayer(topStroke)
 
                 currentStrokePosition = .bottom
                 return
             }
         case .atTheBottom:
-            let navFrame = navigationController?.navigationBar.layer.bounds
+//            let navFrame = navigationController?.navigationBar.layer.bounds
 
-            guard currentStrokePosition == .top  && navFrame == topStroke.bounds else {
+            guard currentStrokePosition == .top  /*&& navFrame == topStroke.bounds*/ else {
                 topStroke.removeFromSuperlayer()
                 bottomStroke.removeFromSuperlayer()
                 

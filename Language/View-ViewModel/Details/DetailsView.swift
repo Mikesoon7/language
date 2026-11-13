@@ -53,6 +53,7 @@ class DetailsView: UIViewController {
     
     private var horizontalSizeClass: CustomLayoutContext!
     private var viewEditState: EditState = .idle
+    private var isInModalMode: Bool = false
 
 
     //MARK: - Subviews
@@ -305,6 +306,7 @@ class DetailsView: UIViewController {
                 case .presentModalEditor(let mode, let text):
                     self.textInputView.clearTextView()
                     presentAddWordsController(with: text, mode: mode)
+                    self.isInModalMode = true
                 case .shouldPresentAlert(let alertType):
                     self.presentAlert(for: alertType)
                 case .shouldPresentError(let error):
@@ -625,6 +627,7 @@ class DetailsView: UIViewController {
     
     
     private func handleKeyboard(_ event: KeyboardListener.Event) {
+        guard !isInModalMode else { return }
         UIView.animate(
             withDuration: event.duration,
             delay: 0,
@@ -688,9 +691,6 @@ class DetailsView: UIViewController {
         self.present(alert, animated: true)
     }
     
-//    func layoutMode(for width: CGFloat) -> DetailsLayoutMode {
-//        width >= 900 ? .expanded : .compact
-//    }
 
     //Assigning text on initializing and if language changes
     private func updateForLanguageChange(){
@@ -821,6 +821,7 @@ extension DetailsView: UIPickerViewDelegate, UIPickerViewDataSource{
 //MARK: - TextView Placeholder Delegate
 extension DetailsView: PlaceholderTextViewDelegate{
     func textViewDidBeginEditing(sender: UITextView)  {
+        self.isInModalMode = false
         self.viewEditState = .editingText
         self.recomputePrimaryAction()
         

@@ -86,8 +86,8 @@ class AddImageController: UIViewController {
         view.layer.cornerRadius = .cornerRadius
         view.layer.cornerCurve = .continuous
         
-        view.layer.backgroundColor = UIColor.systemBackground.withAlphaComponent(0.5).cgColor
-        
+//        view.backgroundColor = UIColor.systemBackground.withAlphaComponent(0.5)
+//        
         view.isLayoutMarginsRelativeArrangement = true
         view.layoutMargins = UIEdgeInsets(
             top: .innerSpacer,
@@ -105,7 +105,7 @@ class AddImageController: UIViewController {
     //MARK: Labels
     var word: UILabel = {
         let label = UILabel()
-        label.font = .selectedFont.withSize(.subtitleSize)
+        label.font = .selectedFont.withSize(.bodyTextSize)
         label.numberOfLines = 0
         label.textColor = .label
         label.text = ""
@@ -122,7 +122,7 @@ class AddImageController: UIViewController {
     }()
     var translation: UILabel = {
         let label = UILabel()
-        label.font = .selectedFont.withSize(.bodyTextSize)
+        label.font = .selectedFont.withSize(.subBodyTextSize)
         label.numberOfLines = 0
         label.textColor = .label
         
@@ -204,21 +204,19 @@ class AddImageController: UIViewController {
             self.imageDetails = imageDetails
         }
 
-        
         super.init(nibName: nil, bundle: nil)
         
         self.word.text = data.word
         self.translation.text = data.definition
         
-        if data.word.isEmpty && data.definition.isEmpty {
-            stackView.layer.backgroundColor = UIColor.clear.cgColor
-        }
         if let image = originalImage {
             let processedImage = self.imageDetails.filterValue.original ? image : image.applyBlackAndWhiteFilter()
             self.imageView.image = processedImage
         }
         updateScaleButton(selectedMode: imageDetails.contentMode)
         updateFilterButton(selectedMode: imageDetails.filterValue)
+        
+        updateStackViewBackground()
     }
     
     
@@ -236,6 +234,7 @@ class AddImageController: UIViewController {
                                              ? shadowColorForDarkIdiom
                                              : shadowColorForLightIdiom)
             }
+            updateStackViewBackground()
         }
     }
     override func viewWillTransition(to size: CGSize, with coordinator: any UIViewControllerTransitionCoordinator) {
@@ -255,6 +254,7 @@ class AddImageController: UIViewController {
     private func configureView(){
         self.view.backgroundColor = .systemBackground
         
+
         if let sheetPresentationController = self.presentationController as? UISheetPresentationController {
             sheetPresentationController.delegate = self
         }
@@ -465,6 +465,15 @@ class AddImageController: UIViewController {
             scaleSelectionButton.setImage(UIImage(systemName: "rectangle.and.arrow.up.right.and.arrow.down.left.slash"), for: .normal)
             scaleSelectionButton.tag = 0
         }
+    }
+    func updateStackViewBackground(){
+        
+        if word.text == "" && translation.text == "" {
+            stackView.backgroundColor = .clear
+        } else {
+            stackView.backgroundColor = .systemBackground.withAlphaComponent(0.6)
+        }
+        
     }
     
 

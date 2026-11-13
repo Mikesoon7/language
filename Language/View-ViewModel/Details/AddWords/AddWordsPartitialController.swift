@@ -225,7 +225,7 @@ class AddWordsPartitialController: UIViewController {
     
     //MARK: View Setup
     private func configureView(){
-        view.backgroundColor = .systemSecondary_WhiteColour
+        view.backgroundColor = .systemBackground
         
         if let sheetPresentationController = self.presentationController as? UISheetPresentationController {
             sheetPresentationController.delegate = self
@@ -659,12 +659,14 @@ extension AddWordsPartitialController: PlaceholderTextViewDelegate{
 extension AddWordsPartitialController: UISheetPresentationControllerDelegate {
     ///Insures, that view won't be accedentaly dismissed without saving the data.
     func presentationControllerShouldDismiss(_ presentationController: UIPresentationController) -> Bool {
-        if viewModel.requiresUpdate  {
-            viewModel.viewRequestToClose()
-            return false
-        }
-        return true
+         !viewModel.requiresUpdate
     }
+    func presentationControllerDidAttemptToDismiss(
+        _ presentationController: UIPresentationController
+    ) {
+        viewModel.viewRequestToClose()
+    }
+
 }
 
 
