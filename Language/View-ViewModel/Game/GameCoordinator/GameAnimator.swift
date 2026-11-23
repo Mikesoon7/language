@@ -164,10 +164,22 @@ final class GameAnimator {
         slide.startAnimation()
     }
     
+    //Cell Centering
+    func centerCellManually(at indexPath: IndexPath) {
+        
+        collectionView?.isUserInteractionEnabled = false
+        collectionView?.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3, execute: {
+            self.collectionView?.isUserInteractionEnabled = true            
+        })
+    }
+
     func centerLastCell(at indexPath: IndexPath, cell: CollectionViewLastCell){
         self.collectionView?.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3, execute: { [weak self] in
             self?.delegate?.requiresDetailsSession(for: cell)
         })
     }
+    
 }

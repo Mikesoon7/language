@@ -10,26 +10,35 @@ import UIKit
 import CoreData
 import Combine
 
-enum CustomStrokePosition {
+fileprivate enum CustomStrokePosition {
     case top, bottom, undefined
 }
 
+
 class SearchView: UIViewController {
     
+    //Combine
     private let viewModelFactory: ViewModelFactory
     private let viewModel: SearchViewModel
     private var cancellable = Set<AnyCancellable>()
     private let input =  PassthroughSubject<SearchViewModel.Input, Never>()
     
-    private var keyboardListener: KeyboardListener?
     
-    private var popoverView: SearchCellExpandedView?
+    private var keyboardListener: KeyboardListener?
+    private var alertCoordinator = SearchViewAlertController()
+
+    private var popoverController: SearchCellExpandedView?
     private var selectedIndexPath: IndexPath? = nil
     
     private var currentLayoutContext: CustomLayoutContext?
+    
     private var currentStrokePosition: CustomStrokePosition?
+    private var isStrokePositionPending: Bool = false
+    
     
     //MARK: - Views
+    private let layout = UICollectionViewFlowLayout()
+
     private lazy var collectionView: UICollectionView = {
         let view = UICollectionView(frame: .zero, collectionViewLayout: layout)
         view.delegate = self
@@ -45,28 +54,38 @@ class SearchView: UIViewController {
         return view
     }()
     
-    private let layout = UICollectionViewFlowLayout()
     
+    //MARK: SearchRelated
     private lazy var topSearchController: UISearchController = {
         let controller = UISearchController(searchResultsController: nil)
         controller.searchBar.delegate = self
         controller.searchBar.tag = 1
         controller.obscuresBackgroundDuringPresentation = false
+        controller.hidesNavigationBarDuringPresentation = false
+
         return controller
     }()
     
-    private let bottomSearchView: CustomSearchBar = CustomSearchBar()
+    private let bottomSearchView: CustomSearchBarView = CustomSearchBarView()
     
+    
+    //MARK: Strokes
     private var topStroke = CAShapeLayer()
     private var bottomStroke = CAShapeLayer()
+
     
     //MARK: Constrait related properties
-    private var cancelButtonLeadingAnchor: NSLayoutConstraint =     .init()
-    private let searchControllerHeight: CGFloat = 50
     private let collectionContentInset: UIEdgeInsets = .init(
         top: .longInnerSpacer, left: .innerSpacer,
         bottom: .longOuterSpacer, right: .innerSpacer)
+
+    private var searchBarBottomAnchorActive: NSLayoutConstraint =   .init()
+    private var searchBarBottomAnchorInactive: NSLayoutConstraint = .init()
     
+    private let searchControllerHeight: CGFloat = 44
+    
+    
+    //MARK: Init
     required init(factory: ViewModelFactory){
         self.viewModelFactory = factory
         self.viewModel = factory.configureSearchViewModel()
@@ -81,7 +100,7 @@ class SearchView: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         bind()
-        bindViewhelpers()
+        bindViewHelpers()
         
         configureController()
         configureCollectionView()
@@ -94,20 +113,32 @@ class SearchView: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
         input.send(.viewWillAppear)
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        //Sometimes UIKit updates
+        guard !isStrokePositionPending else {
+            updateStrokesIfNeeded(positionIsPending: true)
+            isStrokePositionPending = false
+            return
+        }
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+        
         updateLayoutIfNeeded()
         updateStrokesIfNeeded()
         bottomSearchView.configureStrokes()
+        
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
         updateLayoutIfNeeded(width: size.width)
         dismissPopover()
+        
     }
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -115,7 +146,7 @@ class SearchView: UIViewController {
         if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection){
             bottomStroke.strokeColor = UIColor.label.cgColor
             topStroke.strokeColor = UIColor.label.cgColor
-            bottomSearchView.topStroke.strokeColor = UIColor.label.cgColor
+            bottomSearchView.updateForThemeChange()
             
             if traitCollection.userInterfaceStyle == .dark {
                 collectionView.subviews.forEach { section in
@@ -139,23 +170,25 @@ class SearchView: UIViewController {
                 switch changeType{
                 case .shouldUpdateResults:
                     self.collectionView.reloadData()
-                case .error(let error):
+                case .shouldPresentError(let error):
                     self.navigationController?.presentError(error, sourceView: self.view)
                 case .shouldUpdateLabels:
                     self.configureLabels()
-                    self.bottomSearchView.configureLabels()
+                    self.bottomSearchView.updateForLanguageChange()
                 case .shouldUpdateFonts:
                     self.configureFont()
                 case .reflectSearchPositionChange(let position):
                     self.applySearchBarPosition(position)
                 case .shouldReloadCell(let cellIndex):
                     self.collectionView.reloadItems(at: [cellIndex])
+                case .shouldPresentAlert(let alertType):
+                    self.presentAlert(for: alertType)
                 }
             }
             .store(in: &cancellable)
     }
     
-    func bindViewhelpers() {
+    func bindViewHelpers() {
         self.keyboardListener = KeyboardListener(view: self.view)
         
         keyboardListener?.events
@@ -174,7 +207,7 @@ class SearchView: UIViewController {
     
     private func configureNavBar(){
         navigationController?.navigationBar.titleTextAttributes = FontChangeManager.shared.VCTitleAttributes()
-        
+        navigationItem.hidesSearchBarWhenScrolling = false
     }
     
     private func configureCollectionView() {
@@ -198,8 +231,13 @@ class SearchView: UIViewController {
         bottomSearchView.delegate = self
         bottomSearchView.isHidden = true
         
+        self.searchBarBottomAnchorActive = bottomSearchView.bottomAnchor.constraint(
+            equalTo: view.keyboardLayoutGuide.topAnchor)
+        self.searchBarBottomAnchorInactive = bottomSearchView.bottomAnchor.constraint(
+            equalTo: view.bottomAnchor)
+        
         NSLayoutConstraint.activate([
-            bottomSearchView.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor),
+            searchBarBottomAnchorInactive,
             bottomSearchView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             bottomSearchView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             bottomSearchView.heightAnchor.constraint(equalToConstant: searchControllerHeight),
@@ -207,47 +245,40 @@ class SearchView: UIViewController {
     }
     
     //MARK: Refreshing SearchBars.
-    //If searchBar contain text( that mean in search stage) we clearing it, resigning and updating tableView, by manualy calling didEndEditing.
-    private func refreshTopSearchBar(){
-        if topSearchController.searchBar.text != nil{
+    private func clearAndResignPreviousSearch() {
+        switch viewModel.searchBarPosition {
+        case .onTop:
+            bottomSearchView.refreshSearchBar()
+        case .atTheBottom:
             topSearchController.searchBar.text = nil
-            topSearchController.isActive = false
-            searchBarTextDidEndEditing(topSearchController.searchBar)
-            topSearchController.resignFirstResponder()
+            topSearchController.searchBar.resignFirstResponder()
         }
     }
-    private func refreshBottomSearchBar(){
-        if bottomSearchView.searchBar.text != nil{
-            bottomSearchView.searchBar.text = nil
-            bottomSearchView.searchBar.resignFirstResponder()
-            bottomSearchView.animateTransitionTo(isActivated: false, time: 0.2)
-            searchBarTextDidEndEditing(bottomSearchView.searchBar)
+
+//    MARK: State Change
+    private func applySearchBarPosition(_ position: AppSearchBarPosition ) {
+        switch position {
+        case .onTop:
+            clearAndResignPreviousSearch()
+            self.navigationItem.searchController = self.topSearchController
+            self.bottomSearchView.isHidden = true
+            
+        case .atTheBottom:
+            clearAndResignPreviousSearch()
+            if self.navigationItem.searchController != nil {
+                self.navigationItem.searchController = nil
+            }
+            self.bottomSearchView.isHidden = false
         }
+        isStrokePositionPending = true
     }
     
-//    MARK: State Change
-    private func applySearchBarPosition(_ position: AppSearchBarPosition) {
-        UIView.animate(withDuration: 0.3) { [weak self]  in
-            guard let self = self else {return}
-            switch position {
-            case .onTop:
-                refreshBottomSearchBar()
-                bottomSearchView.isHidden = true
-                navigationItem.searchController?.isActive = false
-                navigationItem.searchController = topSearchController
-            case .atTheBottom:
-                refreshTopSearchBar()
-                bottomSearchView.isHidden = false
-                navigationItem.searchController = nil
-            }
-            view.setNeedsDisplay()
-        }
-    }
 
     //MARK: Layout
     private func updateLayoutIfNeeded(width: CGFloat? = nil) {
         if width != nil {
             let newContext = view.layoutContext(width: width)
+
             currentLayoutContext = newContext
             adjustLayoutFor(context: newContext, width: width)
         } else {
@@ -259,10 +290,10 @@ class SearchView: UIViewController {
         }
     }
 
-    private func updateStrokesIfNeeded(){
+    private func updateStrokesIfNeeded(positionIsPending: Bool = false){
         switch viewModel.searchBarPosition {
         case .onTop:
-            guard currentStrokePosition == .bottom else {
+            guard currentStrokePosition == .bottom && !positionIsPending else {
                 topStroke.removeFromSuperlayer()
                 bottomStroke.removeFromSuperlayer()
 
@@ -273,9 +304,7 @@ class SearchView: UIViewController {
                 return
             }
         case .atTheBottom:
-            let navFrame = navigationController?.navigationBar.layer.bounds
-
-            guard currentStrokePosition == .top  && navFrame == topStroke.bounds else {
+            guard currentStrokePosition == .top && !positionIsPending else {
                 topStroke.removeFromSuperlayer()
                 bottomStroke.removeFromSuperlayer()
                 
@@ -285,10 +314,11 @@ class SearchView: UIViewController {
                 currentStrokePosition = .top
                 return
             }
-
         }
     }
     
+
+    //MARK: CollectionLayout
     private func adjustLayoutFor(context: CustomLayoutContext, width: CGFloat? = nil) {
         let isCompact = context == .compact
         let numberOfColumns: CGFloat = isCompact ? 2 : 3
@@ -309,7 +339,7 @@ class SearchView: UIViewController {
         layout.invalidateLayout()
     }
     
-    
+    //MARK: Keyboard response
     private func handleKeyboard(_ event: KeyboardListener.Event) {
         UIView.animate(
             withDuration: event.duration,
@@ -318,15 +348,32 @@ class SearchView: UIViewController {
         ) {
             switch event.presence {
             case .hidden, .accessoryOnly:
-                self.updateCollectionViewForState(isVisible: false, duration: event.duration, intersectingHeight: event.intersection.height)
+                self.updateCollectionViewForKeyboardState(isVisible: false, intersectingHeight: event.intersection.height)
+                self.updateSearchViewForKeyboardState(isVisible: false)
             case .full:
-                self.updateCollectionViewForState(isVisible: true, duration: event.duration, intersectingHeight: event.intersection.height)
+                self.updateCollectionViewForKeyboardState(isVisible: true, intersectingHeight: event.intersection.height)
+                self.updateSearchViewForKeyboardState(isVisible: true)
             }
             self.view.layoutIfNeeded()
         }
     }
-    
-    private func updateCollectionViewForState(isVisible: Bool, duration: TimeInterval, intersectingHeight: CGFloat){
+    private func updateSearchViewForKeyboardState(isVisible: Bool){
+        let isMainResponder = {
+            switch self.viewModel.searchBarPosition {
+            case .onTop: return self.topSearchController.searchBar.isFirstResponder
+            case .atTheBottom: return self.bottomSearchView.searchBar.isFirstResponder
+            }
+        }()
+        let followsKeyboard: Bool = isVisible && isMainResponder
+        
+        
+        NSLayoutConstraint.deactivate([followsKeyboard ? searchBarBottomAnchorInactive : searchBarBottomAnchorActive])
+        NSLayoutConstraint.activate([followsKeyboard ? searchBarBottomAnchorActive : searchBarBottomAnchorInactive])
+    }
+
+    private func updateCollectionViewForKeyboardState(isVisible: Bool,
+                                                      intersectingHeight: CGFloat)
+    {
         if isVisible {
             collectionView.contentInset = UIEdgeInsets(
                 top: .longInnerSpacer, left: .innerSpacer,
@@ -335,6 +382,36 @@ class SearchView: UIViewController {
             collectionView.contentInset = collectionContentInset
         }
         collectionView.scrollIndicatorInsets = collectionView.contentInset
+    }
+    
+    //MARK: Cell calctulations
+    private func prepareForExpandedView() {
+        if selectedIndexPath != nil { self.dismissPopover() }
+        
+        if topSearchController.searchBar.isFirstResponder {
+            topSearchController.searchBar.resignFirstResponder()
+        } else  {
+            _ = bottomSearchView.resignFirstResponder()
+        }
+    }
+    private func positionForCell(_ frame: CGRect) -> Position {
+        let columns = currentLayoutContext == .compact ? 2 : 3
+        let columnWidth = collectionView.bounds.width / CGFloat(columns)
+
+        switch frame.midX {
+        case ..<columnWidth:
+            return .leading
+        case columnWidth..<(columnWidth * 2):
+            return columns == 2 ? .trailing : .center
+        default:
+            return .trailing
+        }
+    }
+
+    
+    private func presentAlert(for alert: SingleEntryEditAlertType) {
+        let alert = self.alertCoordinator.makeAlert(alertType: alert)
+        self.present(alert, animated: true)
     }
 
 
@@ -353,28 +430,20 @@ class SearchView: UIViewController {
 
     //MARK: - Actions
     @objc func dismissPopover() {
-        popoverView?.dismissPopOver(closure: self.popOverDidDismiss )
+        popoverController?.dismissPopOver()
     }
 }
 
 //MARK: - SearchBar delegate.
 //Since i havent found a way to implement custom bottomSearchBar with controller, i should trigger custom search results updater ecery time the customSearchBar calls its delegate.
 extension SearchView: UISearchBarDelegate{
-    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
-        if viewModel.searchBarPosition == .atTheBottom {
-            bottomSearchView.animateTransitionTo(isActivated: true, time: 0.3)
-        }
-    }
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) { }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         let text = searchBar.text ?? ""
         input.send(.reciveText(text))
     }
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
-        if viewModel.searchBarPosition == .atTheBottom {
-            bottomSearchView.animateTransitionTo(isActivated: false, time: 0.3)
-        }
-        
         let text = searchBar.text ?? ""
         input.send(.reciveText(text))
 
@@ -382,18 +451,28 @@ extension SearchView: UISearchBarDelegate{
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         let text = searchBar.text ?? ""
         input.send(.reciveText(text))
-        
-        if searchBar.tag == 2 {
-            bottomSearchView.searchBar.resignFirstResponder()
-        }
-    }
-    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        if !searchBar.isFirstResponder {
-            searchBar.becomeFirstResponder()
-            searchBar.text = nil
-        }
     }
 }
+
+extension SearchView: CustomSearchBarDelegate {
+    func customSearchBarDidBeginEditing(_ searchBar: UISearchBar) { }
+    
+    func customSearchBarDidEndEditing(_ searchBar: UISearchBar) {
+        let text = searchBar.text ?? ""
+        input.send(.reciveText(text))
+    }
+    
+    func customSearchBar(_ searchBar: UISearchBar, didChangeText text: String) {
+        let text = searchBar.text ?? ""
+        input.send(.reciveText(text))
+    }
+    
+    func customSearchBarSearchButtonTapped(_ searchBar: UISearchBar) {
+        let text = searchBar.text ?? ""
+        input.send(.reciveText(text))
+    }
+}
+
 
 //MARK: - CollectionView Delegate
 extension SearchView: UICollectionViewDataSource, UICollectionViewDelegate {
@@ -424,8 +503,6 @@ extension SearchView: UICollectionViewDataSource, UICollectionViewDelegate {
         return cell
     }
     
-    
-    //MARK: Access Responce
     func collectionView(_ collectionView: UICollectionView, didHighlightItemAt indexPath: IndexPath) {
         if let cell = collectionView.cellForItem(at: indexPath) {
             UIView.animate(withDuration: 0.1, delay: 0, options: .curveEaseIn, animations: {
@@ -444,67 +521,48 @@ extension SearchView: UICollectionViewDataSource, UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let cell = collectionView.cellForItem(at: indexPath) as? SearchCell else { return }
         
-        if selectedIndexPath != nil { self.dismissPopover() }
-        
-        if bottomSearchView.searchBar.isFirstResponder {
-            bottomSearchView.searchBar.resignFirstResponder()
-        } else if topSearchController.searchBar.isFirstResponder {
-            topSearchController.searchBar.resignFirstResponder()
-        }
-        
-        let numberOfColumns = currentLayoutContext == .compact ? 2 : 3
+        self.prepareForExpandedView()
         
         let viewToAttach = view.window ?? view ?? collectionView
-        
         let cellFrameInWindow = collectionView.convert(cell.frame, to: viewToAttach)
-        
         let data = viewModel.dataForCellFor(indexPath: indexPath)
+
+        let cellContext = ExpandedCellContext(
+            cellPosition: positionForCell(cellFrameInWindow),
+            sourceViewFrame: cellFrameInWindow,
+            word: data.word,
+            description: data.description,
+            selectedSeparator: viewModel.textSeparator(),
+            placeholder: viewModel.currentPlaceholder())
         
-        let cellPosition: Position = {
-            let part = collectionView.bounds.width / CGFloat(numberOfColumns)
-            
-            if cellFrameInWindow.midX < part {
-                return .leading
-            } else {
-                if (numberOfColumns == 3 && cellFrameInWindow.midX > part * 2) || numberOfColumns == 2 {
-                    return .trailing
-                } else {
-                    return .center
-                }
-            }
-        }()
-        
-        let popover = SearchCellExpandedView(windowView: viewToAttach, shadowPosition: cellPosition, sourceViewFrame: cellFrameInWindow, word: data.word, description: data.description, delegate: self, selectedIndex: indexPath, selectedSeparator: viewModel.textSeparator(), placeholder: viewModel.currentPlaceholder())
-        
+        let popover = SearchCellExpandedView(cellContext: cellContext, delegate: self)
         
         self.selectedIndexPath = indexPath
-        self.popoverView = popover
+        self.popoverController = popover
+        
         popover.modalPresentationStyle = .overFullScreen
         self.present(popover, animated: false)
         popover.presentPopOver()
     }
 }
 
-extension SearchView: SearchViewDeleteDelegate{
-    func shouldDeleteCell(at index: IndexPath) {
+extension SearchView: SearchCellInteractionDelegate{
+    func didRequestDelete(/*cellID: UUID*/) {
+        guard let index = selectedIndexPath else { return }
         viewModel.deleteWordAt(indexPath: index)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
-            self.popOverDidDismiss()
-        })
-
     }
-    func shouldSaveCell(at index: IndexPath, text: String) {
-        viewModel.editWord(with: text, index: index)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
-            self.popOverDidDismiss()
-        })
-
+    
+    func didCommitEdit(/*cellID: UUID,*/ updatedText: String) {
+        guard let index = selectedIndexPath else { return }
+        viewModel.editWord(with: updatedText, index: index)
     }
-    func popOverDidDismiss() {
-        self.popoverView = nil
-        self.selectedIndexPath = nil
+    
+    func didDismissSelection() {
+        selectedIndexPath = nil
+        popoverController = nil
     }
 }
+
 
 
 

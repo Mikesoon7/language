@@ -45,9 +45,6 @@ class CustomNavigationController: UINavigationController {
     //The CAShapeLayer stroke, being added to the tabBarController, displayes on every view. By the design, SearchView need its own logic for any stroke diplay, so any added stroke with name "Stroke" will be removed on the appearence.
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        if self.viewControllers.first is EditView {
-            print("fwefwef")
-        }
         if self.viewControllers.first is SearchView {
             self.navigationBar.layer.sublayers?.removeAll(where: { stroke in
                 return stroke.name == "Stroke"

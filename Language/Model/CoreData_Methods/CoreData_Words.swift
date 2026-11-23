@@ -15,64 +15,65 @@ import UIKit
 
 //MARK: - Working with words.
 protocol WordsManaging{
-    func createWordsFromText(for dictionary : DictionariesEntity, text: String) throws -> [WordsEntity]
-    func createWordFromLine(for dictionary: DictionariesEntity, text: String, index: Int, id: UUID) throws -> WordsEntity
+//    func createWordsFromText(for dictionary : DictionariesEntity, text: String) throws -> [WordsEntity]
+//    func createWordFromLine(for dictionary: DictionariesEntity, text: String, index: Int, id: UUID) throws -> WordsEntity
     func createWordWithImage(for dictionary: DictionariesEntity, data: SingleModeCellData, index: Int, id: UUID) throws -> WordsEntity
-    func assignWordsProperties(for newWord: WordsEntity, from text: String) throws
-    func reassignWordsProperties(for newWord: WordsEntity, from text: String) throws
+//    func assignWordsProperties(for newWord: WordsEntity, from text: String) throws
+//    func reassignWordsProperties(for newWord: WordsEntity, from text: String) throws
     func fetchWords(for dictionary: DictionariesEntity) throws -> [WordsEntity]
 //    func updateWordsOrder(for dictionary: DictionariesEntity) throws
     func updateWordsImage(for word: WordsEntity, imageDetails: ImageDetailsCheck ) throws
+    func updateWordEntity(entity: WordsEntity, data: SingleModeCellData) throws
     func deleteWord(word: WordsEntity) throws
 }
 
 extension CoreDataHelper: WordsManaging{
     //MARK: Creation
     /// Iterate over passed text, divided by lines. Returns array of Words Entities
-    func createWordsFromText(for dictionary : DictionariesEntity, text: String) throws -> [WordsEntity] {
-        var results = [WordsEntity]()
-        let currentIndex = Int(dictionary.lastIndex)
-        let trimmedText = text.trimmingCharacters(in: .whitespacesAndNewlines)
-        let lines = trimmedText.split(separator: "\n", omittingEmptySubsequences: true)
-                
-        for (index, line) in lines.enumerated() {
-            guard line != "\r" else { break }
-            do {
-                //Validating line
-                let newWord = try createWordFromLine(for: dictionary, text: String(line), index:  index + currentIndex)
-                print(newWord, "Create wordsFromText", "Index - \(index + currentIndex)")
-                results.append(newWord)
-            } catch {
-                if let _ = error as? WordsErrorType {
-                    continue
-                } else {
-                    context.rollback()
-                    throw error
-                }
-            }
-        }
-        if results.isEmpty {
-            context.rollback()
-            throw WordsErrorType.failedToAssignEmptyString(text.prefix(20) + (text.count > 20 ? "..." : ""))
-        }
-
-        return results
-    }
+//    func createWordsFromText(for dictionary : DictionariesEntity, text: String) throws -> [WordsEntity] {
+//        var results = [WordsEntity]()
+//        let currentIndex = Int(dictionary.lastIndex)
+//        let trimmedText = text.trimmingCharacters(in: .whitespacesAndNewlines)
+//        let lines = trimmedText.split(separator: "\n", omittingEmptySubsequences: true)
+//                
+//        for (index, line) in lines.enumerated() {
+//            guard line != "\r" else { break }
+//            do {
+//                //Validating line
+//                let newWord = try createWordFromLine(for: dictionary, text: String(line), index:  index + currentIndex)
+//                print(newWord, "Create wordsFromText", "Index - \(index + currentIndex)")
+//                results.append(newWord)
+//            } catch {
+//                if let _ = error as? WordsErrorType {
+//                    continue
+//                } else {
+//                    context.rollback()
+//                    throw error
+//                }
+//            }
+//        }
+//        if results.isEmpty {
+//            context.rollback()
+//            throw WordsErrorType.failedToAssignEmptyString(text.prefix(20) + (text.count > 20 ? "..." : ""))
+//        }
+//
+//        return results
+//    }
 
     ///Assigning requiered properties for Words Entity. Passes word entity and text to complete creation.
-    func createWordFromLine(for dictionary: DictionariesEntity, text: String, index: Int, id: UUID = UUID()) throws -> WordsEntity {
-        let newWord = WordsEntity(context: context)
-        newWord.order = Int64(index)
-        newWord.identifier = id
-        newWord.dictionary = dictionary
-                
-        do {
-            try assignWordsProperties(for: newWord, from: text)
-        } catch {
-            throw error
-        }
-        return newWord
-    }
+//    func createWordFromLine(for dictionary: DictionariesEntity, text: String, index: Int, id: UUID = UUID()) throws -> WordsEntity {
+//        let newWord = WordsEntity(context: context)
+//        newWord.order = Int64(index)
+//        newWord.identifier = id
+//        newWord.dictionary = dictionary
+//                
+//        do {
+//            try assignWordsProperties(for: newWord, from: text)
+//        } catch {
+//            throw error
+//        }
+//        return newWord
+//    }
     
     func createWordWithImage(for dictionary: DictionariesEntity, data: SingleModeCellData , index: Int, id: UUID = UUID()) throws -> WordsEntity {
         let newWord = WordsEntity(context: context)
@@ -95,46 +96,57 @@ extension CoreDataHelper: WordsManaging{
     }
 
     ///Assigning text and description values to passed word with  devided passed text.
-    internal func assignWordsProperties(for wordEntity: WordsEntity, from text: String) throws {
-        
-        var trimmedText = String()
-        var newWord = String()
-        var newDescription = String()
-        
-        let exceptions = settingModel.appExceptions.availableExceptionsInString
-        
-        trimmedText = text.trimmingCharacters(in: CharacterSet(charactersIn: exceptions + exceptions.uppercased()))
-        
-        let parts = trimmedText.split(separator: settingModel.appSeparators.value).map { $0.trimmingCharacters(in: .whitespacesAndNewlines)}
-        
-        
-        guard !trimmedText.isEmpty, !parts.isEmpty else {
-            throw WordsErrorType.failedToAssignEmptyString(text.prefix(20) + (text.count > 20 ? "..." : ""))
-        }
-        
-        newWord = parts[0]
-        
-        if parts.count == 2{
-            newDescription = String(parts[1]).trimmingCharacters(in: .whitespacesAndNewlines)
-        } else if parts.count > 1{
-            newDescription = parts[1...].joined(separator: " \(settingModel.appSeparators.value) ").trimmingCharacters(in: .whitespacesAndNewlines)
-        }
-        
-        wordEntity.word = {
-            if let firstCharachter = newWord.first{
-                let restOfTheString = newWord.dropFirst()
-                return String(firstCharachter).capitalized + restOfTheString
-            } else {
-                return newWord
-            }
-        }()
-        wordEntity.meaning = newDescription
-    }
+//    internal func assignWordsProperties(for wordEntity: WordsEntity, from text: String) throws {
+//        
+//        var trimmedText = String()
+//        var newWord = String()
+//        var newDescription = String()
+//        
+//        let exceptions = settingModel.appExceptions.availableExceptionsInString
+//        
+//        trimmedText = text.trimmingCharacters(in: CharacterSet(charactersIn: exceptions + exceptions.uppercased()))
+//        
+//        let parts = trimmedText.split(separator: settingModel.appSeparators.value).map { $0.trimmingCharacters(in: .whitespacesAndNewlines)}
+//        
+//        
+//        guard !trimmedText.isEmpty, !parts.isEmpty else {
+//            throw WordsErrorType.failedToAssignEmptyString(text.prefix(20) + (text.count > 20 ? "..." : ""))
+//        }
+//        
+//        newWord = parts[0]
+//        
+//        if parts.count == 2{
+//            newDescription = String(parts[1]).trimmingCharacters(in: .whitespacesAndNewlines)
+//        } else if parts.count > 1{
+//            newDescription = parts[1...].joined(separator: " \(settingModel.appSeparators.value) ").trimmingCharacters(in: .whitespacesAndNewlines)
+//        }
+//        
+//        wordEntity.word = {
+//            if let firstCharachter = newWord.first{
+//                let restOfTheString = newWord.dropFirst()
+//                return String(firstCharachter).capitalized + restOfTheString
+//            } else {
+//                return newWord
+//            }
+//        }()
+//        wordEntity.meaning = newDescription
+//    }
     
     //MARK: Update
-    func reassignWordsProperties(for newWord: WordsEntity, from text: String) throws {
-        try assignWordsProperties(for: newWord, from: text)
-        try saveContext()
+//    func reassignWordsProperties(for newWord: WordsEntity, from text: String) throws {
+//        try assignWordsProperties(for: newWord, from: text)
+//        try saveContext()
+//    }
+    
+    func updateWordEntity(entity: WordsEntity, data: SingleModeCellData) throws {
+        entity.word = data.word
+        entity.meaning = data.definition
+        
+        do {
+            try saveContext()
+        } catch {
+            throw WordsErrorType.imageUpdateFailed(nil, entity)
+        }
     }
     
     func updateWordsImage(for word: WordsEntity, imageDetails: ImageDetailsCheck) throws {

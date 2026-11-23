@@ -129,8 +129,8 @@
 "game.lastCell.checked" = "Вы проверили:";
 "game.lastCell.spending" = "Проведя:";
 "game.lastCell.bestResult" = "Лучший результат!";
-"game.lastCell.avarageResult.firstPart" = "Вы справились ";
-"game.lastCell.avarageResult.secondPart" = " в прошлый раз";
+"game.lastCell.averageResult.firstPart" = "Вы справились ";
+"game.lastCell.averageResult.secondPart" = " в прошлый раз";
 "game.lastCell.slower" = "медленнее, чем";
 "game.lastCell.faster" = "быстрее, чем";
 "game.lastCell.same" = "так же быстро, как";
@@ -168,6 +168,11 @@
 "searchVCTitle" = "Поиск";
 "yourWord" = "Введите ваш текст";
 "copied" = "Скопировано";
+
+"searchView.saveError" = "Не удалось сохранить изменения. Повторите попытку.";
+"searchView.emptyText.message" = "Текст не может быть пустым.";
+"searchView.incorrectInput.message" = "Все символы были удалены в соответствии с текущими настройками.";
+
 //MARK: - SeparatorsVC
 "separators.addChar" = "Добавить символ";
 "separators.placeholder" = "Введите текст";
@@ -228,7 +233,7 @@
 //FifthView
 "tutorial.fifthViewLabel" = "Для большей детализации, например, при изучении языков, используйте символ-разделитель. Его можно изменить в настройках, и он будет отображаться во время редактирования.";
 //TranslationView
-"tutorial.translation" = "При выделении слова вы можете перевести его с помощью втроенных в устройство словарей.";
+"tutorial.translation" = "При выделении слова вы можете перевести его с помощью встроенных в устройство словарей.";
 //SixthView
 "tutorial.sixthViewLabel" = "Ну вот и все! Мы рады быть частью вашего пути обучения. \n \n Желаем удачи и приятного использования.";
 "tutorial.card.name" = "Привет";

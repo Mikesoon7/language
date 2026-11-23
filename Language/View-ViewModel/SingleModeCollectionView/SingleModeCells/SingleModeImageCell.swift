@@ -20,8 +20,8 @@ class SingleModeImageCell: UICollectionViewCell {
     static var identifier = "SingleModeImage"
     
     //MARK: Properties
-    var delegate: SingleModeTextDelegate?
-    var actionDelegate: SingleModeCellActionDelegate?
+    weak var delegate: SingleModeTextDelegate?
+    weak var actionDelegate: SingleModeCellActionDelegate?
     
     private var direction: Direction = .right
     private var isActionActive: Bool = false
@@ -476,7 +476,6 @@ class TransperentView: UIView, UIGestureRecognizerDelegate{
     override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         if let panGestureRecognizer = gestureRecognizer as? UIPanGestureRecognizer, panGestureRecognizer.view == self {
             let velocity = panGestureRecognizer.velocity(in: self)
-            print(abs(velocity.y) < abs(velocity.x))
             return abs(velocity.y) < abs(velocity.x)
         }
         

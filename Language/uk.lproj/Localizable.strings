@@ -131,8 +131,8 @@
 "game.lastCell.checked" = "Перевірено:";
 "game.lastCell.spending" = "Витрачено часу:";
 "game.lastCell.bestResult" = "Найкращий результат!";
-"game.lastCell.avarageResult.firstPart" = "Ви виконали це ";
-"game.lastCell.avarageResult.secondPart" = " минулого разу";
+"game.lastCell.averageResult.firstPart" = "Ви виконали це ";
+"game.lastCell.averageResult.secondPart" = " минулого разу";
 "game.lastCell.slower" = "повільніше ніж";
 "game.lastCell.faster" = "швидше ніж";
 "game.lastCell.same" = "так само швидко, як";
@@ -170,6 +170,11 @@
 "searchVCTitle" = "Пошук";
 "yourWord" = "Введіть текст";
 "copied" = "Cкопійованo";
+
+"searchView.saveError" = "Не вдалося зберегти зміни. Спробуйте ще раз.";
+"searchView.emptyText.message" = "Текст не може бути порожнім.";
+"searchView.incorrectInput.message" = "Усі символи було видалено відповідно до поточних налаштувань.";
+
 //MARK: - SeparatorsVC
 "separators.addChar" = "Додати символ";
 "separators.placeholder" = "Введіть текст";

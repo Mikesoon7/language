@@ -65,7 +65,6 @@ class CollectionViewCell: UICollectionViewCell {
         view.distribution = .fill
         view.layer.cornerRadius = .cornerRadius
         view.layer.cornerCurve = .continuous
-//        view.layer.masksToBounds = true
         view.axis = .vertical
         view.alignment = .fill
         
@@ -147,6 +146,7 @@ class CollectionViewCell: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
         cardViewCustomiation()
+        
     }
     required init?(coder: NSCoder) {
         fatalError("Faild to present cells")
@@ -178,13 +178,7 @@ class CollectionViewCell: UICollectionViewCell {
         
         if let image = data.wordEntity.image {
             self.imageData = image
-//            loadImageLazily(from: data.wordEntity, at: indexPath) // ⬅️ new method
         }
-//        if let imageData = data.wordEntity.image, let imageDetails = try? JSONDecoder().decode(ImageDetailsCheck.self, from: imageData), let image = imageDetails.image {
-//            let processedImage = imageDetails.filterValue.original ? image : image.applyBlackAndWhiteFilter()
-//            imageView.image = processedImage
-//            imageView.contentMode = imageDetails.contentMode.uiViewContentMode
-//        }
         
         
         // Set the visibility based on whether there is a meaning to display
@@ -206,6 +200,7 @@ class CollectionViewCell: UICollectionViewCell {
             translationBacksideLabel.isHidden = true
         }
         configureTextDisplay()
+        configureTextAppearance()
     }
     
     func loadImageLazily() {
@@ -216,32 +211,6 @@ class CollectionViewCell: UICollectionViewCell {
             imageView.contentMode = imageDetails.contentMode.uiViewContentMode
         }
     }
-//    func loadImageLazily(from wordEntity: WordsEntity, at indexPath: IndexPath) {
-//        let key = wordEntity.word as NSString
-//        if let cached = imageCache.object(forKey: key) {
-//            self.imageView.image = cached
-//            return
-//        }
-//
-//        self.imageView.image = nil // Reset
-//
-//        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-//            guard let imageData = wordEntity.image,
-//                  let imageDetails = try? JSONDecoder().decode(ImageDetailsCheck.self, from: imageData),
-//                  let image = imageDetails.image else { return }
-//
-//            let finalImage = imageDetails.filterValue.original ? image : image.applyBlackAndWhiteFilter()
-//            self?.imageCache.setObject(finalImage, forKey: key)
-//
-//            DispatchQueue.main.async {
-//                // Ensure cell is still visible and hasn't been reused for another index
-//                guard let strongSelf = self,
-//                      strongSelf.isRepresenting(wordEntity: wordEntity) else { return }
-//
-//                strongSelf.imageView.image = finalImage
-//            }
-//        }
-//    }
 
     
     private func configureTextDisplay(){
@@ -261,8 +230,21 @@ class CollectionViewCell: UICollectionViewCell {
                 word.centerXAnchor.constraint(equalTo: cardView.centerXAnchor),
                 word.centerYAnchor.constraint(equalTo: cardView.centerYAnchor)
             ])
-            word.layer.backgroundColor = UIColor.systemBackground.withAlphaComponent(0.7).cgColor
-            translationBacksideLabel.layer.backgroundColor = UIColor.systemBackground.withAlphaComponent(0.7).cgColor
+        }
+    }
+    private func configureTextAppearance() {
+        if imageData != nil {
+            if isOneSideMode {
+                stackView.backgroundColor = UIColor.systemBackground.withAlphaComponent(0.6)
+            } else {
+                word.layer.backgroundColor = UIColor.systemBackground.withAlphaComponent(0.6).cgColor
+            }
+        } else {
+            if isOneSideMode {
+                stackView.backgroundColor = .clear
+            } else {
+                word.layer.backgroundColor = UIColor.clear.cgColor
+            }
         }
     }
 

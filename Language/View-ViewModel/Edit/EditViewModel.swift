@@ -79,25 +79,22 @@ class EditViewModel {
         self.model = dataModel
         self.settingsmodel = settingsModel
         self.dictionary = dictionary
-        
+        self.dictionaryName = dictionary.language
+
         do {
             words = try model.fetchWords(for: dictionary)
-            print(words)
             for word in self.words {
                 var imageDetails: ImageDetailsCheck? = nil
                 if let imageData = word.image {
                     imageDetails = try? JSONDecoder().decode(ImageDetailsCheck.self, from: imageData)
                 }
                 self.currentWords.append(SingleModeCellData(word: word.word, definition: word.meaning, imageDetails: imageDetails))
-                print(currentWords)
             }
             self.filteredWords = self.currentWords
-            self.dictionaryName = dictionary.language
             
-            self.output.send(.shouldUpdateName(self.dictionaryName))
-            print(filteredWords)
-            self.collectionOutput.send(.shouldUpdateResult( self.filteredWords))
-            
+//            self.output.send(.shouldUpdateName(self.dictionaryName))
+//            self.collectionOutput.send(.shouldUpdateResult( self.filteredWords))
+//            
         } catch {
             words = []
             output.send(.shouldPresentError(error))

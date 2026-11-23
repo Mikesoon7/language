@@ -70,21 +70,6 @@ extension CoreDataHelper: DictionaryManaging{
         if let name = name {
             dictionary.language = name
         }
-//        var wordsWithImages: [WordsEntity] = []
-//        
-//        for (index, pair) in words.enumerated() {
-//            
-//            let currentIndex = Int(dictionary.lastIndex) + index
-//            do {
-//                
-//                let word = try createWordWithImage(for: dictionary, data: pair, index: currentIndex)
-//                
-//                wordsWithImages.append(word)
-//            } catch (let error) {
-//                throw error
-//            }
-//        }
-    
 
         dictionary.words = Set(words) as? NSSet
         dictionary.numberOfCards = Int64(words.count)
@@ -140,22 +125,26 @@ extension CoreDataHelper: DictionaryManaging{
         let text = "tutorial.card.title".localized + settingModel.appSeparators.value +  "tutorial.card.message".localized
         let dictionary = createNewDictionary(name: name)
         
-
-        var words: [WordsEntity] = []
-        
-        do {
-            words = try createWordsFromText(for: dictionary, text: text)
-        } catch {
-            context.rollback()
-            throw error
-        }
+        let newWord = WordsEntity(context: context)
+        newWord.order = Int64(0)
+        newWord.identifier = UUID()
+        newWord.dictionary = dictionary
+        newWord.word = name
+        newWord.meaning = text
+//        do {
+//            words = try create
+//            words = try createWordsFromText(for: dictionary, text: text)
+//        } catch {
+//            context.rollback()
+//            throw error
+//        }
         
         dictionary.id = AppLinks.tutorialUUID
         dictionary.creationDate = Date().timeStripped
-        dictionary.words = NSSet(array: words)
-        dictionary.numberOfCards = Int64(words.count)
+        dictionary.words = NSSet(array: [newWord])
+        dictionary.numberOfCards = Int64(1)
         dictionary.order = numberOfDictionaries
-        dictionary.lastIndex = Int64(words.count)
+        dictionary.lastIndex = Int64(0)
         
         do {
             try context.save()

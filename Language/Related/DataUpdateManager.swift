@@ -144,16 +144,6 @@ class DataUpdateManager{
         }
     }
     
-//    func createDictionary(_ name: String, content: String ) throws {
-//        let dictionary = dataModel.createNewDictionary(name: name)
-//        do {
-//            let wordsCollection = try dataModel.createWordsFromText(for: dictionary, text: content)
-//            
-//            try dataModel.fillNewDictionary(dictionary: dictionary, with: wordsCollection)
-//        } catch {
-//            throw error
-//        }
-//    }
     func createDictionary(_ name: String, content: [SingleModeCellData]) throws {
         let dictionary = dataModel.createNewDictionary(name: name)
         var wordsCollection: [WordsEntity] = []
@@ -173,27 +163,6 @@ class DataUpdateManager{
         }
     }
     
-    func addNewWordsFor(_ dictionary: DictionariesEntity, from text: String) throws {
-        let currentSettings = dataModel.fetchSettings(for: dictionary)
-        let currentSelectedNumber = currentSettings?.selectedNumber ?? dictionary.numberOfCards
-        let currentLastIndex = dictionary.lastIndex
-        let currentTotalNumber = dictionary.numberOfCards
-        do {
-            let words = try dataModel.createWordsFromText(for: dictionary, text: text)
-            print(currentTotalNumber, words, "AddNewWords, update manager")
-            try dataModel.extendDictionary(dictionary, words: words)
-            
-            if currentSelectedNumber == currentTotalNumber {
-                try settingsDidChangeFor(dictionary, selectedDisplayNumber: currentSelectedNumber + Int64(words.count))
-            } else {
-                
-                dataModel.settingsDidChange.send(true)
-            }
-            
-        } catch {
-            throw error
-        }
-    }
     func addNewWordsFor(_ dictionary: DictionariesEntity, from pairs: [SingleModeCellData]) throws {
         let currentSettings = dataModel.fetchSettings(for: dictionary)
         let currentSelectedNumber = currentSettings?.selectedNumber ?? dictionary.numberOfCards
@@ -253,17 +222,24 @@ class DataUpdateManager{
             throw error
         }
     }
+    
+    func updateSingleEntry(entry: WordsEntity, data: SingleModeCellData) throws {
+        do {
+            try dataModel.updateWordEntity(entity: entry, data: data)
+        } catch {
+            throw error
+        }
+    }
+    
     func splitTheText(text: String, trimExceptions: Bool) -> [SingleModeCellData]{
         let trimmedText = text.trimmingCharacters(in: .whitespacesAndNewlines)
         let lines = trimmedText.split(separator: "\n", omittingEmptySubsequences: true)
         
         var data: [SingleModeCellData] = []
         
-        //        var numberOfLines = 0
-        for (index, line) in lines.enumerated() {
+        for (_, line) in lines.enumerated() {
             guard line != "\r" else { break }
             
-            print(line)
             var newWord = String()
             var newDefinition = String()
             var trimmedText = String()
@@ -304,6 +280,43 @@ class DataUpdateManager{
         return data
     }
     
+    func splitSingleExpressionData(data: String) -> SingleModeCellData {
+        let trimmedText = data.trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        var newWord = String()
+        var newDefinition = String()
+        var finalText = String()
+        
+        let exceptions = settingsModel.appExceptions.availableExceptionsInString
+        
+        finalText = trimmedText.trimmingCharacters(in: CharacterSet(charactersIn: exceptions + exceptions.uppercased()))
+        
+        let parts = finalText.split(separator: settingsModel.appSeparators.value).map { $0.trimmingCharacters(in: .whitespacesAndNewlines)}
+        
+        ///Validating line
+        guard let firstPart = parts.first else {
+            return SingleModeCellData(word: "", definition: "")
+        }
+        newWord = firstPart
+        
+        if parts.count == 2{
+            newDefinition = String(parts[1]).trimmingCharacters(in: .whitespacesAndNewlines)
+        } else if parts.count > 1{
+            newDefinition = parts[1...].joined(separator: " \(settingsModel.appSeparators.value) ").trimmingCharacters(in: .whitespacesAndNewlines)
+        }
+        
+        newWord = {
+            if let firstCharachter = newWord.first{
+                let restOfTheString = newWord.dropFirst()
+                return String(firstCharachter).capitalized + restOfTheString
+            } else {
+                return newWord
+            }
+            
+        }()
+        return SingleModeCellData(word: newWord, definition: newDefinition)
+    }
+    
     func verifySingleCellData(data: [SingleModeCellData], name: String?) -> VerificationResult {
         guard let name = name, !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
             return .emptyName
@@ -323,7 +336,7 @@ class DataUpdateManager{
             return .emptyName
         }
         
-        guard let text = data, !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+        guard let text = data, !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
             return .emptyText
         }
         
@@ -337,6 +350,21 @@ class DataUpdateManager{
         return .success(validData, name)
     }
     
+    func verifySingleEntryTextData(data: String?) -> VerificationResult {
+        guard let text = data, !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            return .emptyText
+        }
+        
+        let singleData = self.splitSingleExpressionData(data: text)
+        
+        guard singleData.isValid else {
+            return .croppedText
+        }
+        
+        return .success([singleData], "")
+
+
+    }
 }
 
 

@@ -88,8 +88,6 @@ class MenuView: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         updateLayoutIfNeeded()
-        print("traitCollectionLayoutChange", view.bounds.size)
-
     }
     
     override var canBecomeFirstResponder: Bool {

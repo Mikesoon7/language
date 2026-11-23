@@ -10,6 +10,7 @@ import UIKit
 class SettingsTableLinkView: UIView {
     
     static var footerHeight: CGFloat = 80
+    private var currentLayoutContext: CustomLayoutContext?
     
     private var stackView: UIStackView = {
         let view = UIStackView()
@@ -77,12 +78,13 @@ class SettingsTableLinkView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-        if previousTraitCollection?.horizontalSizeClass != traitCollection.horizontalSizeClass {
-            applyLayout()
-        }
-    }
+//    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+//        super.traitCollectionDidChange(previousTraitCollection)
+//        if previousTraitCollection?.horizontalSizeClass != traitCollection.horizontalSizeClass {
+//            applyLayout()
+//        }
+//    }
+    
     
     private func configureSubviews(){
         self.addSubviews(stackView, buyCoffee)
@@ -138,15 +140,35 @@ class SettingsTableLinkView: UIView {
         buyCoffee.text = "settings.footer.buyCoffee".localized
     }
     
-    func applyLayout(){
-        if traitCollection.isRegularWidth {
-            NSLayoutConstraint.deactivate(compactWidthConstraints)
-            NSLayoutConstraint.activate(regularWidthConstraints)
-        } else {
-            NSLayoutConstraint.deactivate(regularWidthConstraints)
-            NSLayoutConstraint.activate(compactWidthConstraints)
+    
+    func applyLayoutIfNeeded(){
+    
+        let newLayoutContext = layoutContext()
+        if self.currentLayoutContext != newLayoutContext {
+            UIView.animate(withDuration: 0.25) { [weak self] in
+                guard let self = self else { return }
+                
+                switch newLayoutContext {
+                case .compact:
+                    NSLayoutConstraint.deactivate(regularWidthConstraints)
+                    NSLayoutConstraint.activate(compactWidthConstraints)
+                case .regular:
+                    NSLayoutConstraint.deactivate(compactWidthConstraints)
+                    NSLayoutConstraint.activate(regularWidthConstraints)
+                }
+                self.currentLayoutContext = newLayoutContext
+                
+                self.layoutIfNeeded()
+            }
         }
-        layoutIfNeeded()
+//        if traitCollection.isRegularWidth {
+//            NSLayoutConstraint.deactivate(compactWidthConstraints)
+//            NSLayoutConstraint.activate(regularWidthConstraints)
+//        } else {
+//            NSLayoutConstraint.deactivate(regularWidthConstraints)
+//            NSLayoutConstraint.activate(compactWidthConstraints)
+//        }
+//        layoutIfNeeded()
     }
     
     //MARK: Actions

@@ -1,2 +1,13 @@
-xcuserdata/
+# macOS
 .DS_Store
+
+# Xcode user state
+xcuserdata/
+*.xcuserstate
+
+# Build
+build/
+DerivedData/
+
+# Local archives
+Language.zip

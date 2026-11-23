@@ -169,6 +169,11 @@
 "searchVCTitle" = "Arama";
 "yourWord" = "Metninizi girin";
 "copied" = "Kopya";
+
+"searchView.saveError" = "Değişiklikleriniz kaydedilemedi. Lütfen tekrar deneyin.";
+"searchView.emptyText.message" = "Metin boş olamaz.";
+"searchView.incorrectInput.message" = "Geçerli ayarlara göre tüm karakterler kaldırıldı.";
+
 //MARK: - SeparatorsVC
 "separators.addChar" = "Karakter Ekle";
 "separators.placeholder" = "Metin Girin";

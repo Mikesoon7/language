@@ -151,10 +151,13 @@ final class TextInputView: UIView {
             self.layer.shadowColor = UIColor.shadowColour.cgColor
         }
     }
+    
+    @discardableResult
     override func resignFirstResponder() -> Bool {
         self.textView.resignFirstResponder()
     }
     
+    @discardableResult
     override func becomeFirstResponder() -> Bool {
         self.textView.becomeFirstResponder()
     }
@@ -284,22 +287,22 @@ final class TextInputView: UIView {
         }
     }
     
-    func validateText() -> String?{
-        guard let text = self.textView.text, !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-            let insertTextAllert = UIAlertController.alertWithAction(alertTitle: "textAlert".localized,
-                                                                     alertMessage: "textInfo".localized,
-                                                                     alertStyle: .actionSheet,
-                                                                     action1Title: "system.agreeInformal".localized,
-                                                                     action1Handler: { _ in self.textView.becomeFirstResponder() },
-                                                                     action1Style: .cancel,
-                                                                     sourceView: self,
-                                                                     sourceRect: nil)
-            
-            delegate?.presentErrorAlert(alert: insertTextAllert)
-            return nil
-        }
-        return text
-    }
+//    func validateText() -> String?{
+//        guard let text = self.textView.text, !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+//            let insertTextAllert = UIAlertController.alertWithAction(alertTitle: "textAlert".localized,
+//                                                                     alertMessage: "textInfo".localized,
+//                                                                     alertStyle: .actionSheet,
+//                                                                     action1Title: "system.agreeInformal".localized,
+//                                                                     action1Handler: { _ in self.textView.becomeFirstResponder() },
+//                                                                     action1Style: .cancel,
+//                                                                     sourceView: self,
+//                                                                     sourceRect: nil)
+//            
+//            delegate?.presentErrorAlert(alert: insertTextAllert)
+//            return nil
+//        }
+//        return text
+//    }
     
     
     //MARK: Action
