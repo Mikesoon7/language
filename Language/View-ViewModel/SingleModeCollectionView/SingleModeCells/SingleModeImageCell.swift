@@ -476,7 +476,6 @@ class TransperentView: UIView, UIGestureRecognizerDelegate{
     override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         if let panGestureRecognizer = gestureRecognizer as? UIPanGestureRecognizer, panGestureRecognizer.view == self {
             let velocity = panGestureRecognizer.velocity(in: self)
-            print(abs(velocity.y) < abs(velocity.x))
             return abs(velocity.y) < abs(velocity.x)
         }
         

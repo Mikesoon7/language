@@ -144,16 +144,6 @@ class DataUpdateManager{
         }
     }
     
-//    func createDictionary(_ name: String, content: String ) throws {
-//        let dictionary = dataModel.createNewDictionary(name: name)
-//        do {
-//            let wordsCollection = try dataModel.createWordsFromText(for: dictionary, text: content)
-//            
-//            try dataModel.fillNewDictionary(dictionary: dictionary, with: wordsCollection)
-//        } catch {
-//            throw error
-//        }
-//    }
     func createDictionary(_ name: String, content: [SingleModeCellData]) throws {
         let dictionary = dataModel.createNewDictionary(name: name)
         var wordsCollection: [WordsEntity] = []
@@ -173,27 +163,6 @@ class DataUpdateManager{
         }
     }
     
-//    func addNewWordsFor(_ dictionary: DictionariesEntity, from text: String) throws {
-//        let currentSettings = dataModel.fetchSettings(for: dictionary)
-//        let currentSelectedNumber = currentSettings?.selectedNumber ?? dictionary.numberOfCards
-//        let currentLastIndex = dictionary.lastIndex
-//        let currentTotalNumber = dictionary.numberOfCards
-//        do {
-//            let words = try dataModel.createWordsFromText(for: dictionary, text: text)
-//            print(currentTotalNumber, words, "AddNewWords, update manager")
-//            try dataModel.extendDictionary(dictionary, words: words)
-//            
-//            if currentSelectedNumber == currentTotalNumber {
-//                try settingsDidChangeFor(dictionary, selectedDisplayNumber: currentSelectedNumber + Int64(words.count))
-//            } else {
-//                
-//                dataModel.settingsDidChange.send(true)
-//            }
-//            
-//        } catch {
-//            throw error
-//        }
-//    }
     func addNewWordsFor(_ dictionary: DictionariesEntity, from pairs: [SingleModeCellData]) throws {
         let currentSettings = dataModel.fetchSettings(for: dictionary)
         let currentSelectedNumber = currentSettings?.selectedNumber ?? dictionary.numberOfCards
@@ -325,7 +294,10 @@ class DataUpdateManager{
         let parts = finalText.split(separator: settingsModel.appSeparators.value).map { $0.trimmingCharacters(in: .whitespacesAndNewlines)}
         
         ///Validating line
-        newWord = parts[0]
+        guard let firstPart = parts.first else {
+            return SingleModeCellData(word: "", definition: "")
+        }
+        newWord = firstPart
         
         if parts.count == 2{
             newDefinition = String(parts[1]).trimmingCharacters(in: .whitespacesAndNewlines)

@@ -295,7 +295,7 @@ class CollectionViewLastCell: UICollectionViewCell {
         summaryLabel.text = summaryLabelText
         
         
-        let duration = 0.6
+        let duration = 0.45
         var perspective = CATransform3DIdentity
         perspective.m34 = -1.0 / 5000.0
         
@@ -306,12 +306,12 @@ class CollectionViewLastCell: UICollectionViewCell {
         let finalClockwiseTransform    = CATransform3DRotate(perspective, .pi, 0, 1, 0)
                 
         let animation = UIViewPropertyAnimator(duration: duration, curve: .linear) {
-            UIView.animate(withDuration: duration / 2, animations: {
+            UIView.animate(withDuration: 0.1, animations: {
                 self.cardView.layer.transform = CATransform3DConcat(halfwayClockwiseTransform, liftTransform)
 
                 
             }) { _ in
-                UIView.animate(withDuration: duration / 2) {
+                UIView.animate(withDuration: 0.35) {
                     self.cardView.layer.transform = CATransform3DConcat(finalClockwiseTransform, initialTransfrom)
                     
                 }

@@ -9,7 +9,6 @@ import UIKit
 
 enum Section: CaseIterable{
     case cards
-    case results
 }
 
 class CollectionViewCell: UICollectionViewCell {

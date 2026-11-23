@@ -27,7 +27,7 @@ class GameViewModel{
     }
     enum CollectionViewOutput {
         case shouldUpdateResult([CellDataWrapper])
-        case shouldInsert(CellDataWrapper)
+//        case shouldInsert(CellDataWrapper)
     }
 
     //MARK: Properties
@@ -113,14 +113,16 @@ class GameViewModel{
             output.send(.error(error))
         }
     }
-    //TODO: - When deleting, needs to update the slected number in cases when the biggest amount was selected.
-    func deleteWord(word: WordsEntity){
+    //TODO: - When deleting, needs to update the selected number in cases when the biggest amount was selected.
+    @discardableResult
+    func deleteWord(word: WordsEntity) -> Bool {
         do {
             try updateManager.wordDidDeleteFor(dictionary, word: word)
-            self.words.removeAll(where: {$0 == word})
-            
+            self.words.removeAll(where: { $0 == word })
+            return true
         } catch {
             output.send(.error(error))
+            return false
         }
     }
     
@@ -138,18 +140,18 @@ class GameViewModel{
         }
 
         self.words = prepareWords(words: words, selectedOrder: selectedCardsOrder, restrictBy: Int(selectedNumberOfWords))
-//        self.output.send(.dataReadyForDisplay)
     }
+    
     func viewIsReadyForTheDataDisplay() {
-        var data = self.dataForDiffableDataSource()
-        data.append(contentsOf: dataForTheLastCell() ?? [])
-        self.collectionOutput.send(.shouldUpdateResult(data))
+        var data = dataForDiffableDataSource()
+        if selectedTime != nil {
+            data.append(contentsOf: dataForDiffableDataSource())
+        } else {
+            data.append(contentsOf: dataForTheLastCell() ?? [])
+        }
+        collectionOutput.send(.shouldUpdateResult(data))
     }
 
-//
-//    private func wordsHashableWrapper(word: WordsEntity ) -> HashableWordsEntity {
-//        return HashableWordsEntity(wordEntity: word)
-//    }
     ///Creating and return  new array after applying passed random value and restriction by passed number
     private func prepareWords(words: [WordsEntity],
                               selectedOrder: DictionariesSettings.CardOrder,

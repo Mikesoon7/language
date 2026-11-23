@@ -474,7 +474,6 @@ extension GameDetailsVC {
     }
     
     @objc func deleteButtonDidTap(sender: UIButton){
-        //Passing view for an iPad version.
         viewModel?.deleteWord(view: self.view)
     }
     @objc func imageButtonDidTap(sender: UIButton) {

@@ -540,7 +540,6 @@ extension AddImageController: UIImagePickerControllerDelegate, UINavigationContr
         picker.dismiss(animated: true)
         
         if let selectedImage = info[.originalImage] as? UIImage {
-            print("Image was set")
             self.isSavingRequired = true
             DispatchQueue.main.async {
                 let processedImage = self.imageDetails.filterValue.original ? selectedImage : selectedImage.applyBlackAndWhiteFilter()

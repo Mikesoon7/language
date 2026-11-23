@@ -151,10 +151,13 @@ final class TextInputView: UIView {
             self.layer.shadowColor = UIColor.shadowColour.cgColor
         }
     }
+    
+    @discardableResult
     override func resignFirstResponder() -> Bool {
         self.textView.resignFirstResponder()
     }
     
+    @discardableResult
     override func becomeFirstResponder() -> Bool {
         self.textView.becomeFirstResponder()
     }
