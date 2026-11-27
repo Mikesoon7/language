@@ -2,24 +2,24 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>NSCameraUsageDescription</key>
-	<string>$(PRODUCT_NAME) camera access</string>
-	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string></string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string></string>
-	<key>CFBundleLocalizations</key>
-	<array>
-		<string>Ukrainian</string>
-		<string>Russian</string>
-		<string>en</string>
-		<string>Turkish</string>
-	</array>
-	<key>UIApplicationSceneManifest</key>
+    <key>NSCameraUsageDescription</key>
+    <string>Access to the camera is optional and is used only when you take a photo for a card.</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>Access to your photo library is optional and is used only when you choose a picture for a card. Your photos are not shared with anyone.</string>
+    <key>NSPhotoLibraryAddUsageDescription</key>
+    <string>Learny saves images to your photo library only when you export them.</string>
+    <key>CFBundleLocalizations</key>
+    <array>
+        <string>uk</string>
+        <string>ru</string>
+        <string>en</string>
+        <string>tr</string>
+    </array>
+    <key>UIApplicationSceneManifest</key>
 	<dict>
-		<key>UIApplicationSupportsMultipleScenes</key>
-		<true/>
-		<key>UISceneConfigurations</key>
+        <key>UIApplicationSupportsMultipleScenes</key>
+        <false/>
+        <key>UISceneConfigurations</key>
 		<dict>
 			<key>UIWindowSceneSessionRoleApplication</key>
 			<array>
@@ -32,9 +32,5 @@
 			</array>
 		</dict>
 	</dict>
-	<key>UTImportedTypeDeclarations</key>
-	<array>
-		<dict/>
-	</array>
 </dict>
 </plist>

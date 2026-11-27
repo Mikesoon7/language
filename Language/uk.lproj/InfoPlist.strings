@@ -1,0 +1,10 @@
+/* 
+  InfoPlist.strings
+  Learny
+
+  Created by Star Lord on 27/11/2026.
+  
+*/
+"NSCameraUsageDescription" = "Доступ до камери необов'язковий і потрібен лише для того, щоб зробити фото для картки.";
+"NSPhotoLibraryUsageDescription" = "Доступ до фотографій необов'язковий і використовується лише тоді, коли ви обираєте зображення для картки. Ваші фото нікому не передаються.";
+"NSPhotoLibraryAddUsageDescription" = "Learny зберігає зображення у вашу фототеку лише під час експорту.";

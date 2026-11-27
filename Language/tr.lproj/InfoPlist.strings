@@ -1,0 +1,10 @@
+/* 
+  InfoPlist.strings
+  Learny
+
+  Created by Star Lord on 27/11/2026.
+  
+*/
+"NSCameraUsageDescription" = "Kamera erişimi isteğe bağlıdır ve yalnızca bir kart için fotoğraf çektiğinizde kullanılır.";
+"NSPhotoLibraryUsageDescription" = "Fotoğraf kitaplığı erişimi isteğe bağlıdır ve yalnızca bir kart için resim seçtiğinizde kullanılır. Fotoğraflarınız kimseyle paylaşılmaz.";
+"NSPhotoLibraryAddUsageDescription" = "Learny, görselleri fotoğraf kitaplığınıza yalnızca dışa aktardığınızda kaydeder.";

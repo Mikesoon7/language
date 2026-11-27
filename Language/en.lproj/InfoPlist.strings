@@ -1,0 +1,10 @@
+/* 
+  InfoPlist.strings
+  Learny
+
+  Created by Star Lord on 27/11/2026.
+  
+*/
+"NSCameraUsageDescription" = "Access to the camera is optional and is used only when you take a photo for a card.";
+"NSPhotoLibraryUsageDescription" = "Access to your photo library is optional and is used only when you choose a picture for a card. Your photos are not shared with anyone.";
+"NSPhotoLibraryAddUsageDescription" = "Learny saves images to your photo library only when you export them.";
