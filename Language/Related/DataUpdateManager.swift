@@ -238,7 +238,8 @@ class DataUpdateManager{
         var data: [SingleModeCellData] = []
         
         for (_, line) in lines.enumerated() {
-            guard line != "\r" else { break }
+            guard line != "\r" else { continue }
+            
             
             var newWord = String()
             var newDefinition = String()
@@ -253,7 +254,7 @@ class DataUpdateManager{
             }
             let parts = trimmedText.split(separator: settingsModel.appSeparators.value).map { $0.trimmingCharacters(in: .whitespacesAndNewlines)}
             
-            guard !trimmedText.isEmpty, !parts.isEmpty else { break }
+            guard !trimmedText.isEmpty, !parts.isEmpty else { continue }
             
             ///Validating line
             newWord = parts[0]

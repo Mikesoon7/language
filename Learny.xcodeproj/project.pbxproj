@@ -17,6 +17,7 @@
 		0836F0662D5B4D8300B78F88 /* TutorialVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0836F0652D5B4D8300B78F88 /* TutorialVC.swift */; };
 		0836F0682D5E1EFD00B78F88 /* CGFloat Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0836F0672D5E1EFD00B78F88 /* CGFloat Extension.swift */; };
 		0836F06A2D5E3C6900B78F88 /* SettingsTableLinkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0836F0692D5E3C6900B78F88 /* SettingsTableLinkView.swift */; };
+		084EE2DF30B4723500DAF423 /* ParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 084EE2DE30B4723500DAF423 /* ParserTests.swift */; };
 		085CD74B2F1070DA0075D242 /* KeyboardCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 085CD74A2F1070DA0075D242 /* KeyboardCoordinator.swift */; };
 		085E24B22D6C58E600CB5ECB /* DictionariesEntity+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 085E24AA2D6C58E600CB5ECB /* DictionariesEntity+CoreDataProperties.swift */; };
 		085E24B32D6C58E600CB5ECB /* DictionariesAccessLog+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 085E24AB2D6C58E600CB5ECB /* DictionariesAccessLog+CoreDataClass.swift */; };
@@ -51,8 +52,6 @@
 		08CEADB72DB7A53A0092A283 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 08CEADB92DB7A53A0092A283 /* InfoPlist.strings */; };
 		08CEFF1F2D4E6AF300E6DF82 /* SearchCellDetailedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08CEFF1E2D4E6AF300E6DF82 /* SearchCellDetailedView.swift */; };
 		08D01AAA2D5F70FC00A25E31 /* AppProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08D01AA92D5F70FC00A25E31 /* AppProperties.swift */; };
-		08D01AAF2D68A19300A25E31 /* LearnyTests.xctest in Resources */ = {isa = PBXBuildFile; fileRef = 9A7B91D8298D6D9900E60CDD /* LearnyTests.xctest */; };
-		08D01AB02D68A19700A25E31 /* LearnyUITests.xctest in Resources */ = {isa = PBXBuildFile; fileRef = 9A7B91E2298D6D9A00E60CDD /* LearnyUITests.xctest */; };
 		08DA98B12D00AEE8007A3C00 /* CustomTableViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08DA98B02D00AEE8007A3C00 /* CustomTableViewDelegate.swift */; };
 		08EA16F62CFB1E3A00E1CA56 /* StatisticViewSelectedCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08EA16F52CFB1E3A00E1CA56 /* StatisticViewSelectedCell.swift */; };
 		7D3C3F9F2B1745A200025234 /* UIVC Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D3C3F9E2B1745A200025234 /* UIVC Extension.swift */; };
@@ -168,6 +167,7 @@
 		0836F0652D5B4D8300B78F88 /* TutorialVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TutorialVC.swift; sourceTree = "<group>"; };
 		0836F0672D5E1EFD00B78F88 /* CGFloat Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGFloat Extension.swift"; sourceTree = "<group>"; };
 		0836F0692D5E3C6900B78F88 /* SettingsTableLinkView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTableLinkView.swift; sourceTree = "<group>"; };
+		084EE2DE30B4723500DAF423 /* ParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParserTests.swift; sourceTree = "<group>"; };
 		085CD74A2F1070DA0075D242 /* KeyboardCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardCoordinator.swift; sourceTree = "<group>"; };
 		085E24A52D68B97200CB5ECB /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = uk.lproj/Localizable.strings; sourceTree = "<group>"; };
 		085E24AA2D6C58E600CB5ECB /* DictionariesEntity+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "DictionariesEntity+CoreDataProperties.swift"; sourceTree = "<group>"; };
@@ -610,6 +610,7 @@
 			isa = PBXGroup;
 			children = (
 				9A7B91DC298D6D9900E60CDD /* LearnyTests.swift */,
+				084EE2DE30B4723500DAF423 /* ParserTests.swift */,
 			);
 			path = LearnyTests;
 			sourceTree = "<group>";
@@ -896,6 +897,7 @@
 				ru,
 				uk,
 				tr,
+				Base,
 			);
 			mainGroup = 9A7B91B9298D6D9600E60CDD;
 			productRefGroup = 9A7B91C3298D6D9600E60CDD /* Products */;
@@ -927,7 +929,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				08D01AAF2D68A19300A25E31 /* LearnyTests.xctest in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -935,7 +936,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				08D01AB02D68A19700A25E31 /* LearnyUITests.xctest in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1073,6 +1073,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				084EE2DF30B4723500DAF423 /* ParserTests.swift in Sources */,
 				9A7B91DD298D6D9900E60CDD /* LearnyTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1331,7 +1332,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Language.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Language";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Learny.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Learny";
 			};
 			name = Debug;
 		};
@@ -1352,7 +1353,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Language.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Language";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Learny.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Learny";
 			};
 			name = Release;
 		};
